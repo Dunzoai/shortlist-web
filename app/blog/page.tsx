@@ -3,7 +3,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Nav from '@/components/Nav';
 import { useLanguage } from '@/components/LanguageContext';
@@ -91,7 +91,7 @@ const categories = [
   { value: 'general', labelEn: 'General', labelEs: 'General' },
 ];
 
-export default function BlogPage() {
+function BlogContent() {
   const { language, t } = useLanguage();
   const searchParams = useSearchParams();
   const [posts, setPosts] = useState<BlogPost[]>(placeholderPosts);
@@ -133,31 +133,7 @@ export default function BlogPage() {
   }, [activeCategory, posts]);
 
   return (
-    <main className="font-[family-name:var(--font-lora)]">
-      <Nav />
-
-      {/* Hero Section */}
-      <section className="relative pt-32 pb-24 bg-[#1B365D]">
-        <div className="max-w-7xl mx-auto px-6">
-          <motion.div
-            className="text-center"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-          >
-            <h1 className="font-[family-name:var(--font-playfair)] text-5xl md:text-6xl lg:text-7xl font-bold text-white mb-6">
-              Blog
-            </h1>
-            <p className="text-[#D6BFAE] text-xl max-w-2xl mx-auto">
-              {t(
-                'Insights, tips, and guides for buying and selling homes in Myrtle Beach',
-                'Consejos y guías para comprar y vender casas en Myrtle Beach'
-              )}
-            </p>
-          </motion.div>
-        </div>
-      </section>
-
+    <>
       {/* Category Filter */}
       <section className="py-8 bg-white border-b border-[#D6BFAE]/30">
         <div className="max-w-7xl mx-auto px-6">
@@ -285,6 +261,42 @@ export default function BlogPage() {
           </motion.div>
         </div>
       </section>
+    </>
+  );
+}
+
+export default function BlogPage() {
+  const { t } = useLanguage();
+
+  return (
+    <main className="font-[family-name:var(--font-lora)]">
+      <Nav />
+
+      {/* Hero Section */}
+      <section className="relative pt-32 pb-24 bg-[#1B365D]">
+        <div className="max-w-7xl mx-auto px-6">
+          <motion.div
+            className="text-center"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+          >
+            <h1 className="font-[family-name:var(--font-playfair)] text-5xl md:text-6xl lg:text-7xl font-bold text-white mb-6">
+              Blog
+            </h1>
+            <p className="text-[#D6BFAE] text-xl max-w-2xl mx-auto">
+              {t(
+                'Insights, tips, and guides for buying and selling homes in Myrtle Beach',
+                'Consejos y guías para comprar y vender casas en Myrtle Beach'
+              )}
+            </p>
+          </motion.div>
+        </div>
+      </section>
+
+      <Suspense fallback={<div className="py-24 text-center">Loading...</div>}>
+        <BlogContent />
+      </Suspense>
 
       {/* Footer */}
       <footer className="bg-[#1B365D] py-12 border-t border-white/10">
