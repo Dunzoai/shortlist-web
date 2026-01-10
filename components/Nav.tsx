@@ -40,9 +40,9 @@ export default function Nav() {
             <Image
               src="/dani-signature.png"
               alt="Dani Díaz"
-              width={120}
-              height={40}
-              className="h-8 w-auto brightness-0 invert"
+              width={180}
+              height={60}
+              className="h-12 w-auto brightness-0 invert"
               priority
             />
           </Link>

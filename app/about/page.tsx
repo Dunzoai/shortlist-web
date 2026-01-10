@@ -132,6 +132,15 @@ export default function AboutPage() {
                   )}
                 </p>
               </div>
+              <div className="flex justify-end mt-8">
+                <Image
+                  src="/dani-signature.png"
+                  alt="Dani Díaz Signature"
+                  width={250}
+                  height={85}
+                  className="h-20 w-auto"
+                />
+              </div>
             </motion.div>
           </motion.div>
         </div>
@@ -282,18 +291,6 @@ export default function AboutPage() {
                 {t('View Listings', 'Ver Propiedades')}
               </Link>
             </div>
-            <div className="flex justify-end mt-12">
-              <Image
-                src="/dani-signature.png"
-                alt="Dani Díaz Signature"
-                width={150}
-                height={50}
-                className="h-12 w-auto opacity-80"
-                style={{
-                  filter: isDark ? 'none' : 'none',
-                }}
-              />
-            </div>
           </motion.div>
         </div>
       </section>
@@ -309,9 +306,9 @@ export default function AboutPage() {
               <Image
                 src="/dani-signature.png"
                 alt="Dani Díaz"
-                width={120}
-                height={40}
-                className="h-8 w-auto brightness-0 invert mb-2"
+                width={200}
+                height={70}
+                className="h-14 w-auto brightness-0 invert mb-2"
               />
               <p className="text-white/60 text-sm">
                 {t('Bilingual Realtor® at Faircloth Real Estate Group', 'Agente Inmobiliaria Bilingüe en Faircloth Real Estate Group')}

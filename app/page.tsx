@@ -510,9 +510,9 @@ export default function Home() {
               <Image
                 src="/dani-signature.png"
                 alt="Dani Díaz"
-                width={120}
-                height={40}
-                className="h-8 w-auto brightness-0 invert mb-2"
+                width={200}
+                height={70}
+                className="h-14 w-auto brightness-0 invert mb-2"
               />
               <p className="text-white/60 text-sm">
                 {t('Bilingual Realtor® at Faircloth Real Estate Group', 'Agente Inmobiliaria Bilingüe en Faircloth Real Estate Group')}
