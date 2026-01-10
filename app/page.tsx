@@ -6,7 +6,7 @@ import { motion } from 'framer-motion';
 import Nav from '@/components/Nav';
 import { useLanguage } from '@/components/LanguageContext';
 import { useStyle } from '@/components/StyleContext';
-import StyleToggle from '@/components/StyleToggle';
+import LanguageToggle from '@/components/LanguageToggle';
 
 const fadeInUp = {
   initial: { opacity: 0, y: 30 },
@@ -89,7 +89,7 @@ export default function Home() {
   return (
     <main className="font-[family-name:var(--font-lora)]">
       <Nav />
-      <StyleToggle />
+      <LanguageToggle />
 
       {/* Hero Section */}
       <section className="relative min-h-screen flex items-center justify-center">
@@ -507,13 +507,9 @@ export default function Home() {
         <div className="max-w-7xl mx-auto px-6">
           <div className="flex flex-col md:flex-row justify-between items-center gap-6">
             <div className="text-center md:text-left">
-              <Image
-                src="/dani-signature.png"
-                alt="Dani Díaz"
-                width={200}
-                height={70}
-                className="h-14 w-auto brightness-0 invert mb-2"
-              />
+              <p className="font-[family-name:var(--font-playfair)] text-white text-xl mb-2">
+                Dani Díaz
+              </p>
               <p className="text-white/60 text-sm">
                 {t('Bilingual Realtor® at Faircloth Real Estate Group', 'Agente Inmobiliaria Bilingüe en Faircloth Real Estate Group')}
               </p>

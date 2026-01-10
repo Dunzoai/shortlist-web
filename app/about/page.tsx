@@ -6,7 +6,7 @@ import { motion } from 'framer-motion';
 import Nav from '@/components/Nav';
 import { useLanguage } from '@/components/LanguageContext';
 import { useStyle } from '@/components/StyleContext';
-import StyleToggle from '@/components/StyleToggle';
+import LanguageToggle from '@/components/LanguageToggle';
 
 const fadeInUp = {
   initial: { opacity: 0, y: 30 },
@@ -37,7 +37,7 @@ export default function AboutPage() {
   return (
     <main className="font-[family-name:var(--font-lora)]">
       <Nav />
-      <StyleToggle />
+      <LanguageToggle />
 
       {/* Hero Section */}
       <section
@@ -131,15 +131,6 @@ export default function AboutPage() {
                     "Ser bilingüe en inglés y español no es solo una habilidad profesional para mí—es un puente. Un puente que ayuda a las familias a comunicar sus sueños, preocupaciones y preguntas en el idioma en el que se sienten más cómodos. Porque cuando se trata de una de las decisiones más grandes de tu vida, mereces ser entendido completamente."
                   )}
                 </p>
-              </div>
-              <div className="flex justify-end mt-8">
-                <Image
-                  src="/dani-signature.png"
-                  alt="Dani Díaz Signature"
-                  width={250}
-                  height={85}
-                  className="h-20 w-auto"
-                />
               </div>
             </motion.div>
           </motion.div>
@@ -303,13 +294,9 @@ export default function AboutPage() {
         <div className="max-w-7xl mx-auto px-6">
           <div className="flex flex-col md:flex-row justify-between items-center gap-6">
             <div className="text-center md:text-left">
-              <Image
-                src="/dani-signature.png"
-                alt="Dani Díaz"
-                width={200}
-                height={70}
-                className="h-14 w-auto brightness-0 invert mb-2"
-              />
+              <p className="font-[family-name:var(--font-playfair)] text-white text-xl mb-2">
+                Dani Díaz
+              </p>
               <p className="text-white/60 text-sm">
                 {t('Bilingual Realtor® at Faircloth Real Estate Group', 'Agente Inmobiliaria Bilingüe en Faircloth Real Estate Group')}
               </p>
