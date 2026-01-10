@@ -5,6 +5,8 @@ import Link from 'next/link';
 import { motion } from 'framer-motion';
 import Nav from '@/components/Nav';
 import { useLanguage } from '@/components/LanguageContext';
+import { useStyle } from '@/components/StyleContext';
+import StyleToggle from '@/components/StyleToggle';
 
 const fadeInUp = {
   initial: { opacity: 0, y: 30 },
@@ -81,24 +83,41 @@ const testimonials = [
 
 export default function Home() {
   const { language, t } = useLanguage();
+  const { styleMode, colors } = useStyle();
+  const isDark = styleMode === 'dark';
 
   return (
     <main className="font-[family-name:var(--font-lora)]">
       <Nav />
+      <StyleToggle />
 
       {/* Hero Section */}
       <section className="relative min-h-screen flex items-center justify-center">
-        {/* Background Image */}
+        {/* Background Video */}
         <div className="absolute inset-0 z-0">
-          {/* TODO: Replace with actual hero image or video */}
+          <video
+            autoPlay
+            muted
+            loop
+            playsInline
+            className="absolute inset-0 w-full h-full object-cover"
+            poster="https://images.unsplash.com/photo-1499793983690-e29da59ef1c2?w=1920&q=80"
+          >
+            <source src="/dani-diaz-hero-video.m4v" type="video/mp4" />
+            {/* Fallback image if video doesn't load */}
+          </video>
+          {/* Fallback image */}
           <Image
             src="https://images.unsplash.com/photo-1499793983690-e29da59ef1c2?w=1920&q=80"
             alt="Luxury beach home"
             fill
-            className="object-cover"
+            className="object-cover -z-10"
             priority
           />
-          <div className="absolute inset-0 bg-[#1B365D]/70" />
+          <div
+            className="absolute inset-0 transition-colors duration-500"
+            style={{ backgroundColor: isDark ? 'rgba(27, 54, 93, 0.7)' : 'rgba(255, 251, 245, 0.85)' }}
+          />
         </div>
 
         {/* Hero Content */}
@@ -108,13 +127,19 @@ export default function Home() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.2 }}
         >
-          <h1 className="font-[family-name:var(--font-playfair)] text-5xl md:text-7xl lg:text-8xl font-bold text-white mb-6">
+          <h1
+            className="font-[family-name:var(--font-playfair)] text-5xl md:text-7xl lg:text-8xl font-bold mb-6 transition-colors duration-500"
+            style={{ color: isDark ? '#FFFFFF' : '#3D3D3D' }}
+          >
             Dani Díaz
           </h1>
           <p className="text-[#C4A25A] text-xl md:text-2xl mb-4 tracking-wide">
             {t('Bilingual Realtor® at Faircloth Real Estate Group', 'Agente Inmobiliaria Bilingüe en Faircloth Real Estate Group')}
           </p>
-          <p className="font-[family-name:var(--font-playfair)] text-white text-2xl md:text-3xl italic mb-12">
+          <p
+            className="font-[family-name:var(--font-playfair)] text-2xl md:text-3xl italic mb-12 transition-colors duration-500"
+            style={{ color: isDark ? '#FFFFFF' : '#3D3D3D' }}
+          >
             {t('From Global Roots to Local Roofs', 'De Raíces Globales a Techos Locales')}
           </p>
 
@@ -128,7 +153,11 @@ export default function Home() {
             </Link>
             <Link
               href="/sellers"
-              className="border-2 border-white text-white px-8 py-4 text-lg tracking-wide hover:bg-white hover:text-[#1B365D] transition-colors"
+              className="border-2 px-8 py-4 text-lg tracking-wide transition-colors"
+              style={{
+                borderColor: isDark ? '#FFFFFF' : '#3D3D3D',
+                color: isDark ? '#FFFFFF' : '#3D3D3D',
+              }}
             >
               {t("I'm Selling", 'Quiero Vender')}
             </Link>
@@ -141,14 +170,22 @@ export default function Home() {
           animate={{ y: [0, 10, 0] }}
           transition={{ duration: 1.5, repeat: Infinity }}
         >
-          <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg
+            className="w-6 h-6 transition-colors duration-500"
+            fill="none"
+            stroke={isDark ? '#FFFFFF' : '#3D3D3D'}
+            viewBox="0 0 24 24"
+          >
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
           </svg>
         </motion.div>
       </section>
 
       {/* About Preview Section */}
-      <section className="py-24 bg-white">
+      <section
+        className="py-24 transition-colors duration-500"
+        style={{ backgroundColor: isDark ? '#FFFFFF' : '#FFFBF5' }}
+      >
         <div className="max-w-7xl mx-auto px-6">
           <motion.div
             className="grid md:grid-cols-2 gap-12 items-center"
@@ -158,9 +195,8 @@ export default function Home() {
             variants={staggerContainer}
           >
             <motion.div variants={fadeInUp} className="relative">
-              {/* TODO: Replace with actual photo of Dani */}
               <Image
-                src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=800&q=80"
+                src="/dani-diaz-home-about.JPG"
                 alt="Dani Díaz - Bilingual Realtor"
                 width={500}
                 height={600}
@@ -173,7 +209,10 @@ export default function Home() {
             </motion.div>
 
             <motion.div variants={fadeInUp}>
-              <h2 className="font-[family-name:var(--font-playfair)] text-4xl md:text-5xl text-[#1B365D] mb-6">
+              <h2
+                className="font-[family-name:var(--font-playfair)] text-4xl md:text-5xl mb-6 transition-colors duration-500"
+                style={{ color: isDark ? '#1B365D' : '#3D3D3D' }}
+              >
                 {t('Meet Dani', 'Conoce a Dani')}
               </h2>
               <p className="text-[#3D3D3D] text-lg leading-relaxed mb-6">
@@ -203,7 +242,10 @@ export default function Home() {
       </section>
 
       {/* Featured Listings Section */}
-      <section className="py-24 bg-[#F7F7F7]">
+      <section
+        className="py-24 transition-colors duration-500"
+        style={{ backgroundColor: isDark ? '#F7F7F7' : '#F5F0E8' }}
+      >
         <div className="max-w-7xl mx-auto px-6">
           <motion.div
             initial="initial"
@@ -212,7 +254,10 @@ export default function Home() {
             variants={staggerContainer}
           >
             <motion.div variants={fadeInUp} className="text-center mb-16">
-              <h2 className="font-[family-name:var(--font-playfair)] text-4xl md:text-5xl text-[#1B365D] mb-4">
+              <h2
+                className="font-[family-name:var(--font-playfair)] text-4xl md:text-5xl mb-4 transition-colors duration-500"
+                style={{ color: isDark ? '#1B365D' : '#3D3D3D' }}
+              >
                 {t('Featured Properties', 'Propiedades Destacadas')}
               </h2>
               <p className="text-[#3D3D3D] text-lg max-w-2xl mx-auto">
@@ -237,12 +282,18 @@ export default function Home() {
                       fill
                       className="object-cover group-hover:scale-105 transition-transform duration-500"
                     />
-                    <div className="absolute top-4 left-4 bg-[#1B365D] text-white px-4 py-2 font-semibold">
+                    <div
+                      className="absolute top-4 left-4 text-white px-4 py-2 font-semibold"
+                      style={{ backgroundColor: isDark ? '#1B365D' : '#3D3D3D' }}
+                    >
                       {listing.price}
                     </div>
                   </div>
                   <div className="p-6">
-                    <h3 className="font-[family-name:var(--font-playfair)] text-xl text-[#1B365D] mb-1">
+                    <h3
+                      className="font-[family-name:var(--font-playfair)] text-xl mb-1"
+                      style={{ color: isDark ? '#1B365D' : '#3D3D3D' }}
+                    >
                       {listing.address}
                     </h3>
                     <p className="text-[#3D3D3D] mb-4">{listing.city}</p>
@@ -261,7 +312,8 @@ export default function Home() {
             <motion.div variants={fadeInUp} className="text-center mt-12">
               <Link
                 href="/listings"
-                className="inline-flex items-center bg-[#1B365D] text-white px-8 py-4 text-lg hover:bg-[#152a4a] transition-colors"
+                className="inline-flex items-center text-white px-8 py-4 text-lg transition-colors"
+                style={{ backgroundColor: isDark ? '#1B365D' : '#3D3D3D' }}
               >
                 {t('View All Listings', 'Ver Todas las Propiedades')}
                 <svg className="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -274,7 +326,10 @@ export default function Home() {
       </section>
 
       {/* Testimonials Section */}
-      <section className="py-24 bg-[#1B365D]">
+      <section
+        className="py-24 transition-colors duration-500"
+        style={{ backgroundColor: isDark ? '#1B365D' : '#3D3D3D' }}
+      >
         <div className="max-w-7xl mx-auto px-6">
           <motion.div
             initial="initial"
@@ -318,7 +373,10 @@ export default function Home() {
       </section>
 
       {/* Contact Section */}
-      <section className="py-24 bg-white">
+      <section
+        className="py-24 transition-colors duration-500"
+        style={{ backgroundColor: isDark ? '#FFFFFF' : '#FFFBF5' }}
+      >
         <div className="max-w-7xl mx-auto px-6">
           <motion.div
             className="grid md:grid-cols-2 gap-12"
@@ -328,7 +386,10 @@ export default function Home() {
             variants={staggerContainer}
           >
             <motion.div variants={fadeInUp}>
-              <h2 className="font-[family-name:var(--font-playfair)] text-4xl md:text-5xl text-[#1B365D] mb-6">
+              <h2
+                className="font-[family-name:var(--font-playfair)] text-4xl md:text-5xl mb-6 transition-colors duration-500"
+                style={{ color: isDark ? '#1B365D' : '#3D3D3D' }}
+              >
                 {t("Let's Connect", 'Conectemos')}
               </h2>
               <p className="text-[#3D3D3D] text-lg leading-relaxed mb-8">
@@ -346,7 +407,7 @@ export default function Home() {
                   </div>
                   <div>
                     <p className="text-sm text-[#3D3D3D]/60">{t('Phone', 'Teléfono')}</p>
-                    <p className="text-[#1B365D] font-semibold">(843) 555-0123</p>
+                    <p style={{ color: isDark ? '#1B365D' : '#3D3D3D' }} className="font-semibold">(843) 555-0123</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-4">
@@ -357,7 +418,7 @@ export default function Home() {
                   </div>
                   <div>
                     <p className="text-sm text-[#3D3D3D]/60">Email</p>
-                    <p className="text-[#1B365D] font-semibold">dani@fairclothrealestate.com</p>
+                    <p style={{ color: isDark ? '#1B365D' : '#3D3D3D' }} className="font-semibold">dani@fairclothrealestate.com</p>
                   </div>
                 </div>
               </div>
@@ -439,7 +500,10 @@ export default function Home() {
       </section>
 
       {/* Footer */}
-      <footer className="bg-[#1B365D] py-12">
+      <footer
+        className="py-12 transition-colors duration-500"
+        style={{ backgroundColor: isDark ? '#1B365D' : '#3D3D3D' }}
+      >
         <div className="max-w-7xl mx-auto px-6">
           <div className="flex flex-col md:flex-row justify-between items-center gap-6">
             <div className="text-center md:text-left">

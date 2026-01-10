@@ -5,6 +5,8 @@ import Link from 'next/link';
 import { motion } from 'framer-motion';
 import Nav from '@/components/Nav';
 import { useLanguage } from '@/components/LanguageContext';
+import { useStyle } from '@/components/StyleContext';
+import StyleToggle from '@/components/StyleToggle';
 
 const fadeInUp = {
   initial: { opacity: 0, y: 30 },
@@ -29,13 +31,19 @@ const credentials = [
 
 export default function AboutPage() {
   const { language, t } = useLanguage();
+  const { styleMode } = useStyle();
+  const isDark = styleMode === 'dark';
 
   return (
     <main className="font-[family-name:var(--font-lora)]">
       <Nav />
+      <StyleToggle />
 
       {/* Hero Section */}
-      <section className="relative pt-32 pb-24 bg-[#1B365D]">
+      <section
+        className="relative pt-32 pb-24 transition-colors duration-500"
+        style={{ backgroundColor: isDark ? '#1B365D' : '#3D3D3D' }}
+      >
         <div className="max-w-7xl mx-auto px-6">
           <motion.div
             className="text-center"
@@ -57,7 +65,10 @@ export default function AboutPage() {
       </section>
 
       {/* Main Bio Section */}
-      <section className="py-24 bg-white">
+      <section
+        className="py-24 transition-colors duration-500"
+        style={{ backgroundColor: isDark ? '#FFFFFF' : '#FFFBF5' }}
+      >
         <div className="max-w-7xl mx-auto px-6">
           <motion.div
             className="grid lg:grid-cols-2 gap-16 items-start"
@@ -67,9 +78,8 @@ export default function AboutPage() {
             variants={staggerContainer}
           >
             <motion.div variants={fadeInUp} className="relative">
-              {/* TODO: Replace with actual professional photo of Dani */}
               <Image
-                src="https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?w=800&q=80"
+                src="/dani-diaz-about.JPG"
                 alt="Dani Díaz - Professional Portrait"
                 width={600}
                 height={750}
@@ -86,7 +96,10 @@ export default function AboutPage() {
             </motion.div>
 
             <motion.div variants={fadeInUp} className="lg:pt-8">
-              <h2 className="font-[family-name:var(--font-playfair)] text-4xl text-[#1B365D] mb-8">
+              <h2
+                className="font-[family-name:var(--font-playfair)] text-4xl mb-8 transition-colors duration-500"
+                style={{ color: isDark ? '#1B365D' : '#3D3D3D' }}
+              >
                 {t('From Global Roots to Local Roofs', 'De Raíces Globales a Techos Locales')}
               </h2>
 
@@ -125,7 +138,10 @@ export default function AboutPage() {
       </section>
 
       {/* Credentials Section */}
-      <section className="py-24 bg-[#F7F7F7]">
+      <section
+        className="py-24 transition-colors duration-500"
+        style={{ backgroundColor: isDark ? '#F7F7F7' : '#F5F0E8' }}
+      >
         <div className="max-w-7xl mx-auto px-6">
           <motion.div
             initial="initial"
@@ -134,7 +150,10 @@ export default function AboutPage() {
             variants={staggerContainer}
           >
             <motion.div variants={fadeInUp} className="text-center mb-16">
-              <h2 className="font-[family-name:var(--font-playfair)] text-4xl text-[#1B365D] mb-4">
+              <h2
+                className="font-[family-name:var(--font-playfair)] text-4xl mb-4 transition-colors duration-500"
+                style={{ color: isDark ? '#1B365D' : '#3D3D3D' }}
+              >
                 {t('Credentials & Certifications', 'Credenciales y Certificaciones')}
               </h2>
               <p className="text-[#3D3D3D] text-lg max-w-2xl mx-auto">
@@ -152,11 +171,20 @@ export default function AboutPage() {
                   className="bg-white p-8 shadow-lg hover:shadow-xl transition-shadow text-center"
                 >
                   <div className="w-16 h-16 bg-[#D6BFAE] rounded-full flex items-center justify-center mx-auto mb-4">
-                    <svg className="w-8 h-8 text-[#1B365D]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg
+                      className="w-8 h-8"
+                      style={{ color: isDark ? '#1B365D' : '#3D3D3D' }}
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
                     </svg>
                   </div>
-                  <h3 className="font-[family-name:var(--font-playfair)] text-xl text-[#1B365D] mb-2">
+                  <h3
+                    className="font-[family-name:var(--font-playfair)] text-xl mb-2"
+                    style={{ color: isDark ? '#1B365D' : '#3D3D3D' }}
+                  >
                     {language === 'en' ? credential.titleEn : credential.titleEs}
                   </h3>
                   <p className="text-[#C4A25A] font-semibold">{credential.year}</p>
@@ -168,7 +196,10 @@ export default function AboutPage() {
       </section>
 
       {/* Personal Story Section */}
-      <section className="py-24 bg-[#1B365D]">
+      <section
+        className="py-24 transition-colors duration-500"
+        style={{ backgroundColor: isDark ? '#1B365D' : '#3D3D3D' }}
+      >
         <div className="max-w-4xl mx-auto px-6">
           <motion.div
             initial="initial"
@@ -210,7 +241,10 @@ export default function AboutPage() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-24 bg-white">
+      <section
+        className="py-24 transition-colors duration-500"
+        style={{ backgroundColor: isDark ? '#FFFFFF' : '#FFFBF5' }}
+      >
         <div className="max-w-4xl mx-auto px-6 text-center">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -218,7 +252,10 @@ export default function AboutPage() {
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
           >
-            <h2 className="font-[family-name:var(--font-playfair)] text-4xl md:text-5xl text-[#1B365D] mb-6">
+            <h2
+              className="font-[family-name:var(--font-playfair)] text-4xl md:text-5xl mb-6 transition-colors duration-500"
+              style={{ color: isDark ? '#1B365D' : '#3D3D3D' }}
+            >
               {t("Let's Start Your Journey", 'Comencemos Tu Viaje')}
             </h2>
             <p className="text-[#3D3D3D] text-lg mb-8 max-w-2xl mx-auto">
@@ -236,7 +273,11 @@ export default function AboutPage() {
               </Link>
               <Link
                 href="/listings"
-                className="border-2 border-[#1B365D] text-[#1B365D] px-8 py-4 text-lg hover:bg-[#1B365D] hover:text-white transition-colors"
+                className="border-2 px-8 py-4 text-lg transition-colors"
+                style={{
+                  borderColor: isDark ? '#1B365D' : '#3D3D3D',
+                  color: isDark ? '#1B365D' : '#3D3D3D',
+                }}
               >
                 {t('View Listings', 'Ver Propiedades')}
               </Link>
@@ -246,7 +287,10 @@ export default function AboutPage() {
       </section>
 
       {/* Footer */}
-      <footer className="bg-[#1B365D] py-12">
+      <footer
+        className="py-12 transition-colors duration-500"
+        style={{ backgroundColor: isDark ? '#1B365D' : '#3D3D3D' }}
+      >
         <div className="max-w-7xl mx-auto px-6">
           <div className="flex flex-col md:flex-row justify-between items-center gap-6">
             <div className="text-center md:text-left">

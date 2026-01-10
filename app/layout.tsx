@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Playfair_Display, Lora } from "next/font/google";
 import "./globals.css";
 import { LanguageProvider } from "@/components/LanguageContext";
+import { StyleProvider } from "@/components/StyleContext";
 
 const playfair = Playfair_Display({
   variable: "--font-playfair",
@@ -29,7 +30,9 @@ export default function RootLayout({
         className={`${playfair.variable} ${lora.variable} antialiased bg-[#F7F7F7] text-[#3D3D3D]`}
       >
         <LanguageProvider>
-          {children}
+          <StyleProvider>
+            {children}
+          </StyleProvider>
         </LanguageProvider>
       </body>
     </html>
