@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useLanguage } from './LanguageContext';
 
@@ -35,8 +36,15 @@ export default function Nav() {
       >
         <div className="max-w-7xl mx-auto px-6 flex justify-between items-center">
           {/* Logo */}
-          <Link href="/" className="font-[family-name:var(--font-playfair)] text-xl font-semibold text-white">
-            Dani Díaz
+          <Link href="/" className="relative">
+            <Image
+              src="/dani-signature.png"
+              alt="Dani Díaz"
+              width={120}
+              height={40}
+              className="h-8 w-auto brightness-0 invert"
+              priority
+            />
           </Link>
 
           {/* Desktop Navigation */}
