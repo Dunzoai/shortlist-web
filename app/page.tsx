@@ -1,81 +1,463 @@
-import { supabase } from '@/lib/supabase';
+'use client';
 
-async function getClientData() {
-  const { data, error } = await supabase
-    .from('clients')
-    .select('*')
-    .eq('slug', 'danidiaz')
-    .single();
+import Image from 'next/image';
+import Link from 'next/link';
+import { motion } from 'framer-motion';
+import Nav from '@/components/Nav';
+import { useLanguage } from '@/components/LanguageContext';
 
-  if (error) {
-    console.error('Error fetching client:', error);
-    return null;
+const fadeInUp = {
+  initial: { opacity: 0, y: 30 },
+  animate: { opacity: 1, y: 0 },
+  transition: { duration: 0.6 }
+};
+
+const staggerContainer = {
+  animate: {
+    transition: {
+      staggerChildren: 0.1
+    }
   }
+};
 
-  return data;
-}
+// Placeholder featured listings
+const featuredListings = [
+  {
+    id: 1,
+    image: 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=800&q=80',
+    price: '$425,000',
+    address: '123 Ocean Boulevard',
+    city: 'Myrtle Beach, SC',
+    beds: 4,
+    baths: 3,
+    sqft: '2,450'
+  },
+  {
+    id: 2,
+    image: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800&q=80',
+    price: '$575,000',
+    address: '456 Marsh View Drive',
+    city: 'Pawleys Island, SC',
+    beds: 5,
+    baths: 4,
+    sqft: '3,200'
+  },
+  {
+    id: 3,
+    image: 'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=800&q=80',
+    price: '$325,000',
+    address: '789 Coastal Lane',
+    city: 'Surfside Beach, SC',
+    beds: 3,
+    baths: 2,
+    sqft: '1,850'
+  }
+];
 
-export default async function Home() {
-  const client = await getClientData();
+// Placeholder testimonials
+const testimonials = [
+  {
+    id: 1,
+    text: "Dani made our home buying experience seamless. Her bilingual skills were invaluable for our family!",
+    textEs: "Dani hizo que nuestra experiencia de compra de casa fuera perfecta. ¡Sus habilidades bilingües fueron invaluables para nuestra familia!",
+    author: 'Maria & Carlos Rodriguez',
+    location: 'Myrtle Beach'
+  },
+  {
+    id: 2,
+    text: "Professional, knowledgeable, and always available. Dani found us our dream beach home.",
+    textEs: "Profesional, conocedora y siempre disponible. Dani nos encontró la casa de playa de nuestros sueños.",
+    author: 'The Thompson Family',
+    location: 'Pawleys Island'
+  },
+  {
+    id: 3,
+    text: "Her global perspective and local expertise made all the difference in our relocation.",
+    textEs: "Su perspectiva global y experiencia local marcaron toda la diferencia en nuestra reubicación.",
+    author: 'James & Linda Park',
+    location: 'Surfside Beach'
+  }
+];
 
-  const primaryColor = client?.primary_color || '#1B365D';
-  const secondaryColor = client?.secondary_color || '#C9A227';
-  const accentColor = client?.accent_color || '#FFFFFF';
+export default function Home() {
+  const { language, t } = useLanguage();
 
   return (
-    <div
-      className="min-h-screen font-[family-name:var(--font-lora)]"
-      style={{ backgroundColor: primaryColor }}
-    >
-      {/* Navigation */}
-      <nav
-        className="fixed top-0 left-0 right-0 z-50 px-8 py-4"
-        style={{ backgroundColor: primaryColor }}
-      >
-        <div className="max-w-7xl mx-auto flex justify-between items-center">
-          <div
-            className="font-[family-name:var(--font-playfair)] text-xl font-semibold"
-            style={{ color: accentColor }}
-          >
-            {client?.business_name || 'Dani Díaz Realty'}
-          </div>
-          <ul className="flex gap-8 text-sm tracking-wide">
-            {['Home', 'Buyers', 'Sellers', 'About', 'Blog'].map((item) => (
-              <li key={item}>
-                <a
-                  href={item === 'Home' ? '/' : `/${item.toLowerCase()}`}
-                  className="transition-colors hover:opacity-80"
-                  style={{ color: accentColor }}
-                >
-                  {item}
-                </a>
-              </li>
-            ))}
-          </ul>
-        </div>
-      </nav>
+    <main className="font-[family-name:var(--font-lora)]">
+      <Nav />
 
       {/* Hero Section */}
-      <main className="min-h-screen flex flex-col items-center justify-center text-center px-8">
-        <h1
-          className="font-[family-name:var(--font-playfair)] text-6xl md:text-8xl font-bold mb-4"
-          style={{ color: accentColor }}
+      <section className="relative min-h-screen flex items-center justify-center">
+        {/* Background Image */}
+        <div className="absolute inset-0 z-0">
+          {/* TODO: Replace with actual hero image or video */}
+          <Image
+            src="https://images.unsplash.com/photo-1499793983690-e29da59ef1c2?w=1920&q=80"
+            alt="Luxury beach home"
+            fill
+            className="object-cover"
+            priority
+          />
+          <div className="absolute inset-0 bg-[#1B365D]/70" />
+        </div>
+
+        {/* Hero Content */}
+        <motion.div
+          className="relative z-10 text-center px-6 max-w-4xl"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.2 }}
         >
-          {client?.name || 'Dani Díaz'}
-        </h1>
-        <p
-          className="text-xl md:text-2xl mb-6 tracking-wide"
-          style={{ color: secondaryColor }}
+          <h1 className="font-[family-name:var(--font-playfair)] text-5xl md:text-7xl lg:text-8xl font-bold text-white mb-6">
+            Dani Díaz
+          </h1>
+          <p className="text-[#C4A25A] text-xl md:text-2xl mb-4 tracking-wide">
+            {t('Bilingual Realtor® at Faircloth Real Estate Group', 'Agente Inmobiliaria Bilingüe en Faircloth Real Estate Group')}
+          </p>
+          <p className="font-[family-name:var(--font-playfair)] text-white text-2xl md:text-3xl italic mb-12">
+            {t('From Global Roots to Local Roofs', 'De Raíces Globales a Techos Locales')}
+          </p>
+
+          {/* Dual CTA Buttons */}
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Link
+              href="/buyers"
+              className="bg-[#C4A25A] text-white px-8 py-4 text-lg tracking-wide hover:bg-[#b3923f] transition-colors"
+            >
+              {t("I'm Buying", 'Quiero Comprar')}
+            </Link>
+            <Link
+              href="/sellers"
+              className="border-2 border-white text-white px-8 py-4 text-lg tracking-wide hover:bg-white hover:text-[#1B365D] transition-colors"
+            >
+              {t("I'm Selling", 'Quiero Vender')}
+            </Link>
+          </div>
+        </motion.div>
+
+        {/* Scroll Indicator */}
+        <motion.div
+          className="absolute bottom-8 left-1/2 -translate-x-1/2"
+          animate={{ y: [0, 10, 0] }}
+          transition={{ duration: 1.5, repeat: Infinity }}
         >
-          {client?.business_name || 'Bilingual Realtor'}
-        </p>
-        <p
-          className="font-[family-name:var(--font-playfair)] text-2xl md:text-3xl italic"
-          style={{ color: accentColor }}
-        >
-          From Global Roots to Local Roofs
-        </p>
-      </main>
-    </div>
+          <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+          </svg>
+        </motion.div>
+      </section>
+
+      {/* About Preview Section */}
+      <section className="py-24 bg-white">
+        <div className="max-w-7xl mx-auto px-6">
+          <motion.div
+            className="grid md:grid-cols-2 gap-12 items-center"
+            initial="initial"
+            whileInView="animate"
+            viewport={{ once: true }}
+            variants={staggerContainer}
+          >
+            <motion.div variants={fadeInUp} className="relative">
+              {/* TODO: Replace with actual photo of Dani */}
+              <Image
+                src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=800&q=80"
+                alt="Dani Díaz - Bilingual Realtor"
+                width={500}
+                height={600}
+                className="object-cover shadow-lg"
+              />
+              <div className="absolute -bottom-6 -right-6 bg-[#C4A25A] text-white px-6 py-4 font-[family-name:var(--font-playfair)]">
+                <p className="text-2xl font-bold">10+</p>
+                <p className="text-sm">{t('Years Experience', 'Años de Experiencia')}</p>
+              </div>
+            </motion.div>
+
+            <motion.div variants={fadeInUp}>
+              <h2 className="font-[family-name:var(--font-playfair)] text-4xl md:text-5xl text-[#1B365D] mb-6">
+                {t('Meet Dani', 'Conoce a Dani')}
+              </h2>
+              <p className="text-[#3D3D3D] text-lg leading-relaxed mb-6">
+                {t(
+                  "With a global background and deep local roots in Myrtle Beach, I bring a unique perspective to every real estate transaction. Whether you're relocating from abroad or moving across town, I understand the journey.",
+                  "Con una trayectoria global y profundas raíces locales en Myrtle Beach, aporto una perspectiva única a cada transacción inmobiliaria. Ya sea que te estés reubicando desde el extranjero o mudándote al otro lado de la ciudad, entiendo el viaje."
+                )}
+              </p>
+              <p className="text-[#3D3D3D] text-lg leading-relaxed mb-8">
+                {t(
+                  "As a bilingual Realtor®, I'm here to guide Spanish and English-speaking clients through the exciting process of finding their perfect home on the Grand Strand.",
+                  "Como Agente Inmobiliaria bilingüe, estoy aquí para guiar a clientes hispanohablantes e angloparlantes a través del emocionante proceso de encontrar su hogar perfecto en el Grand Strand."
+                )}
+              </p>
+              <Link
+                href="/about"
+                className="inline-flex items-center text-[#C4A25A] text-lg hover:text-[#1B365D] transition-colors"
+              >
+                {t('Learn More About Me', 'Conoce Más Sobre Mí')}
+                <svg className="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                </svg>
+              </Link>
+            </motion.div>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* Featured Listings Section */}
+      <section className="py-24 bg-[#F7F7F7]">
+        <div className="max-w-7xl mx-auto px-6">
+          <motion.div
+            initial="initial"
+            whileInView="animate"
+            viewport={{ once: true }}
+            variants={staggerContainer}
+          >
+            <motion.div variants={fadeInUp} className="text-center mb-16">
+              <h2 className="font-[family-name:var(--font-playfair)] text-4xl md:text-5xl text-[#1B365D] mb-4">
+                {t('Featured Properties', 'Propiedades Destacadas')}
+              </h2>
+              <p className="text-[#3D3D3D] text-lg max-w-2xl mx-auto">
+                {t(
+                  'Discover exceptional homes along the Grand Strand. From beachfront condos to luxury estates.',
+                  'Descubre hogares excepcionales a lo largo del Grand Strand. Desde condominios frente al mar hasta propiedades de lujo.'
+                )}
+              </p>
+            </motion.div>
+
+            <motion.div variants={fadeInUp} className="grid md:grid-cols-3 gap-8">
+              {featuredListings.map((listing) => (
+                <div
+                  key={listing.id}
+                  className="bg-white shadow-lg hover:shadow-xl transition-shadow group"
+                >
+                  <div className="relative h-64 overflow-hidden">
+                    {/* TODO: Replace with actual listing photos */}
+                    <Image
+                      src={listing.image}
+                      alt={listing.address}
+                      fill
+                      className="object-cover group-hover:scale-105 transition-transform duration-500"
+                    />
+                    <div className="absolute top-4 left-4 bg-[#1B365D] text-white px-4 py-2 font-semibold">
+                      {listing.price}
+                    </div>
+                  </div>
+                  <div className="p-6">
+                    <h3 className="font-[family-name:var(--font-playfair)] text-xl text-[#1B365D] mb-1">
+                      {listing.address}
+                    </h3>
+                    <p className="text-[#3D3D3D] mb-4">{listing.city}</p>
+                    <div className="flex gap-4 text-sm text-[#3D3D3D]">
+                      <span>{listing.beds} {t('beds', 'hab')}</span>
+                      <span>•</span>
+                      <span>{listing.baths} {t('baths', 'baños')}</span>
+                      <span>•</span>
+                      <span>{listing.sqft} {t('sq ft', 'pies²')}</span>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </motion.div>
+
+            <motion.div variants={fadeInUp} className="text-center mt-12">
+              <Link
+                href="/listings"
+                className="inline-flex items-center bg-[#1B365D] text-white px-8 py-4 text-lg hover:bg-[#152a4a] transition-colors"
+              >
+                {t('View All Listings', 'Ver Todas las Propiedades')}
+                <svg className="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                </svg>
+              </Link>
+            </motion.div>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* Testimonials Section */}
+      <section className="py-24 bg-[#1B365D]">
+        <div className="max-w-7xl mx-auto px-6">
+          <motion.div
+            initial="initial"
+            whileInView="animate"
+            viewport={{ once: true }}
+            variants={staggerContainer}
+          >
+            <motion.div variants={fadeInUp} className="text-center mb-16">
+              <h2 className="font-[family-name:var(--font-playfair)] text-4xl md:text-5xl text-white mb-4">
+                {t('What Clients Say', 'Lo Que Dicen los Clientes')}
+              </h2>
+              <p className="text-[#D6BFAE] text-lg max-w-2xl mx-auto">
+                {t(
+                  "Don't just take my word for it. Here's what families I've helped have to say.",
+                  "No solo me creas a mí. Esto es lo que dicen las familias que he ayudado."
+                )}
+              </p>
+            </motion.div>
+
+            <motion.div variants={fadeInUp} className="grid md:grid-cols-3 gap-8">
+              {testimonials.map((testimonial) => (
+                <div
+                  key={testimonial.id}
+                  className="bg-white/10 backdrop-blur p-8 border border-white/20"
+                >
+                  <svg className="w-10 h-10 text-[#C4A25A] mb-4" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z" />
+                  </svg>
+                  <p className="text-white text-lg mb-6 leading-relaxed">
+                    {language === 'en' ? testimonial.text : testimonial.textEs}
+                  </p>
+                  <div>
+                    <p className="text-[#C4A25A] font-semibold">{testimonial.author}</p>
+                    <p className="text-white/60 text-sm">{testimonial.location}</p>
+                  </div>
+                </div>
+              ))}
+            </motion.div>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* Contact Section */}
+      <section className="py-24 bg-white">
+        <div className="max-w-7xl mx-auto px-6">
+          <motion.div
+            className="grid md:grid-cols-2 gap-12"
+            initial="initial"
+            whileInView="animate"
+            viewport={{ once: true }}
+            variants={staggerContainer}
+          >
+            <motion.div variants={fadeInUp}>
+              <h2 className="font-[family-name:var(--font-playfair)] text-4xl md:text-5xl text-[#1B365D] mb-6">
+                {t("Let's Connect", 'Conectemos')}
+              </h2>
+              <p className="text-[#3D3D3D] text-lg leading-relaxed mb-8">
+                {t(
+                  "Ready to start your real estate journey? Whether you're buying, selling, or just exploring your options, I'm here to help. Reach out today for a free consultation.",
+                  "¿Listo para comenzar tu viaje inmobiliario? Ya sea que estés comprando, vendiendo o simplemente explorando tus opciones, estoy aquí para ayudar. Contáctame hoy para una consulta gratuita."
+                )}
+              </p>
+              <div className="space-y-4">
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 bg-[#D6BFAE] rounded-full flex items-center justify-center">
+                    <svg className="w-5 h-5 text-[#1B365D]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                    </svg>
+                  </div>
+                  <div>
+                    <p className="text-sm text-[#3D3D3D]/60">{t('Phone', 'Teléfono')}</p>
+                    <p className="text-[#1B365D] font-semibold">(843) 555-0123</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 bg-[#D6BFAE] rounded-full flex items-center justify-center">
+                    <svg className="w-5 h-5 text-[#1B365D]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                    </svg>
+                  </div>
+                  <div>
+                    <p className="text-sm text-[#3D3D3D]/60">Email</p>
+                    <p className="text-[#1B365D] font-semibold">dani@fairclothrealestate.com</p>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+
+            <motion.div variants={fadeInUp}>
+              <form className="space-y-6">
+                <div className="grid sm:grid-cols-2 gap-6">
+                  <div>
+                    <label htmlFor="firstName" className="block text-sm text-[#3D3D3D] mb-2">
+                      {t('First Name', 'Nombre')}
+                    </label>
+                    <input
+                      type="text"
+                      id="firstName"
+                      className="w-full px-4 py-3 border border-[#D6BFAE] focus:border-[#1B365D] focus:outline-none transition-colors"
+                      placeholder={t('John', 'Juan')}
+                    />
+                  </div>
+                  <div>
+                    <label htmlFor="lastName" className="block text-sm text-[#3D3D3D] mb-2">
+                      {t('Last Name', 'Apellido')}
+                    </label>
+                    <input
+                      type="text"
+                      id="lastName"
+                      className="w-full px-4 py-3 border border-[#D6BFAE] focus:border-[#1B365D] focus:outline-none transition-colors"
+                      placeholder={t('Doe', 'García')}
+                    />
+                  </div>
+                </div>
+                <div>
+                  <label htmlFor="email" className="block text-sm text-[#3D3D3D] mb-2">
+                    Email
+                  </label>
+                  <input
+                    type="email"
+                    id="email"
+                    className="w-full px-4 py-3 border border-[#D6BFAE] focus:border-[#1B365D] focus:outline-none transition-colors"
+                    placeholder="john@example.com"
+                  />
+                </div>
+                <div>
+                  <label htmlFor="interest" className="block text-sm text-[#3D3D3D] mb-2">
+                    {t("I'm interested in...", 'Estoy interesado en...')}
+                  </label>
+                  <select
+                    id="interest"
+                    className="w-full px-4 py-3 border border-[#D6BFAE] focus:border-[#1B365D] focus:outline-none transition-colors bg-white"
+                  >
+                    <option value="">{t('Select an option', 'Selecciona una opción')}</option>
+                    <option value="buying">{t('Buying a home', 'Comprar una casa')}</option>
+                    <option value="selling">{t('Selling my home', 'Vender mi casa')}</option>
+                    <option value="both">{t('Both buying and selling', 'Comprar y vender')}</option>
+                    <option value="info">{t('Just getting information', 'Solo obtener información')}</option>
+                  </select>
+                </div>
+                <div>
+                  <label htmlFor="message" className="block text-sm text-[#3D3D3D] mb-2">
+                    {t('Message', 'Mensaje')}
+                  </label>
+                  <textarea
+                    id="message"
+                    rows={4}
+                    className="w-full px-4 py-3 border border-[#D6BFAE] focus:border-[#1B365D] focus:outline-none transition-colors resize-none"
+                    placeholder={t('Tell me about your real estate goals...', 'Cuéntame sobre tus metas inmobiliarias...')}
+                  />
+                </div>
+                <button
+                  type="submit"
+                  className="w-full bg-[#C4A25A] text-white px-8 py-4 text-lg hover:bg-[#b3923f] transition-colors"
+                >
+                  {t('Send Message', 'Enviar Mensaje')}
+                </button>
+              </form>
+            </motion.div>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* Footer */}
+      <footer className="bg-[#1B365D] py-12">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="flex flex-col md:flex-row justify-between items-center gap-6">
+            <div className="text-center md:text-left">
+              <p className="font-[family-name:var(--font-playfair)] text-white text-xl mb-2">
+                Dani Díaz
+              </p>
+              <p className="text-white/60 text-sm">
+                {t('Bilingual Realtor® at Faircloth Real Estate Group', 'Agente Inmobiliaria Bilingüe en Faircloth Real Estate Group')}
+              </p>
+            </div>
+            <div className="text-center md:text-right">
+              <p className="text-white/60 text-sm">
+                © {new Date().getFullYear()} Dani Díaz. {t('All rights reserved.', 'Todos los derechos reservados.')}
+              </p>
+            </div>
+          </div>
+        </div>
+      </footer>
+    </main>
   );
 }
