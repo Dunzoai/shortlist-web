@@ -2,7 +2,6 @@
 
 import { useEffect, useState, useRef } from 'react';
 import Image from 'next/image';
-import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronLeft, ChevronRight, X, Check } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
@@ -11,7 +10,6 @@ import { useLanguage } from '@/components/LanguageContext';
 interface Neighborhood {
   id: string;
   name: string;
-  slug: string;
   description: string;
   highlights: string[];
   price_range: string;
@@ -192,7 +190,7 @@ export default function NeighborhoodGuides() {
 
                 {/* Highlights */}
                 {selectedNeighborhood.highlights && selectedNeighborhood.highlights.length > 0 && (
-                  <div className="mb-8">
+                  <div>
                     <h3 className="font-[family-name:var(--font-playfair)] text-2xl text-[#1B365D] mb-4">
                       {t('Highlights', 'Destacados')}
                     </h3>
@@ -208,17 +206,6 @@ export default function NeighborhoodGuides() {
                     </ul>
                   </div>
                 )}
-
-                {/* CTA Button */}
-                <Link
-                  href={`/listings?area=${selectedNeighborhood.slug}`}
-                  className="inline-block bg-[#1B365D] text-white px-8 py-4 text-lg hover:bg-[#C4A25A] transition-colors"
-                >
-                  {t(
-                    `View Homes in ${selectedNeighborhood.name}`,
-                    `Ver Casas en ${selectedNeighborhood.name}`
-                  )}
-                </Link>
               </div>
             </motion.div>
           </motion.div>
