@@ -8,9 +8,9 @@ const supabase = createClient(
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { clientId: string } }
+  { params }: { params: Promise<{ clientId: string }> }
 ) {
-  const { clientId: slug } = params;
+  const { clientId: slug } = await params;
 
   try {
     // Look up client UUID from web_clients table using slug
