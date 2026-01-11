@@ -42,26 +42,18 @@ const lightColors = {
 const StyleContext = createContext<StyleContextType | undefined>(undefined);
 
 export function StyleProvider({ children }: { children: ReactNode }) {
-  const [styleMode, setStyleModeState] = useState<StyleMode>('dark');
-
-  useEffect(() => {
-    const saved = localStorage.getItem('styleMode') as StyleMode;
-    if (saved) {
-      setStyleModeState(saved);
-    }
-  }, []);
+  // Always use dark mode (style toggle has been removed)
+  const [styleMode] = useState<StyleMode>('dark');
 
   const setStyleMode = (mode: StyleMode) => {
-    setStyleModeState(mode);
-    localStorage.setItem('styleMode', mode);
+    // No-op: style toggle disabled
   };
 
   const toggleStyle = () => {
-    const newMode = styleMode === 'dark' ? 'light' : 'dark';
-    setStyleMode(newMode);
+    // No-op: style toggle disabled
   };
 
-  const colors = styleMode === 'dark' ? darkColors : lightColors;
+  const colors = darkColors;
 
   return (
     <StyleContext.Provider value={{ styleMode, setStyleMode, toggleStyle, colors }}>

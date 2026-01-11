@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
@@ -85,6 +86,7 @@ export default function Home() {
   const { language, t } = useLanguage();
   const { styleMode, colors } = useStyle();
   const isDark = styleMode === 'dark';
+  const [videoLoaded, setVideoLoaded] = useState(false);
 
   return (
     <main className="font-[family-name:var(--font-lora)]">
@@ -94,28 +96,20 @@ export default function Home() {
       {/* Hero Section */}
       <section className="relative min-h-screen flex items-center justify-center">
         {/* Background Video */}
-        <div className="absolute inset-0 z-0">
+        <div className="absolute inset-0 z-0 bg-[#1B365D]">
           <video
             autoPlay
             muted
             loop
             playsInline
-            className="absolute inset-0 w-full h-full object-cover"
-            poster="https://images.unsplash.com/photo-1499793983690-e29da59ef1c2?w=1920&q=80"
+            preload="auto"
+            onLoadedData={() => setVideoLoaded(true)}
+            className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-700 ${videoLoaded ? 'opacity-100' : 'opacity-0'}`}
           >
             <source src="/dani-diaz-hero-video.m4v" type="video/mp4" />
-            {/* Fallback image if video doesn't load */}
           </video>
-          {/* Fallback image */}
-          <Image
-            src="https://images.unsplash.com/photo-1499793983690-e29da59ef1c2?w=1920&q=80"
-            alt="Luxury beach home"
-            fill
-            className="object-cover -z-10"
-            priority
-          />
           <div
-            className="absolute inset-0 transition-colors duration-500"
+            className="absolute inset-0 transition-colors duration-500 pointer-events-none"
             style={{ backgroundColor: isDark ? 'rgba(27, 54, 93, 0.7)' : 'rgba(255, 251, 245, 0.85)' }}
           />
         </div>
