@@ -73,8 +73,21 @@ export default function InstagramFeed({ clientId }: InstagramFeedProps) {
     );
   }
 
-  if (error || !feedData) {
-    return null; // Hide section if error or no data
+  if (error) {
+    return (
+      <section className="bg-[#1B365D] py-16">
+        <div className="container mx-auto px-4">
+          <div className="text-center text-white">
+            <p className="text-red-400">Error loading Instagram feed:</p>
+            <p className="text-sm mt-2">{error}</p>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  if (!feedData) {
+    return null; // Hide section if no data
   }
 
   return (
