@@ -174,11 +174,6 @@ export default function NeighborhoodGuides() {
 
               {/* Content */}
               <div className="p-8">
-                {/* Price Range */}
-                <div className="inline-block bg-[#C4A25A] text-white px-6 py-2 rounded-full mb-6">
-                  <p className="font-semibold">{selectedNeighborhood.price_range}</p>
-                </div>
-
                 {/* Description */}
                 <div className="prose prose-lg max-w-none mb-8">
                   {selectedNeighborhood.description.split('\n\n').map((paragraph, index) => (
