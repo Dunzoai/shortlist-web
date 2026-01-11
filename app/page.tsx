@@ -236,14 +236,18 @@ export default function Home() {
               {/* Social Icons */}
               <div className="flex gap-3 mt-8">
                 <a
-                  href="#"
+                  href="https://www.instagram.com/dani.globalhomes/"
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="w-12 h-12 rounded-full bg-[#1B365D] flex items-center justify-center text-white hover:bg-[#C4A25A] transition-colors"
                   aria-label="Instagram"
                 >
                   <Instagram size={20} />
                 </a>
                 <a
-                  href="#"
+                  href="https://www.facebook.com/daniampudiazv/"
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="w-12 h-12 rounded-full bg-[#1B365D] flex items-center justify-center text-white hover:bg-[#C4A25A] transition-colors"
                   aria-label="Facebook"
                 >
@@ -257,14 +261,18 @@ export default function Home() {
                   Z
                 </a>
                 <a
-                  href="#"
+                  href="https://www.realtor.com/realestateagents/66abbb21e7320c7ad682b6a8"
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="w-12 h-12 rounded-full bg-[#1B365D] flex items-center justify-center text-white hover:bg-[#C4A25A] transition-colors font-[family-name:var(--font-playfair)] text-xl font-bold"
                   aria-label="Realtor.com"
                 >
                   R
                 </a>
                 <a
-                  href="#"
+                  href="https://www.linkedin.com/in/danidiazrealtor"
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="w-12 h-12 rounded-full bg-[#1B365D] flex items-center justify-center text-white hover:bg-[#C4A25A] transition-colors"
                   aria-label="LinkedIn"
                 >
