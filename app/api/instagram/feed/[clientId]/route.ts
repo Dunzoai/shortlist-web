@@ -97,13 +97,23 @@ export async function GET(
 
     const instagramData = await instagramResponse.json();
     console.log('[Instagram Feed] Media data received, post count:', instagramData.data?.length || 0);
+    console.log('[Instagram Feed] Full Instagram API response:', JSON.stringify(instagramData, null, 2));
 
     // Transform the data - use thumbnail_url for videos, media_url for images
-    const posts = instagramData.data.map((post: any) => {
+    const posts = instagramData.data.map((post: any, index: number) => {
+      console.log(`\n[Instagram Feed] === POST ${index + 1} RAW DATA ===`);
+      console.log('[Instagram Feed] id:', post.id);
+      console.log('[Instagram Feed] media_type:', post.media_type);
+      console.log('[Instagram Feed] media_url:', post.media_url);
+      console.log('[Instagram Feed] thumbnail_url:', post.thumbnail_url);
+      console.log('[Instagram Feed] permalink:', post.permalink);
+      console.log('[Instagram Feed] caption:', post.caption?.substring(0, 100) || '(no caption)');
+
       const isVideo = post.media_type === 'VIDEO';
       const displayUrl = isVideo ? post.thumbnail_url : post.media_url;
 
-      console.log(`[Instagram Feed] Post ${post.id}: type=${post.media_type}, using ${isVideo ? 'thumbnail_url' : 'media_url'}`);
+      console.log(`[Instagram Feed] >>> USING: ${isVideo ? 'thumbnail_url' : 'media_url'} = ${displayUrl}`);
+      console.log('[Instagram Feed] === END POST DATA ===\n');
 
       return {
         id: post.id,
