@@ -62,9 +62,9 @@ export async function GET(
     const accessToken = tokenData.access_token;
     console.log('[Instagram Feed] Using access token (first 20 chars):', accessToken.substring(0, 20) + '...');
 
-    // Step 1: Test token by fetching user profile first
-    console.log('[Instagram Feed] Testing token with profile fetch...');
-    const profileUrl = `https://graph.instagram.com/me?fields=id,username&access_token=${accessToken}`;
+    // Step 1: Fetch user_id from /me endpoint
+    console.log('[Instagram Feed] Fetching user_id from /me endpoint...');
+    const profileUrl = `https://graph.instagram.com/v24.0/me?fields=user_id,username&access_token=${accessToken}`;
     const profileResponse = await fetch(profileUrl);
 
     console.log('[Instagram Feed] Profile response status:', profileResponse.status);
@@ -78,9 +78,13 @@ export async function GET(
     const profileData = await profileResponse.json();
     console.log('[Instagram Feed] Profile data:', JSON.stringify(profileData, null, 2));
 
-    // Step 2: Fetch latest 6 posts from Instagram Business API
-    console.log('[Instagram Feed] Token works! Now fetching media...');
-    const mediaUrl = `https://graph.instagram.com/v21.0/me/media?fields=id,caption,media_type,media_url,thumbnail_url,permalink,timestamp&limit=6&access_token=${accessToken}`;
+    const userId = profileData.user_id;
+    const username = profileData.username;
+    console.log('[Instagram Feed] Using user_id:', userId, 'username:', username);
+
+    // Step 2: Fetch latest 6 posts using user_id
+    console.log('[Instagram Feed] Fetching media for user_id:', userId);
+    const mediaUrl = `https://graph.instagram.com/v24.0/${userId}/media?fields=id,caption,media_type,media_url,thumbnail_url,permalink,timestamp&limit=6&access_token=${accessToken}`;
     const instagramResponse = await fetch(mediaUrl);
 
     console.log('[Instagram Feed] Media response status:', instagramResponse.status);
@@ -107,7 +111,7 @@ export async function GET(
     console.log('[Instagram Feed] Successfully transformed posts, returning response');
 
     return NextResponse.json({
-      username: tokenData.instagram_username,
+      username: username,
       posts,
     });
   } catch (error) {
