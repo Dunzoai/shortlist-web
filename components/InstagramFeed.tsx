@@ -28,17 +28,32 @@ export default function InstagramFeed({ clientId }: InstagramFeedProps) {
   useEffect(() => {
     async function fetchFeed() {
       try {
+        console.log('[InstagramFeed Component] Fetching feed for clientId:', clientId);
         const response = await fetch(`/api/instagram/feed/${clientId}`);
 
         if (!response.ok) {
           const errorData = await response.json();
+          console.error('[InstagramFeed Component] API error:', errorData);
           throw new Error(errorData.error || 'Failed to fetch Instagram feed');
         }
 
         const data = await response.json();
+        console.log('[InstagramFeed Component] Received data:', data);
+        console.log('[InstagramFeed Component] Number of posts:', data.posts?.length);
+
+        // Log each post URL
+        data.posts?.forEach((post: InstagramPost, index: number) => {
+          console.log(`[InstagramFeed Component] Post ${index + 1}:`, {
+            id: post.id,
+            media_type: post.media_type,
+            media_url: post.media_url?.substring(0, 100) + '...',
+            permalink: post.permalink,
+          });
+        });
+
         setFeedData(data);
       } catch (err) {
-        console.error('Error fetching Instagram feed:', err);
+        console.error('[InstagramFeed Component] Error fetching feed:', err);
         setError(err instanceof Error ? err.message : 'Failed to load Instagram feed');
       } finally {
         setLoading(false);
@@ -92,27 +107,32 @@ export default function InstagramFeed({ clientId }: InstagramFeedProps) {
         {/* Horizontal scrolling posts */}
         <div className="relative">
           <div className="flex gap-4 overflow-x-auto pb-4 scrollbar-hide snap-x snap-mandatory">
-            {feedData.posts.map((post) => (
-              <a
-                key={post.id}
-                href={post.permalink}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex-shrink-0 w-80 snap-start group"
-              >
-                <div className="relative aspect-square overflow-hidden rounded-lg bg-gray-800">
-                  {/* media_url is already transformed by API: thumbnail_url for videos, media_url for images */}
-                  <img
-                    src={post.media_url}
-                    alt={post.caption || 'Instagram post'}
-                    className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-                    referrerPolicy="no-referrer"
-                    crossOrigin="anonymous"
-                    onError={(e) => {
-                      console.error('[InstagramFeed] Failed to load image:', post.media_url, 'for post:', post.id);
-                      e.currentTarget.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="320" height="320"%3E%3Crect width="320" height="320" fill="%23374151"/%3E%3Ctext x="50%25" y="50%25" dominant-baseline="middle" text-anchor="middle" fill="%239CA3AF" font-family="sans-serif" font-size="14"%3EImage unavailable%3C/text%3E%3C/svg%3E';
-                    }}
-                  />
+            {feedData.posts.map((post, index) => {
+              console.log(`[InstagramFeed Component] Rendering post ${index + 1}, img src:`, post.media_url);
+              return (
+                <a
+                  key={post.id}
+                  href={post.permalink}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex-shrink-0 w-80 snap-start group"
+                >
+                  <div className="relative aspect-square overflow-hidden rounded-lg bg-gray-800">
+                    {/* media_url is already transformed by API: thumbnail_url for videos, media_url for images */}
+                    <img
+                      src={post.media_url}
+                      alt={post.caption || 'Instagram post'}
+                      className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                      referrerPolicy="no-referrer"
+                      crossOrigin="anonymous"
+                      onLoad={() => {
+                        console.log(`[InstagramFeed] Image loaded successfully for post ${post.id}`);
+                      }}
+                      onError={(e) => {
+                        console.error('[InstagramFeed] Failed to load image:', post.media_url, 'for post:', post.id);
+                        e.currentTarget.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="320" height="320"%3E%3Crect width="320" height="320" fill="%23374151"/%3E%3Ctext x="50%25" y="50%25" dominant-baseline="middle" text-anchor="middle" fill="%239CA3AF" font-family="sans-serif" font-size="14"%3EImage unavailable%3C/text%3E%3C/svg%3E';
+                      }}
+                    />
 
                   {/* Overlay on hover */}
                   <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-40 transition-all duration-300 flex items-center justify-center">
