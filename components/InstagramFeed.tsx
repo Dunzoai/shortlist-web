@@ -123,7 +123,11 @@ export default function InstagramFeed({ clientId }: InstagramFeedProps) {
         <div className="relative">
           <div className="flex gap-4 overflow-x-auto pb-4 scrollbar-hide snap-x snap-mandatory">
             {feedData.posts.map((post, index) => {
-              console.log(`[InstagramFeed Component] Rendering post ${index + 1}, img src:`, post.media_url);
+              console.log(`[InstagramFeed Component] Rendering post ${index + 1}`);
+              console.log(`  - ID: ${post.id}`);
+              console.log(`  - img src: ${post.media_url}`);
+              console.log(`  - href (permalink): ${post.permalink}`);
+              console.log(`  - caption: ${post.caption?.substring(0, 50) || '(no caption)'}`);
               return (
                 <a
                   key={post.id}
