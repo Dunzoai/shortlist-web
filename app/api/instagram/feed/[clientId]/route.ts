@@ -97,7 +97,8 @@ export async function GET(
 
     // Step 2: Fetch latest 6 posts using user_id
     console.log('[Instagram Feed] Fetching media for user_id:', userId);
-    const mediaUrl = `https://graph.instagram.com/v24.0/${userId}/media?fields=id,caption,media_type,media_url,thumbnail_url,permalink,timestamp&limit=6&access_token=${accessToken}`;
+    // Request shortcode field to build proper permalinks ourselves
+    const mediaUrl = `https://graph.instagram.com/v24.0/${userId}/media?fields=id,caption,media_type,media_url,thumbnail_url,permalink,shortcode,timestamp&limit=6&access_token=${accessToken}`;
     const instagramResponse = await fetch(mediaUrl);
 
     console.log('[Instagram Feed] Media response status:', instagramResponse.status);
@@ -119,11 +120,23 @@ export async function GET(
       console.log('[Instagram Feed] media_type:', post.media_type);
       console.log('[Instagram Feed] media_url:', post.media_url);
       console.log('[Instagram Feed] thumbnail_url:', post.thumbnail_url);
-      console.log('[Instagram Feed] permalink:', post.permalink);
+      console.log('[Instagram Feed] shortcode:', post.shortcode);
+      console.log('[Instagram Feed] permalink (from API):', post.permalink);
       console.log('[Instagram Feed] caption:', post.caption?.substring(0, 100) || '(no caption)');
 
       const isVideo = post.media_type === 'VIDEO';
       const displayUrl = isVideo ? post.thumbnail_url : post.media_url;
+
+      // Construct proper permalink using username and shortcode if available
+      let properPermalink = post.permalink;
+      if (post.shortcode) {
+        // For VIDEO/REEL type, use /reel/, for IMAGE use /p/
+        const urlType = post.media_type === 'VIDEO' ? 'reel' : 'p';
+        properPermalink = `https://www.instagram.com/${urlType}/${post.shortcode}/`;
+        console.log(`[Instagram Feed] >>> CONSTRUCTED permalink: ${properPermalink}`);
+      } else {
+        console.log('[Instagram Feed] >>> WARNING: No shortcode available, using API permalink');
+      }
 
       console.log(`[Instagram Feed] >>> USING: ${isVideo ? 'thumbnail_url' : 'media_url'} = ${displayUrl}`);
       console.log('[Instagram Feed] === END POST DATA ===\n');
@@ -133,7 +146,7 @@ export async function GET(
         caption: post.caption || '',
         media_type: post.media_type,
         media_url: displayUrl, // VIDEO: thumbnail_url, IMAGE: media_url
-        permalink: post.permalink,
+        permalink: properPermalink,
         timestamp: post.timestamp,
       };
     });
