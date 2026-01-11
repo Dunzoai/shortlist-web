@@ -142,10 +142,10 @@ export default function InstagramFeed({ clientId }: InstagramFeedProps) {
                       src={post.media_url}
                       alt={post.caption || 'Instagram post'}
                       className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-                      referrerPolicy="no-referrer"
-                      crossOrigin="anonymous"
-                      onLoad={() => {
-                        console.log(`[InstagramFeed] Image loaded successfully for post ${post.id}`);
+                      onLoad={(e) => {
+                        console.log(`[InstagramFeed] Image loaded for post ${post.id}`);
+                        console.log(`[InstagramFeed] Image dimensions: ${e.currentTarget.naturalWidth}x${e.currentTarget.naturalHeight}`);
+                        console.log(`[InstagramFeed] Image src: ${e.currentTarget.src}`);
                       }}
                       onError={(e) => {
                         console.error('[InstagramFeed] Failed to load image:', post.media_url, 'for post:', post.id);
