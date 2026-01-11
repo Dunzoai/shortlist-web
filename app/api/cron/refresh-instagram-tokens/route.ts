@@ -1,10 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-);
+function getSupabaseClient() {
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
+  if (!supabaseUrl || !supabaseKey) {
+    throw new Error('Missing Supabase environment variables');
+  }
+
+  return createClient(supabaseUrl, supabaseKey);
+}
 
 export async function GET(request: NextRequest) {
   // Optional: Add authentication check for cron job
@@ -23,6 +29,8 @@ export async function GET(request: NextRequest) {
   }
 
   try {
+    const supabase = getSupabaseClient();
+
     // Get all tokens expiring within 10 days
     const tenDaysFromNow = new Date();
     tenDaysFromNow.setDate(tenDaysFromNow.getDate() + 10);
