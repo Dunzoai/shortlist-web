@@ -8,6 +8,7 @@ import Nav from '@/components/Nav';
 import { useLanguage } from '@/components/LanguageContext';
 import { useStyle } from '@/components/StyleContext';
 import LanguageToggle from '@/components/LanguageToggle';
+import InstagramFeed from '@/components/InstagramFeed';
 
 const fadeInUp = {
   initial: { opacity: 0, y: 30 },
@@ -492,6 +493,9 @@ export default function Home() {
           </motion.div>
         </div>
       </section>
+
+      {/* Instagram Feed */}
+      <InstagramFeed clientId="danidiaz" />
 
       {/* Footer */}
       <footer
