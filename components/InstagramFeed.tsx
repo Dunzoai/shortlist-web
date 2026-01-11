@@ -136,7 +136,7 @@ export default function InstagramFeed({ clientId }: InstagramFeedProps) {
                   rel="noopener noreferrer"
                   className="flex-shrink-0 w-80 snap-start group"
                 >
-                  <div className="relative aspect-square overflow-hidden rounded-lg bg-gray-800">
+                  <div className="relative aspect-square overflow-hidden rounded-lg bg-red-500">
                     {/* media_url is already transformed by API: thumbnail_url for videos, media_url for images */}
                     <img
                       src={post.media_url}
