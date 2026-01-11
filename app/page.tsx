@@ -254,13 +254,6 @@ export default function Home() {
                   <Facebook size={20} />
                 </a>
                 <a
-                  href="#"
-                  className="w-12 h-12 rounded-full bg-[#1B365D] flex items-center justify-center text-white hover:bg-[#C4A25A] transition-colors font-[family-name:var(--font-playfair)] text-xl font-bold"
-                  aria-label="Zillow"
-                >
-                  Z
-                </a>
-                <a
                   href="https://www.realtor.com/realestateagents/66abbb21e7320c7ad682b6a8"
                   target="_blank"
                   rel="noopener noreferrer"
