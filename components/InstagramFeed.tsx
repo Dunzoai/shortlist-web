@@ -1,7 +1,6 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import Image from 'next/image';
 
 interface InstagramPost {
   id: string;
@@ -103,12 +102,14 @@ export default function InstagramFeed({ clientId }: InstagramFeedProps) {
               >
                 <div className="relative aspect-square overflow-hidden rounded-lg bg-gray-800">
                   {/* media_url is already transformed by API: thumbnail_url for videos, media_url for images */}
-                  <Image
+                  <img
                     src={post.media_url}
                     alt={post.caption || 'Instagram post'}
-                    fill
-                    className="object-cover transition-transform duration-300 group-hover:scale-105"
-                    sizes="320px"
+                    className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                    onError={(e) => {
+                      console.error('[InstagramFeed] Failed to load image:', post.media_url, 'for post:', post.id);
+                      e.currentTarget.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="320" height="320"%3E%3Crect width="320" height="320" fill="%23374151"/%3E%3Ctext x="50%25" y="50%25" dominant-baseline="middle" text-anchor="middle" fill="%239CA3AF" font-family="sans-serif" font-size="14"%3EImage unavailable%3C/text%3E%3C/svg%3E';
+                    }}
                   />
 
                   {/* Overlay on hover */}
