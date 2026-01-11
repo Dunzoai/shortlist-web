@@ -9,7 +9,7 @@ const supabase = createClient(
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
   const code = searchParams.get('code');
-  const state = searchParams.get('state'); // This is the client_id
+  const state = searchParams.get('state'); // This is the slug
   const error = searchParams.get('error');
 
   if (error) {
@@ -26,19 +26,35 @@ export async function GET(request: NextRequest) {
     );
   }
 
-  const clientId = state;
-  const appId = process.env.INSTAGRAM_APP_ID;
-  const appSecret = process.env.INSTAGRAM_APP_SECRET;
-  const redirectUri = `${request.nextUrl.origin}/api/instagram/callback`;
-
-  if (!appId || !appSecret) {
-    return NextResponse.json(
-      { error: 'Instagram credentials not configured' },
-      { status: 500 }
-    );
-  }
+  const slug = state;
 
   try {
+    // Look up client UUID from web_clients table using slug
+    const { data: clientData, error: clientError } = await supabase
+      .from('web_clients')
+      .select('id')
+      .eq('slug', slug)
+      .single();
+
+    if (clientError || !clientData) {
+      return NextResponse.json(
+        { error: 'Client not found' },
+        { status: 404 }
+      );
+    }
+
+    const clientUuid = clientData.id;
+
+    const appId = process.env.INSTAGRAM_APP_ID;
+    const appSecret = process.env.INSTAGRAM_APP_SECRET;
+    const redirectUri = `${request.nextUrl.origin}/api/instagram/callback`;
+
+    if (!appId || !appSecret) {
+      return NextResponse.json(
+        { error: 'Instagram credentials not configured' },
+        { status: 500 }
+      );
+    }
     // Step 1: Exchange code for short-lived access token
     const tokenParams = new URLSearchParams({
       client_id: appId,
@@ -96,15 +112,15 @@ export async function GET(request: NextRequest) {
     const userData = await userResponse.json();
     const username = userData.username;
 
-    // Step 3: Save to Supabase
+    // Step 3: Save to Supabase using UUID
     const { error: dbError } = await supabase
       .from('instagram_tokens')
       .upsert({
-        client_id: clientId,
+        client_id: clientUuid,
         access_token: accessToken,
         instagram_user_id: userId,
-        username: username,
-        expires_at: expiresAt.toISOString(),
+        instagram_username: username,
+        token_expires_at: expiresAt.toISOString(),
         updated_at: new Date().toISOString(),
       }, {
         onConflict: 'client_id'

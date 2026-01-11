@@ -10,14 +10,30 @@ export async function GET(
   request: NextRequest,
   { params }: { params: { clientId: string } }
 ) {
-  const { clientId } = params;
+  const { clientId: slug } = params;
 
   try {
-    // Get the access token from Supabase
+    // Look up client UUID from web_clients table using slug
+    const { data: clientData, error: clientError } = await supabase
+      .from('web_clients')
+      .select('id')
+      .eq('slug', slug)
+      .single();
+
+    if (clientError || !clientData) {
+      return NextResponse.json(
+        { error: 'Client not found' },
+        { status: 404 }
+      );
+    }
+
+    const clientUuid = clientData.id;
+
+    // Get the access token from Supabase using UUID
     const { data: tokenData, error: tokenError } = await supabase
       .from('instagram_tokens')
-      .select('access_token, username, expires_at')
-      .eq('client_id', clientId)
+      .select('access_token, instagram_username, token_expires_at')
+      .eq('client_id', clientUuid)
       .single();
 
     if (tokenError || !tokenData) {
@@ -28,7 +44,7 @@ export async function GET(
     }
 
     // Check if token is expired
-    const expiresAt = new Date(tokenData.expires_at);
+    const expiresAt = new Date(tokenData.token_expires_at);
     if (expiresAt < new Date()) {
       return NextResponse.json(
         { error: 'Instagram token has expired. Please reconnect your account.' },
@@ -62,7 +78,7 @@ export async function GET(
     }));
 
     return NextResponse.json({
-      username: tokenData.username,
+      username: tokenData.instagram_username,
       posts,
     });
   } catch (error) {

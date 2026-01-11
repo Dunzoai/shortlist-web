@@ -1,13 +1,33 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { createClient } from '@supabase/supabase-js';
+
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+);
 
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
-  const clientId = searchParams.get('client_id');
+  const slug = searchParams.get('client_id');
 
-  if (!clientId) {
+  if (!slug) {
     return NextResponse.json(
       { error: 'client_id parameter is required' },
       { status: 400 }
+    );
+  }
+
+  // Verify client exists by looking up slug
+  const { data: clientData, error: clientError } = await supabase
+    .from('web_clients')
+    .select('id')
+    .eq('slug', slug)
+    .single();
+
+  if (clientError || !clientData) {
+    return NextResponse.json(
+      { error: 'Client not found' },
+      { status: 404 }
     );
   }
 
@@ -27,7 +47,7 @@ export async function GET(request: NextRequest) {
   authUrl.searchParams.set('redirect_uri', redirectUri);
   authUrl.searchParams.set('scope', 'user_profile,user_media');
   authUrl.searchParams.set('response_type', 'code');
-  authUrl.searchParams.set('state', clientId); // Pass client_id as state
+  authUrl.searchParams.set('state', slug); // Pass slug as state
 
   return NextResponse.redirect(authUrl.toString());
 }
