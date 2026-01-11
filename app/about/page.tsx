@@ -106,15 +106,15 @@ export default function AboutPage() {
               <div className="space-y-6 text-[#3D3D3D] text-lg leading-relaxed">
                 <p>
                   {t(
-                    "Hello! I'm Dani Díaz, a bilingual Realtor® proudly serving the Myrtle Beach area with Faircloth Real Estate Group. My journey to real estate wasn't a straight path—it was a winding road through different countries, cultures, and experiences that ultimately led me here, to the beautiful Grand Strand.",
-                    "¡Hola! Soy Dani Díaz, una Agente Inmobiliaria bilingüe que orgullosamente sirve el área de Myrtle Beach con Faircloth Real Estate Group. Mi camino hacia los bienes raíces no fue directo—fue un camino sinuoso a través de diferentes países, culturas y experiencias que finalmente me trajo aquí, al hermoso Grand Strand."
+                    "Originally from Colombia, I moved to Myrtle Beach in 2018 and found more than a new home—I found my family. After purchasing and renovating my first home with my husband in 2019, I discovered my passion for helping others find their perfect place.",
+                    "Originaria de Colombia, me mudé a Myrtle Beach en 2018 y encontré más que un nuevo hogar: encontré a mi familia. Después de comprar y renovar mi primera casa con mi esposo en 2019, descubrí mi pasión por ayudar a otros a encontrar su lugar perfecto."
                   )}
                 </p>
 
                 <p>
                   {t(
-                    "Born with roots spanning multiple continents, I understand what it means to search for a place to call home. Whether you're relocating from another country, moving from across the United States, or simply looking for your forever home right here in South Carolina, I've walked in your shoes.",
-                    "Nacida con raíces que abarcan múltiples continentes, entiendo lo que significa buscar un lugar al que llamar hogar. Ya sea que te estés reubicando desde otro país, mudándote desde cualquier parte de Estados Unidos, o simplemente buscando tu hogar definitivo aquí en Carolina del Sur, he estado en tu lugar."
+                    "As a bilingual Realtor®, I guide Spanish and English-speaking clients through every step of buying or selling on the Grand Strand. Whether you're a first-time buyer or looking for your next investment, I'm here to make the journey personal.",
+                    "Como Agente Inmobiliaria bilingüe, guío a clientes hispanohablantes e angloparlantes a través de cada paso de compra o venta en el Grand Strand. Ya sea que seas un comprador primerizo o estés buscando tu próxima inversión, estoy aquí para hacer el viaje personal."
                   )}
                 </p>
 
