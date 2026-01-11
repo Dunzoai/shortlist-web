@@ -32,7 +32,7 @@ export async function GET(
     // Get the access token from Supabase using UUID
     const { data: tokenData, error: tokenError } = await supabase
       .from('instagram_tokens')
-      .select('access_token, instagram_username, instagram_user_id, token_expires_at')
+      .select('access_token, instagram_username, token_expires_at')
       .eq('client_id', clientUuid)
       .single();
 
@@ -53,12 +53,10 @@ export async function GET(
     }
 
     const accessToken = tokenData.access_token;
-    const userId = tokenData.instagram_user_id;
 
     // Fetch latest 6 posts from Instagram Business API
-    const fields = 'id,caption,media_type,media_url,thumbnail_url,permalink,timestamp';
     const instagramResponse = await fetch(
-      `https://graph.instagram.com/v21.0/${userId}/media?fields=${fields}&limit=6&access_token=${accessToken}`
+      `https://graph.instagram.com/v21.0/me/media?fields=id,caption,media_type,media_url,thumbnail_url,permalink,timestamp&limit=6&access_token=${accessToken}`
     );
 
     if (!instagramResponse.ok) {
