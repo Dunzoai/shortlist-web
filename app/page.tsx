@@ -10,6 +10,7 @@ import { useLanguage } from '@/components/LanguageContext';
 import { useStyle } from '@/components/StyleContext';
 import LanguageToggle from '@/components/LanguageToggle';
 import InstagramFeed from '@/components/InstagramFeed';
+import NeighborhoodGuides from '@/components/NeighborhoodGuides';
 
 const fadeInUp = {
   initial: { opacity: 0, y: 30 },
@@ -360,6 +361,9 @@ export default function Home() {
           </motion.div>
         </div>
       </section>
+
+      {/* Neighborhood Guides Section */}
+      <NeighborhoodGuides />
 
       {/* Testimonials Section */}
       <section
