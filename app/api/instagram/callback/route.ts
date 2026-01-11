@@ -89,7 +89,14 @@ export async function GET(request: NextRequest) {
     });
 
     const longLivedResponse = await fetch(
-      `https://graph.instagram.com/access_token?${longLivedParams.toString()}`
+      'https://graph.instagram.com/access_token',
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: longLivedParams.toString(),
+      }
     );
 
     if (!longLivedResponse.ok) {
