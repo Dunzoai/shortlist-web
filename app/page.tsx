@@ -554,9 +554,49 @@ export default function Home() {
               <p className="font-[family-name:var(--font-playfair)] text-white text-xl mb-2">
                 Dani Díaz
               </p>
-              <p className="text-white/60 text-sm">
+              <p className="text-white/60 text-sm mb-4">
                 {t('Bilingual Realtor® at Faircloth Real Estate Group', 'Agente Inmobiliaria Bilingüe en Faircloth Real Estate Group')}
               </p>
+
+              {/* Social Icons */}
+              <div className="flex gap-3 justify-center md:justify-start">
+                <a
+                  href="https://www.instagram.com/dani.globalhomes/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-white hover:bg-[#C4A25A] transition-colors"
+                  aria-label="Instagram"
+                >
+                  <Instagram size={18} />
+                </a>
+                <a
+                  href="https://www.facebook.com/daniampudiazv/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-white hover:bg-[#C4A25A] transition-colors"
+                  aria-label="Facebook"
+                >
+                  <Facebook size={18} />
+                </a>
+                <a
+                  href="https://www.realtor.com/realestateagents/66abbb21e7320c7ad682b6a8"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-white hover:bg-[#C4A25A] transition-colors font-[family-name:var(--font-playfair)] text-lg font-bold"
+                  aria-label="Realtor.com"
+                >
+                  R
+                </a>
+                <a
+                  href="https://www.linkedin.com/in/danidiazrealtor"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-white hover:bg-[#C4A25A] transition-colors"
+                  aria-label="LinkedIn"
+                >
+                  <Linkedin size={18} />
+                </a>
+              </div>
             </div>
             <div className="text-center md:text-right">
               <p className="text-white/60 text-sm">
