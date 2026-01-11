@@ -213,14 +213,14 @@ export default function Home() {
               </h2>
               <p className="text-[#3D3D3D] text-lg leading-relaxed mb-6">
                 {t(
-                  "With a global background and deep local roots in Myrtle Beach, I bring a unique perspective to every real estate transaction. Whether you're relocating from abroad or moving across town, I understand the journey.",
-                  "Con una trayectoria global y profundas raíces locales en Myrtle Beach, aporto una perspectiva única a cada transacción inmobiliaria. Ya sea que te estés reubicando desde el extranjero o mudándote al otro lado de la ciudad, entiendo el viaje."
+                  "Originally from Colombia, I moved to Myrtle Beach in 2018 and found more than a new home—I found my family. After purchasing and renovating my first home with my husband in 2019, I discovered my passion for helping others find their perfect place.",
+                  "Originaria de Colombia, me mudé a Myrtle Beach en 2018 y encontré más que un nuevo hogar: encontré a mi familia. Después de comprar y renovar mi primera casa con mi esposo en 2019, descubrí mi pasión por ayudar a otros a encontrar su lugar perfecto."
                 )}
               </p>
               <p className="text-[#3D3D3D] text-lg leading-relaxed mb-8">
                 {t(
-                  "As a bilingual Realtor®, I'm here to guide Spanish and English-speaking clients through the exciting process of finding their perfect home on the Grand Strand.",
-                  "Como Agente Inmobiliaria bilingüe, estoy aquí para guiar a clientes hispanohablantes e angloparlantes a través del emocionante proceso de encontrar su hogar perfecto en el Grand Strand."
+                  "As a bilingual Realtor®, I guide Spanish and English-speaking clients through every step of buying or selling on the Grand Strand. Whether you're a first-time buyer or looking for your next investment, I'm here to make the journey personal.",
+                  "Como Agente Inmobiliaria bilingüe, guío a clientes hispanohablantes e angloparlantes a través de cada paso de compra o venta en el Grand Strand. Ya sea que seas un comprador primerizo o estés buscando tu próxima inversión, estoy aquí para hacer el viaje personal."
                 )}
               </p>
               <Link
