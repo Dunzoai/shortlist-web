@@ -495,7 +495,8 @@ export default function Home() {
       </section>
 
       {/* Instagram Feed */}
-      <InstagramFeed clientId="danidiaz" />
+      {/* Instagram Feed - DISABLED - See INSTAGRAM_FEED_DEBUG.md for details */}
+      {/* <InstagramFeed clientId="danidiaz" /> */}
 
       {/* Footer */}
       <footer
