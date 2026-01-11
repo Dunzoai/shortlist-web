@@ -30,7 +30,7 @@ export async function GET(request: NextRequest) {
     const { data: tokens, error: fetchError } = await supabase
       .from('instagram_tokens')
       .select('*')
-      .lt('expires_at', tenDaysFromNow.toISOString());
+      .lt('token_expires_at', tenDaysFromNow.toISOString());
 
     if (fetchError) {
       throw new Error(`Failed to fetch tokens: ${fetchError.message}`);
@@ -76,7 +76,7 @@ export async function GET(request: NextRequest) {
           .from('instagram_tokens')
           .update({
             access_token: newAccessToken,
-            expires_at: newExpiresAt.toISOString(),
+            token_expires_at: newExpiresAt.toISOString(),
             updated_at: new Date().toISOString(),
           })
           .eq('client_id', token.client_id);

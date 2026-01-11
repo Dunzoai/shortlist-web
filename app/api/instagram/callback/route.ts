@@ -81,7 +81,7 @@ export async function GET(request: NextRequest) {
     const shortLivedToken = tokenData.access_token;
     const userId = tokenData.user_id;
 
-    // Step 2: Exchange short-lived token for long-lived token
+    // Step 2: Exchange short-lived token for long-lived token (60 days)
     const longLivedParams = new URLSearchParams({
       grant_type: 'ig_exchange_token',
       client_secret: appSecret,
@@ -89,14 +89,7 @@ export async function GET(request: NextRequest) {
     });
 
     const longLivedResponse = await fetch(
-      'https://graph.instagram.com/access_token',
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-        },
-        body: longLivedParams.toString(),
-      }
+      `https://graph.instagram.com/access_token?${longLivedParams.toString()}`
     );
 
     if (!longLivedResponse.ok) {
