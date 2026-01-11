@@ -98,15 +98,22 @@ export async function GET(
     const instagramData = await instagramResponse.json();
     console.log('[Instagram Feed] Media data received, post count:', instagramData.data?.length || 0);
 
-    // Transform the data to include username
-    const posts = instagramData.data.map((post: any) => ({
-      id: post.id,
-      caption: post.caption || '',
-      media_type: post.media_type,
-      media_url: post.media_type === 'VIDEO' ? post.thumbnail_url : post.media_url,
-      permalink: post.permalink,
-      timestamp: post.timestamp,
-    }));
+    // Transform the data - use thumbnail_url for videos, media_url for images
+    const posts = instagramData.data.map((post: any) => {
+      const isVideo = post.media_type === 'VIDEO';
+      const displayUrl = isVideo ? post.thumbnail_url : post.media_url;
+
+      console.log(`[Instagram Feed] Post ${post.id}: type=${post.media_type}, using ${isVideo ? 'thumbnail_url' : 'media_url'}`);
+
+      return {
+        id: post.id,
+        caption: post.caption || '',
+        media_type: post.media_type,
+        media_url: displayUrl, // VIDEO: thumbnail_url, IMAGE: media_url
+        permalink: post.permalink,
+        timestamp: post.timestamp,
+      };
+    });
 
     console.log('[Instagram Feed] Successfully transformed posts, returning response');
 

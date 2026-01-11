@@ -102,6 +102,7 @@ export default function InstagramFeed({ clientId }: InstagramFeedProps) {
                 className="flex-shrink-0 w-80 snap-start group"
               >
                 <div className="relative aspect-square overflow-hidden rounded-lg bg-gray-800">
+                  {/* media_url is already transformed by API: thumbnail_url for videos, media_url for images */}
                   <Image
                     src={post.media_url}
                     alt={post.caption || 'Instagram post'}
