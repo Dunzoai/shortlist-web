@@ -89,6 +89,11 @@ export async function GET(
     const userId = profileData.user_id;
     const username = profileData.username;
     console.log('[Instagram Feed] Using user_id:', userId, 'username:', username);
+    console.log('[Instagram Feed] Expected username: dunzomedia');
+
+    if (username !== 'dunzomedia') {
+      console.error('[Instagram Feed] WARNING: Username mismatch! Got:', username, 'Expected: dunzomedia');
+    }
 
     // Step 2: Fetch latest 6 posts using user_id
     console.log('[Instagram Feed] Fetching media for user_id:', userId);
