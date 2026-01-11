@@ -78,31 +78,11 @@ export async function GET(request: NextRequest) {
     }
 
     const tokenData = await tokenResponse.json();
-    const shortLivedToken = tokenData.access_token;
+    const accessToken = tokenData.access_token;
     const userId = tokenData.user_id;
 
-    // Step 2: Exchange short-lived token for long-lived token (60 days)
-    const longLivedParams = new URLSearchParams({
-      grant_type: 'ig_exchange_token',
-      client_secret: appSecret,
-      access_token: shortLivedToken,
-    });
-
-    const longLivedResponse = await fetch(
-      `https://graph.instagram.com/access_token?${longLivedParams.toString()}`
-    );
-
-    if (!longLivedResponse.ok) {
-      const errorData = await longLivedResponse.json();
-      throw new Error(`Failed to get long-lived token: ${JSON.stringify(errorData)}`);
-    }
-
-    const longLivedData = await longLivedResponse.json();
-    const accessToken = longLivedData.access_token;
-    const expiresIn = longLivedData.expires_in; // Usually 60 days
-
-    // Calculate expiration date
-    const expiresAt = new Date(Date.now() + expiresIn * 1000);
+    // Calculate expiration date (1 hour for short-lived token)
+    const expiresAt = new Date(Date.now() + 3600 * 1000);
 
     // Get Instagram username
     const userResponse = await fetch(
