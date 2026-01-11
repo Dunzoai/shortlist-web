@@ -41,14 +41,16 @@ export default function InstagramFeed({ clientId }: InstagramFeedProps) {
         console.log('[InstagramFeed Component] Received data:', data);
         console.log('[InstagramFeed Component] Number of posts:', data.posts?.length);
 
-        // Log each post URL
+        // Log each post URL with full details
         data.posts?.forEach((post: InstagramPost, index: number) => {
-          console.log(`[InstagramFeed Component] Post ${index + 1}:`, {
-            id: post.id,
-            media_type: post.media_type,
-            media_url: post.media_url?.substring(0, 100) + '...',
-            permalink: post.permalink,
-          });
+          console.log(`[InstagramFeed Component] === POST ${index + 1} FULL DATA ===`);
+          console.log('[InstagramFeed Component] id:', post.id);
+          console.log('[InstagramFeed Component] media_type:', post.media_type);
+          console.log('[InstagramFeed Component] media_url:', post.media_url);
+          console.log('[InstagramFeed Component] permalink:', post.permalink);
+          console.log('[InstagramFeed Component] caption:', post.caption?.substring(0, 100));
+          console.log('[InstagramFeed Component] Full post object:', post);
+          console.log('[InstagramFeed Component] === END POST DATA ===\n');
         });
 
         setFeedData(data);
