@@ -4,6 +4,7 @@ import { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
+import { Instagram, Facebook, Linkedin } from 'lucide-react';
 import Nav from '@/components/Nav';
 import { useLanguage } from '@/components/LanguageContext';
 import { useStyle } from '@/components/StyleContext';
@@ -231,6 +232,45 @@ export default function Home() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
                 </svg>
               </Link>
+
+              {/* Social Icons */}
+              <div className="flex gap-3 mt-8">
+                <a
+                  href="#"
+                  className="w-12 h-12 rounded-full bg-[#1B365D] flex items-center justify-center text-white hover:bg-[#C4A25A] transition-colors"
+                  aria-label="Instagram"
+                >
+                  <Instagram size={20} />
+                </a>
+                <a
+                  href="#"
+                  className="w-12 h-12 rounded-full bg-[#1B365D] flex items-center justify-center text-white hover:bg-[#C4A25A] transition-colors"
+                  aria-label="Facebook"
+                >
+                  <Facebook size={20} />
+                </a>
+                <a
+                  href="#"
+                  className="w-12 h-12 rounded-full bg-[#1B365D] flex items-center justify-center text-white hover:bg-[#C4A25A] transition-colors font-[family-name:var(--font-playfair)] text-xl font-bold"
+                  aria-label="Zillow"
+                >
+                  Z
+                </a>
+                <a
+                  href="#"
+                  className="w-12 h-12 rounded-full bg-[#1B365D] flex items-center justify-center text-white hover:bg-[#C4A25A] transition-colors font-[family-name:var(--font-playfair)] text-xl font-bold"
+                  aria-label="Realtor.com"
+                >
+                  R
+                </a>
+                <a
+                  href="#"
+                  className="w-12 h-12 rounded-full bg-[#1B365D] flex items-center justify-center text-white hover:bg-[#C4A25A] transition-colors"
+                  aria-label="LinkedIn"
+                >
+                  <Linkedin size={20} />
+                </a>
+              </div>
             </motion.div>
           </motion.div>
         </div>
