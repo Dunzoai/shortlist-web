@@ -543,64 +543,137 @@ export default function Home() {
 
       {/* Footer */}
       <footer
-        className="py-12 transition-colors duration-500"
-        style={{ backgroundColor: isDark ? '#1B365D' : '#3D3D3D' }}
+        className="py-16 transition-colors duration-500"
+        style={{ backgroundColor: isDark ? '#1B365D' : '#1B365D' }}
       >
         <div className="max-w-7xl mx-auto px-6">
-          <div className="flex flex-col md:flex-row justify-between items-center gap-6">
-            <div className="text-center md:text-left">
-              <p className="font-[family-name:var(--font-playfair)] text-white text-xl mb-2">
-                Dani Díaz
-              </p>
-              <p className="text-white/60 text-sm mb-4">
-                {t('Bilingual Realtor® at Faircloth Real Estate Group', 'Agente Inmobiliaria Bilingüe en Faircloth Real Estate Group')}
-              </p>
+          {/* Brand Section */}
+          <div className="mb-12">
+            <h2 className="text-white text-5xl md:text-6xl font-bold tracking-tight mb-4" style={{ fontFamily: 'var(--font-playfair)' }}>
+              DANI DÍAZ.
+            </h2>
+            <p className="text-white text-xl md:text-2xl" style={{ fontFamily: 'var(--font-playfair)' }}>
+              {t('Daniela Ampudia Díaz', 'Daniela Ampudia Díaz')}
+            </p>
+          </div>
 
-              {/* Social Icons */}
-              <div className="flex gap-3 justify-center md:justify-start">
+          {/* Main Footer Content */}
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-12 mb-12">
+            {/* Contact Section */}
+            <div className="md:col-span-3">
+              <h3 className="text-white text-sm font-semibold tracking-wider mb-4">
+                {t('CONTACT', 'CONTACTO')}
+              </h3>
+              <div className="space-y-3">
                 <a
-                  href="https://www.instagram.com/dani.globalhomes/"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-white hover:bg-[#C4A25A] transition-colors"
-                  aria-label="Instagram"
+                  href="tel:+18437994566"
+                  className="block text-white hover:text-[#C4A25A] transition-colors"
                 >
-                  <Instagram size={18} />
+                  (843) 799-4566
                 </a>
+                <a
+                  href="mailto:danidiazrealestate@gmail.com"
+                  className="block text-white hover:text-[#C4A25A] transition-colors uppercase text-sm"
+                >
+                  DANIDIAZREALESTATE@GMAIL.COM
+                </a>
+              </div>
+            </div>
+
+            {/* Address Section */}
+            <div className="md:col-span-3">
+              <h3 className="text-white text-sm font-semibold tracking-wider mb-4">
+                {t('ADDRESS', 'DIRECCIÓN')}
+              </h3>
+              <div className="text-white">
+                <p>1274 Professional Dr</p>
+                <p>Myrtle Beach SC 29577</p>
+              </div>
+            </div>
+
+            {/* Vertical Divider */}
+            <div className="hidden md:block md:col-span-1">
+              <div className="h-full w-px bg-white/20 mx-auto"></div>
+            </div>
+
+            {/* Social Icons Section */}
+            <div className="md:col-span-5 flex items-start justify-start md:justify-end">
+              <div className="flex gap-3">
                 <a
                   href="https://www.facebook.com/daniampudiazv/"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-white hover:bg-[#C4A25A] transition-colors"
+                  className="w-12 h-12 rounded-full bg-white flex items-center justify-center text-[#1B365D] hover:bg-[#C4A25A] hover:text-white transition-colors"
                   aria-label="Facebook"
                 >
-                  <Facebook size={18} />
+                  <Facebook size={20} />
                 </a>
                 <a
-                  href="https://www.realtor.com/realestateagents/66abbb21e7320c7ad682b6a8"
+                  href="https://www.instagram.com/dani.globalhomes/"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-white hover:bg-[#C4A25A] transition-colors font-[family-name:var(--font-playfair)] text-lg font-bold"
-                  aria-label="Realtor.com"
+                  className="w-12 h-12 rounded-full bg-white flex items-center justify-center text-[#1B365D] hover:bg-[#C4A25A] hover:text-white transition-colors"
+                  aria-label="Instagram"
                 >
-                  R
+                  <Instagram size={20} />
                 </a>
                 <a
                   href="https://www.linkedin.com/in/danidiazrealtor"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-white hover:bg-[#C4A25A] transition-colors"
+                  className="w-12 h-12 rounded-full bg-white flex items-center justify-center text-[#1B365D] hover:bg-[#C4A25A] hover:text-white transition-colors"
                   aria-label="LinkedIn"
                 >
-                  <Linkedin size={18} />
+                  <Linkedin size={20} />
+                </a>
+                <a
+                  href="https://www.realtor.com/realestateagents/66abbb21e7320c7ad682b6a8"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-12 h-12 rounded-full bg-white flex items-center justify-center text-[#1B365D] hover:bg-[#C4A25A] hover:text-white transition-colors font-bold text-xl"
+                  aria-label="Realtor.com"
+                  style={{ fontFamily: 'var(--font-playfair)' }}
+                >
+                  R
                 </a>
               </div>
             </div>
-            <div className="text-center md:text-right">
-              <p className="text-white/60 text-sm">
-                © {new Date().getFullYear()} Dani Díaz. {t('All rights reserved.', 'Todos los derechos reservados.')}
-              </p>
+          </div>
+
+          {/* Horizontal Divider */}
+          <div className="border-t border-white/20 pt-8">
+            {/* Navigation Links */}
+            <div className="flex flex-wrap gap-6 md:gap-8 justify-center md:justify-start mb-6">
+              <a
+                href="/about"
+                className="text-white hover:text-[#C4A25A] transition-colors text-sm font-semibold tracking-wider"
+              >
+                {t('ABOUT', 'ACERCA DE')}
+              </a>
+              <a
+                href="/buyers"
+                className="text-white hover:text-[#C4A25A] transition-colors text-sm font-semibold tracking-wider"
+              >
+                {t('BUYERS', 'COMPRADORES')}
+              </a>
+              <a
+                href="/sellers"
+                className="text-white hover:text-[#C4A25A] transition-colors text-sm font-semibold tracking-wider"
+              >
+                {t('SELLERS', 'VENDEDORES')}
+              </a>
+              <a
+                href="#contact"
+                className="text-white hover:text-[#C4A25A] transition-colors text-sm font-semibold tracking-wider"
+              >
+                {t("LET'S CONNECT", 'CONECTEMOS')}
+              </a>
             </div>
+
+            {/* Copyright */}
+            <p className="text-white/60 text-xs text-center md:text-left">
+              © {new Date().getFullYear()} Dani Díaz. {t('All rights reserved.', 'Todos los derechos reservados.')}
+            </p>
           </div>
         </div>
       </footer>
