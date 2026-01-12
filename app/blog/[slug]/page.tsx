@@ -194,7 +194,7 @@ export default function BlogPostPage() {
 
       {/* Article Content */}
       <section className="py-16 bg-white">
-        <div className="max-w-3xl mx-auto px-6">
+        <div className="max-w-2xl mx-auto px-6">
           {/* Back to Blog Link */}
           <Link
             href="/blog"
@@ -242,13 +242,15 @@ export default function BlogPostPage() {
           {/* Author Box */}
           <div className="mt-16 p-8 bg-[#F7F7F7] rounded-lg">
             <div className="flex items-center gap-6">
-              <Image
-                src="/dani-diaz-home-about.JPG"
-                alt="Dani Díaz"
-                width={80}
-                height={80}
-                className="rounded-full object-cover w-20 h-20"
-              />
+              <div className="rounded-full overflow-hidden w-20 h-20 flex-shrink-0">
+                <Image
+                  src="/dani-diaz-about.JPG"
+                  alt="Dani Díaz"
+                  width={80}
+                  height={80}
+                  className="object-cover object-top w-full h-full"
+                />
+              </div>
               <div className="flex-1">
                 <h3 className="font-[family-name:var(--font-playfair)] text-2xl text-[#1B365D] mb-2">
                   Dani Díaz
@@ -268,9 +270,9 @@ export default function BlogPostPage() {
             <Image
               src="/dani-signature.png"
               alt="Dani Díaz Signature"
-              width={180}
-              height={60}
-              className="opacity-60"
+              width={150}
+              height={50}
+              className="opacity-60 max-w-[150px] w-auto h-auto"
             />
           </div>
         </div>
