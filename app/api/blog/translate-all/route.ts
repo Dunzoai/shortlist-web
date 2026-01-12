@@ -40,6 +40,12 @@ export async function GET(request: NextRequest) {
       );
     }
 
+    // Log Supabase client configuration
+    console.log('⚙️  Supabase configuration:');
+    console.log('  - Using ANON key (subject to RLS):', !!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY);
+    console.log('  - Has SERVICE_ROLE key (bypasses RLS):', !!process.env.SUPABASE_SERVICE_ROLE_KEY);
+    console.log('  ⚠️  If UPDATEs return 0 rows, check RLS policies in Supabase');
+
     // If post_id is provided, translate only that post
     if (postId) {
       return await translateSinglePost(postId);
@@ -241,7 +247,33 @@ async function translateSinglePost(postId: string) {
     if (updatedData.content_es) console.log(`    - content_es: ${updatedData.content_es.length} chars`);
     if (updatedData.content) console.log(`    - content: ${updatedData.content.length} chars`);
 
+    // CRITICAL DEBUG: Log the exact ID being used
+    console.log(`  🔍 DEBUGGING UPDATE QUERY:`);
+    console.log(`    - Post ID value: "${post.id}"`);
+    console.log(`    - Post ID type: ${typeof post.id}`);
+    console.log(`    - Post ID length: ${String(post.id).length}`);
+
+    // Test if the row exists with a SELECT query
+    console.log(`  🔍 Testing if row exists with SELECT...`);
+    const { data: testSelect, error: testError } = await supabase
+      .from('blog_posts')
+      .select('id, title, client_id')
+      .eq('id', post.id)
+      .single();
+
+    if (testError) {
+      console.error(`  ❌ TEST SELECT FAILED:`, testError);
+    } else if (testSelect) {
+      console.log(`  ✅ Row found in test SELECT:`);
+      console.log(`    - ID: ${testSelect.id}`);
+      console.log(`    - Title: ${testSelect.title}`);
+      console.log(`    - Client ID: ${testSelect.client_id}`);
+    } else {
+      console.error(`  ❌ No row found in test SELECT!`);
+    }
+
     console.log(`  Calling Supabase UPDATE...`);
+    console.log(`  UPDATE query: .from('blog_posts').update(...).eq('id', '${post.id}').select()`);
 
     const { data: updateResult, error: updateError } = await supabase
       .from('blog_posts')
@@ -274,17 +306,38 @@ async function translateSinglePost(postId: string) {
       );
     }
 
-    console.log(`  ✅ DATABASE UPDATE SUCCESSFUL`);
+    console.log(`  ✅ DATABASE UPDATE SUCCESSFUL (no error)`);
+    console.log(`  Update result type: ${typeof updateResult}`);
+    console.log(`  Update result is array: ${Array.isArray(updateResult)}`);
     console.log(`  Update result:`, JSON.stringify(updateResult, null, 2));
     console.log(`  Rows updated: ${updateResult?.length || 0}`);
+
+    if (!updateResult || updateResult.length === 0) {
+      console.error(`  ❌❌❌ CRITICAL: UPDATE RETURNED 0 ROWS! ❌❌❌`);
+      console.error(`  This means the WHERE clause did not match any rows!`);
+      console.error(`  Possible causes:`);
+      console.error(`    1. Row with ID "${post.id}" does not exist`);
+      console.error(`    2. RLS (Row Level Security) policy is blocking the update`);
+      console.error(`    3. ID format/type mismatch`);
+      console.error(`  `);
+
+      // Try a manual verification query
+      const { data: verifyData, error: verifyError } = await supabase
+        .from('blog_posts')
+        .select('*')
+        .eq('id', post.id);
+
+      console.error(`  Verification SELECT result: ${verifyData ? `Found ${verifyData.length} row(s)` : 'No rows'}`);
+      if (verifyData && verifyData.length > 0) {
+        console.error(`  Row EXISTS but UPDATE did not work - likely RLS policy issue!`);
+      }
+    }
 
     if (updateResult && updateResult.length > 0) {
       console.log(`  Verification - Spanish fields in database:`);
       console.log(`    - title_es: ${updateResult[0]?.title_es ? `"${updateResult[0].title_es.substring(0, 50)}..."` : 'NULL'}`);
       console.log(`    - excerpt_es: ${updateResult[0]?.excerpt_es ? `${updateResult[0].excerpt_es.length} chars` : 'NULL'}`);
       console.log(`    - content_es: ${updateResult[0]?.content_es ? `${updateResult[0].content_es.length} chars` : 'NULL'}`);
-    } else {
-      console.log(`  ⚠️  WARNING: No rows returned from update`);
     }
 
     console.log(`  ═══════════════════════════════════════`);
