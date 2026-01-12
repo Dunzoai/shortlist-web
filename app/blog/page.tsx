@@ -18,6 +18,8 @@ interface BlogPost {
   published_at: string;
   category: string;
   tags: string[];
+  title_es?: string;
+  excerpt_es?: string;
 }
 
 // Placeholder posts for when Supabase data is not available
@@ -110,7 +112,7 @@ function BlogContent() {
     async function fetchPosts() {
       const { data, error } = await supabase
         .from('blog_posts')
-        .select('*')
+        .select('id, title, title_es, slug, excerpt, excerpt_es, featured_image, published_at, category, tags')
         .eq('client_id', 'danidiaz')
         .order('published_at', { ascending: false });
 
@@ -202,10 +204,10 @@ function BlogContent() {
                           })}
                         </p>
                         <h3 className="font-[family-name:var(--font-playfair)] text-xl text-[#1B365D] mb-3 group-hover:text-[#C4A25A] transition-colors">
-                          {post.title}
+                          {language === 'es' && post.title_es ? post.title_es : post.title}
                         </h3>
                         <p className="text-[#3D3D3D] line-clamp-3 flex-grow">
-                          {post.excerpt}
+                          {language === 'es' && post.excerpt_es ? post.excerpt_es : post.excerpt}
                         </p>
                         <div className="mt-4 flex flex-wrap gap-2">
                           {post.tags?.slice(0, 3).map((tag, tagIndex) => (
