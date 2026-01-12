@@ -554,8 +554,8 @@ export default function Home() {
         <div className="max-w-7xl mx-auto px-6">
           {/* Brand Section */}
           <div className="mb-12">
-            <h2 className="font-[family-name:var(--font-playfair)] text-white text-5xl md:text-6xl font-bold tracking-tight">
-              DANI DÍAZ.
+            <h2 className="font-[family-name:var(--font-playfair)] text-white text-5xl md:text-6xl font-bold">
+              Dani Díaz
             </h2>
           </div>
 
