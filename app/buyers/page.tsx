@@ -80,7 +80,7 @@ const buyerResources = [
     descEn: 'Step-by-step buying guide',
     descEs: 'Guía paso a paso para comprar',
     icon: ClipboardCheck,
-    link: '#'
+    link: '/buyers/checklist'
   },
   {
     titleEn: 'School Reports',
