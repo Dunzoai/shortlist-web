@@ -140,6 +140,10 @@ async function translateSinglePost(postId: string) {
     let wasFormatted = false;
     let wasTranslated = false;
 
+    console.log(`  Current post Spanish fields - title_es:`, post.title_es || 'NULL');
+    console.log(`  Current post Spanish fields - excerpt_es:`, post.excerpt_es || 'NULL');
+    console.log(`  Current post Spanish fields - content_es:`, post.content_es ? `${post.content_es.length} chars` : 'NULL');
+
     // Format English content if needed
     let contentToTranslate = post.content;
     if (post.content) {
@@ -160,7 +164,13 @@ async function translateSinglePost(postId: string) {
     }
 
     // Translate to Spanish if missing
-    if (post.content && (!post.title_es || !post.excerpt_es || !post.content_es)) {
+    const needsSpanishTranslation = !post.title_es || !post.excerpt_es || !post.content_es;
+    console.log(`  Needs Spanish translation: ${needsSpanishTranslation}`);
+    console.log(`  - Missing title_es: ${!post.title_es}`);
+    console.log(`  - Missing excerpt_es: ${!post.excerpt_es}`);
+    console.log(`  - Missing content_es: ${!post.content_es}`);
+
+    if (post.content && needsSpanishTranslation) {
       console.log(`  Post ${postId} needs Spanish translation`);
       const sourceLanguage = await detectLanguage(contentToTranslate);
       console.log(`  Detected language: ${sourceLanguage}`);
@@ -176,62 +186,43 @@ async function translateSinglePost(postId: string) {
           'en'
         );
 
-        // Only set Spanish fields if they don't exist
-        if (!post.title_es) updatedData.title_es = translated.title;
-        if (!post.excerpt_es) updatedData.excerpt_es = translated.excerpt;
-        if (!post.content_es) updatedData.content_es = translated.content;
+        console.log(`  Translation received from API`);
+        console.log(`  - Translated title: ${translated.title.substring(0, 50)}...`);
+        console.log(`  - Translated excerpt length: ${translated.excerpt.length}`);
+        console.log(`  - Translated content length: ${translated.content.length}`);
+
+        // ALWAYS set Spanish fields if missing (force update)
+        if (!post.title_es) {
+          updatedData.title_es = translated.title;
+          console.log(`  ✓ Will update title_es`);
+        }
+        if (!post.excerpt_es) {
+          updatedData.excerpt_es = translated.excerpt;
+          console.log(`  ✓ Will update excerpt_es`);
+        }
+        if (!post.content_es) {
+          updatedData.content_es = translated.content;
+          console.log(`  ✓ Will update content_es`);
+        }
 
         wasTranslated = true;
-        console.log(`  Translation complete for post ${postId}`);
-        console.log(`  Spanish title: ${translated.title.substring(0, 50)}...`);
-        console.log(`  Spanish content length: ${translated.content.length}`);
+        console.log(`  Translation data prepared for database update`);
+      } else {
+        console.log(`  Skipping translation - detected language is not English: ${sourceLanguage}`);
       }
     } else {
-      console.log(`  Post ${postId} already has Spanish translation`);
+      console.log(`  Post ${postId} already has Spanish translation - skipping`);
     }
 
     // Update the post if needed
-    if (Object.keys(updatedData).length > 0) {
-      console.log(`  Updating post ${postId} in database...`);
-      console.log(`  Update data keys:`, Object.keys(updatedData));
-      console.log(`  Has title_es:`, !!updatedData.title_es);
-      console.log(`  Has excerpt_es:`, !!updatedData.excerpt_es);
-      console.log(`  Has content_es:`, !!updatedData.content_es);
+    console.log(`  ═══════════════════════════════════════`);
+    console.log(`  ATTEMPTING DATABASE UPDATE`);
+    console.log(`  Post ID: ${post.id}`);
+    console.log(`  Update data keys: [${Object.keys(updatedData).join(', ')}]`);
+    console.log(`  Number of fields to update: ${Object.keys(updatedData).length}`);
 
-      const { data: updateResult, error: updateError } = await supabase
-        .from('blog_posts')
-        .update(updatedData)
-        .eq('id', post.id)
-        .select('id, title, title_es, excerpt_es, content_es');
-
-      if (updateError) {
-        console.error(`Error updating post ${post.id}:`, updateError);
-        return NextResponse.json(
-          { error: 'Failed to update post', details: updateError.message },
-          { status: 500 }
-        );
-      }
-
-      console.log(`  Post ${postId} updated successfully`);
-      console.log(`  Updated record has title_es:`, updateResult?.[0]?.title_es ? 'YES' : 'NO');
-      console.log(`  Updated record has content_es length:`, updateResult?.[0]?.content_es?.length || 0);
-
-      return NextResponse.json({
-        success: true,
-        message: `Successfully processed post: ${post.title}`,
-        postId: post.id,
-        title: post.title,
-        slug: post.slug,
-        formatted: wasFormatted,
-        translated: wasTranslated,
-        updatedFields: Object.keys(updatedData),
-        verification: {
-          title_es: updateResult?.[0]?.title_es?.substring(0, 50) + '...',
-          has_excerpt_es: !!updateResult?.[0]?.excerpt_es,
-          content_es_length: updateResult?.[0]?.content_es?.length || 0,
-        }
-      });
-    } else {
+    if (Object.keys(updatedData).length === 0) {
+      console.log(`  ⚠️  NO FIELDS TO UPDATE - SKIPPING DATABASE CALL`);
       return NextResponse.json({
         success: true,
         message: `Post already up to date: ${post.title}`,
@@ -240,8 +231,81 @@ async function translateSinglePost(postId: string) {
         slug: post.slug,
         formatted: false,
         translated: false,
+        skipped: true,
       });
     }
+
+    console.log(`  Fields to update:`);
+    if (updatedData.title_es) console.log(`    - title_es: "${updatedData.title_es.substring(0, 50)}..."`);
+    if (updatedData.excerpt_es) console.log(`    - excerpt_es: ${updatedData.excerpt_es.length} chars`);
+    if (updatedData.content_es) console.log(`    - content_es: ${updatedData.content_es.length} chars`);
+    if (updatedData.content) console.log(`    - content: ${updatedData.content.length} chars`);
+
+    console.log(`  Calling Supabase UPDATE...`);
+
+    const { data: updateResult, error: updateError } = await supabase
+      .from('blog_posts')
+      .update(updatedData)
+      .eq('id', post.id)
+      .select('id, title, title_es, excerpt_es, content_es');
+
+    if (updateError) {
+      console.error(`  ❌ SUPABASE UPDATE ERROR:`, JSON.stringify(updateError, null, 2));
+      console.error(`  Error message:`, updateError.message);
+      console.error(`  Error details:`, updateError.details);
+      console.error(`  Error hint:`, updateError.hint);
+      console.error(`  Error code:`, updateError.code);
+
+      return NextResponse.json(
+        {
+          error: 'SUPABASE UPDATE FAILED',
+          supabaseError: {
+            message: updateError.message,
+            details: updateError.details,
+            hint: updateError.hint,
+            code: updateError.code
+          },
+          attemptedUpdate: {
+            postId: post.id,
+            fields: Object.keys(updatedData)
+          }
+        },
+        { status: 500 }
+      );
+    }
+
+    console.log(`  ✅ DATABASE UPDATE SUCCESSFUL`);
+    console.log(`  Update result:`, JSON.stringify(updateResult, null, 2));
+    console.log(`  Rows updated: ${updateResult?.length || 0}`);
+
+    if (updateResult && updateResult.length > 0) {
+      console.log(`  Verification - Spanish fields in database:`);
+      console.log(`    - title_es: ${updateResult[0]?.title_es ? `"${updateResult[0].title_es.substring(0, 50)}..."` : 'NULL'}`);
+      console.log(`    - excerpt_es: ${updateResult[0]?.excerpt_es ? `${updateResult[0].excerpt_es.length} chars` : 'NULL'}`);
+      console.log(`    - content_es: ${updateResult[0]?.content_es ? `${updateResult[0].content_es.length} chars` : 'NULL'}`);
+    } else {
+      console.log(`  ⚠️  WARNING: No rows returned from update`);
+    }
+
+    console.log(`  ═══════════════════════════════════════`);
+
+    return NextResponse.json({
+      success: true,
+      message: `Successfully processed post: ${post.title}`,
+      postId: post.id,
+      title: post.title,
+      slug: post.slug,
+      formatted: wasFormatted,
+      translated: wasTranslated,
+      updatedFields: Object.keys(updatedData),
+      databaseUpdateSucceeded: true,
+      rowsAffected: updateResult?.length || 0,
+      verification: {
+        title_es: updateResult?.[0]?.title_es?.substring(0, 50) || 'NOT SAVED',
+        has_excerpt_es: !!updateResult?.[0]?.excerpt_es,
+        content_es_length: updateResult?.[0]?.content_es?.length || 0,
+      }
+    });
   } catch (error: any) {
     console.error(`Error processing post ${postId}:`, error);
     return NextResponse.json(
