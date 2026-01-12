@@ -248,29 +248,30 @@ export default function BlogPostPage() {
           </Link>
 
           {/* Content */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-            className="blog-content"
+          <div
+            className="blog-content prose prose-lg max-w-none"
             dangerouslySetInnerHTML={{
-              __html: decodeHtmlEntities(
-                language === 'es' && post.content_es ? post.content_es : post.content
-              )
+              __html: (() => {
+                const content = language === 'es' && post.content_es ? post.content_es : post.content;
+                const decoded = decodeHtmlEntities(content);
+                console.log('Content to render (first 200 chars):', decoded.substring(0, 200));
+                console.log('Has HTML tags:', decoded.includes('<'));
+                return decoded;
+              })()
             }}
           />
 
-          <style jsx>{`
-            .blog-content :global(h2) {
+          <style jsx global>{`
+            .blog-content h2 {
               font-family: var(--font-playfair);
               font-size: 1.5rem;
               font-weight: 600;
               color: #1B365D;
-              margin-top: 2.5rem;
+              margin-top: 2rem;
               margin-bottom: 1rem;
             }
 
-            .blog-content :global(h3) {
+            .blog-content h3 {
               font-family: var(--font-playfair);
               font-size: 1.25rem;
               font-weight: 600;
@@ -279,41 +280,41 @@ export default function BlogPostPage() {
               margin-bottom: 0.75rem;
             }
 
-            .blog-content :global(p) {
-              color: #3D3D3D;
+            .blog-content p {
+              color: #374151;
               font-size: 1.125rem;
               line-height: 1.75;
               margin-bottom: 1.5rem;
             }
 
-            .blog-content :global(ul),
-            .blog-content :global(ol) {
-              color: #3D3D3D;
+            .blog-content ul,
+            .blog-content ol {
+              color: #374151;
               font-size: 1.125rem;
               line-height: 1.75;
               margin-bottom: 1.5rem;
               padding-left: 1.5rem;
             }
 
-            .blog-content :global(li) {
+            .blog-content li {
               margin-bottom: 0.5rem;
             }
 
-            .blog-content :global(a) {
+            .blog-content a {
               color: #C4A25A;
               text-decoration: none;
             }
 
-            .blog-content :global(a:hover) {
+            .blog-content a:hover {
               text-decoration: underline;
             }
 
-            .blog-content :global(strong) {
+            .blog-content strong {
               color: #1B365D;
               font-weight: 600;
             }
 
-            .blog-content :global(em) {
+            .blog-content em {
               font-style: italic;
             }
           `}</style>
