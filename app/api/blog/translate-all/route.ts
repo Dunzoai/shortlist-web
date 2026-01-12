@@ -116,7 +116,7 @@ async function translateSinglePost(postId: string) {
   // Fetch the post
   const { data: post, error: fetchError } = await supabase
     .from('blog_posts')
-    .select('id, title, excerpt, content, title_es, excerpt_es, content_es')
+    .select('id, title, slug, excerpt, content, title_es, excerpt_es, content_es')
     .eq('id', postId)
     .single();
 
@@ -247,7 +247,7 @@ async function translateSinglePost(postId: string) {
       .from('blog_posts')
       .update(updatedData)
       .eq('id', post.id)
-      .select('id, title, title_es, excerpt_es, content_es');
+      .select('id, title, slug, title_es, excerpt_es, content_es');
 
     if (updateError) {
       console.error(`  ❌ SUPABASE UPDATE ERROR:`, JSON.stringify(updateError, null, 2));
