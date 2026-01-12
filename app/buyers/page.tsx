@@ -4,6 +4,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
+import { Calculator, ClipboardCheck, GraduationCap, MapPin } from 'lucide-react';
 import Nav from '@/components/Nav';
 import { useLanguage } from '@/components/LanguageContext';
 import { supabase } from '@/lib/supabase';
@@ -70,28 +71,32 @@ const buyerResources = [
     titleEs: 'Calculadora de Hipoteca',
     descEn: 'Estimate your monthly payments',
     descEs: 'Estima tus pagos mensuales',
-    icon: '🏠'
+    icon: Calculator,
+    link: '/calculator'
   },
   {
     titleEn: 'Buyer Checklist',
     titleEs: 'Lista de Verificación',
     descEn: 'Step-by-step buying guide',
     descEs: 'Guía paso a paso para comprar',
-    icon: '✓'
+    icon: ClipboardCheck,
+    link: '#'
   },
   {
     titleEn: 'School Reports',
     titleEs: 'Informes Escolares',
     descEn: 'Local school ratings and info',
     descEs: 'Calificaciones e información escolar',
-    icon: '📚'
+    icon: GraduationCap,
+    link: '#'
   },
   {
     titleEn: 'Area Guide',
     titleEs: 'Guía del Área',
     descEn: 'Explore Myrtle Beach neighborhoods',
     descEs: 'Explora los vecindarios',
-    icon: '📍'
+    icon: MapPin,
+    link: '#'
   },
 ];
 
@@ -148,23 +153,32 @@ export default function BuyersPage() {
       <section className="py-16 bg-white">
         <div className="max-w-7xl mx-auto px-6">
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {buyerResources.map((resource, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
-                className="bg-[#F7F7F7] p-6 text-center hover:shadow-lg transition-shadow cursor-pointer"
-              >
-                <span className="text-4xl mb-4 block">{resource.icon}</span>
-                <h3 className="font-[family-name:var(--font-playfair)] text-lg text-[#1B365D] mb-2">
-                  {language === 'en' ? resource.titleEn : resource.titleEs}
-                </h3>
-                <p className="text-sm text-[#3D3D3D]">
-                  {language === 'en' ? resource.descEn : resource.descEs}
-                </p>
-              </motion.div>
-            ))}
+            {buyerResources.map((resource, index) => {
+              const IconComponent = resource.icon;
+              return (
+                <motion.div
+                  key={index}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: index * 0.1 }}
+                >
+                  <Link
+                    href={resource.link}
+                    className="block bg-[#F7F7F7] p-6 text-center hover:shadow-lg transition-shadow"
+                  >
+                    <div className="flex justify-center mb-4">
+                      <IconComponent size={32} className="text-[#1B365D]" />
+                    </div>
+                    <h3 className="font-[family-name:var(--font-playfair)] text-lg text-[#1B365D] mb-2">
+                      {language === 'en' ? resource.titleEn : resource.titleEs}
+                    </h3>
+                    <p className="text-sm text-[#3D3D3D]">
+                      {language === 'en' ? resource.descEn : resource.descEs}
+                    </p>
+                  </Link>
+                </motion.div>
+              );
+            })}
           </div>
         </div>
       </section>
