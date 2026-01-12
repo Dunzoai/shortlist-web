@@ -309,9 +309,10 @@ export default function Home() {
               {featuredListings.map((listing) => (
                 <div
                   key={listing.id}
-                  className="bg-white shadow-lg md:hover:shadow-2xl md:hover:-translate-y-2 transition-all duration-300 group"
+                  className="relative h-96 overflow-hidden shadow-lg md:hover:shadow-2xl transition-shadow duration-300 group cursor-pointer"
                 >
-                  <div className="relative h-64 overflow-hidden">
+                  {/* Image */}
+                  <div className="absolute inset-0">
                     {/* TODO: Replace with actual listing photos */}
                     <Image
                       src={listing.image}
@@ -319,14 +320,36 @@ export default function Home() {
                       fill
                       className="object-cover"
                     />
-                    <div
-                      className="absolute top-4 left-4 text-white px-4 py-2 font-semibold"
-                      style={{ backgroundColor: isDark ? '#1B365D' : '#3D3D3D' }}
+                  </div>
+
+                  {/* Price Badge */}
+                  <div
+                    className="absolute top-4 left-4 text-white px-4 py-2 font-semibold z-10"
+                    style={{ backgroundColor: isDark ? '#1B365D' : '#3D3D3D' }}
+                  >
+                    {listing.price}
+                  </div>
+
+                  {/* Content Box - Slides up on hover */}
+                  <div className="absolute inset-x-0 bottom-0 bg-white/95 backdrop-blur-sm p-6 translate-y-full md:group-hover:translate-y-0 transition-transform duration-300 ease-out">
+                    <h3
+                      className="font-[family-name:var(--font-playfair)] text-xl mb-1"
+                      style={{ color: isDark ? '#1B365D' : '#3D3D3D' }}
                     >
-                      {listing.price}
+                      {listing.address}
+                    </h3>
+                    <p className="text-[#3D3D3D] mb-4">{listing.city}</p>
+                    <div className="flex gap-4 text-sm text-[#3D3D3D]">
+                      <span>{listing.beds} {t('beds', 'hab')}</span>
+                      <span>•</span>
+                      <span>{listing.baths} {t('baths', 'baños')}</span>
+                      <span>•</span>
+                      <span>{listing.sqft} {t('sq ft', 'pies²')}</span>
                     </div>
                   </div>
-                  <div className="p-6">
+
+                  {/* Mobile - Always show content at bottom */}
+                  <div className="md:hidden absolute inset-x-0 bottom-0 bg-white/95 backdrop-blur-sm p-6">
                     <h3
                       className="font-[family-name:var(--font-playfair)] text-xl mb-1"
                       style={{ color: isDark ? '#1B365D' : '#3D3D3D' }}
