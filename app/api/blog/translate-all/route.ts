@@ -141,6 +141,7 @@ async function translateSinglePost(postId: string) {
     let wasTranslated = false;
 
     // Format English content if needed
+    let contentToTranslate = post.content;
     if (post.content) {
       console.log(`  Checking if formatting needed for post ${postId}...`);
       const needsFormatting = !(post.content.includes('<h2>') && post.content.includes('<p>'));
@@ -149,18 +150,19 @@ async function translateSinglePost(postId: string) {
         console.log(`  Formatting content for post ${postId}...`);
         const formattedContent = await formatBlogContent(post.content);
         updatedData.content = formattedContent;
+        contentToTranslate = formattedContent;
         wasFormatted = true;
         console.log(`  Content formatted for post ${postId}`);
       } else {
         console.log(`  Content already formatted for post ${postId}`);
-        updatedData.content = post.content;
+        // Don't update content field if no changes needed
       }
     }
 
     // Translate to Spanish if missing
     if (post.content && (!post.title_es || !post.excerpt_es || !post.content_es)) {
       console.log(`  Post ${postId} needs Spanish translation`);
-      const sourceLanguage = await detectLanguage(updatedData.content || post.content);
+      const sourceLanguage = await detectLanguage(contentToTranslate);
       console.log(`  Detected language: ${sourceLanguage}`);
 
       if (sourceLanguage === 'en') {
@@ -169,17 +171,20 @@ async function translateSinglePost(postId: string) {
           {
             title: post.title,
             excerpt: post.excerpt,
-            content: updatedData.content || post.content,
+            content: contentToTranslate,
           },
           'en'
         );
 
-        updatedData.title_es = post.title_es || translated.title;
-        updatedData.excerpt_es = post.excerpt_es || translated.excerpt;
-        updatedData.content_es = post.content_es || translated.content;
+        // Only set Spanish fields if they don't exist
+        if (!post.title_es) updatedData.title_es = translated.title;
+        if (!post.excerpt_es) updatedData.excerpt_es = translated.excerpt;
+        if (!post.content_es) updatedData.content_es = translated.content;
 
         wasTranslated = true;
         console.log(`  Translation complete for post ${postId}`);
+        console.log(`  Spanish title: ${translated.title.substring(0, 50)}...`);
+        console.log(`  Spanish content length: ${translated.content.length}`);
       }
     } else {
       console.log(`  Post ${postId} already has Spanish translation`);
@@ -188,10 +193,16 @@ async function translateSinglePost(postId: string) {
     // Update the post if needed
     if (Object.keys(updatedData).length > 0) {
       console.log(`  Updating post ${postId} in database...`);
-      const { error: updateError } = await supabase
+      console.log(`  Update data keys:`, Object.keys(updatedData));
+      console.log(`  Has title_es:`, !!updatedData.title_es);
+      console.log(`  Has excerpt_es:`, !!updatedData.excerpt_es);
+      console.log(`  Has content_es:`, !!updatedData.content_es);
+
+      const { data: updateResult, error: updateError } = await supabase
         .from('blog_posts')
         .update(updatedData)
-        .eq('id', post.id);
+        .eq('id', post.id)
+        .select('id, title, title_es, excerpt_es, content_es');
 
       if (updateError) {
         console.error(`Error updating post ${post.id}:`, updateError);
@@ -202,6 +213,8 @@ async function translateSinglePost(postId: string) {
       }
 
       console.log(`  Post ${postId} updated successfully`);
+      console.log(`  Updated record has title_es:`, updateResult?.[0]?.title_es ? 'YES' : 'NO');
+      console.log(`  Updated record has content_es length:`, updateResult?.[0]?.content_es?.length || 0);
 
       return NextResponse.json({
         success: true,
@@ -211,6 +224,12 @@ async function translateSinglePost(postId: string) {
         slug: post.slug,
         formatted: wasFormatted,
         translated: wasTranslated,
+        updatedFields: Object.keys(updatedData),
+        verification: {
+          title_es: updateResult?.[0]?.title_es?.substring(0, 50) + '...',
+          has_excerpt_es: !!updateResult?.[0]?.excerpt_es,
+          content_es_length: updateResult?.[0]?.content_es?.length || 0,
+        }
       });
     } else {
       return NextResponse.json({

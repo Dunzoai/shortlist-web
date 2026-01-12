@@ -212,21 +212,69 @@ export default function BlogPostPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.2 }}
-            className="prose prose-lg max-w-none
-              prose-headings:font-[family-name:var(--font-playfair)]
-              prose-headings:text-[#1B365D]
-              prose-h2:text-2xl prose-h2:font-semibold prose-h2:mt-12 prose-h2:mb-6
-              prose-h3:text-xl prose-h3:font-semibold prose-h3:mt-8 prose-h3:mb-4
-              prose-p:text-[#3D3D3D] prose-p:text-lg prose-p:leading-relaxed prose-p:mb-6
-              prose-a:text-[#C4A25A] prose-a:no-underline hover:prose-a:underline
-              prose-strong:text-[#1B365D] prose-strong:font-semibold
-              prose-ul:text-[#3D3D3D] prose-ul:space-y-2
-              prose-ol:text-[#3D3D3D] prose-ol:space-y-2
-              prose-li:text-lg prose-li:leading-relaxed"
+            className="blog-content"
             dangerouslySetInnerHTML={{
               __html: language === 'es' && post.content_es ? post.content_es : post.content
             }}
           />
+
+          <style jsx>{`
+            .blog-content :global(h2) {
+              font-family: var(--font-playfair);
+              font-size: 1.5rem;
+              font-weight: 600;
+              color: #1B365D;
+              margin-top: 2.5rem;
+              margin-bottom: 1rem;
+            }
+
+            .blog-content :global(h3) {
+              font-family: var(--font-playfair);
+              font-size: 1.25rem;
+              font-weight: 600;
+              color: #1B365D;
+              margin-top: 2rem;
+              margin-bottom: 0.75rem;
+            }
+
+            .blog-content :global(p) {
+              color: #3D3D3D;
+              font-size: 1.125rem;
+              line-height: 1.75;
+              margin-bottom: 1.5rem;
+            }
+
+            .blog-content :global(ul),
+            .blog-content :global(ol) {
+              color: #3D3D3D;
+              font-size: 1.125rem;
+              line-height: 1.75;
+              margin-bottom: 1.5rem;
+              padding-left: 1.5rem;
+            }
+
+            .blog-content :global(li) {
+              margin-bottom: 0.5rem;
+            }
+
+            .blog-content :global(a) {
+              color: #C4A25A;
+              text-decoration: none;
+            }
+
+            .blog-content :global(a:hover) {
+              text-decoration: underline;
+            }
+
+            .blog-content :global(strong) {
+              color: #1B365D;
+              font-weight: 600;
+            }
+
+            .blog-content :global(em) {
+              font-style: italic;
+            }
+          `}</style>
 
           {/* Signature */}
           <div className="mt-12 mb-12 flex justify-center">
