@@ -33,11 +33,11 @@ export async function GET(request: NextRequest) {
 
     console.log('Fetching blog posts from Supabase...');
 
-    // Fetch all blog posts where Spanish translation is missing
+    // Fetch all blog posts (using correct client_id UUID for danidiaz)
     const { data: posts, error: fetchError } = await supabase
       .from('blog_posts')
       .select('id, title, excerpt, content, title_es, excerpt_es, content_es, client_id')
-      .eq('client_id', 'danidiaz');
+      .eq('client_id', '3c125122-f3d9-4f75-91d9-69cf84d6d20e');
 
     if (fetchError) {
       console.error('Error fetching posts:', fetchError);
