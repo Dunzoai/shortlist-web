@@ -452,7 +452,7 @@ export default function Home() {
               <div className="relative inline-block">
                 {/* Decorative Animated Ellipse - Desktop Only */}
                 <motion.svg
-                  className="hidden md:block absolute -left-12 -top-4 pointer-events-none"
+                  className="hidden md:block absolute -left-20 -top-6 pointer-events-none"
                   width="480"
                   height="100"
                   viewBox="0 0 480 100"
