@@ -450,15 +450,20 @@ export default function Home() {
                     <p style={{ color: isDark ? '#1B365D' : '#3D3D3D' }} className="font-semibold">(843) 555-0123</p>
                   </div>
                 </div>
-                <a
-                  href="mailto:danidiazrealestate@gmail.com"
-                  className="inline-flex items-center gap-3 px-6 py-3 bg-[#1B365D] text-white hover:bg-[#C4A25A] transition-colors rounded"
-                >
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                  </svg>
-                  {t('Email Me', 'Envíame un Email')}
-                </a>
+                <div className="flex items-center gap-4">
+                  <a
+                    href="mailto:danidiazrealestate@gmail.com"
+                    className="w-12 h-12 bg-[#D6BFAE] rounded-full flex items-center justify-center hover:bg-[#C4A25A] transition-colors"
+                  >
+                    <svg className="w-5 h-5 text-[#1B365D]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                    </svg>
+                  </a>
+                  <div>
+                    <p className="text-sm text-[#3D3D3D]/60">{t('Email', 'Correo')}</p>
+                    <p style={{ color: isDark ? '#1B365D' : '#3D3D3D' }} className="font-semibold">danidiazrealestate@gmail.com</p>
+                  </div>
+                </div>
               </div>
             </motion.div>
 
@@ -549,12 +554,9 @@ export default function Home() {
         <div className="max-w-7xl mx-auto px-6">
           {/* Brand Section */}
           <div className="mb-12">
-            <h2 className="text-white text-5xl md:text-6xl font-bold tracking-tight mb-4" style={{ fontFamily: 'var(--font-playfair)' }}>
+            <h2 className="font-[family-name:var(--font-playfair)] text-white text-5xl md:text-6xl font-bold tracking-tight">
               DANI DÍAZ.
             </h2>
-            <p className="text-white text-xl md:text-2xl" style={{ fontFamily: 'var(--font-playfair)' }}>
-              {t('Daniela Ampudia Díaz', 'Daniela Ampudia Díaz')}
-            </p>
           </div>
 
           {/* Main Footer Content */}
