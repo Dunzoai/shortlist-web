@@ -93,7 +93,7 @@ export default function Home() {
 
   return (
     <main className="font-[family-name:var(--font-lora)]">
-      <Nav />
+      <Nav startTransparent={true} />
 
       {/* Hero Section */}
       <section className="relative min-h-screen flex items-center justify-center">
