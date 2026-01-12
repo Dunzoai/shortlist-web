@@ -136,7 +136,7 @@ export default function SellersPage() {
         .from('blog_posts')
         .select('id, title, slug, excerpt, featured_image, published_at, category, title_es, excerpt_es')
         .eq('category', 'sellers')
-        .eq('client_id', 'danidiaz')
+        .eq('client_id', '3c125122-f3d9-4f75-91d9-69cf84d6d20e')
         .order('published_at', { ascending: false });
 
       if (data && data.length > 0) {

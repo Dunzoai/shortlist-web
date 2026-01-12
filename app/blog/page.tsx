@@ -113,7 +113,7 @@ function BlogContent() {
       const { data, error } = await supabase
         .from('blog_posts')
         .select('id, title, title_es, slug, excerpt, excerpt_es, featured_image, published_at, category, tags')
-        .eq('client_id', 'danidiaz')
+        .eq('client_id', '3c125122-f3d9-4f75-91d9-69cf84d6d20e')
         .order('published_at', { ascending: false });
 
       if (data && data.length > 0) {

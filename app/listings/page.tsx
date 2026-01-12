@@ -148,7 +148,7 @@ export default function ListingsPage() {
       const { data, error } = await supabase
         .from('listings')
         .select('*')
-        .eq('client_id', 'danidiaz')
+        .eq('client_id', '3c125122-f3d9-4f75-91d9-69cf84d6d20e')
         .order('created_at', { ascending: false });
 
       if (data && data.length > 0) {

@@ -117,7 +117,7 @@ export default function BlogPostPage() {
         .from('blog_posts')
         .select('id, title, slug, content, excerpt, featured_image, published_at, category, tags, author, title_es, excerpt_es, content_es')
         .eq('slug', params.slug)
-        .eq('client_id', 'danidiaz')
+        .eq('client_id', '3c125122-f3d9-4f75-91d9-69cf84d6d20e')
         .single();
 
       if (data) {
@@ -126,7 +126,7 @@ export default function BlogPostPage() {
         const { data: relatedData } = await supabase
           .from('blog_posts')
           .select('id, title, slug, featured_image, category, title_es')
-          .eq('client_id', 'danidiaz')
+          .eq('client_id', '3c125122-f3d9-4f75-91d9-69cf84d6d20e')
           .eq('category', data.category)
           .neq('slug', params.slug)
           .limit(3);

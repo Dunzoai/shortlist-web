@@ -84,7 +84,7 @@ export default function ListingDetailPage() {
         .from('listings')
         .select('*')
         .eq('id', params.id)
-        .eq('client_id', 'danidiaz')
+        .eq('client_id', '3c125122-f3d9-4f75-91d9-69cf84d6d20e')
         .single();
 
       if (data) {
