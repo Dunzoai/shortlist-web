@@ -21,7 +21,7 @@ interface BlogPost {
   published_at: string;
   category: string;
   tags: string[];
-  author: string;
+  author?: string;
   title_es?: string;
   excerpt_es?: string;
   content_es?: string;
