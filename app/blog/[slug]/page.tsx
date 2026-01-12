@@ -121,6 +121,15 @@ export default function BlogPostPage() {
         .single();
 
       if (data) {
+        console.log('Post data from Supabase:', {
+          title: data.title,
+          title_es: data.title_es,
+          has_content_es: !!data.content_es,
+          content_preview: data.content?.substring(0, 150),
+          content_es_preview: data.content_es?.substring(0, 150),
+          content_has_html: data.content?.includes('<'),
+          content_es_has_html: data.content_es?.includes('<')
+        });
         setPost(data);
         // Fetch related posts
         const { data: relatedData } = await supabase
@@ -172,6 +181,15 @@ export default function BlogPostPage() {
       </main>
     );
   }
+
+  // Debug: Log language and content selection
+  console.log('Rendering with:', {
+    language,
+    hasPost: !!post,
+    hasTitleEs: !!post?.title_es,
+    hasContentEs: !!post?.content_es,
+    willShowSpanish: language === 'es' && !!post?.title_es
+  });
 
   return (
     <main className="font-[family-name:var(--font-lora)]">
