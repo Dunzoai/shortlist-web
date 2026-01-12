@@ -63,14 +63,14 @@ export async function GET(request: NextRequest) {
 }
 
 /**
- * Returns a list of posts that need translation or formatting
+ * Returns a list of posts that need translation (bidirectional)
  */
 async function getPostsNeedingTranslation() {
   console.log('Fetching posts that need translation...');
 
   const { data: posts, error: fetchError } = await supabase
     .from('blog_posts')
-    .select('id, title, slug, content, content_es, title_es, excerpt_es')
+    .select('id, title, slug, excerpt, content, title_es, excerpt_es, content_es')
     .eq('client_id', '3c125122-f3d9-4f75-91d9-69cf84d6d20e');
 
   if (fetchError) {
@@ -89,32 +89,39 @@ async function getPostsNeedingTranslation() {
     });
   }
 
-  // Filter posts that need translation or formatting
+  // Filter posts that need translation (either direction)
   const needsWork = posts.filter(post => {
-    const needsTranslation = post.content && (!post.title_es || !post.excerpt_es || !post.content_es);
-    const needsFormatting = post.content && !(post.content.includes('<h2>') && post.content.includes('<p>'));
-    return needsTranslation || needsFormatting;
+    const hasEnglish = post.title && post.excerpt && post.content;
+    const hasSpanish = post.title_es && post.excerpt_es && post.content_es;
+    // Need translation if one language exists but the other doesn't
+    return (hasEnglish && !hasSpanish) || (hasSpanish && !hasEnglish);
   });
 
-  console.log(`Found ${posts.length} total posts, ${needsWork.length} need work`);
+  console.log(`Found ${posts.length} total posts, ${needsWork.length} need translation`);
 
   return NextResponse.json({
-    message: `Found ${needsWork.length} posts needing translation/formatting`,
+    message: `Found ${needsWork.length} posts needing translation`,
     total: posts.length,
     needsWork: needsWork.length,
-    posts: needsWork.map(p => ({
-      id: p.id,
-      title: p.title,
-      slug: p.slug,
-      needsTranslation: !p.content_es,
-      needsFormatting: !(p.content?.includes('<h2>') && p.content?.includes('<p>')),
-    })),
+    posts: needsWork.map(p => {
+      const hasEnglish = p.title && p.excerpt && p.content;
+      const hasSpanish = p.title_es && p.excerpt_es && p.content_es;
+      return {
+        id: p.id,
+        title: p.title || p.title_es,
+        slug: p.slug,
+        hasEnglish,
+        hasSpanish,
+        translationDirection: hasEnglish && !hasSpanish ? 'EN → ES' : hasSpanish && !hasEnglish ? 'ES → EN' : 'None',
+      };
+    }),
     instructions: 'To translate a specific post, call this endpoint with ?post_id=POST_ID',
   });
 }
 
 /**
- * Translates and formats a single blog post
+ * Translates a single blog post (bidirectional: EN ↔ ES)
+ * Only fills in empty fields, never overwrites existing content
  */
 async function translateSinglePost(postId: string) {
   console.log(`Translating post ${postId}...`);
@@ -146,62 +153,88 @@ async function translateSinglePost(postId: string) {
     let wasFormatted = false;
     let wasTranslated = false;
 
-    console.log(`  Current post Spanish fields - title_es:`, post.title_es || 'NULL');
-    console.log(`  Current post Spanish fields - excerpt_es:`, post.excerpt_es || 'NULL');
-    console.log(`  Current post Spanish fields - content_es:`, post.content_es ? `${post.content_es.length} chars` : 'NULL');
+    console.log(`  Current English fields - title:`, post.title || 'NULL');
+    console.log(`  Current English fields - excerpt:`, post.excerpt || 'NULL');
+    console.log(`  Current English fields - content:`, post.content ? `${post.content.length} chars` : 'NULL');
+    console.log(`  Current Spanish fields - title_es:`, post.title_es || 'NULL');
+    console.log(`  Current Spanish fields - excerpt_es:`, post.excerpt_es || 'NULL');
+    console.log(`  Current Spanish fields - content_es:`, post.content_es ? `${post.content_es.length} chars` : 'NULL');
 
-    // Use existing English content for translation (DO NOT modify English fields)
-    const contentToTranslate = post.content;
-
-    // Translate to Spanish if missing
+    // Determine what's missing
+    const hasEnglish = post.title && post.excerpt && post.content;
+    const hasSpanish = post.title_es && post.excerpt_es && post.content_es;
+    const needsEnglishTranslation = !post.title || !post.excerpt || !post.content;
     const needsSpanishTranslation = !post.title_es || !post.excerpt_es || !post.content_es;
-    console.log(`  Needs Spanish translation: ${needsSpanishTranslation}`);
-    console.log(`  - Missing title_es: ${!post.title_es}`);
-    console.log(`  - Missing excerpt_es: ${!post.excerpt_es}`);
-    console.log(`  - Missing content_es: ${!post.content_es}`);
 
-    if (post.content && needsSpanishTranslation) {
-      console.log(`  Post ${postId} needs Spanish translation`);
-      const sourceLanguage = await detectLanguage(contentToTranslate);
-      console.log(`  Detected language: ${sourceLanguage}`);
+    console.log(`  Translation status:`);
+    console.log(`    - Has complete English: ${hasEnglish}`);
+    console.log(`    - Has complete Spanish: ${hasSpanish}`);
+    console.log(`    - Needs English translation: ${needsEnglishTranslation}`);
+    console.log(`    - Needs Spanish translation: ${needsSpanishTranslation}`);
 
-      if (sourceLanguage === 'en') {
-        console.log(`  Translating post ${postId} to Spanish...`);
-        const translated = await translateBlogPost(
-          {
-            title: post.title,
-            excerpt: post.excerpt,
-            content: contentToTranslate,
-          },
-          'en'
-        );
+    // Case 1: Both languages complete - skip
+    if (hasEnglish && hasSpanish) {
+      console.log(`  ✓ Post has both English and Spanish - skipping translation`);
+    }
+    // Case 2: English exists, Spanish missing - translate EN → ES
+    else if (hasEnglish && needsSpanishTranslation) {
+      console.log(`  📝 English exists, Spanish missing - translating EN → ES`);
+      const translated = await translateBlogPost(
+        {
+          title: post.title,
+          excerpt: post.excerpt,
+          content: post.content,
+        },
+        'en'
+      );
 
-        console.log(`  Translation received from API`);
-        console.log(`  - Translated title: ${translated.title.substring(0, 50)}...`);
-        console.log(`  - Translated excerpt length: ${translated.excerpt.length}`);
-        console.log(`  - Translated content length: ${translated.content.length}`);
-
-        // ALWAYS set Spanish fields if missing (force update)
-        if (!post.title_es) {
-          updatedData.title_es = translated.title;
-          console.log(`  ✓ Will update title_es`);
-        }
-        if (!post.excerpt_es) {
-          updatedData.excerpt_es = translated.excerpt;
-          console.log(`  ✓ Will update excerpt_es`);
-        }
-        if (!post.content_es) {
-          updatedData.content_es = translated.content;
-          console.log(`  ✓ Will update content_es`);
-        }
-
-        wasTranslated = true;
-        console.log(`  Translation data prepared for database update`);
-      } else {
-        console.log(`  Skipping translation - detected language is not English: ${sourceLanguage}`);
+      console.log(`  Translation EN → ES received from API`);
+      // Only fill EMPTY Spanish fields, never overwrite
+      if (!post.title_es) {
+        updatedData.title_es = translated.title;
+        console.log(`  ✓ Will update title_es`);
       }
-    } else {
-      console.log(`  Post ${postId} already has Spanish translation - skipping`);
+      if (!post.excerpt_es) {
+        updatedData.excerpt_es = translated.excerpt;
+        console.log(`  ✓ Will update excerpt_es`);
+      }
+      if (!post.content_es) {
+        updatedData.content_es = translated.content;
+        console.log(`  ✓ Will update content_es`);
+      }
+      wasTranslated = true;
+    }
+    // Case 3: Spanish exists, English missing - translate ES → EN
+    else if (hasSpanish && needsEnglishTranslation) {
+      console.log(`  📝 Spanish exists, English missing - translating ES → EN`);
+      const translated = await translateBlogPost(
+        {
+          title: post.title_es,
+          excerpt: post.excerpt_es,
+          content: post.content_es,
+        },
+        'es'
+      );
+
+      console.log(`  Translation ES → EN received from API`);
+      // Only fill EMPTY English fields, never overwrite
+      if (!post.title) {
+        updatedData.title = translated.title;
+        console.log(`  ✓ Will update title`);
+      }
+      if (!post.excerpt) {
+        updatedData.excerpt = translated.excerpt;
+        console.log(`  ✓ Will update excerpt`);
+      }
+      if (!post.content) {
+        updatedData.content = translated.content;
+        console.log(`  ✓ Will update content`);
+      }
+      wasTranslated = true;
+    }
+    // Case 4: Neither language complete - can't translate
+    else {
+      console.log(`  ⚠️  Neither language has complete content - cannot translate`);
     }
 
     // Update the post if needed
