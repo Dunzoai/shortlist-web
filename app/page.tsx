@@ -448,9 +448,36 @@ export default function Home() {
             viewport={{ once: true }}
             variants={staggerContainer}
           >
-            <motion.div variants={fadeInUp}>
+            <motion.div variants={fadeInUp} className="relative">
+              {/* Decorative Animated Circle - Desktop Only */}
+              <motion.svg
+                className="hidden md:block absolute -left-32 -top-8 pointer-events-none"
+                width="350"
+                height="350"
+                viewBox="0 0 350 350"
+                initial={{ opacity: 0 }}
+                whileInView={{ opacity: 0.3 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.8, ease: "easeOut" }}
+                style={{ zIndex: 0 }}
+              >
+                <motion.circle
+                  cx="175"
+                  cy="175"
+                  r="170"
+                  fill="none"
+                  stroke="#C4A25A"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  initial={{ pathLength: 0 }}
+                  whileInView={{ pathLength: 1 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 1.5, ease: "easeOut", delay: 0.3 }}
+                />
+              </motion.svg>
+
               <h2
-                className="font-[family-name:var(--font-playfair)] text-4xl md:text-5xl mb-6 transition-colors duration-500"
+                className="font-[family-name:var(--font-playfair)] text-4xl md:text-5xl mb-6 transition-colors duration-500 relative z-10"
                 style={{ color: isDark ? '#1B365D' : '#3D3D3D' }}
               >
                 {t("Let's Connect", 'Conectemos')}
