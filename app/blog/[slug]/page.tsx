@@ -5,7 +5,9 @@ import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
+import { ArrowLeft } from 'lucide-react';
 import Nav from '@/components/Nav';
+import Footer from '@/components/Footer';
 import { useLanguage } from '@/components/LanguageContext';
 import { supabase } from '@/lib/supabase';
 
@@ -154,56 +156,55 @@ export default function BlogPostPage() {
       <Nav />
 
       {/* Hero Section */}
-      <section className="relative pt-24 pb-0">
-        <div className="relative h-[50vh] min-h-[400px]">
-          {/* TODO: Replace with actual blog image */}
-          <Image
-            src={post.featured_image || 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=1200&q=80'}
-            alt={post.title}
-            fill
-            className="object-cover"
-            priority
-          />
-          <div className="absolute inset-0 bg-[#1B365D]/60" />
-          <div className="absolute inset-0 flex items-center justify-center">
-            <div className="max-w-4xl mx-auto px-6 text-center">
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8 }}
-              >
-                <div className={`inline-block px-4 py-1 text-sm text-white mb-6 ${
-                  post.category === 'buyers' ? 'bg-[#C4A25A]' :
-                  post.category === 'sellers' ? 'bg-[#1B365D] border border-white' :
-                  'bg-[#3D3D3D]'
-                }`}>
-                  {post.category === 'buyers' ? t('Buyers', 'Compradores') :
-                   post.category === 'sellers' ? t('Sellers', 'Vendedores') :
-                   t('General', 'General')}
-                </div>
-                <h1 className="font-[family-name:var(--font-playfair)] text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6">
-                  {post.title}
-                </h1>
-                <div className="flex items-center justify-center gap-4 text-white/80">
-                  <span>{post.author || 'Dani Díaz'}</span>
-                  <span>•</span>
-                  <span>
-                    {new Date(post.published_at).toLocaleDateString(language === 'en' ? 'en-US' : 'es-ES', {
-                      year: 'numeric',
-                      month: 'long',
-                      day: 'numeric'
-                    })}
-                  </span>
-                </div>
-              </motion.div>
+      <section className="relative pt-32 pb-16 bg-[#1B365D]">
+        <div className="max-w-4xl mx-auto px-6">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+          >
+            <div className="mb-6">
+              <span className={`inline-block px-4 py-1.5 text-sm text-white ${
+                post.category === 'buyers' ? 'bg-[#C4A25A]' :
+                post.category === 'sellers' ? 'bg-white/20 border border-white/30' :
+                'bg-white/20'
+              }`}>
+                {post.category === 'buyers' ? t('Buyers', 'Compradores') :
+                 post.category === 'sellers' ? t('Sellers', 'Vendedores') :
+                 t('General', 'General')}
+              </span>
             </div>
-          </div>
+            <h1 className="font-[family-name:var(--font-playfair)] text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6 leading-tight">
+              {post.title}
+            </h1>
+            <div className="flex items-center gap-4 text-white/70 text-lg">
+              <span>{post.author || 'Dani Díaz'}</span>
+              <span>•</span>
+              <span>
+                {new Date(post.published_at).toLocaleDateString(language === 'en' ? 'en-US' : 'es-ES', {
+                  year: 'numeric',
+                  month: 'long',
+                  day: 'numeric'
+                })}
+              </span>
+            </div>
+          </motion.div>
         </div>
       </section>
 
       {/* Article Content */}
       <section className="py-16 bg-white">
         <div className="max-w-3xl mx-auto px-6">
+          {/* Back to Blog Link */}
+          <Link
+            href="/blog"
+            className="inline-flex items-center gap-2 text-[#C4A25A] hover:text-[#1B365D] transition-colors mb-12"
+          >
+            <ArrowLeft size={20} />
+            <span>{t('Back to Blog', 'Volver al Blog')}</span>
+          </Link>
+
+          {/* Content */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -211,22 +212,25 @@ export default function BlogPostPage() {
             className="prose prose-lg max-w-none
               prose-headings:font-[family-name:var(--font-playfair)]
               prose-headings:text-[#1B365D]
-              prose-h2:text-3xl prose-h2:mt-12 prose-h2:mb-6
-              prose-p:text-[#3D3D3D] prose-p:leading-relaxed
+              prose-h2:text-2xl prose-h2:font-semibold prose-h2:mt-12 prose-h2:mb-6
+              prose-h3:text-xl prose-h3:font-semibold prose-h3:mt-8 prose-h3:mb-4
+              prose-p:text-[#3D3D3D] prose-p:text-lg prose-p:leading-relaxed prose-p:mb-6
               prose-a:text-[#C4A25A] prose-a:no-underline hover:prose-a:underline
-              prose-strong:text-[#1B365D]
-              prose-ul:text-[#3D3D3D] prose-ol:text-[#3D3D3D]"
+              prose-strong:text-[#1B365D] prose-strong:font-semibold
+              prose-ul:text-[#3D3D3D] prose-ul:space-y-2
+              prose-ol:text-[#3D3D3D] prose-ol:space-y-2
+              prose-li:text-lg prose-li:leading-relaxed"
             dangerouslySetInnerHTML={{ __html: post.content }}
           />
 
           {/* Tags */}
           {post.tags && post.tags.length > 0 && (
-            <div className="mt-12 pt-8 border-t border-[#D6BFAE]/30">
-              <div className="flex flex-wrap gap-2">
+            <div className="mt-16 pt-8 border-t border-[#D6BFAE]/30">
+              <div className="flex flex-wrap gap-3">
                 {post.tags.map((tag, index) => (
                   <span
                     key={index}
-                    className="bg-[#F7F7F7] text-[#3D3D3D] px-4 py-2 text-sm"
+                    className="border border-[#C4A25A] text-[#C4A25A] px-4 py-2 text-sm rounded-full hover:bg-[#C4A25A] hover:text-white transition-colors"
                   >
                     #{tag}
                   </span>
@@ -236,28 +240,38 @@ export default function BlogPostPage() {
           )}
 
           {/* Author Box */}
-          <div className="mt-12 p-8 bg-[#F7F7F7]">
+          <div className="mt-16 p-8 bg-[#F7F7F7] rounded-lg">
             <div className="flex items-center gap-6">
-              {/* TODO: Replace with actual author photo */}
               <Image
-                src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=200&q=80"
+                src="/dani-diaz-home-about.JPG"
                 alt="Dani Díaz"
                 width={80}
                 height={80}
-                className="rounded-full object-cover"
+                className="rounded-full object-cover w-20 h-20"
               />
-              <div>
-                <h3 className="font-[family-name:var(--font-playfair)] text-xl text-[#1B365D] mb-1">
+              <div className="flex-1">
+                <h3 className="font-[family-name:var(--font-playfair)] text-2xl text-[#1B365D] mb-2">
                   Dani Díaz
                 </h3>
-                <p className="text-[#3D3D3D] text-sm mb-2">
+                <p className="text-[#3D3D3D] mb-3">
                   {t('Bilingual Realtor® at Faircloth Real Estate Group', 'Agente Inmobiliaria Bilingüe en Faircloth Real Estate Group')}
                 </p>
-                <Link href="/about" className="text-[#C4A25A] text-sm hover:underline">
-                  {t('Read full bio', 'Leer biografía completa')}
+                <Link href="/about" className="text-[#C4A25A] hover:text-[#1B365D] transition-colors font-medium">
+                  {t('Read full bio →', 'Leer biografía completa →')}
                 </Link>
               </div>
             </div>
+          </div>
+
+          {/* Signature */}
+          <div className="mt-12 flex justify-center">
+            <Image
+              src="/dani-signature.png"
+              alt="Dani Díaz Signature"
+              width={180}
+              height={60}
+              className="opacity-60"
+            />
           </div>
         </div>
       </section>
@@ -265,7 +279,7 @@ export default function BlogPostPage() {
       {/* Related Posts */}
       <section className="py-24 bg-[#F7F7F7]">
         <div className="max-w-7xl mx-auto px-6">
-          <h2 className="font-[family-name:var(--font-playfair)] text-3xl text-[#1B365D] mb-12 text-center">
+          <h2 className="font-[family-name:var(--font-playfair)] text-4xl text-[#1B365D] mb-12 text-center">
             {t('Related Articles', 'Artículos Relacionados')}
           </h2>
           <div className="grid md:grid-cols-3 gap-8">
@@ -280,6 +294,7 @@ export default function BlogPostPage() {
                 <Link href={`/blog/${relatedPost.slug}`} className="group block">
                   <div className="bg-white shadow-lg hover:shadow-xl transition-shadow overflow-hidden">
                     <div className="relative h-48 overflow-hidden">
+                      {/* TODO: Replace with actual blog images */}
                       <Image
                         src={relatedPost.featured_image || 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=800&q=80'}
                         alt={relatedPost.title}
@@ -300,26 +315,7 @@ export default function BlogPostPage() {
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="bg-[#1B365D] py-12">
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="flex flex-col md:flex-row justify-between items-center gap-6">
-            <div className="text-center md:text-left">
-              <p className="font-[family-name:var(--font-playfair)] text-white text-xl mb-2">
-                Dani Díaz
-              </p>
-              <p className="text-white/60 text-sm">
-                {t('Bilingual Realtor® at Faircloth Real Estate Group', 'Agente Inmobiliaria Bilingüe en Faircloth Real Estate Group')}
-              </p>
-            </div>
-            <div className="text-center md:text-right">
-              <p className="text-white/60 text-sm">
-                © {new Date().getFullYear()} Dani Díaz. {t('All rights reserved.', 'Todos los derechos reservados.')}
-              </p>
-            </div>
-          </div>
-        </div>
-      </footer>
+      <Footer />
     </main>
   );
 }

@@ -17,6 +17,8 @@ interface BlogPost {
   featured_image: string;
   published_at: string;
   category: string;
+  title_es?: string;
+  excerpt_es?: string;
 }
 
 const fadeInUp = {
@@ -132,7 +134,7 @@ export default function SellersPage() {
     async function fetchPosts() {
       const { data, error } = await supabase
         .from('blog_posts')
-        .select('*')
+        .select('id, title, slug, excerpt, featured_image, published_at, category, title_es, excerpt_es')
         .eq('category', 'sellers')
         .eq('client_id', 'danidiaz')
         .order('published_at', { ascending: false });
@@ -296,10 +298,10 @@ export default function SellersPage() {
                         })}
                       </p>
                       <h3 className="font-[family-name:var(--font-playfair)] text-xl text-[#1B365D] mb-3 group-hover:text-[#C4A25A] transition-colors">
-                        {post.title}
+                        {language === 'es' && post.title_es ? post.title_es : post.title}
                       </h3>
                       <p className="text-[#3D3D3D] line-clamp-2">
-                        {post.excerpt}
+                        {language === 'es' && post.excerpt_es ? post.excerpt_es : post.excerpt}
                       </p>
                     </div>
                   </div>
