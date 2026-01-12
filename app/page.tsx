@@ -450,22 +450,23 @@ export default function Home() {
           >
             <motion.div variants={fadeInUp}>
               <div className="relative inline-block">
-                {/* Decorative Animated Circle - Desktop Only */}
+                {/* Decorative Animated Ellipse - Desktop Only */}
                 <motion.svg
-                  className="hidden md:block absolute -left-20 -top-6 pointer-events-none"
-                  width="280"
-                  height="120"
-                  viewBox="0 0 280 120"
+                  className="hidden md:block absolute -left-12 -top-4 pointer-events-none"
+                  width="480"
+                  height="100"
+                  viewBox="0 0 480 100"
                   initial={{ opacity: 0 }}
                   whileInView={{ opacity: 0.3 }}
                   viewport={{ once: true }}
                   transition={{ duration: 0.8, ease: "easeOut" }}
                   style={{ zIndex: 0 }}
                 >
-                  <motion.circle
-                    cx="140"
-                    cy="60"
-                    r="110"
+                  <motion.ellipse
+                    cx="240"
+                    cy="50"
+                    rx="220"
+                    ry="40"
                     fill="none"
                     stroke="#C4A25A"
                     strokeWidth="2"
