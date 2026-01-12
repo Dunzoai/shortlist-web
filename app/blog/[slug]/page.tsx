@@ -104,6 +104,67 @@ function decodeHtmlEntities(html: string): string {
     .replace(/&nbsp;/g, ' ');
 }
 
+// Wrap paragraphs in <p> tags if they're missing
+function ensureParagraphTags(html: string): string {
+  if (!html) return html;
+
+  // Check if content already has <p> tags
+  if (html.includes('<p>') || html.includes('<p ')) {
+    console.log('✓ Content has <p> tags');
+    return html;
+  }
+
+  console.log('⚠️  Content missing <p> tags, wrapping paragraphs...');
+
+  // Split by double newlines or by heading tags to identify paragraphs
+  let processed = html;
+
+  // First, protect heading tags and other block elements
+  const blockElements = ['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'ul', 'ol', 'li', 'blockquote', 'pre', 'div'];
+  const protectedRanges: Array<{start: number, end: number}> = [];
+
+  blockElements.forEach(tag => {
+    const regex = new RegExp(`<${tag}[^>]*>.*?</${tag}>`, 'gis');
+    let match;
+    while ((match = regex.exec(html)) !== null) {
+      protectedRanges.push({start: match.index, end: match.index + match[0].length});
+    }
+  });
+
+  // Split content into lines
+  const lines = processed.split('\n');
+  const wrappedLines: string[] = [];
+  let inProtectedBlock = false;
+
+  lines.forEach((line) => {
+    const trimmed = line.trim();
+
+    // Skip empty lines
+    if (!trimmed) {
+      wrappedLines.push('');
+      return;
+    }
+
+    // Check if line is a heading or other block element
+    const isBlockElement = blockElements.some(tag =>
+      trimmed.startsWith(`<${tag}>`) || trimmed.startsWith(`<${tag} `)
+    );
+
+    if (isBlockElement) {
+      wrappedLines.push(trimmed);
+    } else {
+      // Wrap in <p> tags if not already wrapped
+      if (!trimmed.startsWith('<p>') && !trimmed.startsWith('<p ')) {
+        wrappedLines.push(`<p>${trimmed}</p>`);
+      } else {
+        wrappedLines.push(trimmed);
+      }
+    }
+  });
+
+  return wrappedLines.join('\n');
+}
+
 export default function BlogPostPage() {
   const { language, t } = useLanguage();
   const params = useParams();
@@ -254,9 +315,15 @@ export default function BlogPostPage() {
               __html: (() => {
                 const content = language === 'es' && post.content_es ? post.content_es : post.content;
                 const decoded = decodeHtmlEntities(content);
-                console.log('Content to render (first 200 chars):', decoded.substring(0, 200));
-                console.log('Has HTML tags:', decoded.includes('<'));
-                return decoded;
+                const withParagraphs = ensureParagraphTags(decoded);
+                console.log('=== BLOG CONTENT DEBUG ===');
+                console.log('Content length:', withParagraphs.length);
+                console.log('First 300 chars:', withParagraphs.substring(0, 300));
+                console.log('Has <p> tags:', withParagraphs.includes('<p>'));
+                console.log('Has <h2> tags:', withParagraphs.includes('<h2>'));
+                console.log('Number of <p> tags:', (withParagraphs.match(/<p>/g) || []).length);
+                console.log('==========================');
+                return withParagraphs;
               })()
             }}
           />
