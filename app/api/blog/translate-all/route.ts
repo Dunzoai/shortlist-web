@@ -150,24 +150,8 @@ async function translateSinglePost(postId: string) {
     console.log(`  Current post Spanish fields - excerpt_es:`, post.excerpt_es || 'NULL');
     console.log(`  Current post Spanish fields - content_es:`, post.content_es ? `${post.content_es.length} chars` : 'NULL');
 
-    // Format English content if needed
-    let contentToTranslate = post.content;
-    if (post.content) {
-      console.log(`  Checking if formatting needed for post ${postId}...`);
-      const needsFormatting = !(post.content.includes('<h2>') && post.content.includes('<p>'));
-
-      if (needsFormatting) {
-        console.log(`  Formatting content for post ${postId}...`);
-        const formattedContent = await formatBlogContent(post.content);
-        updatedData.content = formattedContent;
-        contentToTranslate = formattedContent;
-        wasFormatted = true;
-        console.log(`  Content formatted for post ${postId}`);
-      } else {
-        console.log(`  Content already formatted for post ${postId}`);
-        // Don't update content field if no changes needed
-      }
-    }
+    // Use existing English content for translation (DO NOT modify English fields)
+    const contentToTranslate = post.content;
 
     // Translate to Spanish if missing
     const needsSpanishTranslation = !post.title_es || !post.excerpt_es || !post.content_es;
