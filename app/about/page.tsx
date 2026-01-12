@@ -4,6 +4,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import Nav from '@/components/Nav';
+import Footer from '@/components/Footer';
 import { useLanguage } from '@/components/LanguageContext';
 import { useStyle } from '@/components/StyleContext';
 import LanguageToggle from '@/components/LanguageToggle';
@@ -286,29 +287,7 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* Footer */}
-      <footer
-        className="py-12 transition-colors duration-500"
-        style={{ backgroundColor: isDark ? '#1B365D' : '#3D3D3D' }}
-      >
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="flex flex-col md:flex-row justify-between items-center gap-6">
-            <div className="text-center md:text-left">
-              <p className="font-[family-name:var(--font-playfair)] text-white text-xl mb-2">
-                Dani Díaz
-              </p>
-              <p className="text-white/60 text-sm">
-                {t('Bilingual Realtor® at Faircloth Real Estate Group', 'Agente Inmobiliaria Bilingüe en Faircloth Real Estate Group')}
-              </p>
-            </div>
-            <div className="text-center md:text-right">
-              <p className="text-white/60 text-sm">
-                © {new Date().getFullYear()} Dani Díaz. {t('All rights reserved.', 'Todos los derechos reservados.')}
-              </p>
-            </div>
-          </div>
-        </div>
-      </footer>
+      <Footer />
     </main>
   );
 }

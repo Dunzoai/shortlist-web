@@ -8,9 +8,9 @@ import { Instagram, Facebook, Linkedin } from 'lucide-react';
 import Nav from '@/components/Nav';
 import { useLanguage } from '@/components/LanguageContext';
 import { useStyle } from '@/components/StyleContext';
-import LanguageToggle from '@/components/LanguageToggle';
 import InstagramFeed from '@/components/InstagramFeed';
 import NeighborhoodGuides from '@/components/NeighborhoodGuides';
+import Footer from '@/components/Footer';
 
 const fadeInUp = {
   initial: { opacity: 0, y: 30 },
@@ -94,7 +94,6 @@ export default function Home() {
   return (
     <main className="font-[family-name:var(--font-lora)]">
       <Nav />
-      <LanguageToggle />
 
       {/* Hero Section */}
       <section className="relative min-h-screen flex items-center justify-center">
@@ -600,138 +599,7 @@ export default function Home() {
       {/* <InstagramFeed clientId="danidiaz" /> */}
 
       {/* Footer */}
-      <footer
-        className="py-16 transition-colors duration-500"
-        style={{ backgroundColor: isDark ? '#1B365D' : '#1B365D' }}
-      >
-        <div className="max-w-7xl mx-auto px-6">
-          {/* Brand Section */}
-          <div className="mb-12">
-            <h2 className="font-[family-name:var(--font-playfair)] text-white text-5xl md:text-6xl font-bold">
-              Dani Díaz
-            </h2>
-          </div>
-
-          {/* Main Footer Content */}
-          <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-12 mb-12">
-            {/* Contact Section */}
-            <div className="md:col-span-3">
-              <h3 className="text-white text-sm font-semibold tracking-wider mb-4">
-                {t('CONTACT', 'CONTACTO')}
-              </h3>
-              <div className="space-y-3">
-                <a
-                  href="tel:+18437994566"
-                  className="block text-white hover:text-[#C4A25A] transition-colors"
-                >
-                  (843) 799-4566
-                </a>
-                <a
-                  href="mailto:danidiazrealestate@gmail.com"
-                  className="block text-white hover:text-[#C4A25A] transition-colors uppercase text-sm"
-                >
-                  DANIDIAZREALESTATE@GMAIL.COM
-                </a>
-              </div>
-            </div>
-
-            {/* Address Section */}
-            <div className="md:col-span-3">
-              <h3 className="text-white text-sm font-semibold tracking-wider mb-4">
-                {t('ADDRESS', 'DIRECCIÓN')}
-              </h3>
-              <div className="text-white">
-                <p>1274 Professional Dr</p>
-                <p>Myrtle Beach SC 29577</p>
-              </div>
-            </div>
-
-            {/* Vertical Divider */}
-            <div className="hidden md:block md:col-span-1">
-              <div className="h-full w-px bg-white/20 mx-auto"></div>
-            </div>
-
-            {/* Social Icons Section */}
-            <div className="md:col-span-5 flex items-start justify-start md:justify-end">
-              <div className="flex gap-3">
-                <a
-                  href="https://www.facebook.com/daniampudiazv/"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="w-12 h-12 rounded-full bg-white flex items-center justify-center text-[#1B365D] hover:bg-[#C4A25A] hover:text-white transition-colors"
-                  aria-label="Facebook"
-                >
-                  <Facebook size={20} />
-                </a>
-                <a
-                  href="https://www.instagram.com/dani.globalhomes/"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="w-12 h-12 rounded-full bg-white flex items-center justify-center text-[#1B365D] hover:bg-[#C4A25A] hover:text-white transition-colors"
-                  aria-label="Instagram"
-                >
-                  <Instagram size={20} />
-                </a>
-                <a
-                  href="https://www.linkedin.com/in/danidiazrealtor"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="w-12 h-12 rounded-full bg-white flex items-center justify-center text-[#1B365D] hover:bg-[#C4A25A] hover:text-white transition-colors"
-                  aria-label="LinkedIn"
-                >
-                  <Linkedin size={20} />
-                </a>
-                <a
-                  href="https://www.realtor.com/realestateagents/66abbb21e7320c7ad682b6a8"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="w-12 h-12 rounded-full bg-white flex items-center justify-center text-[#1B365D] hover:bg-[#C4A25A] hover:text-white transition-colors font-bold text-xl"
-                  aria-label="Realtor.com"
-                  style={{ fontFamily: 'var(--font-playfair)' }}
-                >
-                  R
-                </a>
-              </div>
-            </div>
-          </div>
-
-          {/* Horizontal Divider */}
-          <div className="border-t border-white/20 pt-8">
-            {/* Navigation Links */}
-            <div className="flex flex-wrap gap-6 md:gap-8 justify-center md:justify-start mb-6">
-              <a
-                href="/about"
-                className="text-white hover:text-[#C4A25A] transition-colors text-sm font-semibold tracking-wider"
-              >
-                {t('ABOUT', 'ACERCA DE')}
-              </a>
-              <a
-                href="/buyers"
-                className="text-white hover:text-[#C4A25A] transition-colors text-sm font-semibold tracking-wider"
-              >
-                {t('BUYERS', 'COMPRADORES')}
-              </a>
-              <a
-                href="/sellers"
-                className="text-white hover:text-[#C4A25A] transition-colors text-sm font-semibold tracking-wider"
-              >
-                {t('SELLERS', 'VENDEDORES')}
-              </a>
-              <a
-                href="#contact"
-                className="text-white hover:text-[#C4A25A] transition-colors text-sm font-semibold tracking-wider"
-              >
-                {t("LET'S CONNECT", 'CONECTEMOS')}
-              </a>
-            </div>
-
-            {/* Copyright */}
-            <p className="text-white/60 text-xs text-center md:text-left">
-              © {new Date().getFullYear()} Dani Díaz. {t('All rights reserved.', 'Todos los derechos reservados.')}
-            </p>
-          </div>
-        </div>
-      </footer>
+      <Footer />
     </main>
   );
 }

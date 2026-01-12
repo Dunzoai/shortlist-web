@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import Link from 'next/link';
 import { KeyRound, UserCheck, ListChecks, Search, FileText, ClipboardCheck, Home } from 'lucide-react';
 import Nav from '@/components/Nav';
+import Footer from '@/components/Footer';
 import { useLanguage } from '@/components/LanguageContext';
 
 const checklistSteps = [
@@ -242,30 +243,7 @@ export default function BuyerChecklistPage() {
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="bg-[#1B365D] py-12 border-t border-white/10">
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="flex flex-col md:flex-row justify-between items-center gap-6">
-            <div className="text-center md:text-left">
-              <p className="font-[family-name:var(--font-playfair)] text-white text-xl mb-2">
-                Dani Díaz
-              </p>
-              <p className="text-white/60 text-sm">
-                {t(
-                  'Bilingual Realtor® at Faircloth Real Estate Group',
-                  'Agente Inmobiliaria Bilingüe en Faircloth Real Estate Group'
-                )}
-              </p>
-            </div>
-            <div className="text-center md:text-right">
-              <p className="text-white/60 text-sm">
-                © {new Date().getFullYear()} Dani Díaz.{' '}
-                {t('All rights reserved.', 'Todos los derechos reservados.')}
-              </p>
-            </div>
-          </div>
-        </div>
-      </footer>
+      <Footer />
     </main>
   );
 }
