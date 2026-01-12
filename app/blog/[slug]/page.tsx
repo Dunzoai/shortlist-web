@@ -120,6 +120,9 @@ export default function BlogPostPage() {
         .eq('client_id', '3c125122-f3d9-4f75-91d9-69cf84d6d20e')
         .single();
 
+      console.log('RAW SUPABASE DATA:', data);
+      console.log('SUPABASE ERROR:', error);
+
       if (data) {
         console.log('Post data from Supabase:', {
           title: data.title,
