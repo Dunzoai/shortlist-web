@@ -57,74 +57,76 @@ export default function NeighborhoodGuides() {
     return null;
   }
 
+  // Create an infinite loop by tripling the neighborhoods array
+  const infiniteNeighborhoods = [...neighborhoods, ...neighborhoods, ...neighborhoods];
+
   return (
     <>
       <section className="py-24 bg-[#F7F7F7]">
         <div className="max-w-7xl mx-auto px-6">
-          {/* Header */}
-          <div className="text-center mb-12">
-            <h2 className="font-[family-name:var(--font-playfair)] text-4xl md:text-5xl text-[#1B365D] mb-4">
-              {t('Explore the Grand Strand', 'Explora el Grand Strand')}
-            </h2>
-            <p className="text-[#3D3D3D] text-lg max-w-2xl mx-auto">
-              {t(
-                'Discover the unique neighborhoods that make our coast special',
-                'Descubre los vecindarios únicos que hacen especial nuestra costa'
-              )}
-            </p>
+          {/* Header with Navigation Arrows */}
+          <div className="flex justify-between items-start mb-12">
+            <div className="flex-1">
+              <h2 className="font-[family-name:var(--font-playfair)] text-4xl md:text-5xl text-[#1B365D] mb-4">
+                {t('Explore the Grand Strand', 'Explora el Grand Strand')}
+              </h2>
+              <p className="text-[#3D3D3D] text-lg max-w-2xl">
+                {t(
+                  'Discover the unique neighborhoods that make our coast special',
+                  'Descubre los vecindarios únicos que hacen especial nuestra costa'
+                )}
+              </p>
+            </div>
+
+            {/* Navigation Arrows - Together in top right */}
+            <div className="flex gap-3 ml-6">
+              <button
+                onClick={() => scroll('left')}
+                className="w-12 h-12 rounded-full bg-[#1B365D] text-white flex items-center justify-center hover:bg-[#C4A25A] transition-colors shadow-lg"
+                aria-label="Scroll left"
+              >
+                <ChevronLeft size={24} />
+              </button>
+              <button
+                onClick={() => scroll('right')}
+                className="w-12 h-12 rounded-full bg-[#C4A25A] text-white flex items-center justify-center hover:bg-[#1B365D] transition-colors shadow-lg"
+                aria-label="Scroll right"
+              >
+                <ChevronRight size={24} />
+              </button>
+            </div>
           </div>
 
-          {/* Carousel */}
-          <div className="relative">
-            {/* Left Arrow */}
-            <button
-              onClick={() => scroll('left')}
-              className="absolute left-0 top-1/2 -translate-y-1/2 z-10 w-12 h-12 rounded-full bg-[#1B365D] text-white flex items-center justify-center hover:bg-[#C4A25A] transition-colors shadow-lg"
-              aria-label="Scroll left"
-            >
-              <ChevronLeft size={24} />
-            </button>
-
-            {/* Right Arrow */}
-            <button
-              onClick={() => scroll('right')}
-              className="absolute right-0 top-1/2 -translate-y-1/2 z-10 w-12 h-12 rounded-full bg-[#1B365D] text-white flex items-center justify-center hover:bg-[#C4A25A] transition-colors shadow-lg"
-              aria-label="Scroll right"
-            >
-              <ChevronRight size={24} />
-            </button>
-
-            {/* Scrollable Container */}
-            <div
-              ref={scrollContainerRef}
-              className="flex gap-6 overflow-x-auto scrollbar-hide scroll-smooth pb-4"
-              style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
-            >
-              {neighborhoods.map((neighborhood) => (
-                <button
-                  key={neighborhood.id}
-                  onClick={() => setSelectedNeighborhood(neighborhood)}
-                  className="flex-shrink-0 w-80 group cursor-pointer"
-                >
-                  <div className="relative h-96 overflow-hidden rounded-lg shadow-lg">
-                    <Image
-                      src={neighborhood.image_url}
-                      alt={neighborhood.name}
-                      fill
-                      className="object-cover group-hover:scale-105 transition-transform duration-500"
-                    />
-                    {/* Overlay */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
-                    {/* Name */}
-                    <div className="absolute bottom-0 left-0 right-0 p-6">
-                      <h3 className="font-[family-name:var(--font-playfair)] text-2xl text-white font-bold">
-                        {neighborhood.name}
-                      </h3>
-                    </div>
+          {/* Scrollable Container */}
+          <div
+            ref={scrollContainerRef}
+            className="flex gap-6 overflow-x-auto scrollbar-hide scroll-smooth pb-4"
+            style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+          >
+            {infiniteNeighborhoods.map((neighborhood, index) => (
+              <button
+                key={`${neighborhood.id}-${index}`}
+                onClick={() => setSelectedNeighborhood(neighborhood)}
+                className="flex-shrink-0 w-80 group cursor-pointer"
+              >
+                <div className="relative h-96 overflow-hidden rounded-lg shadow-lg">
+                  <Image
+                    src={neighborhood.image_url}
+                    alt={neighborhood.name}
+                    fill
+                    className="object-cover group-hover:scale-105 transition-transform duration-500"
+                  />
+                  {/* Overlay */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
+                  {/* Name */}
+                  <div className="absolute bottom-0 left-0 right-0 p-6">
+                    <h3 className="font-[family-name:var(--font-playfair)] text-2xl text-white font-bold">
+                      {neighborhood.name}
+                    </h3>
                   </div>
-                </button>
-              ))}
-            </div>
+                </div>
+              </button>
+            ))}
           </div>
         </div>
       </section>
