@@ -13,6 +13,8 @@ export async function GET(request: NextRequest) {
     const searchParams = request.nextUrl.searchParams;
     const secret = searchParams.get('secret');
 
+    console.log('Translate-all endpoint called with secret:', secret ? 'provided' : 'missing');
+
     if (secret !== 'dani2026') {
       return NextResponse.json(
         { error: 'Unauthorized' },
@@ -20,19 +22,32 @@ export async function GET(request: NextRequest) {
       );
     }
 
+    // Check for API key
+    if (!process.env.ANTHROPIC_API_KEY) {
+      console.error('ANTHROPIC_API_KEY is not set');
+      return NextResponse.json(
+        { error: 'Server configuration error: ANTHROPIC_API_KEY not set' },
+        { status: 500 }
+      );
+    }
+
+    console.log('Fetching blog posts from Supabase...');
+
     // Fetch all blog posts where Spanish translation is missing
     const { data: posts, error: fetchError } = await supabase
       .from('blog_posts')
-      .select('id, title, excerpt, content, title_es, excerpt_es, content_es')
+      .select('id, title, excerpt, content, title_es, excerpt_es, content_es, client_id')
       .eq('client_id', 'danidiaz');
 
     if (fetchError) {
       console.error('Error fetching posts:', fetchError);
       return NextResponse.json(
-        { error: 'Failed to fetch posts' },
+        { error: 'Failed to fetch posts', details: fetchError.message },
         { status: 500 }
       );
     }
+
+    console.log(`Found ${posts?.length || 0} posts`);
 
     if (!posts || posts.length === 0) {
       return NextResponse.json({
@@ -53,22 +68,28 @@ export async function GET(request: NextRequest) {
     // Process each post
     for (const post of posts) {
       try {
+        console.log(`Processing post ${post.id}: "${post.title}"`);
         let needsUpdate = false;
         let updatedData: any = {};
 
         // Format English content if it exists
         if (post.content) {
+          console.log(`  Formatting content for post ${post.id}...`);
           const formattedContent = await formatBlogContent(post.content);
           updatedData.content = formattedContent;
           needsUpdate = true;
           results.formatted++;
+          console.log(`  Content formatted for post ${post.id}`);
         }
 
         // Translate to Spanish if missing
         if (post.content && (!post.title_es || !post.excerpt_es || !post.content_es)) {
+          console.log(`  Post ${post.id} needs Spanish translation`);
           const sourceLanguage = await detectLanguage(updatedData.content || post.content);
+          console.log(`  Detected language: ${sourceLanguage}`);
 
           if (sourceLanguage === 'en') {
+            console.log(`  Translating post ${post.id} to Spanish...`);
             const translated = await translateBlogPost(
               {
                 title: post.title,
@@ -84,7 +105,10 @@ export async function GET(request: NextRequest) {
 
             needsUpdate = true;
             results.translated++;
+            console.log(`  Translation complete for post ${post.id}`);
           }
+        } else {
+          console.log(`  Post ${post.id} already has Spanish translation`);
         }
 
         // Update the post if needed

@@ -22,6 +22,9 @@ interface BlogPost {
   category: string;
   tags: string[];
   author: string;
+  title_es?: string;
+  excerpt_es?: string;
+  content_es?: string;
 }
 
 // Placeholder post for when Supabase data is not available
@@ -93,7 +96,7 @@ export default function BlogPostPage() {
     async function fetchPost() {
       const { data, error } = await supabase
         .from('blog_posts')
-        .select('*')
+        .select('id, title, slug, content, excerpt, featured_image, published_at, category, tags, author, title_es, excerpt_es, content_es')
         .eq('slug', params.slug)
         .eq('client_id', 'danidiaz')
         .single();
@@ -103,7 +106,7 @@ export default function BlogPostPage() {
         // Fetch related posts
         const { data: relatedData } = await supabase
           .from('blog_posts')
-          .select('id, title, slug, featured_image, category')
+          .select('id, title, slug, featured_image, category, title_es')
           .eq('client_id', 'danidiaz')
           .eq('category', data.category)
           .neq('slug', params.slug)
@@ -175,7 +178,7 @@ export default function BlogPostPage() {
               </span>
             </div>
             <h1 className="font-[family-name:var(--font-playfair)] text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6 leading-tight">
-              {post.title}
+              {language === 'es' && post.title_es ? post.title_es : post.title}
             </h1>
             <div className="flex items-center gap-4 text-white/70 text-lg">
               <span>{post.author || 'Dani Díaz'}</span>
@@ -220,7 +223,9 @@ export default function BlogPostPage() {
               prose-ul:text-[#3D3D3D] prose-ul:space-y-2
               prose-ol:text-[#3D3D3D] prose-ol:space-y-2
               prose-li:text-lg prose-li:leading-relaxed"
-            dangerouslySetInnerHTML={{ __html: post.content }}
+            dangerouslySetInnerHTML={{
+              __html: language === 'es' && post.content_es ? post.content_es : post.content
+            }}
           />
 
           {/* Signature */}
@@ -306,7 +311,7 @@ export default function BlogPostPage() {
                     </div>
                     <div className="p-6">
                       <h3 className="font-[family-name:var(--font-playfair)] text-lg text-[#1B365D] group-hover:text-[#C4A25A] transition-colors">
-                        {relatedPost.title}
+                        {language === 'es' && (relatedPost as any).title_es ? (relatedPost as any).title_es : relatedPost.title}
                       </h3>
                     </div>
                   </div>
