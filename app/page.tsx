@@ -309,7 +309,7 @@ export default function Home() {
               {featuredListings.map((listing) => (
                 <div
                   key={listing.id}
-                  className="bg-white shadow-lg hover:shadow-xl transition-shadow group"
+                  className="bg-white shadow-lg md:hover:shadow-2xl md:hover:-translate-y-2 transition-all duration-300 group"
                 >
                   <div className="relative h-64 overflow-hidden">
                     {/* TODO: Replace with actual listing photos */}
@@ -317,7 +317,7 @@ export default function Home() {
                       src={listing.image}
                       alt={listing.address}
                       fill
-                      className="object-cover group-hover:scale-105 transition-transform duration-500"
+                      className="object-cover"
                     />
                     <div
                       className="absolute top-4 left-4 text-white px-4 py-2 font-semibold"
