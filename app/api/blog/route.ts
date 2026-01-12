@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabase';
 import { translateBlogPost, detectLanguage } from '@/lib/translate';
+import { formatBlogContent } from '@/lib/formatBlogContent';
 
 export async function POST(request: NextRequest) {
   try {
@@ -28,8 +29,11 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Format content to ensure proper HTML structure
+    const formattedContent = await formatBlogContent(content);
+
     // Detect source language
-    const sourceLanguage = await detectLanguage(content);
+    const sourceLanguage = await detectLanguage(formattedContent);
 
     // Auto-translate if one language is missing
     let finalTitleEs = title_es;
@@ -37,13 +41,13 @@ export async function POST(request: NextRequest) {
     let finalContentEs = content_es;
     let finalTitle = title;
     let finalExcerpt = excerpt;
-    let finalContent = content;
+    let finalContent = formattedContent;
 
     if (sourceLanguage === 'en') {
       // English content provided, translate to Spanish if not provided
       if (!title_es || !excerpt_es || !content_es) {
         const translated = await translateBlogPost(
-          { title, excerpt, content },
+          { title, excerpt, content: formattedContent },
           'en'
         );
         finalTitleEs = title_es || translated.title;
@@ -57,18 +61,18 @@ export async function POST(request: NextRequest) {
           {
             title: title_es || title,
             excerpt: excerpt_es || excerpt,
-            content: content_es || content,
+            content: content_es || formattedContent,
           },
           'es'
         );
         finalTitle = title || translated.title;
         finalExcerpt = excerpt || translated.excerpt;
-        finalContent = content || translated.content;
+        finalContent = translated.content;
 
         // If Spanish was the source, use that
         finalTitleEs = title_es || title;
         finalExcerptEs = excerpt_es || excerpt;
-        finalContentEs = content_es || content;
+        finalContentEs = content_es || formattedContent;
       }
     }
 
@@ -136,8 +140,11 @@ export async function PUT(request: NextRequest) {
       );
     }
 
+    // Format content to ensure proper HTML structure
+    const formattedContent = await formatBlogContent(content);
+
     // Detect source language
-    const sourceLanguage = await detectLanguage(content);
+    const sourceLanguage = await detectLanguage(formattedContent);
 
     // Auto-translate if one language is missing
     let finalTitleEs = title_es;
@@ -145,13 +152,13 @@ export async function PUT(request: NextRequest) {
     let finalContentEs = content_es;
     let finalTitle = title;
     let finalExcerpt = excerpt;
-    let finalContent = content;
+    let finalContent = formattedContent;
 
     if (sourceLanguage === 'en') {
       // English content provided, translate to Spanish if not provided
       if (!title_es || !excerpt_es || !content_es) {
         const translated = await translateBlogPost(
-          { title, excerpt, content },
+          { title, excerpt, content: formattedContent },
           'en'
         );
         finalTitleEs = title_es || translated.title;
@@ -165,18 +172,18 @@ export async function PUT(request: NextRequest) {
           {
             title: title_es || title,
             excerpt: excerpt_es || excerpt,
-            content: content_es || content,
+            content: content_es || formattedContent,
           },
           'es'
         );
         finalTitle = title || translated.title;
         finalExcerpt = excerpt || translated.excerpt;
-        finalContent = content || translated.content;
+        finalContent = translated.content;
 
         // If Spanish was the source, use that
         finalTitleEs = title_es || title;
         finalExcerptEs = excerpt_es || excerpt;
-        finalContentEs = content_es || content;
+        finalContentEs = content_es || formattedContent;
       }
     }
 

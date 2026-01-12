@@ -223,6 +223,17 @@ export default function BlogPostPage() {
             dangerouslySetInnerHTML={{ __html: post.content }}
           />
 
+          {/* Signature */}
+          <div className="mt-12 mb-12 flex justify-center">
+            <Image
+              src="/dani-signature.png"
+              alt="Dani Díaz Signature"
+              width={150}
+              height={50}
+              className="opacity-60 max-w-[150px] w-auto h-auto"
+            />
+          </div>
+
           {/* Tags */}
           {post.tags && post.tags.length > 0 && (
             <div className="mt-16 pt-8 border-t border-[#D6BFAE]/30">
@@ -263,17 +274,6 @@ export default function BlogPostPage() {
                 </Link>
               </div>
             </div>
-          </div>
-
-          {/* Signature */}
-          <div className="mt-12 flex justify-center">
-            <Image
-              src="/dani-signature.png"
-              alt="Dani Díaz Signature"
-              width={150}
-              height={50}
-              className="opacity-60 max-w-[150px] w-auto h-auto"
-            />
           </div>
         </div>
       </section>
