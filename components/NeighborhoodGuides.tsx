@@ -12,13 +12,16 @@ interface Neighborhood {
   name: string;
   description: string;
   highlights: string[];
+  name_es?: string;
+  description_es?: string;
+  highlights_es?: string[];
   price_range: string;
   image_url: string;
   display_order: number;
 }
 
 export default function NeighborhoodGuides() {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const [neighborhoods, setNeighborhoods] = useState<Neighborhood[]>([]);
   const [selectedNeighborhood, setSelectedNeighborhood] = useState<Neighborhood | null>(null);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
@@ -133,80 +136,93 @@ export default function NeighborhoodGuides() {
 
       {/* Modal */}
       <AnimatePresence>
-        {selectedNeighborhood && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4"
-            onClick={() => setSelectedNeighborhood(null)}
-          >
+        {selectedNeighborhood && (() => {
+          // Get language-specific content
+          const displayName = language === 'es' && selectedNeighborhood.name_es
+            ? selectedNeighborhood.name_es
+            : selectedNeighborhood.name;
+          const displayDescription = language === 'es' && selectedNeighborhood.description_es
+            ? selectedNeighborhood.description_es
+            : selectedNeighborhood.description;
+          const displayHighlights = language === 'es' && selectedNeighborhood.highlights_es
+            ? selectedNeighborhood.highlights_es
+            : selectedNeighborhood.highlights;
+
+          return (
             <motion.div
-              initial={{ scale: 0.9, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.9, opacity: 0 }}
-              transition={{ type: 'spring', duration: 0.5 }}
-              className="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto"
-              onClick={(e) => e.stopPropagation()}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4"
+              onClick={() => setSelectedNeighborhood(null)}
             >
-              {/* Close Button */}
-              <button
-                onClick={() => setSelectedNeighborhood(null)}
-                className="absolute top-4 right-4 w-10 h-10 rounded-full bg-white text-[#1B365D] flex items-center justify-center hover:bg-[#C4A25A] hover:text-white transition-colors shadow-lg z-10"
-                aria-label="Close"
+              <motion.div
+                initial={{ scale: 0.9, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                exit={{ scale: 0.9, opacity: 0 }}
+                transition={{ type: 'spring', duration: 0.5 }}
+                className="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto"
+                onClick={(e) => e.stopPropagation()}
               >
-                <X size={24} />
-              </button>
+                {/* Close Button */}
+                <button
+                  onClick={() => setSelectedNeighborhood(null)}
+                  className="absolute top-4 right-4 w-10 h-10 rounded-full bg-white text-[#1B365D] flex items-center justify-center hover:bg-[#C4A25A] hover:text-white transition-colors shadow-lg z-10"
+                  aria-label="Close"
+                >
+                  <X size={24} />
+                </button>
 
-              {/* Hero Image */}
-              <div className="relative h-96 w-full">
-                <Image
-                  src={selectedNeighborhood.image_url}
-                  alt={selectedNeighborhood.name}
-                  fill
-                  className="object-cover"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-                <div className="absolute bottom-0 left-0 right-0 p-8">
-                  <h2 className="font-[family-name:var(--font-playfair)] text-4xl md:text-5xl text-white font-bold">
-                    {selectedNeighborhood.name}
-                  </h2>
-                </div>
-              </div>
-
-              {/* Content */}
-              <div className="p-8">
-                {/* Description */}
-                <div className="prose prose-lg max-w-none mb-8">
-                  {selectedNeighborhood.description.split('\n\n').map((paragraph, index) => (
-                    <p key={index} className="text-[#3D3D3D] leading-relaxed mb-4">
-                      {paragraph}
-                    </p>
-                  ))}
-                </div>
-
-                {/* Highlights */}
-                {selectedNeighborhood.highlights && selectedNeighborhood.highlights.length > 0 && (
-                  <div>
-                    <h3 className="font-[family-name:var(--font-playfair)] text-2xl text-[#1B365D] mb-4">
-                      {t('Highlights', 'Destacados')}
-                    </h3>
-                    <ul className="grid md:grid-cols-2 gap-3">
-                      {selectedNeighborhood.highlights.map((highlight, index) => (
-                        <li key={index} className="flex items-start gap-3">
-                          <div className="w-6 h-6 rounded-full bg-[#C4A25A] flex items-center justify-center flex-shrink-0 mt-0.5">
-                            <Check size={16} className="text-white" />
-                          </div>
-                          <span className="text-[#3D3D3D]">{highlight}</span>
-                        </li>
-                      ))}
-                    </ul>
+                {/* Hero Image */}
+                <div className="relative h-96 w-full">
+                  <Image
+                    src={selectedNeighborhood.image_url}
+                    alt={displayName}
+                    fill
+                    className="object-cover"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+                  <div className="absolute bottom-0 left-0 right-0 p-8">
+                    <h2 className="font-[family-name:var(--font-playfair)] text-4xl md:text-5xl text-white font-bold">
+                      {displayName}
+                    </h2>
                   </div>
-                )}
-              </div>
+                </div>
+
+                {/* Content */}
+                <div className="p-8">
+                  {/* Description */}
+                  <div className="prose prose-lg max-w-none mb-8">
+                    {displayDescription.split('\n\n').map((paragraph, index) => (
+                      <p key={index} className="text-[#3D3D3D] leading-relaxed mb-4">
+                        {paragraph}
+                      </p>
+                    ))}
+                  </div>
+
+                  {/* Highlights */}
+                  {displayHighlights && displayHighlights.length > 0 && (
+                    <div>
+                      <h3 className="font-[family-name:var(--font-playfair)] text-2xl text-[#1B365D] mb-4">
+                        {t('Highlights', 'Destacados')}
+                      </h3>
+                      <ul className="grid md:grid-cols-2 gap-3">
+                        {displayHighlights.map((highlight, index) => (
+                          <li key={index} className="flex items-start gap-3">
+                            <div className="w-6 h-6 rounded-full bg-[#C4A25A] flex items-center justify-center flex-shrink-0 mt-0.5">
+                              <Check size={16} className="text-white" />
+                            </div>
+                            <span className="text-[#3D3D3D]">{highlight}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                </div>
+              </motion.div>
             </motion.div>
-          </motion.div>
-        )}
+          );
+        })()}
       </AnimatePresence>
 
       {/* Hide scrollbar styles */}
