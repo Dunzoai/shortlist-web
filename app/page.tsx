@@ -450,17 +450,15 @@ export default function Home() {
                     <p style={{ color: isDark ? '#1B365D' : '#3D3D3D' }} className="font-semibold">(843) 555-0123</p>
                   </div>
                 </div>
-                <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 bg-[#D6BFAE] rounded-full flex items-center justify-center">
-                    <svg className="w-5 h-5 text-[#1B365D]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                    </svg>
-                  </div>
-                  <div>
-                    <p className="text-sm text-[#3D3D3D]/60">Email</p>
-                    <p style={{ color: isDark ? '#1B365D' : '#3D3D3D' }} className="font-semibold">dani@fairclothrealestate.com</p>
-                  </div>
-                </div>
+                <a
+                  href="mailto:danidiazrealestate@gmail.com"
+                  className="inline-flex items-center gap-3 px-6 py-3 bg-[#1B365D] text-white hover:bg-[#C4A25A] transition-colors rounded"
+                >
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                  </svg>
+                  {t('Email Me', 'Envíame un Email')}
+                </a>
               </div>
             </motion.div>
 
