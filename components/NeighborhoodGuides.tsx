@@ -30,7 +30,7 @@ export default function NeighborhoodGuides() {
     async function fetchNeighborhoods() {
       const { data, error } = await supabase
         .from('neighborhoods')
-        .select('*')
+        .select('id, name, description, highlights, image_url, display_order, price_range, name_es, description_es, highlights_es')
         .order('display_order', { ascending: true });
 
       if (data) {
