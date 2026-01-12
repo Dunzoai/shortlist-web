@@ -155,19 +155,21 @@ export default function BuyersPage() {
       {/* Quick Resources */}
       <section className="py-16 bg-white">
         <div className="max-w-7xl mx-auto px-6">
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          {/* Mobile: Horizontal scroll, Desktop: Grid */}
+          <div className="flex md:grid md:grid-cols-2 lg:grid-cols-4 gap-6 overflow-x-auto md:overflow-x-visible snap-x snap-mandatory md:snap-none scrollbar-hide pb-4 md:pb-0 -mx-6 md:mx-0 px-6 md:px-0">
             {buyerResources.map((resource, index) => {
               const IconComponent = resource.icon;
               return (
                 <motion.div
                   key={index}
+                  className="flex-shrink-0 w-[280px] md:w-auto snap-center md:snap-align-none"
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.5, delay: index * 0.1 }}
                 >
                   <Link
                     href={resource.link}
-                    className="block bg-[#F7F7F7] p-6 text-center hover:shadow-lg transition-shadow"
+                    className="block bg-[#F7F7F7] p-6 text-center hover:shadow-lg transition-shadow h-full"
                   >
                     <div className="flex justify-center mb-4">
                       <IconComponent size={32} className="text-[#1B365D]" />

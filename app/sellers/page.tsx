@@ -177,14 +177,15 @@ export default function SellersPage() {
       {/* Quick Resources */}
       <section className="py-16 bg-white">
         <div className="max-w-7xl mx-auto px-6">
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          {/* Mobile: Horizontal scroll, Desktop: Grid */}
+          <div className="flex md:grid md:grid-cols-2 lg:grid-cols-4 gap-6 overflow-x-auto md:overflow-x-visible snap-x snap-mandatory md:snap-none scrollbar-hide pb-4 md:pb-0 -mx-6 md:mx-0 px-6 md:px-0">
             {sellerResources.map((resource, index) => (
               <motion.div
                 key={index}
+                className="flex-shrink-0 w-[280px] md:w-auto snap-center md:snap-align-none bg-[#F7F7F7] p-6 text-center hover:shadow-lg transition-shadow cursor-pointer"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: index * 0.1 }}
-                className="bg-[#F7F7F7] p-6 text-center hover:shadow-lg transition-shadow cursor-pointer"
               >
                 <span className="text-4xl mb-4 block">{resource.icon}</span>
                 <h3 className="font-[family-name:var(--font-playfair)] text-lg text-[#1B365D] mb-2">

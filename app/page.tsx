@@ -1,9 +1,9 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { motion } from 'framer-motion';
+import { motion, useScroll, useTransform } from 'framer-motion';
 import { Instagram, Facebook, Linkedin } from 'lucide-react';
 import Nav from '@/components/Nav';
 import { useLanguage } from '@/components/LanguageContext';
@@ -90,6 +90,14 @@ export default function Home() {
   const { styleMode, colors } = useStyle();
   const isDark = styleMode === 'dark';
   const [videoLoaded, setVideoLoaded] = useState(false);
+
+  // Scroll-based animation for "Let's Connect" circle
+  const connectSectionRef = useRef(null);
+  const { scrollYProgress } = useScroll({
+    target: connectSectionRef,
+    offset: ["start end", "end start"]
+  });
+  const circleProgress = useTransform(scrollYProgress, [0, 0.5], [0, 1]);
 
   return (
     <main className="font-[family-name:var(--font-lora)]">
@@ -436,6 +444,7 @@ export default function Home() {
 
       {/* Contact Section */}
       <section
+        ref={connectSectionRef}
         className="py-24 transition-colors duration-500"
         style={{ backgroundColor: isDark ? '#FFFFFF' : '#FFFBF5' }}
       >
@@ -449,31 +458,27 @@ export default function Home() {
           >
             <motion.div variants={fadeInUp}>
               <div className="relative inline-block">
-                {/* Decorative Animated Ellipse - Desktop Only */}
+                {/* Decorative Animated Ellipse - Scroll-based */}
                 <motion.svg
-                  className="hidden md:block absolute -left-20 -top-6 pointer-events-none"
-                  width="480"
-                  height="100"
-                  viewBox="0 0 480 100"
-                  initial={{ opacity: 0 }}
-                  whileInView={{ opacity: 0.3 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.8, ease: "easeOut" }}
-                  style={{ zIndex: 0 }}
+                  className="absolute -left-8 md:-left-20 -top-4 md:-top-6 pointer-events-none"
+                  width="350"
+                  height="80"
+                  viewBox="0 0 350 80"
+                  style={{
+                    zIndex: 0,
+                    opacity: 0.3
+                  }}
                 >
                   <motion.ellipse
-                    cx="240"
-                    cy="50"
-                    rx="220"
-                    ry="40"
+                    cx="175"
+                    cy="40"
+                    rx="160"
+                    ry="30"
                     fill="none"
                     stroke="#C4A25A"
                     strokeWidth="2"
                     strokeLinecap="round"
-                    initial={{ pathLength: 0 }}
-                    whileInView={{ pathLength: 1 }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 1.5, ease: "easeOut", delay: 0.3 }}
+                    style={{ pathLength: circleProgress }}
                   />
                 </motion.svg>
 

@@ -68,21 +68,41 @@ export default function NeighborhoodGuides() {
       <section className="py-24 bg-[#F7F7F7]">
         <div className="max-w-7xl mx-auto px-6">
           {/* Header with Navigation Arrows */}
-          <div className="flex justify-between items-start mb-12">
-            <div className="flex-1">
-              <h2 className="font-[family-name:var(--font-playfair)] text-4xl md:text-5xl text-[#1B365D] mb-4">
-                {t('Explore the Grand Strand', 'Explora el Grand Strand')}
-              </h2>
-              <p className="text-[#3D3D3D] text-lg max-w-2xl">
-                {t(
-                  'Discover the unique neighborhoods that make our coast special',
-                  'Descubre los vecindarios únicos que hacen especial nuestra costa'
-                )}
-              </p>
+          <div className="mb-8">
+            <div className="flex justify-between items-start mb-6 md:mb-12">
+              <div className="flex-1">
+                <h2 className="font-[family-name:var(--font-playfair)] text-4xl md:text-5xl text-[#1B365D] mb-4">
+                  {t('Explore the Grand Strand', 'Explora el Grand Strand')}
+                </h2>
+                <p className="text-[#3D3D3D] text-lg max-w-2xl">
+                  {t(
+                    'Discover the unique neighborhoods that make our coast special',
+                    'Descubre los vecindarios únicos que hacen especial nuestra costa'
+                  )}
+                </p>
+              </div>
+
+              {/* Navigation Arrows - Desktop: top right */}
+              <div className="hidden md:flex gap-3 ml-6">
+                <button
+                  onClick={() => scroll('left')}
+                  className="w-12 h-12 rounded-full bg-[#1B365D] text-white flex items-center justify-center hover:bg-[#C4A25A] transition-colors shadow-lg"
+                  aria-label="Scroll left"
+                >
+                  <ChevronLeft size={24} />
+                </button>
+                <button
+                  onClick={() => scroll('right')}
+                  className="w-12 h-12 rounded-full bg-[#1B365D] text-white flex items-center justify-center hover:bg-[#C4A25A] transition-colors shadow-lg"
+                  aria-label="Scroll right"
+                >
+                  <ChevronRight size={24} />
+                </button>
+              </div>
             </div>
 
-            {/* Navigation Arrows - Together in top right */}
-            <div className="flex gap-3 ml-6">
+            {/* Navigation Arrows - Mobile: above images */}
+            <div className="flex md:hidden gap-3 justify-end mb-4">
               <button
                 onClick={() => scroll('left')}
                 className="w-12 h-12 rounded-full bg-[#1B365D] text-white flex items-center justify-center hover:bg-[#C4A25A] transition-colors shadow-lg"
