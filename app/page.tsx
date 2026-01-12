@@ -95,9 +95,9 @@ export default function Home() {
   const connectSectionRef = useRef(null);
   const { scrollYProgress } = useScroll({
     target: connectSectionRef,
-    offset: ["start end", "end start"]
+    offset: ["start end", "center center"]
   });
-  const circleProgress = useTransform(scrollYProgress, [0, 0.5], [0, 1]);
+  const circleProgress = useTransform(scrollYProgress, [0, 1], [0, 1]);
 
   return (
     <main className="font-[family-name:var(--font-lora)]">
