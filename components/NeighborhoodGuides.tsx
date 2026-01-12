@@ -89,7 +89,7 @@ export default function NeighborhoodGuides() {
               </button>
               <button
                 onClick={() => scroll('right')}
-                className="w-12 h-12 rounded-full bg-[#C4A25A] text-white flex items-center justify-center hover:bg-[#1B365D] transition-colors shadow-lg"
+                className="w-12 h-12 rounded-full bg-[#1B365D] text-white flex items-center justify-center hover:bg-[#C4A25A] transition-colors shadow-lg"
                 aria-label="Scroll right"
               >
                 <ChevronRight size={24} />
