@@ -85,6 +85,25 @@ const relatedPosts = [
   },
 ];
 
+// Decode HTML entities if content is escaped
+function decodeHtmlEntities(html: string): string {
+  if (!html) return html;
+
+  // Check if HTML contains entities
+  if (!html.includes('&lt;') && !html.includes('&gt;') && !html.includes('&amp;')) {
+    return html; // Already decoded
+  }
+
+  // Decode HTML entities
+  return html
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&amp;/g, '&')
+    .replace(/&quot;/g, '"')
+    .replace(/&#039;/g, "'")
+    .replace(/&nbsp;/g, ' ');
+}
+
 export default function BlogPostPage() {
   const { language, t } = useLanguage();
   const params = useParams();
@@ -214,7 +233,9 @@ export default function BlogPostPage() {
             transition={{ duration: 0.6, delay: 0.2 }}
             className="blog-content"
             dangerouslySetInnerHTML={{
-              __html: language === 'es' && post.content_es ? post.content_es : post.content
+              __html: decodeHtmlEntities(
+                language === 'es' && post.content_es ? post.content_es : post.content
+              )
             }}
           />
 
