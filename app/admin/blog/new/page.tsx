@@ -9,6 +9,7 @@ export default function NewBlogPost() {
   const router = useRouter();
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
 
   const [formData, setFormData] = useState({
     title: '',
@@ -22,7 +23,15 @@ export default function NewBlogPost() {
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
-      setFormData({ ...formData, featuredImage: e.target.files[0] });
+      const file = e.target.files[0];
+      setFormData({ ...formData, featuredImage: file });
+
+      // Create preview URL
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
     }
   };
 
@@ -45,11 +54,10 @@ export default function NewBlogPost() {
       if (formData.featuredImage) {
         const fileExt = formData.featuredImage.name.split('.').pop();
         const fileName = `${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`;
-        const filePath = `blog-images/${fileName}`;
 
         const { error: uploadError } = await supabase.storage
           .from('blog-images')
-          .upload(filePath, formData.featuredImage);
+          .upload(fileName, formData.featuredImage);
 
         if (uploadError) {
           throw new Error(`Image upload failed: ${uploadError.message}`);
@@ -57,7 +65,7 @@ export default function NewBlogPost() {
 
         const { data: { publicUrl } } = supabase.storage
           .from('blog-images')
-          .getPublicUrl(filePath);
+          .getPublicUrl(fileName);
 
         featuredImageUrl = publicUrl;
       }
@@ -223,16 +231,44 @@ export default function NewBlogPost() {
           <label className="block text-[#1B365D] font-medium mb-2">
             Featured Image
           </label>
-          <input
-            type="file"
-            accept="image/*"
-            onChange={handleImageChange}
-            className="w-full px-4 py-2 border border-[#D6BFAE] rounded focus:outline-none focus:ring-2 focus:ring-[#C4A25A]"
-          />
-          {formData.featuredImage && (
-            <p className="text-sm text-[#3D3D3D] mt-1">
-              Selected: {formData.featuredImage.name}
+
+          {/* Image Preview */}
+          {imagePreview && (
+            <div className="mb-4 p-4 bg-[#F7F7F7] rounded-lg border border-[#D6BFAE]">
+              <p className="text-sm text-[#3D3D3D] mb-2 font-medium">Preview:</p>
+              <img
+                src={imagePreview}
+                alt="Preview"
+                className="w-full max-w-md h-48 object-cover rounded border border-[#D6BFAE]"
+              />
+            </div>
+          )}
+
+          {/* Upload Button */}
+          <div className="relative">
+            <input
+              type="file"
+              accept="image/*"
+              onChange={handleImageChange}
+              className="w-full px-4 py-3 border border-[#D6BFAE] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#C4A25A] file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-[#1B365D] file:text-white hover:file:bg-[#C4A25A] file:cursor-pointer"
+            />
+          </div>
+
+          {/* Helper Text */}
+          <div className="mt-2 space-y-1">
+            <p className="text-sm text-[#3D3D3D]">
+              <span className="font-medium">💡 Recommended:</span> 1200×630px (landscape) for best results
             </p>
+            <p className="text-xs text-[#3D3D3D]/70">
+              • Minimum: 800×400px • Aspect ratio: 16:9 or 1.91:1 • Format: JPG or PNG
+            </p>
+          </div>
+
+          {formData.featuredImage && (
+            <div className="mt-2 flex items-center gap-2 text-sm text-green-600">
+              <span>✓</span>
+              <span>Image ready: {formData.featuredImage.name}</span>
+            </div>
           )}
         </div>
 
