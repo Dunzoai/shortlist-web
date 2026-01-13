@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useParams } from 'next/navigation';
 import Image from 'next/image';
 import { supabase } from '@/lib/supabase';
 import { X, Upload, Trash2 } from 'lucide-react';
@@ -18,8 +18,11 @@ interface ImagePreview {
   id: string;
 }
 
-export default function EditProperty({ params }: { params: { id: string } }) {
+export default function EditProperty() {
   const router = useRouter();
+  const params = useParams();
+  const propertyId = typeof params.id === 'string' ? params.id : params.id?.[0];
+
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [deleting, setDeleting] = useState(false);
@@ -47,21 +50,29 @@ export default function EditProperty({ params }: { params: { id: string } }) {
   });
 
   useEffect(() => {
-    fetchProperty();
-  }, [params.id]);
+    if (propertyId) {
+      fetchProperty();
+    }
+  }, [propertyId]);
 
   const fetchProperty = async () => {
-    console.log('Fetching property with ID:', params.id);
+    console.log('Fetching property with ID:', propertyId);
+
+    if (!propertyId) {
+      setError('No property ID provided');
+      setLoading(false);
+      return;
+    }
 
     const { data, error } = await supabase
       .from('featured_properties')
       .select('*')
-      .eq('id', params.id)
+      .eq('id', propertyId)
       .single();
 
     if (error) {
       console.error('Error fetching property:', error);
-      setError(`Failed to load property: ${error.message}. ID: ${params.id}`);
+      setError(`Failed to load property: ${error.message}. ID: ${propertyId}`);
       setLoading(false);
       return;
     }
@@ -201,7 +212,7 @@ export default function EditProperty({ params }: { params: { id: string } }) {
           status: formData.status,
           updated_at: new Date().toISOString(),
         })
-        .eq('id', params.id);
+        .eq('id', propertyId);
 
       if (updateError) {
         throw new Error(`Failed to update property: ${updateError.message}`);
@@ -224,7 +235,7 @@ export default function EditProperty({ params }: { params: { id: string } }) {
     const { error } = await supabase
       .from('featured_properties')
       .delete()
-      .eq('id', params.id);
+      .eq('id', propertyId);
 
     if (!error) {
       router.push('/admin/properties');
