@@ -77,6 +77,12 @@ export default function ListingDetailPage() {
   const [selectedImage, setSelectedImage] = useState(0);
   const [loading, setLoading] = useState(true);
   const [showContactForm, setShowContactForm] = useState(false);
+  const [translatedContent, setTranslatedContent] = useState<{
+    description: string;
+    property_type: string;
+    features: string[];
+  } | null>(null);
+  const [translating, setTranslating] = useState(false);
 
   useEffect(() => {
     async function fetchListing() {
@@ -98,6 +104,39 @@ export default function ListingDetailPage() {
 
     fetchListing();
   }, [params.id]);
+
+  // Translate listing content when language changes to Spanish
+  useEffect(() => {
+    async function translateListing() {
+      if (language === 'es' && listing && !translating) {
+        setTranslating(true);
+        try {
+          const response = await fetch('/api/listings/translate', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              description: listing.description,
+              features: listing.features || [],
+              property_type: listing.property_type,
+            }),
+          });
+
+          if (response.ok) {
+            const translated = await response.json();
+            setTranslatedContent(translated);
+          }
+        } catch (error) {
+          console.error('Failed to translate listing:', error);
+        } finally {
+          setTranslating(false);
+        }
+      } else if (language === 'en') {
+        setTranslatedContent(null);
+      }
+    }
+
+    translateListing();
+  }, [language, listing]);
 
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('en-US', {
@@ -243,7 +282,7 @@ export default function ListingDetailPage() {
                     {t('Description', 'Descripción')}
                   </h2>
                   <div className="text-[#3D3D3D] leading-relaxed whitespace-pre-line">
-                    {listing.description}
+                    {translatedContent?.description || listing.description}
                   </div>
                 </div>
 
@@ -254,7 +293,7 @@ export default function ListingDetailPage() {
                       {t('Features', 'Características')}
                     </h2>
                     <div className="grid sm:grid-cols-2 gap-3">
-                      {listing.features.map((feature, index) => (
+                      {(translatedContent?.features || listing.features).map((feature, index) => (
                         <div key={index} className="flex items-center gap-2">
                           <svg className="w-5 h-5 text-[#C4A25A]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
@@ -274,7 +313,7 @@ export default function ListingDetailPage() {
                   <div className="grid sm:grid-cols-2 gap-4">
                     <div className="flex justify-between py-3 border-b border-[#D6BFAE]/30">
                       <span className="text-[#3D3D3D]/60">{t('Property Type', 'Tipo de Propiedad')}</span>
-                      <span className="text-[#3D3D3D]">{listing.property_type}</span>
+                      <span className="text-[#3D3D3D]">{translatedContent?.property_type || listing.property_type}</span>
                     </div>
                     <div className="flex justify-between py-3 border-b border-[#D6BFAE]/30">
                       <span className="text-[#3D3D3D]/60">{t('Year Built', 'Año de Construcción')}</span>
