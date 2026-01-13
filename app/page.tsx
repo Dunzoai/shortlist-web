@@ -446,7 +446,6 @@ export default function Home() {
 
       {/* Contact Section */}
       <section
-        ref={connectSectionRef}
         className="py-24 transition-colors duration-500"
         style={{ backgroundColor: isDark ? '#FFFFFF' : '#FFFBF5' }}
       >
