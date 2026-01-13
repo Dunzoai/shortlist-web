@@ -93,13 +93,14 @@ function ParallaxSection({ language, t }: { language: string; t: (en: string, es
     offset: ["start end", "end start"]
   });
 
-  const y = useTransform(scrollYProgress, [0, 1], ["-20%", "20%"]);
+  // Stronger parallax effect: image moves more slowly creating "fixed" appearance
+  const y = useTransform(scrollYProgress, [0, 1], ["0%", "50%"]);
 
   return (
     <section ref={parallaxRef} className="relative h-[70vh] overflow-hidden">
       <motion.div
         style={{ y }}
-        className="absolute inset-0 w-full h-[120%] -top-[10%]"
+        className="absolute inset-0 w-full h-[150%] -top-[25%]"
       >
         <Image
           src="/dani-phone-laptop.jpg"
