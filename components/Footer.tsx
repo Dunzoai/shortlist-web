@@ -53,8 +53,8 @@ export default function Footer() {
           </div>
 
           {/* Faircloth and Social Icons Section */}
-          <div className="md:col-span-5 flex justify-end">
-            <div className="flex flex-col items-center gap-2">
+          <div className="md:col-span-5 flex justify-end items-start -mt-8">
+            <div className="flex flex-col items-center gap-1 mr-[-100px]">
               {/* Faircloth Real Estate Logo */}
               <div className="relative w-[750px] h-[188px] md:w-[1125px] md:h-[281px]">
                 <Image
