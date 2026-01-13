@@ -37,13 +37,13 @@ export default function ParallaxSection() {
 
   if (isMobile) {
     return (
-      <section ref={sectionRef} className="relative h-[80vh] w-full overflow-hidden">
+      <section ref={sectionRef} className="relative h-[80vh] w-full max-w-full overflow-hidden">
         <div
           ref={imageRef}
           className="absolute top-0 left-0 w-full h-[150%] bg-cover bg-no-repeat will-change-transform"
           style={{
             backgroundImage: 'url(/dani-phone-laptop.jpg)',
-            backgroundPosition: 'center 35%'
+            backgroundPosition: 'center 50%'
           }}
         />
         <div className="absolute inset-0 bg-[#1B365D]/30 z-10" />
