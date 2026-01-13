@@ -19,6 +19,7 @@ interface BlogPost {
   excerpt: string;
   featured_image: string;
   published_at: string;
+  updated_at?: string;
   category: string;
   tags: string[];
   author?: string;
@@ -176,7 +177,7 @@ export default function BlogPostPage() {
     async function fetchPost() {
       const { data, error } = await supabase
         .from('blog_posts')
-        .select('id, title, slug, content, excerpt, featured_image, published_at, category, tags, title_es, excerpt_es, content_es')
+        .select('id, title, slug, content, excerpt, featured_image, published_at, updated_at, category, tags, title_es, excerpt_es, content_es')
         .eq('slug', params.slug)
         .eq('client_id', '3c125122-f3d9-4f75-91d9-69cf84d6d20e')
         .single();
@@ -291,6 +292,18 @@ export default function BlogPostPage() {
                   day: 'numeric'
                 })}
               </span>
+              {post.updated_at && post.updated_at !== post.published_at && (
+                <>
+                  <span>•</span>
+                  <span className="text-[#C4A25A]">
+                    {t('Updated:', 'Actualizado:')} {new Date(post.updated_at).toLocaleDateString(language === 'en' ? 'en-US' : 'es-ES', {
+                      year: 'numeric',
+                      month: 'long',
+                      day: 'numeric'
+                    })}
+                  </span>
+                </>
+              )}
             </div>
           </motion.div>
         </div>

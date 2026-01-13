@@ -17,6 +17,7 @@ export default function NewBlogPost() {
     category: 'general',
     tags: '',
     featuredImage: null as File | null,
+    updatedDate: new Date().toISOString().split('T')[0], // Default to today
   });
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -80,6 +81,7 @@ export default function NewBlogPost() {
           featured_image: featuredImageUrl,
           client_id: '3c125122-f3d9-4f75-91d9-69cf84d6d20e',
           published_at: new Date().toISOString(),
+          updated_at: formData.updatedDate ? new Date(formData.updatedDate).toISOString() : new Date().toISOString(),
         }])
         .select()
         .single();
@@ -200,6 +202,20 @@ export default function NewBlogPost() {
             placeholder="first-time, guide, tips (comma-separated)"
           />
           <p className="text-sm text-[#3D3D3D] mt-1">Separate tags with commas</p>
+        </div>
+
+        {/* Last Updated Date */}
+        <div className="mb-6">
+          <label className="block text-[#1B365D] font-medium mb-2">
+            Last Updated Date (Optional)
+          </label>
+          <input
+            type="date"
+            value={formData.updatedDate}
+            onChange={(e) => setFormData({ ...formData, updatedDate: e.target.value })}
+            className="w-full px-4 py-2 border border-[#D6BFAE] rounded focus:outline-none focus:ring-2 focus:ring-[#C4A25A]"
+          />
+          <p className="text-sm text-[#3D3D3D] mt-1">Date this content was last updated (defaults to today)</p>
         </div>
 
         {/* Featured Image */}
