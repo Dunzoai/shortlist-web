@@ -2,6 +2,8 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
+import { ArrowLeft } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import RichTextEditor from '@/components/admin/RichTextEditor';
 
@@ -122,6 +124,14 @@ export default function NewBlogPost() {
 
   return (
     <div>
+      <Link
+        href="/admin/blog"
+        className="inline-flex items-center gap-2 text-[#3D3D3D] hover:text-[#C4A25A] transition-colors mb-6"
+      >
+        <ArrowLeft size={20} />
+        <span>Back to Blog Posts</span>
+      </Link>
+
       <div className="mb-8">
         <h1 className="font-[family-name:var(--font-playfair)] text-4xl text-[#1B365D] mb-2">
           New Blog Post

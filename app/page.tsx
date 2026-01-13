@@ -378,14 +378,30 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Parallax Section */}
-      <ParallaxSection />
+      {/* Parallax Section 1 - CURRENTLY HIDDEN */}
+      {/*
+        TEMPLATIZATION NOTE: This parallax section provides visual depth and engagement
+        on desktop screens. It displays a background image with parallax scroll effect.
+        To re-enable: Remove the 'hidden' class below.
+        Image location: /public/beach-parallax.png
+      */}
+      <div className="hidden">
+        <ParallaxSection />
+      </div>
 
       {/* Neighborhood Guides Section */}
       <NeighborhoodGuides />
 
-      {/* Parallax Section 2 */}
-      <ParallaxSection2 />
+      {/* Parallax Section 2 - CURRENTLY HIDDEN */}
+      {/*
+        TEMPLATIZATION NOTE: Second parallax section for additional visual interest.
+        Provides scrolling depth effect between content sections.
+        To re-enable: Remove the 'hidden' class below.
+        Image location: /public/front-door-paralax.png
+      */}
+      <div className="hidden">
+        <ParallaxSection2 />
+      </div>
 
       {/* Testimonials Section */}
       <section

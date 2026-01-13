@@ -2,9 +2,10 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
+import Link from 'next/link';
 import Image from 'next/image';
 import { supabase } from '@/lib/supabase';
-import { X, Upload, Trash2 } from 'lucide-react';
+import { X, Upload, Trash2, ArrowLeft } from 'lucide-react';
 
 interface ImageItem {
   url: string;
@@ -260,6 +261,14 @@ export default function EditProperty() {
   return (
     <div className="min-h-screen bg-[#FAF9F7] p-6">
       <div className="max-w-4xl mx-auto">
+        <Link
+          href="/admin/properties"
+          className="inline-flex items-center gap-2 text-[#3D3D3D] hover:text-[#C4A25A] transition-colors mb-6"
+        >
+          <ArrowLeft size={20} />
+          <span>Back to Properties</span>
+        </Link>
+
         <div className="mb-8 flex justify-between items-start">
           <div>
             <h1 className="font-[family-name:var(--font-playfair)] text-4xl text-[#1B365D] mb-2">
