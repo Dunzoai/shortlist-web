@@ -303,7 +303,7 @@ export default function ListingDetailPage() {
               >
                 <div className="text-center mb-6">
                   <Image
-                    src="/dani-hero.jpg"
+                    src="/dani-diaz-about.JPG"
                     alt="Dani Díaz"
                     width={100}
                     height={100}
