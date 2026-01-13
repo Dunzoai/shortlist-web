@@ -94,19 +94,19 @@ function ParallaxSection({ language, t }: { language: string; t: (en: string, es
   });
 
   // Stronger parallax effect: image moves more slowly creating "fixed" appearance
-  const y = useTransform(scrollYProgress, [0, 1], ["0%", "50%"]);
+  const y = useTransform(scrollYProgress, [0, 1], ["-10%", "10%"]);
 
   return (
     <section ref={parallaxRef} className="relative h-[70vh] overflow-hidden">
       <motion.div
         style={{ y }}
-        className="absolute inset-0 w-full h-[150%] -top-[25%]"
+        className="absolute inset-0 w-full h-[130%] -top-[15%]"
       >
         <Image
           src="/dani-phone-laptop.jpg"
           alt="Dani Díaz"
           fill
-          className="object-cover"
+          className="object-cover object-center"
           priority={false}
           quality={90}
         />
