@@ -53,9 +53,9 @@ export default function Footer() {
           </div>
 
           {/* Faircloth and Social Icons Section */}
-          <div className="md:col-span-5 flex flex-col items-start md:items-end">
+          <div className="md:col-span-5">
             {/* Faircloth Real Estate Logo */}
-            <div className="relative w-[600px] h-[150px] md:w-[1200px] md:h-[300px] mb-4">
+            <div className="relative w-[600px] h-[150px] md:w-[1200px] md:h-[300px] md:ml-auto mb-6">
               <Image
                 src="/faircloth-real-estate-logo.png"
                 alt="Faircloth Real Estate Group"
@@ -65,7 +65,7 @@ export default function Footer() {
             </div>
 
             {/* Social Icons */}
-            <div className="flex gap-3 w-full justify-start md:justify-end">
+            <div className="flex gap-3 justify-center md:justify-end md:mr-[200px]">
               <a
                 href="https://www.facebook.com/daniampudiazv/"
                 target="_blank"
