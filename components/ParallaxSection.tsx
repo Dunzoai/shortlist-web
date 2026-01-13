@@ -43,15 +43,10 @@ export default function ParallaxSection() {
           className="absolute top-0 left-0 w-full h-[150%] bg-cover bg-no-repeat will-change-transform"
           style={{
             backgroundImage: 'url(/dani-phone-laptop.jpg)',
-            backgroundPosition: 'center 65%'
+            backgroundPosition: 'center 90%'
           }}
         />
         <div className="absolute inset-0 bg-[#1B365D]/30 z-10" />
-        <div className="relative z-20 h-full flex items-center justify-center">
-          <h2 className="text-white text-3xl md:text-4xl font-[family-name:var(--font-playfair)] font-bold text-center px-6 drop-shadow-lg">
-            {t('From Global Roots to Local Roofs', 'De Raíces Globales a Techos Locales')}
-          </h2>
-        </div>
       </section>
     );
   }
