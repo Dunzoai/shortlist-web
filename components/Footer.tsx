@@ -38,7 +38,7 @@ export default function Footer() {
 
           {/* Address Section */}
           <div className="md:col-span-3">
-            <h3 className="text-white text-sm font-semibold tracking-wider mb-4 mt-[88px] md:mt-[104px]">
+            <h3 className="text-white text-sm font-semibold tracking-wider mb-4 md:mt-[104px]">
               {t('ADDRESS', 'DIRECCIÓN')}
             </h3>
             <div className="text-white">
@@ -56,7 +56,7 @@ export default function Footer() {
           <div className="md:col-span-5 flex justify-start md:justify-end items-start">
             <div className="flex flex-col items-start md:items-end md:-mt-2">
               {/* Faircloth Real Estate Logo */}
-              <div className="relative w-[280px] h-[70px] md:w-[1125px] md:h-[281px] mb-3 md:mb-2">
+              <div className="relative w-[500px] h-[125px] md:w-[1125px] md:h-[281px] mb-3 md:mb-2">
                 <Image
                   src="/faircloth-real-estate-logo.png"
                   alt="Faircloth Real Estate Group"
