@@ -10,17 +10,13 @@ export default function Footer() {
   return (
     <footer className="py-16 bg-[#1B365D]">
       <div className="max-w-7xl mx-auto px-6">
-        {/* Brand Section */}
-        <div className="mb-12">
-          <h2 className="font-[family-name:var(--font-playfair)] text-white text-5xl md:text-6xl font-bold">
-            Dani Díaz
-          </h2>
-        </div>
-
         {/* Main Footer Content */}
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-12 mb-12">
-          {/* Contact Section */}
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-12 mb-12 items-start">
+          {/* Brand Section */}
           <div className="md:col-span-3">
+            <h2 className="font-[family-name:var(--font-playfair)] text-white text-5xl md:text-6xl font-bold mb-8">
+              Dani Díaz
+            </h2>
             <h3 className="text-white text-sm font-semibold tracking-wider mb-4">
               {t('CONTACT', 'CONTACTO')}
             </h3>
@@ -42,12 +38,12 @@ export default function Footer() {
 
           {/* Address Section */}
           <div className="md:col-span-3">
-            <h3 className="text-white text-sm font-semibold tracking-wider mb-4">
+            <h3 className="text-white text-sm font-semibold tracking-wider mb-4 mt-[88px] md:mt-[104px]">
               {t('ADDRESS', 'DIRECCIÓN')}
             </h3>
             <div className="text-white">
-              <p>1274 Professional Dr</p>
-              <p>Myrtle Beach SC 29577</p>
+              <p>730 Main Street #355</p>
+              <p>North Myrtle Beach, SC 29572</p>
             </div>
           </div>
 
@@ -56,10 +52,10 @@ export default function Footer() {
             <div className="h-full w-px bg-white/20 mx-auto"></div>
           </div>
 
-          {/* Social Icons Section */}
-          <div className="md:col-span-5 flex flex-col items-start md:items-end justify-start gap-3">
+          {/* Faircloth and Social Icons Section */}
+          <div className="md:col-span-5 flex flex-col items-start md:items-end">
             {/* Faircloth Real Estate Logo */}
-            <div className="relative w-[600px] h-[150px] md:w-[1200px] md:h-[300px] -mt-2">
+            <div className="relative w-[600px] h-[150px] md:w-[1200px] md:h-[300px] mb-4">
               <Image
                 src="/faircloth-real-estate-logo.png"
                 alt="Faircloth Real Estate Group"
@@ -69,7 +65,7 @@ export default function Footer() {
             </div>
 
             {/* Social Icons */}
-            <div className="flex gap-3 md:mr-0">
+            <div className="flex gap-3 w-full justify-start md:justify-end">
               <a
                 href="https://www.facebook.com/daniampudiazv/"
                 target="_blank"
