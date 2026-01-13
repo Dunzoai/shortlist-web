@@ -179,7 +179,7 @@ export default function FAQsPage() {
                 </button>
 
                 {/* Cards */}
-                <div className="relative w-full max-w-md mx-auto h-full flex items-center justify-center">
+                <div className="relative w-full max-w-md mx-auto h-full flex items-center justify-center scale-90 md:scale-100">
                   <AnimatePresence mode="popLayout" custom={direction}>
                     {/* Current Card */}
                     <motion.div
@@ -187,20 +187,18 @@ export default function FAQsPage() {
                       custom={direction}
                       initial={{
                         scale: 0.95,
-                        opacity: 0,
                         rotateZ: direction > 0 ? 5 : -5,
                       }}
                       animate={{
                         scale: 1,
-                        opacity: 1,
                         rotateZ: 0,
                         x: 0,
                         transition: { duration: 0.3 }
                       }}
                       exit={{
-                        x: direction > 0 ? 800 : -800,
-                        rotateZ: direction > 0 ? 25 : -25,
-                        transition: { duration: 0.4, ease: "easeIn" }
+                        x: direction > 0 ? -1000 : 1000,
+                        rotateZ: direction > 0 ? -30 : 30,
+                        transition: { duration: 0.3, ease: "easeOut" }
                       }}
                       drag="x"
                       dragConstraints={{ left: 0, right: 0 }}
