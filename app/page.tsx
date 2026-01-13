@@ -94,13 +94,6 @@ export default function Home() {
   const isDark = styleMode === 'dark';
   const [videoLoaded, setVideoLoaded] = useState(false);
 
-  // Scroll-based animation for "Let's Connect" circle
-  const connectSectionRef = useRef(null);
-  const { scrollYProgress } = useScroll({
-    target: connectSectionRef,
-    offset: ["start end", "start center"]
-  });
-  const circleProgress = useTransform(scrollYProgress, [0, 1], [0, 1]);
 
   return (
     <main className="font-[family-name:var(--font-lora)]">
@@ -471,7 +464,7 @@ export default function Home() {
                 <svg
                   className="absolute pointer-events-none"
                   style={{
-                    left: '-30px',
+                    left: '-50px',
                     top: '50%',
                     transform: 'translateY(-50%)',
                     width: 'calc(100% + 80px)',
