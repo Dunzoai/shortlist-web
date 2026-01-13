@@ -99,12 +99,18 @@ function BlogContent() {
   const [posts, setPosts] = useState<BlogPost[]>(placeholderPosts);
   const [filteredPosts, setFilteredPosts] = useState<BlogPost[]>(placeholderPosts);
   const [activeCategory, setActiveCategory] = useState('all');
+  const [activeTag, setActiveTag] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const categoryParam = searchParams.get('category');
+    const tagParam = searchParams.get('tag');
+
     if (categoryParam) {
       setActiveCategory(categoryParam);
+    }
+    if (tagParam) {
+      setActiveTag(tagParam);
     }
   }, [searchParams]);
 
@@ -127,19 +133,45 @@ function BlogContent() {
   }, []);
 
   useEffect(() => {
-    if (activeCategory === 'all') {
-      setFilteredPosts(posts);
-    } else {
-      setFilteredPosts(posts.filter(post => post.category === activeCategory));
+    let filtered = posts;
+
+    // Filter by category
+    if (activeCategory !== 'all') {
+      filtered = filtered.filter(post => post.category === activeCategory);
     }
-  }, [activeCategory, posts]);
+
+    // Filter by tag
+    if (activeTag) {
+      filtered = filtered.filter(post => post.tags?.includes(activeTag));
+    }
+
+    setFilteredPosts(filtered);
+  }, [activeCategory, activeTag, posts]);
+
+  const handleTagClick = (tag: string, e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setActiveTag(tag);
+    // Update URL
+    const url = new URL(window.location.href);
+    url.searchParams.set('tag', tag);
+    window.history.pushState({}, '', url);
+  };
+
+  const clearTagFilter = () => {
+    setActiveTag(null);
+    // Remove tag from URL
+    const url = new URL(window.location.href);
+    url.searchParams.delete('tag');
+    window.history.pushState({}, '', url);
+  };
 
   return (
     <>
       {/* Category Filter */}
       <section className="py-8 bg-white border-b border-[#D6BFAE]/30">
         <div className="max-w-7xl mx-auto px-6">
-          <div className="flex flex-wrap justify-center gap-4">
+          <div className="flex flex-wrap justify-center gap-4 mb-4">
             {categories.map((category) => (
               <button
                 key={category.value}
@@ -154,6 +186,26 @@ function BlogContent() {
               </button>
             ))}
           </div>
+
+          {/* Active Tag Filter */}
+          {activeTag && (
+            <div className="flex justify-center">
+              <div className="inline-flex items-center gap-2 px-4 py-2 bg-[#C4A25A] text-white rounded-full">
+                <span className="text-sm">
+                  {t('Tag:', 'Etiqueta:')} <span className="font-semibold">#{activeTag}</span>
+                </span>
+                <button
+                  onClick={clearTagFilter}
+                  className="ml-1 hover:bg-white/20 rounded-full p-1 transition-colors"
+                  title={t('Clear filter', 'Limpiar filtro')}
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+          )}
         </div>
       </section>
 
@@ -211,12 +263,17 @@ function BlogContent() {
                         </p>
                         <div className="mt-4 flex flex-wrap gap-2">
                           {post.tags?.slice(0, 3).map((tag, tagIndex) => (
-                            <span
+                            <button
                               key={tagIndex}
-                              className="text-xs bg-[#F7F7F7] text-[#3D3D3D] px-2 py-1"
+                              onClick={(e) => handleTagClick(tag, e)}
+                              className={`text-xs px-2 py-1 transition-colors hover:bg-[#C4A25A] hover:text-white ${
+                                activeTag === tag
+                                  ? 'bg-[#C4A25A] text-white'
+                                  : 'bg-[#F7F7F7] text-[#3D3D3D]'
+                              }`}
                             >
                               #{tag}
-                            </span>
+                            </button>
                           ))}
                         </div>
                       </div>

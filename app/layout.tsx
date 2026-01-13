@@ -15,8 +15,50 @@ const lora = Lora({
 });
 
 export const metadata: Metadata = {
-  title: "Dani Díaz - Bilingual Realtor® | Myrtle Beach Real Estate",
-  description: "From Global Roots to Local Roofs. Bilingual Realtor® at Faircloth Real Estate Group serving Myrtle Beach and the Grand Strand.",
+  title: "Dani Díaz | Bilingual Realtor® Myrtle Beach",
+  description: "Your bilingual real estate expert on the Grand Strand. Helping buyers and sellers in Myrtle Beach, SC.",
+  keywords: ["Myrtle Beach realtor", "bilingual real estate agent", "Grand Strand homes", "Myrtle Beach real estate", "Spanish speaking realtor"],
+  authors: [{ name: "Dani Díaz" }],
+  creator: "Dani Díaz",
+  publisher: "Faircloth Real Estate Group",
+  metadataBase: new URL('https://danidiaz.com'),
+  alternates: {
+    canonical: '/',
+  },
+  openGraph: {
+    type: 'website',
+    locale: 'en_US',
+    alternateLocale: 'es_ES',
+    url: '/',
+    siteName: 'Dani Díaz Real Estate',
+    title: 'Dani Díaz | Bilingual Realtor® Myrtle Beach',
+    description: 'Your bilingual real estate expert on the Grand Strand. Helping buyers and sellers in Myrtle Beach, SC.',
+    images: [
+      {
+        url: '/dani-og-image.jpg',
+        width: 1200,
+        height: 630,
+        alt: 'Dani Díaz - Bilingual Realtor®',
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Dani Díaz | Bilingual Realtor® Myrtle Beach',
+    description: 'Your bilingual real estate expert on the Grand Strand. Helping buyers and sellers in Myrtle Beach, SC.',
+    images: ['/dani-og-image.jpg'],
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
+  },
 };
 
 export default function RootLayout({

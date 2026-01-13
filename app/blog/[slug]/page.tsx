@@ -2,10 +2,11 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
+import Head from 'next/head';
 import { motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, Facebook, Twitter, Linkedin, Link as LinkIcon, Check } from 'lucide-react';
 import Nav from '@/components/Nav';
 import Footer from '@/components/Footer';
 import { useLanguage } from '@/components/LanguageContext';
@@ -172,6 +173,41 @@ export default function BlogPostPage() {
   const [post, setPost] = useState<BlogPost | null>(null);
   const [related, setRelated] = useState(relatedPosts);
   const [loading, setLoading] = useState(true);
+  const [copied, setCopied] = useState(false);
+
+  const shareUrl = typeof window !== 'undefined' ? window.location.href : '';
+
+  const handleShare = (platform: 'facebook' | 'twitter' | 'linkedin') => {
+    if (!post) return;
+
+    const title = language === 'es' && post.title_es ? post.title_es : post.title;
+    const description = language === 'es' && post.excerpt_es ? post.excerpt_es : post.excerpt;
+
+    let url = '';
+    switch (platform) {
+      case 'facebook':
+        url = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`;
+        break;
+      case 'twitter':
+        url = `https://twitter.com/intent/tweet?url=${encodeURIComponent(shareUrl)}&text=${encodeURIComponent(title)}`;
+        break;
+      case 'linkedin':
+        url = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareUrl)}`;
+        break;
+    }
+
+    window.open(url, '_blank', 'width=600,height=400');
+  };
+
+  const handleCopyLink = async () => {
+    try {
+      await navigator.clipboard.writeText(shareUrl);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch (err) {
+      console.error('Failed to copy:', err);
+    }
+  };
 
   useEffect(() => {
     async function fetchPost() {
@@ -217,6 +253,56 @@ export default function BlogPostPage() {
 
     fetchPost();
   }, [params.slug]);
+
+  // SEO Meta Tags
+  useEffect(() => {
+    if (!post) return;
+
+    const title = `${language === 'es' && post.title_es ? post.title_es : post.title} | Dani Díaz Real Estate`;
+    const description = language === 'es' && post.excerpt_es ? post.excerpt_es : post.excerpt;
+    const image = post.featured_image || '/dani-og-image.jpg';
+    const url = typeof window !== 'undefined' ? window.location.href : '';
+
+    // Set document title
+    document.title = title;
+
+    // Helper to set or update meta tag
+    const setMetaTag = (property: string, content: string, isProperty = true) => {
+      const attr = isProperty ? 'property' : 'name';
+      let meta = document.querySelector(`meta[${attr}="${property}"]`);
+      if (!meta) {
+        meta = document.createElement('meta');
+        meta.setAttribute(attr, property);
+        document.head.appendChild(meta);
+      }
+      meta.setAttribute('content', content);
+    };
+
+    // Description
+    setMetaTag('description', description, false);
+
+    // Open Graph
+    setMetaTag('og:title', title);
+    setMetaTag('og:description', description);
+    setMetaTag('og:image', image);
+    setMetaTag('og:url', url);
+    setMetaTag('og:type', 'article');
+
+    // Twitter Card
+    setMetaTag('twitter:card', 'summary_large_image', false);
+    setMetaTag('twitter:title', title, false);
+    setMetaTag('twitter:description', description, false);
+    setMetaTag('twitter:image', image, false);
+
+    // Canonical URL
+    let canonical = document.querySelector('link[rel="canonical"]') as HTMLLinkElement;
+    if (!canonical) {
+      canonical = document.createElement('link');
+      canonical.rel = 'canonical';
+      document.head.appendChild(canonical);
+    }
+    canonical.href = url;
+  }, [post, language]);
 
   if (loading) {
     return (
@@ -425,6 +511,50 @@ export default function BlogPostPage() {
               </div>
             </div>
           )}
+
+          {/* Social Share Buttons */}
+          <div className="mt-12 pt-8 border-t border-[#D6BFAE]/30">
+            <div className="flex flex-col items-center gap-4">
+              <h3 className="text-[#1B365D] font-medium">
+                {t('Share this article', 'Compartir este artículo')}
+              </h3>
+              <div className="flex items-center gap-3">
+                <button
+                  onClick={() => handleShare('facebook')}
+                  className="w-12 h-12 rounded-full bg-[#1877F2] text-white flex items-center justify-center hover:opacity-80 transition-opacity"
+                  aria-label="Share on Facebook"
+                >
+                  <Facebook size={20} />
+                </button>
+                <button
+                  onClick={() => handleShare('twitter')}
+                  className="w-12 h-12 rounded-full bg-[#1DA1F2] text-white flex items-center justify-center hover:opacity-80 transition-opacity"
+                  aria-label="Share on Twitter"
+                >
+                  <Twitter size={20} />
+                </button>
+                <button
+                  onClick={() => handleShare('linkedin')}
+                  className="w-12 h-12 rounded-full bg-[#0A66C2] text-white flex items-center justify-center hover:opacity-80 transition-opacity"
+                  aria-label="Share on LinkedIn"
+                >
+                  <Linkedin size={20} />
+                </button>
+                <button
+                  onClick={handleCopyLink}
+                  className="w-12 h-12 rounded-full bg-[#3D3D3D] text-white flex items-center justify-center hover:opacity-80 transition-opacity relative"
+                  aria-label="Copy link"
+                >
+                  {copied ? <Check size={20} /> : <LinkIcon size={20} />}
+                </button>
+              </div>
+              {copied && (
+                <div className="text-sm text-green-600 font-medium animate-fade-in">
+                  {t('Link copied!', '¡Enlace copiado!')}
+                </div>
+              )}
+            </div>
+          </div>
 
           {/* Author Box */}
           <div className="mt-16 p-8 bg-[#F7F7F7] rounded-lg">

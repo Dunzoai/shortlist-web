@@ -130,9 +130,19 @@ export default function Footer() {
           </div>
 
           {/* Copyright */}
-          <p className="text-white/60 text-xs text-center md:text-left">
-            © {new Date().getFullYear()} Dani Díaz. {t('All rights reserved.', 'Todos los derechos reservados.')}
-          </p>
+          <div className="text-center md:text-left">
+            <p className="text-white/60 text-xs">
+              © {new Date().getFullYear()} Dani Díaz. {t('All rights reserved.', 'Todos los derechos reservados.')}
+            </p>
+            <p className="mt-2">
+              <a
+                href="/admin"
+                className="text-white/30 hover:text-white/50 transition-colors text-xs"
+              >
+                Admin
+              </a>
+            </p>
+          </div>
         </div>
       </div>
     </footer>
