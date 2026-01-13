@@ -47,7 +47,7 @@ const placeholderPost: BlogPost = {
     <p>Myrtle Beach and the surrounding Grand Strand area offer diverse neighborhoods to suit different lifestyles. Whether you prefer beachfront living, golf course communities, or quiet suburban streets, there's something for everyone.</p>
 
     <h2>The Home Search Process</h2>
-    <p>Once you're pre-approved and know what you can afford, the fun begins! Work with a knowledgeable local REALTOR who understands the market and can help you find properties that match your criteria.</p>
+    <p>Once you're pre-approved and know what you can afford, the fun begins! Work with a knowledgeable local Realtor who understands the market and can help you find properties that match your criteria.</p>
 
     <h2>Making an Offer</h2>
     <p>When you find "the one," your agent will help you craft a competitive offer. In today's market, being prepared to move quickly can make all the difference.</p>
@@ -573,7 +573,7 @@ export default function BlogPostPage() {
                   Dani Díaz
                 </h3>
                 <p className="text-[#3D3D3D] mb-3">
-                  {t('Bilingual REALTOR at Faircloth Real Estate Group', 'Agente Inmobiliaria Bilingüe en Faircloth Real Estate Group')}
+                  {t('Bilingual Realtor at Faircloth Real Estate Group', 'Agente Inmobiliaria Bilingüe en Faircloth Real Estate Group')}
                 </p>
                 <Link href="/about" className="text-[#C4A25A] hover:text-[#1B365D] transition-colors font-medium">
                   {t('Read full bio →', 'Leer biografía completa →')}

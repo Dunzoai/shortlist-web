@@ -15,7 +15,7 @@ const lora = Lora({
 });
 
 export const metadata: Metadata = {
-  title: "Dani Díaz | Bilingual REALTOR Myrtle Beach",
+  title: "Dani Díaz | Bilingual Realtor Myrtle Beach",
   description: "Your bilingual real estate expert on the Grand Strand. Helping buyers and sellers in Myrtle Beach, SC.",
   keywords: ["Myrtle Beach realtor", "bilingual real estate agent", "Grand Strand homes", "Myrtle Beach real estate", "Spanish speaking realtor"],
   authors: [{ name: "Dani Díaz" }],
@@ -31,20 +31,20 @@ export const metadata: Metadata = {
     alternateLocale: 'es_ES',
     url: '/',
     siteName: 'Dani Díaz Real Estate',
-    title: 'Dani Díaz | Bilingual REALTOR Myrtle Beach',
+    title: 'Dani Díaz | Bilingual Realtor Myrtle Beach',
     description: 'Your bilingual real estate expert on the Grand Strand. Helping buyers and sellers in Myrtle Beach, SC.',
     images: [
       {
         url: '/dani-og-image.jpg',
         width: 1200,
         height: 630,
-        alt: 'Dani Díaz - Bilingual REALTOR',
+        alt: 'Dani Díaz - Bilingual Realtor',
       },
     ],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Dani Díaz | Bilingual REALTOR Myrtle Beach',
+    title: 'Dani Díaz | Bilingual Realtor Myrtle Beach',
     description: 'Your bilingual real estate expert on the Grand Strand. Helping buyers and sellers in Myrtle Beach, SC.',
     images: ['/dani-og-image.jpg'],
   },

@@ -24,7 +24,7 @@ const staggerContainer = {
 };
 
 const credentials = [
-  { titleEn: 'Licensed REALTOR', titleEs: 'Agente Inmobiliaria con Licencia', year: '2015' },
+  { titleEn: 'Licensed Realtor', titleEs: 'Agente Inmobiliaria con Licencia', year: '2015' },
   { titleEn: 'Bilingual Certification', titleEs: 'Certificación Bilingüe', year: '2016' },
   { titleEn: 'Luxury Home Specialist', titleEs: 'Especialista en Casas de Lujo', year: '2018' },
   { titleEn: 'Relocation Expert', titleEs: 'Experta en Reubicación', year: '2019' },

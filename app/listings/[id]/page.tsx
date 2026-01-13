@@ -388,7 +388,7 @@ export default function ListingDetailPage() {
                     Dani Díaz
                   </h3>
                   <p className="text-[#3D3D3D] text-sm">
-                    {t('Bilingual REALTOR', 'Agente Inmobiliaria Bilingüe')}
+                    {t('Bilingual Realtor', 'Agente Inmobiliaria Bilingüe')}
                   </p>
                 </div>
 
@@ -477,7 +477,7 @@ export default function ListingDetailPage() {
                 Dani Díaz
               </p>
               <p className="text-white/60 text-sm">
-                {t('Bilingual REALTOR at Faircloth Real Estate Group', 'Agente Inmobiliaria Bilingüe en Faircloth Real Estate Group')}
+                {t('Bilingual Realtor at Faircloth Real Estate Group', 'Agente Inmobiliaria Bilingüe en Faircloth Real Estate Group')}
               </p>
             </div>
             <div className="text-center md:text-right">
