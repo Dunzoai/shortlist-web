@@ -461,12 +461,38 @@ export default function Home() {
               <div className="relative mb-8">
                 {/* Decorative Animated Circle - Scroll-based */}
                 <svg
-                  className="absolute pointer-events-none"
+                  className="absolute pointer-events-none hidden md:block"
                   style={{
                     left: '-50px',
                     top: '50%',
                     transform: 'translateY(-50%)',
                     width: 'calc(100% + 80px)',
+                    height: '100px',
+                    zIndex: 0
+                  }}
+                  viewBox="0 0 400 100"
+                  preserveAspectRatio="xMinYMid meet"
+                >
+                  <motion.path
+                    d="M 10,50 C 10,20 50,10 200,10 C 350,10 390,20 390,50 C 390,80 350,90 200,90 C 50,90 10,80 10,50 Z"
+                    fill="none"
+                    stroke="#C4A25A"
+                    strokeWidth="2"
+                    initial={{ pathLength: 0, opacity: 0 }}
+                    whileInView={{ pathLength: 1, opacity: 0.3 }}
+                    viewport={{ once: true, margin: "-100px" }}
+                    transition={{ duration: 1.5, ease: "easeInOut" }}
+                  />
+                </svg>
+
+                {/* Mobile version with different positioning */}
+                <svg
+                  className="absolute pointer-events-none md:hidden"
+                  style={{
+                    left: '-20px',
+                    top: '50%',
+                    transform: 'translateY(-50%)',
+                    width: 'calc(100% + 40px)',
                     height: '100px',
                     zIndex: 0
                   }}
