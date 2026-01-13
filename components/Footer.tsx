@@ -59,12 +59,12 @@ export default function Footer() {
           {/* Social Icons Section */}
           <div className="md:col-span-5 flex flex-col items-start md:items-end justify-start gap-6">
             {/* Faircloth Real Estate Logo */}
-            <div className="relative w-48 h-12">
+            <div className="relative w-[600px] h-[150px]">
               <Image
                 src="/faircloth-real-estate-logo.png"
                 alt="Faircloth Real Estate Group"
                 fill
-                className="object-contain brightness-0 invert"
+                className="object-contain object-left md:object-right brightness-0 invert"
               />
             </div>
 

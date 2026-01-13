@@ -186,12 +186,17 @@ export default function AboutPage() {
               </p>
             </motion.div>
 
-            <motion.div variants={fadeInUp} className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-              {credentials.map((credential, index) => (
-                <div
-                  key={index}
-                  className="bg-white p-8 shadow-lg hover:shadow-xl transition-shadow text-center"
-                >
+            <motion.div
+              variants={fadeInUp}
+              className="overflow-x-auto pb-4 snap-x snap-mandatory md:overflow-visible"
+              style={{ scrollbarWidth: 'thin', scrollbarColor: '#C4A25A transparent' }}
+            >
+              <div className="flex gap-6 md:grid md:grid-cols-2 lg:grid-cols-4 md:gap-6">
+                {credentials.map((credential, index) => (
+                  <div
+                    key={index}
+                    className="bg-white p-8 shadow-lg hover:shadow-xl transition-shadow text-center w-[280px] md:w-auto flex-shrink-0 snap-center"
+                  >
                   <div className="w-16 h-16 bg-[#D6BFAE] rounded-full flex items-center justify-center mx-auto mb-4">
                     <svg
                       className="w-8 h-8"
@@ -212,6 +217,7 @@ export default function AboutPage() {
                   <p className="text-[#C4A25A] font-semibold">{credential.year}</p>
                 </div>
               ))}
+              </div>
             </motion.div>
           </motion.div>
         </div>
