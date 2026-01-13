@@ -12,7 +12,7 @@ export default function AdminDashboard() {
       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
         <Link
           href="/admin/blog"
-          className="bg-white p-6 rounded-lg shadow-lg hover:shadow-xl transition-shadow"
+          className="bg-white p-6 rounded-lg shadow-md border-2 border-[#D6BFAE] hover:border-[#C4A25A] hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
         >
           <h2 className="font-[family-name:var(--font-playfair)] text-2xl text-[#1B365D] mb-2">
             Blog Posts
@@ -24,7 +24,7 @@ export default function AdminDashboard() {
 
         <Link
           href="/admin/properties"
-          className="bg-white p-6 rounded-lg shadow-lg hover:shadow-xl transition-shadow"
+          className="bg-white p-6 rounded-lg shadow-md border-2 border-[#D6BFAE] hover:border-[#C4A25A] hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
         >
           <h2 className="font-[family-name:var(--font-playfair)] text-2xl text-[#1B365D] mb-2">
             Properties
@@ -35,16 +35,16 @@ export default function AdminDashboard() {
         </Link>
       </div>
 
-      <div className="bg-white p-6 rounded-lg shadow-lg">
+      <div className="bg-white p-6 rounded-lg shadow-md border-2 border-[#D6BFAE]">
         <h2 className="font-[family-name:var(--font-playfair)] text-2xl text-[#1B365D] mb-4">
           Image Guidelines
         </h2>
         <div className="space-y-4 text-[#3D3D3D]">
-          <div>
+          <div className="border-l-4 border-[#C4A25A] pl-4">
             <h3 className="font-semibold text-[#1B365D] mb-1">Blog Featured Images</h3>
             <p className="text-sm">Recommended: 1200 x 630 pixels (landscape orientation)</p>
           </div>
-          <div>
+          <div className="border-l-4 border-[#C4A25A] pl-4">
             <h3 className="font-semibold text-[#1B365D] mb-1">Property Images</h3>
             <p className="text-sm">Recommended: 1920 x 1080 pixels (landscape orientation)</p>
             <p className="text-sm text-[#C4A25A] mt-1">Maximum 5 images per property</p>

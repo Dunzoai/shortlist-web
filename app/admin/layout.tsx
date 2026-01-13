@@ -52,7 +52,7 @@ export default function AdminLayout({
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#F7F7F7]">
+      <div className="min-h-screen flex items-center justify-center bg-[#f5f1ed]">
         <div className="text-[#1B365D]">Loading...</div>
       </div>
     );
@@ -60,8 +60,8 @@ export default function AdminLayout({
 
   if (!isAuthenticated) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#F7F7F7]">
-        <div className="bg-white p-8 rounded-lg shadow-lg max-w-md w-full">
+      <div className="min-h-screen flex items-center justify-center bg-[#f5f1ed]">
+        <div className="bg-white p-8 rounded-lg shadow-lg border-2 border-[#D6BFAE] max-w-md w-full">
           <h1 className="font-[family-name:var(--font-playfair)] text-3xl text-[#1B365D] mb-6 text-center">
             Admin Access
           </h1>
@@ -72,7 +72,7 @@ export default function AdminLayout({
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full px-4 py-2 border border-[#D6BFAE] rounded focus:outline-none focus:ring-2 focus:ring-[#C4A25A]"
+                className="w-full px-4 py-2 border-2 border-[#D6BFAE] rounded focus:outline-none focus:border-[#C4A25A] focus:ring-2 focus:ring-[#C4A25A]/20 transition-all"
                 placeholder="Enter admin password"
               />
             </div>
@@ -81,7 +81,7 @@ export default function AdminLayout({
             )}
             <button
               type="submit"
-              className="w-full bg-[#1B365D] text-white py-2 rounded hover:bg-[#C4A25A] transition-colors"
+              className="w-full bg-[#C4A25A] text-white py-2 rounded hover:bg-[#1B365D] transition-colors font-medium"
             >
               Login
             </button>
@@ -92,9 +92,9 @@ export default function AdminLayout({
   }
 
   return (
-    <div className="min-h-screen bg-[#F7F7F7]">
+    <div className="min-h-screen bg-[#f5f1ed]">
       {/* Admin Header */}
-      <header className="bg-[#1B365D] text-white py-4 shadow-lg">
+      <header className="bg-[#1B365D] text-white py-4 shadow-lg border-b-2 border-[#C4A25A]">
         <div className="max-w-7xl mx-auto px-6 flex justify-between items-center">
           <h1 className="font-[family-name:var(--font-playfair)] text-2xl">
             Dani Díaz Admin
@@ -121,7 +121,7 @@ export default function AdminLayout({
             </Link>
             <button
               onClick={handleLogout}
-              className="text-sm bg-white/10 px-4 py-1 rounded hover:bg-white/20 transition-colors"
+              className="text-sm bg-[#C4A25A] text-white px-4 py-1 rounded hover:bg-[#1B365D] hover:ring-2 hover:ring-[#C4A25A] transition-all"
             >
               Logout
             </button>
