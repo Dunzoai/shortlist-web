@@ -459,12 +459,17 @@ export default function Home() {
               </p>
             </motion.div>
 
-            <motion.div variants={fadeInUp} className="grid md:grid-cols-3 gap-8">
-              {testimonials.slice(0, 3).map((testimonial) => (
-                <div
-                  key={testimonial.id}
-                  className="bg-white/10 backdrop-blur p-8 border border-white/20"
-                >
+            <motion.div
+              variants={fadeInUp}
+              className="overflow-x-auto pb-4 snap-x snap-mandatory"
+              style={{ scrollbarWidth: 'thin', scrollbarColor: '#C4A25A transparent' }}
+            >
+              <div className="flex gap-8 min-w-max">
+                {testimonials.map((testimonial) => (
+                  <div
+                    key={testimonial.id}
+                    className="bg-white/10 backdrop-blur p-8 border border-white/20 w-[400px] flex-shrink-0 snap-center"
+                  >
                   <svg className="w-10 h-10 text-[#C4A25A] mb-4" fill="currentColor" viewBox="0 0 24 24">
                     <path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z" />
                   </svg>
@@ -473,10 +478,11 @@ export default function Home() {
                   </p>
                   <div>
                     <p className="text-[#C4A25A] font-semibold">{testimonial.author}</p>
-                    <p className="text-white/60 text-sm">{testimonial.location}</p>
+                    {testimonial.location && <p className="text-white/60 text-sm">{testimonial.location}</p>}
                   </div>
                 </div>
               ))}
+              </div>
             </motion.div>
           </motion.div>
         </div>
@@ -571,7 +577,7 @@ export default function Home() {
                   </div>
                   <div>
                     <p className="text-sm text-[#3D3D3D]/60">{t('Phone', 'Teléfono')}</p>
-                    <p style={{ color: isDark ? '#1B365D' : '#3D3D3D' }} className="font-semibold">(843) 555-0123</p>
+                    <p style={{ color: isDark ? '#1B365D' : '#3D3D3D' }} className="font-semibold">(843) 503-5038</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-4">
@@ -588,6 +594,19 @@ export default function Home() {
                     <p style={{ color: isDark ? '#1B365D' : '#3D3D3D' }} className="font-semibold">danidiazrealestate@gmail.com</p>
                   </div>
                 </div>
+              </div>
+
+              {/* Faircloth Real Estate Logo */}
+              <div className="mt-6 relative w-48 h-12">
+                <Image
+                  src="/faircloth-real-estate-logo.png"
+                  alt="Faircloth Real Estate Group"
+                  fill
+                  className="object-contain"
+                  style={{
+                    filter: 'brightness(0) saturate(100%) invert(16%) sepia(47%) saturate(1634%) hue-rotate(194deg) brightness(94%) contrast(92%)'
+                  }}
+                />
               </div>
             </motion.div>
 

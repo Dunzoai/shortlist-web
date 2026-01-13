@@ -154,37 +154,6 @@ export default function AboutPage() {
                   )}
                 </p>
               </div>
-
-              {/* Contact Info and Logo */}
-              <div className="mt-8 pt-8 border-t border-[#D6BFAE]/30">
-                <div className="space-y-3 mb-6">
-                  <a
-                    href="tel:+18435035038"
-                    className="block text-[#3D3D3D] hover:text-[#C4A25A] transition-colors text-lg font-medium"
-                  >
-                    (843) 503-5038
-                  </a>
-                  <a
-                    href="mailto:danidiazrealestate@gmail.com"
-                    className="block text-[#3D3D3D] hover:text-[#C4A25A] transition-colors"
-                  >
-                    danidiazrealestate@gmail.com
-                  </a>
-                </div>
-
-                {/* Faircloth Real Estate Logo */}
-                <div className="relative w-48 h-12">
-                  <Image
-                    src="/faircloth-real-estate-logo.png"
-                    alt="Faircloth Real Estate Group"
-                    fill
-                    className="object-contain"
-                    style={{
-                      filter: 'brightness(0) saturate(100%) invert(16%) sepia(47%) saturate(1634%) hue-rotate(194deg) brightness(94%) contrast(92%)'
-                    }}
-                  />
-                </div>
-              </div>
             </motion.div>
           </motion.div>
         </div>

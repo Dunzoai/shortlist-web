@@ -64,10 +64,7 @@ export default function Footer() {
                 src="/faircloth-real-estate-logo.png"
                 alt="Faircloth Real Estate Group"
                 fill
-                className="object-contain"
-                style={{
-                  filter: 'brightness(0) saturate(100%) invert(16%) sepia(47%) saturate(1634%) hue-rotate(194deg) brightness(94%) contrast(92%)'
-                }}
+                className="object-contain brightness-0 invert"
               />
             </div>
 
