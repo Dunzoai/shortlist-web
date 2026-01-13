@@ -4,7 +4,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
-import { Home, ClipboardCheck, TrendingUp, Calculator } from 'lucide-react';
+import { Home, ClipboardCheck, HelpCircle, Calculator } from 'lucide-react';
 import Nav from '@/components/Nav';
 import Footer from '@/components/Footer';
 import { useLanguage } from '@/components/LanguageContext';
@@ -86,12 +86,12 @@ const sellerResources = [
     link: '/sellers/checklist'
   },
   {
-    titleEn: 'Market Report',
-    titleEs: 'Reporte del Mercado',
-    descEn: 'Current market conditions',
-    descEs: 'Condiciones actuales del mercado',
-    icon: TrendingUp,
-    link: '/sellers/market-report'
+    titleEn: 'Selling FAQs',
+    titleEs: 'Preguntas Frecuentes',
+    descEn: 'Common questions answered',
+    descEs: 'Preguntas comunes respondidas',
+    icon: HelpCircle,
+    link: '/sellers/faqs'
   },
   {
     titleEn: 'Net Proceeds',
