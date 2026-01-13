@@ -31,7 +31,7 @@ export default function AdminLayout({
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (password === 'daniadmin2026') {
+    if (password === 'avaelena2019!') {
       // Set cookie for 7 days
       const expires = new Date();
       expires.setDate(expires.getDate() + 7);

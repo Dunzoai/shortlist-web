@@ -257,7 +257,7 @@ export default function NewBlogPost() {
           {/* Helper Text */}
           <div className="mt-2 space-y-1">
             <p className="text-sm text-[#3D3D3D]">
-              <span className="font-medium">💡 Recommended:</span> 1200×630px (landscape) for best results
+              <span className="font-medium">Recommended:</span> 1200×630px (landscape) for best results
             </p>
             <p className="text-xs text-[#3D3D3D]/70">
               • Minimum: 800×400px • Aspect ratio: 16:9 or 1.91:1 • Format: JPG or PNG

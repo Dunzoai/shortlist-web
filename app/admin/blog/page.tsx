@@ -245,7 +245,6 @@ export default function AdminBlogList() {
 
         {posts.length === 0 ? (
           <div className="bg-white rounded-xl p-12 shadow-sm text-center">
-            <div className="text-6xl mb-4">📝</div>
             <p className="text-[#3D3D3D] text-lg mb-4">No blog posts yet.</p>
             <Link
               href="/admin/blog/new"
@@ -319,7 +318,6 @@ export default function AdminBlogList() {
             {/* Posts Grid */}
             {filteredPosts.length === 0 ? (
               <div className="bg-white rounded-xl p-12 shadow-sm text-center">
-                <div className="text-6xl mb-4">🔍</div>
                 <p className="text-[#3D3D3D] text-lg">No posts found matching your filters.</p>
                 <button
                   onClick={() => {

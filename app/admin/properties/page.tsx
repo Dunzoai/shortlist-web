@@ -218,7 +218,6 @@ export default function AdminPropertiesList() {
 
         {properties.length === 0 ? (
           <div className="bg-white rounded-xl p-12 shadow-sm text-center">
-            <div className="text-6xl mb-4">🏠</div>
             <p className="text-[#3D3D3D] text-lg mb-4">No properties yet.</p>
             <Link
               href="/admin/properties/new"
@@ -251,7 +250,6 @@ export default function AdminPropertiesList() {
             {/* Properties Grid */}
             {filteredProperties.length === 0 ? (
               <div className="bg-white rounded-xl p-12 shadow-sm text-center">
-                <div className="text-6xl mb-4">🔍</div>
                 <p className="text-[#3D3D3D] text-lg">No properties found with status: {statusFilter}</p>
                 <button
                   onClick={() => setStatusFilter('all')}
