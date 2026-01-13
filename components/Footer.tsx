@@ -105,6 +105,7 @@ export default function Footer() {
                 R
               </a>
             </div>
+            </div>
           </div>
         </div>
 
