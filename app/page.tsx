@@ -462,10 +462,10 @@ export default function Home() {
                 <svg
                   className="absolute pointer-events-none"
                   style={{
-                    left: '-10px',
+                    left: '-30px',
                     top: '50%',
                     transform: 'translateY(-50%)',
-                    width: 'calc(100% + 40px)',
+                    width: 'calc(100% + 80px)',
                     height: '100px',
                     zIndex: 0
                   }}
