@@ -61,3 +61,24 @@ p, span, a, li, label, input, textarea, button {
     background-position: center 65%;
   }
 }
+
+/* Parallax Section 2 */
+.parallax-section-2 {
+  background-image: url('/dani-paralax.png');
+  height: 70vh;
+  background-attachment: fixed;
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+/* Disable fixed attachment on mobile - it doesn't work well */
+@media only screen and (max-device-width: 1366px) {
+  .parallax-section-2 {
+    background-attachment: scroll;
+  }
+}

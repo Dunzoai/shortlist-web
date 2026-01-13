@@ -11,6 +11,7 @@ import { useStyle } from '@/components/StyleContext';
 import InstagramFeed from '@/components/InstagramFeed';
 import NeighborhoodGuides from '@/components/NeighborhoodGuides';
 import ParallaxSection from '@/components/ParallaxSection';
+import ParallaxSection2 from '@/components/ParallaxSection2';
 import Footer from '@/components/Footer';
 
 const fadeInUp = {
@@ -399,6 +400,9 @@ export default function Home() {
 
       {/* Neighborhood Guides Section */}
       <NeighborhoodGuides />
+
+      {/* Parallax Section 2 */}
+      <ParallaxSection2 />
 
       {/* Testimonials Section */}
       <section
