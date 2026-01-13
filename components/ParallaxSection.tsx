@@ -43,7 +43,7 @@ export default function ParallaxSection() {
           className="absolute -top-[40%] left-0 w-full h-[150%] bg-cover bg-no-repeat will-change-transform"
           style={{
             backgroundImage: 'url(/dani-phone-laptop.jpg)',
-            backgroundPosition: 'center center'
+            backgroundPosition: '70% center'
           }}
         />
         <div className="absolute inset-0 bg-[#1B365D]/30 z-10" />
