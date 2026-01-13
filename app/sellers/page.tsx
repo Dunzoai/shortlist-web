@@ -4,6 +4,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
+import { Home, ClipboardCheck, TrendingUp, Calculator } from 'lucide-react';
 import Nav from '@/components/Nav';
 import Footer from '@/components/Footer';
 import { useLanguage } from '@/components/LanguageContext';
@@ -73,28 +74,28 @@ const sellerResources = [
     titleEs: 'Valuación de Casa',
     descEn: 'Get a free market analysis',
     descEs: 'Obtén un análisis gratuito',
-    icon: '💰'
+    icon: Home
   },
   {
     titleEn: 'Seller Checklist',
     titleEs: 'Lista del Vendedor',
     descEn: 'Prepare your home for sale',
     descEs: 'Prepara tu casa para vender',
-    icon: '📋'
+    icon: ClipboardCheck
   },
   {
     titleEn: 'Market Report',
     titleEs: 'Reporte del Mercado',
     descEn: 'Current market conditions',
     descEs: 'Condiciones actuales del mercado',
-    icon: '📊'
+    icon: TrendingUp
   },
   {
     titleEn: 'Net Proceeds',
     titleEs: 'Ganancias Netas',
     descEn: 'Estimate your sale proceeds',
     descEs: 'Estima tus ganancias de venta',
-    icon: '🧮'
+    icon: Calculator
   },
 ];
 
@@ -179,23 +180,28 @@ export default function SellersPage() {
         <div className="max-w-7xl mx-auto px-6">
           {/* Mobile: Horizontal scroll, Desktop: Grid */}
           <div className="flex md:grid md:grid-cols-2 lg:grid-cols-4 gap-6 overflow-x-auto md:overflow-x-visible snap-x snap-mandatory md:snap-none scrollbar-hide pb-4 md:pb-0 -mx-6 md:mx-0 px-6 md:px-0">
-            {sellerResources.map((resource, index) => (
-              <motion.div
-                key={index}
-                className="flex-shrink-0 w-[280px] md:w-auto snap-center md:snap-align-none bg-[#F7F7F7] p-6 text-center hover:shadow-lg transition-shadow cursor-pointer"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
-              >
-                <span className="text-4xl mb-4 block">{resource.icon}</span>
-                <h3 className="font-[family-name:var(--font-playfair)] text-lg text-[#1B365D] mb-2">
-                  {language === 'en' ? resource.titleEn : resource.titleEs}
-                </h3>
-                <p className="text-sm text-[#3D3D3D]">
-                  {language === 'en' ? resource.descEn : resource.descEs}
-                </p>
-              </motion.div>
-            ))}
+            {sellerResources.map((resource, index) => {
+              const IconComponent = resource.icon;
+              return (
+                <motion.div
+                  key={index}
+                  className="flex-shrink-0 w-[280px] md:w-auto snap-center md:snap-align-none bg-[#F7F7F7] p-6 text-center hover:shadow-lg transition-shadow cursor-pointer"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: index * 0.1 }}
+                >
+                  <div className="flex justify-center mb-4">
+                    <IconComponent size={32} className="text-[#1B365D]" />
+                  </div>
+                  <h3 className="font-[family-name:var(--font-playfair)] text-lg text-[#1B365D] mb-2">
+                    {language === 'en' ? resource.titleEn : resource.titleEs}
+                  </h3>
+                  <p className="text-sm text-[#3D3D3D]">
+                    {language === 'en' ? resource.descEn : resource.descEs}
+                  </p>
+                </motion.div>
+              );
+            })}
           </div>
         </div>
       </section>
