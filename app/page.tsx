@@ -95,7 +95,7 @@ export default function Home() {
   const connectSectionRef = useRef(null);
   const { scrollYProgress } = useScroll({
     target: connectSectionRef,
-    offset: ["start end", "center center"]
+    offset: ["start end", "start 60%"]
   });
   const circleProgress = useTransform(scrollYProgress, [0, 1], [0, 1]);
 
