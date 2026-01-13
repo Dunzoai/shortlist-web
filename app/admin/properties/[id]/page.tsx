@@ -57,6 +57,13 @@ export default function EditProperty({ params }: { params: { id: string } }) {
       .eq('id', params.id)
       .single();
 
+    if (error) {
+      console.error('Error fetching property:', error);
+      setError('Failed to load property. It may not exist or the database table may not be set up.');
+      setLoading(false);
+      return;
+    }
+
     if (data) {
       setFormData({
         address: data.address || '',
