@@ -63,6 +63,15 @@ export default function Home() {
   const [videoLoaded, setVideoLoaded] = useState(false);
   const [featuredListings, setFeaturedListings] = useState<any[]>([]);
 
+  // Failsafe: Force video to show after 500ms even if events don't fire
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setVideoLoaded(true);
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, []);
+
   useEffect(() => {
     async function fetchProperties() {
       const { data } = await supabase
@@ -95,8 +104,10 @@ export default function Home() {
             loop
             playsInline
             preload="auto"
-            onLoadedData={() => setVideoLoaded(true)}
-            className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-700 ${videoLoaded ? 'opacity-100' : 'opacity-0'}`}
+            onCanPlay={() => setVideoLoaded(true)}
+            onPlaying={() => setVideoLoaded(true)}
+            onError={() => setVideoLoaded(true)}
+            className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-300 ${videoLoaded ? 'opacity-100' : 'opacity-0'}`}
           >
             <source src="/dani-diaz-hero-video.m4v" type="video/mp4" />
           </video>
