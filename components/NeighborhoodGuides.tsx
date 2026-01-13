@@ -65,7 +65,7 @@ export default function NeighborhoodGuides() {
 
   return (
     <>
-      <section id="neighborhoods" className="py-24 bg-[#F7F7F7]">
+      <section id="neighborhoods" className="relative z-10 py-24 bg-[#F7F7F7]">
         <div className="max-w-7xl mx-auto px-6">
           {/* Header with Navigation Arrows */}
           <div className="mb-8">

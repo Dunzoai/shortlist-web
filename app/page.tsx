@@ -93,15 +93,10 @@ function ParallaxSection({ language, t }: { language: string; t: (en: string, es
     offset: ["start end", "end start"]
   });
 
-  // Near-static image: moves very little to appear fixed while content washes over
-  const y = useTransform(scrollYProgress, [0, 1], ["-3%", "3%"]);
-
   return (
     <section ref={parallaxRef} className="relative h-[70vh] overflow-hidden">
-      <motion.div
-        style={{ y }}
-        className="absolute inset-0 w-full h-[110%] -top-[5%]"
-      >
+      {/* Fixed background image */}
+      <div className="sticky top-0 h-[70vh] w-full">
         <Image
           src="/dani-phone-laptop.jpg"
           alt="Dani Díaz"
@@ -112,21 +107,21 @@ function ParallaxSection({ language, t }: { language: string; t: (en: string, es
         />
         {/* Overlay */}
         <div className="absolute inset-0 bg-[#1B365D]/30"></div>
-      </motion.div>
 
-      {/* Text overlay */}
-      <div className="relative h-full flex items-center justify-center z-10">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.8 }}
-          className="text-center px-6"
-        >
-          <h2 className="font-[family-name:var(--font-playfair)] text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-4">
-            {t('From Global Roots to Local Roofs', 'De Raíces Globales a Techos Locales')}
-          </h2>
-        </motion.div>
+        {/* Text overlay */}
+        <div className="relative h-full flex items-center justify-center z-10">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8 }}
+            className="text-center px-6"
+          >
+            <h2 className="font-[family-name:var(--font-playfair)] text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-4">
+              {t('From Global Roots to Local Roofs', 'De Raíces Globales a Techos Locales')}
+            </h2>
+          </motion.div>
+        </div>
       </div>
     </section>
   );
@@ -334,7 +329,7 @@ export default function Home() {
 
       {/* Featured Listings Section */}
       <section
-        className="py-24 transition-colors duration-500"
+        className="relative z-10 py-24 transition-colors duration-500"
         style={{ backgroundColor: isDark ? '#F7F7F7' : '#F5F0E8' }}
       >
         <div className="max-w-7xl mx-auto px-6">
