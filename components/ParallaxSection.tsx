@@ -27,7 +27,7 @@ export default function ParallaxSection() {
 
       // Only apply effect when section is in view
       if (rect.top < window.innerHeight && rect.bottom > 0) {
-        imageRef.current.style.transform = `translateY(${scrollProgress * 0.3}px)`;
+        imageRef.current.style.transform = `translateY(${scrollProgress * 0.5}px)`;
       }
     };
 
@@ -37,10 +37,10 @@ export default function ParallaxSection() {
 
   if (isMobile) {
     return (
-      <section ref={sectionRef} className="relative h-[60vh] w-full overflow-hidden">
+      <section ref={sectionRef} className="relative h-[80vh] w-full overflow-hidden">
         <div
           ref={imageRef}
-          className="absolute top-0 left-0 w-full h-[120%] bg-cover bg-no-repeat will-change-transform"
+          className="absolute top-0 left-0 w-full h-[150%] bg-cover bg-no-repeat will-change-transform"
           style={{
             backgroundImage: 'url(/dani-phone-laptop.jpg)',
             backgroundPosition: 'center 35%'
