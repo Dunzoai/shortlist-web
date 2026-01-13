@@ -10,6 +10,7 @@ import { useLanguage } from '@/components/LanguageContext';
 import { useStyle } from '@/components/StyleContext';
 import InstagramFeed from '@/components/InstagramFeed';
 import NeighborhoodGuides from '@/components/NeighborhoodGuides';
+import ParallaxSection from '@/components/ParallaxSection';
 import Footer from '@/components/Footer';
 
 const fadeInUp = {
@@ -394,14 +395,7 @@ export default function Home() {
       </section>
 
       {/* Parallax Section */}
-      <div className="parallax-section">
-        <div className="absolute inset-0 bg-[#1B365D]/30"></div>
-        <div className="relative text-center px-6 z-10">
-          <h2 className="font-[family-name:var(--font-playfair)] text-4xl md:text-5xl lg:text-6xl font-bold text-white drop-shadow-lg">
-            {t('From Global Roots to Local Roofs', 'De Raíces Globales a Techos Locales')}
-          </h2>
-        </div>
-      </div>
+      <ParallaxSection />
 
       {/* Neighborhood Guides Section */}
       <NeighborhoodGuides />
