@@ -198,10 +198,9 @@ export default function FAQsPage() {
                         transition: { duration: 0.3 }
                       }}
                       exit={{
-                        x: direction > 0 ? 300 : -300,
-                        opacity: 0,
-                        rotateZ: direction > 0 ? 20 : -20,
-                        transition: { duration: 0.3 }
+                        x: direction > 0 ? 800 : -800,
+                        rotateZ: direction > 0 ? 25 : -25,
+                        transition: { duration: 0.4, ease: "easeIn" }
                       }}
                       drag="x"
                       dragConstraints={{ left: 0, right: 0 }}

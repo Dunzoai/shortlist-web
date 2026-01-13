@@ -1,10 +1,8 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import { useLanguage } from './LanguageContext';
 
 export default function ParallaxSection() {
-  const { language, t } = useLanguage();
   const [isMobile, setIsMobile] = useState(false);
   const imageRef = useRef<HTMLDivElement>(null);
   const sectionRef = useRef<HTMLDivElement>(null);
@@ -55,11 +53,6 @@ export default function ParallaxSection() {
   return (
     <div className="parallax-section">
       <div className="absolute inset-0 bg-[#1B365D]/30" />
-      <div className="relative z-10 text-center px-6">
-        <h2 className="text-white text-4xl md:text-5xl lg:text-6xl font-[family-name:var(--font-playfair)] font-bold drop-shadow-lg">
-          {t('From Global Roots to Local Roofs', 'De Raíces Globales a Techos Locales')}
-        </h2>
-      </div>
     </div>
   );
 }
