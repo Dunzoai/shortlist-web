@@ -1,9 +1,9 @@
 'use client';
 
 import { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, useMotionValue, useTransform } from 'framer-motion';
 import Link from 'next/link';
-import { HelpCircle, ChevronDown } from 'lucide-react';
+import { HelpCircle, ChevronLeft, ChevronRight, RotateCcw } from 'lucide-react';
 import Nav from '@/components/Nav';
 import Footer from '@/components/Footer';
 import { useLanguage } from '@/components/LanguageContext';
@@ -80,10 +80,40 @@ const faqs: FAQ[] = [
 
 export default function FAQsPage() {
   const { language, t } = useLanguage();
-  const [openIndex, setOpenIndex] = useState<number | null>(null);
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [direction, setDirection] = useState(0);
 
-  const toggleAccordion = (index: number) => {
-    setOpenIndex(openIndex === index ? null : index);
+  const currentFAQ = faqs[currentIndex];
+  const isComplete = currentIndex >= faqs.length;
+
+  const handleNext = () => {
+    if (currentIndex < faqs.length) {
+      setDirection(1);
+      setCurrentIndex(prev => prev + 1);
+    }
+  };
+
+  const handlePrevious = () => {
+    if (currentIndex > 0) {
+      setDirection(-1);
+      setCurrentIndex(prev => prev - 1);
+    }
+  };
+
+  const handleStartOver = () => {
+    setDirection(-1);
+    setCurrentIndex(0);
+  };
+
+  const handleDragEnd = (event: any, info: any) => {
+    const swipeThreshold = 100;
+    if (Math.abs(info.offset.x) > swipeThreshold) {
+      if (info.offset.x > 0 && currentIndex > 0) {
+        handlePrevious();
+      } else if (info.offset.x < 0 && currentIndex < faqs.length) {
+        handleNext();
+      }
+    }
   };
 
   return (
@@ -91,7 +121,7 @@ export default function FAQsPage() {
       <Nav />
 
       {/* Hero Section */}
-      <section className="relative pt-32 pb-24 bg-[#1B365D]">
+      <section className="relative pt-32 pb-16 bg-[#1B365D]">
         <div className="max-w-4xl mx-auto px-6">
           <motion.div
             className="text-center"
@@ -107,64 +137,194 @@ export default function FAQsPage() {
             </h1>
             <p className="text-[#D6BFAE] text-xl max-w-2xl mx-auto">
               {t(
-                'Answers to frequently asked questions about selling your home',
-                'Respuestas a preguntas frecuentes sobre la venta de tu casa'
+                'Swipe through answers to frequently asked questions',
+                'Desliza para ver respuestas a preguntas frecuentes'
               )}
             </p>
           </motion.div>
         </div>
       </section>
 
-      {/* FAQs Section */}
-      <section className="py-24 bg-[#F7F7F7]">
-        <div className="max-w-4xl mx-auto px-6">
-          <div className="space-y-4">
-            {faqs.map((faq, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: index * 0.05 }}
-              >
-                <div className="bg-white shadow-md overflow-hidden">
-                  {/* Question Button */}
-                  <button
-                    onClick={() => toggleAccordion(index)}
-                    className="w-full px-6 py-5 flex justify-between items-center text-left hover:bg-[#F7F7F7] transition-colors"
-                  >
-                    <span className="font-[family-name:var(--font-playfair)] text-lg md:text-xl text-[#1B365D] pr-4">
-                      {language === 'en' ? faq.questionEn : faq.questionEs}
-                    </span>
-                    <motion.div
-                      animate={{ rotate: openIndex === index ? 180 : 0 }}
-                      transition={{ duration: 0.3 }}
-                      className="flex-shrink-0"
-                    >
-                      <ChevronDown size={24} className="text-[#C4A25A]" />
-                    </motion.div>
-                  </button>
+      {/* Card Stack Section */}
+      <section className="py-16 md:py-24 bg-[#F7F7F7] min-h-[600px] flex items-center">
+        <div className="max-w-7xl mx-auto px-6 w-full">
+          {!isComplete ? (
+            <div className="relative">
+              {/* Card Counter */}
+              <div className="text-center mb-8">
+                <p className="text-[#C4A25A] font-semibold text-lg">
+                  {currentIndex + 1} {t('of', 'de')} {faqs.length}
+                </p>
+              </div>
 
-                  {/* Answer */}
-                  <AnimatePresence>
-                    {openIndex === index && (
+              {/* Card Stack Container */}
+              <div className="relative h-[500px] md:h-[450px] flex items-center justify-center">
+                {/* Navigation Arrows - Desktop */}
+                <button
+                  onClick={handlePrevious}
+                  disabled={currentIndex === 0}
+                  className="hidden md:flex absolute left-0 z-20 w-12 h-12 items-center justify-center bg-white rounded-full shadow-lg hover:bg-[#C4A25A] hover:text-white transition-colors disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:bg-white disabled:hover:text-[#3D3D3D]"
+                  aria-label="Previous"
+                >
+                  <ChevronLeft size={24} />
+                </button>
+
+                <button
+                  onClick={handleNext}
+                  disabled={currentIndex >= faqs.length - 1}
+                  className="hidden md:flex absolute right-0 z-20 w-12 h-12 items-center justify-center bg-white rounded-full shadow-lg hover:bg-[#C4A25A] hover:text-white transition-colors disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:bg-white disabled:hover:text-[#3D3D3D]"
+                  aria-label="Next"
+                >
+                  <ChevronRight size={24} />
+                </button>
+
+                {/* Cards */}
+                <div className="relative w-full max-w-md mx-auto h-full flex items-center justify-center">
+                  <AnimatePresence mode="popLayout" custom={direction}>
+                    {/* Current Card */}
+                    <motion.div
+                      key={currentIndex}
+                      custom={direction}
+                      initial={{
+                        scale: 0.95,
+                        opacity: 0,
+                        rotateZ: direction > 0 ? 5 : -5,
+                      }}
+                      animate={{
+                        scale: 1,
+                        opacity: 1,
+                        rotateZ: 0,
+                        x: 0,
+                        transition: { duration: 0.3 }
+                      }}
+                      exit={{
+                        x: direction > 0 ? 300 : -300,
+                        opacity: 0,
+                        rotateZ: direction > 0 ? 20 : -20,
+                        transition: { duration: 0.3 }
+                      }}
+                      drag="x"
+                      dragConstraints={{ left: 0, right: 0 }}
+                      dragElastic={0.7}
+                      onDragEnd={handleDragEnd}
+                      className="absolute w-full cursor-grab active:cursor-grabbing"
+                    >
+                      <div className="bg-white rounded-2xl shadow-2xl p-8 md:p-10 min-h-[400px] flex flex-col">
+                        {/* Gold accent line */}
+                        <div className="w-16 h-1 bg-[#C4A25A] rounded-full mb-6"></div>
+
+                        {/* Question */}
+                        <h2 className="font-[family-name:var(--font-playfair)] text-2xl md:text-3xl text-[#1B365D] mb-6">
+                          {language === 'en' ? currentFAQ.questionEn : currentFAQ.questionEs}
+                        </h2>
+
+                        {/* Answer */}
+                        <p className="text-[#3D3D3D] text-base md:text-lg leading-relaxed flex-grow">
+                          {language === 'en' ? currentFAQ.answerEn : currentFAQ.answerEs}
+                        </p>
+
+                        {/* Swipe hint - mobile only */}
+                        <div className="md:hidden mt-6 text-center text-sm text-[#3D3D3D]/40">
+                          {t('← Swipe to navigate →', '← Desliza para navegar →')}
+                        </div>
+                      </div>
+                    </motion.div>
+
+                    {/* Next card preview (behind current) */}
+                    {currentIndex < faqs.length - 1 && (
                       <motion.div
-                        initial={{ height: 0, opacity: 0 }}
-                        animate={{ height: 'auto', opacity: 1 }}
-                        exit={{ height: 0, opacity: 0 }}
-                        transition={{ duration: 0.3 }}
-                        className="overflow-hidden"
+                        key={`preview-${currentIndex + 1}`}
+                        className="absolute w-full pointer-events-none"
+                        initial={{ scale: 0.9, opacity: 0.5, y: 10 }}
+                        animate={{ scale: 0.95, opacity: 0.5, y: 10 }}
+                        style={{ zIndex: -1 }}
                       >
-                        <div className="px-6 pb-5 pt-2 text-[#3D3D3D] leading-relaxed border-t border-[#D6BFAE]/30">
-                          {language === 'en' ? faq.answerEn : faq.answerEs}
+                        <div className="bg-white rounded-2xl shadow-xl p-8 md:p-10 min-h-[400px] transform rotate-2">
+                          <div className="w-16 h-1 bg-[#C4A25A]/50 rounded-full mb-6"></div>
+                          <div className="space-y-4 opacity-30">
+                            <div className="h-8 bg-[#1B365D]/10 rounded w-3/4"></div>
+                            <div className="h-4 bg-[#3D3D3D]/10 rounded"></div>
+                            <div className="h-4 bg-[#3D3D3D]/10 rounded w-5/6"></div>
+                          </div>
+                        </div>
+                      </motion.div>
+                    )}
+
+                    {/* Second card preview (further behind) */}
+                    {currentIndex < faqs.length - 2 && (
+                      <motion.div
+                        key={`preview2-${currentIndex + 2}`}
+                        className="absolute w-full pointer-events-none"
+                        initial={{ scale: 0.85, opacity: 0.3, y: 20 }}
+                        animate={{ scale: 0.9, opacity: 0.3, y: 20 }}
+                        style={{ zIndex: -2 }}
+                      >
+                        <div className="bg-white rounded-2xl shadow-lg p-8 md:p-10 min-h-[400px] transform -rotate-1">
+                          <div className="w-16 h-1 bg-[#C4A25A]/30 rounded-full mb-6"></div>
+                          <div className="space-y-4 opacity-20">
+                            <div className="h-8 bg-[#1B365D]/10 rounded w-3/4"></div>
+                            <div className="h-4 bg-[#3D3D3D]/10 rounded"></div>
+                            <div className="h-4 bg-[#3D3D3D]/10 rounded w-5/6"></div>
+                          </div>
                         </div>
                       </motion.div>
                     )}
                   </AnimatePresence>
                 </div>
-              </motion.div>
-            ))}
-          </div>
+              </div>
+
+              {/* Progress Dots */}
+              <div className="flex justify-center gap-2 mt-8">
+                {faqs.map((_, index) => (
+                  <button
+                    key={index}
+                    onClick={() => {
+                      setDirection(index > currentIndex ? 1 : -1);
+                      setCurrentIndex(index);
+                    }}
+                    className={`h-2 rounded-full transition-all ${
+                      index === currentIndex
+                        ? 'w-8 bg-[#C4A25A]'
+                        : index < currentIndex
+                        ? 'w-2 bg-[#C4A25A]/50'
+                        : 'w-2 bg-[#D6BFAE]'
+                    }`}
+                    aria-label={`Go to question ${index + 1}`}
+                  />
+                ))}
+              </div>
+            </div>
+          ) : (
+            /* Completion State */
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.5 }}
+              className="max-w-md mx-auto text-center"
+            >
+              <div className="bg-white rounded-2xl shadow-2xl p-10">
+                <div className="inline-flex items-center justify-center w-20 h-20 bg-[#C4A25A]/10 rounded-full mb-6">
+                  <HelpCircle size={40} className="text-[#C4A25A]" />
+                </div>
+                <h2 className="font-[family-name:var(--font-playfair)] text-3xl text-[#1B365D] mb-4">
+                  {t('All Done!', '¡Todo Listo!')}
+                </h2>
+                <p className="text-[#3D3D3D] text-lg mb-8">
+                  {t(
+                    'You\'ve explored all the common seller questions.',
+                    'Has explorado todas las preguntas comunes de vendedores.'
+                  )}
+                </p>
+                <button
+                  onClick={handleStartOver}
+                  className="inline-flex items-center gap-2 bg-[#F7F7F7] text-[#1B365D] px-6 py-3 rounded-lg hover:bg-[#D6BFAE] transition-colors mb-4"
+                >
+                  <RotateCcw size={20} />
+                  {t('Start Over', 'Empezar de Nuevo')}
+                </button>
+              </div>
+            </motion.div>
+          )}
         </div>
       </section>
 
@@ -178,12 +338,12 @@ export default function FAQsPage() {
             transition={{ duration: 0.6 }}
           >
             <h2 className="font-[family-name:var(--font-playfair)] text-4xl text-white mb-6">
-              {t('Have More Questions?', '¿Tienes Más Preguntas?')}
+              {t('Still Have Questions?', '¿Todavía Tienes Preguntas?')}
             </h2>
             <p className="text-[#D6BFAE] text-lg mb-8">
               {t(
-                'Let\'s talk! I\'m here to answer all your questions and guide you through every step of the selling process.',
-                '¡Hablemos! Estoy aquí para responder todas tus preguntas y guiarte en cada paso del proceso de venta.'
+                'Let\'s talk! I\'m here to answer all your questions and guide you through every step.',
+                '¡Hablemos! Estoy aquí para responder todas tus preguntas y guiarte en cada paso.'
               )}
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
