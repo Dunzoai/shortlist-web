@@ -93,20 +93,20 @@ function ParallaxSection({ language, t }: { language: string; t: (en: string, es
     offset: ["start end", "end start"]
   });
 
-  // True parallax: image moves much slower (30% of scroll speed) creating fixed appearance
-  const y = useTransform(scrollYProgress, [0, 1], ["-20%", "20%"]);
+  // Near-static image: moves very little to appear fixed while content washes over
+  const y = useTransform(scrollYProgress, [0, 1], ["-3%", "3%"]);
 
   return (
     <section ref={parallaxRef} className="relative h-[70vh] overflow-hidden">
       <motion.div
         style={{ y }}
-        className="absolute inset-0 w-full h-[140%] -top-[20%]"
+        className="absolute inset-0 w-full h-[110%] -top-[5%]"
       >
         <Image
           src="/dani-phone-laptop.jpg"
           alt="Dani Díaz"
           fill
-          className="object-cover object-[center_35%]"
+          className="object-cover object-[center_35%] md:object-[center_65%]"
           priority={false}
           quality={90}
         />
