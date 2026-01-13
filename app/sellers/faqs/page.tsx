@@ -195,24 +195,25 @@ export default function FAQsPage() {
 
                 {/* Cards */}
                 <div className="relative w-full max-w-md mx-auto h-full flex items-center justify-center scale-90 md:scale-100">
-                  <AnimatePresence mode="popLayout" custom={direction}>
+                  <AnimatePresence mode="wait" custom={direction}>
                     {/* Current Card */}
                     <motion.div
                       key={currentIndex}
                       custom={direction}
                       initial={{
-                        scale: 0.95,
-                        rotateZ: direction > 0 ? 5 : -5,
+                        x: 0,
+                        rotateZ: 0,
+                        scale: 1
                       }}
                       animate={{
-                        scale: 1,
-                        rotateZ: 0,
                         x: 0,
-                        transition: { duration: 0.3 }
+                        rotateZ: 0,
+                        scale: 1
                       }}
                       exit={{
                         x: direction > 0 ? -1000 : 1000,
                         rotateZ: direction > 0 ? -30 : 30,
+                        scale: 1,
                         transition: { duration: 0.3, ease: "easeOut" }
                       }}
                       drag="x"
