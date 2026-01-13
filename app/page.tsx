@@ -457,33 +457,35 @@ export default function Home() {
             variants={staggerContainer}
           >
             <motion.div variants={fadeInUp}>
-              <div className="relative inline-block">
-                {/* Decorative Animated Ellipse - Scroll-based */}
-                <motion.svg
-                  className="absolute -left-8 md:-left-20 -top-4 md:-top-6 pointer-events-none"
-                  width="350"
-                  height="80"
-                  viewBox="0 0 350 80"
+              <div className="relative mb-8">
+                {/* Decorative Animated Circle - Scroll-based */}
+                <svg
+                  className="absolute pointer-events-none"
                   style={{
-                    zIndex: 0,
-                    opacity: 0.3
+                    left: '-10px',
+                    top: '50%',
+                    transform: 'translateY(-50%)',
+                    width: 'calc(100% + 40px)',
+                    height: '100px',
+                    zIndex: 0
                   }}
+                  viewBox="0 0 400 100"
+                  preserveAspectRatio="xMinYMid meet"
                 >
-                  <motion.ellipse
-                    cx="175"
-                    cy="40"
-                    rx="160"
-                    ry="30"
+                  <motion.path
+                    d="M 10,50 C 10,20 50,10 200,10 C 350,10 390,20 390,50 C 390,80 350,90 200,90 C 50,90 10,80 10,50 Z"
                     fill="none"
                     stroke="#C4A25A"
                     strokeWidth="2"
-                    strokeLinecap="round"
-                    style={{ pathLength: circleProgress }}
+                    initial={{ pathLength: 0, opacity: 0 }}
+                    whileInView={{ pathLength: 1, opacity: 0.3 }}
+                    viewport={{ once: true, margin: "-100px" }}
+                    transition={{ duration: 1.5, ease: "easeInOut" }}
                   />
-                </motion.svg>
+                </svg>
 
                 <h2
-                  className="font-[family-name:var(--font-playfair)] text-4xl md:text-5xl mb-6 transition-colors duration-500 relative z-10"
+                  className="font-[family-name:var(--font-playfair)] text-4xl md:text-5xl transition-colors duration-500 relative z-10"
                   style={{ color: isDark ? '#1B365D' : '#3D3D3D' }}
                 >
                   {t("Let's Connect", 'Conectemos')}
