@@ -366,7 +366,7 @@ export default function BlogPage() {
                 Dani Díaz
               </p>
               <p className="text-white/60 text-sm">
-                {t('Bilingual Realtor® at Faircloth Real Estate Group', 'Agente Inmobiliaria Bilingüe en Faircloth Real Estate Group')}
+                {t('Bilingual REALTOR at Faircloth Real Estate Group', 'Agente Inmobiliaria Bilingüe en Faircloth Real Estate Group')}
               </p>
             </div>
             <div className="text-center md:text-right">

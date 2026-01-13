@@ -150,6 +150,9 @@ export default function Footer() {
             <p className="text-white/60 text-xs">
               © {new Date().getFullYear()} Dani Díaz. {t('All rights reserved.', 'Todos los derechos reservados.')}
             </p>
+            <p className="text-white/40 text-xs mt-2">
+              REALTOR is a registered trademark of the NAR.
+            </p>
             <p className="mt-2">
               <a
                 href="/admin"

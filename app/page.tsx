@@ -152,7 +152,7 @@ export default function Home() {
             Dani Díaz
           </h1>
           <p className="text-[#C4A25A] text-xl md:text-2xl mb-4 tracking-wide">
-            {t('Bilingual Realtor® at Faircloth Real Estate Group', 'Agente Inmobiliaria Bilingüe en Faircloth Real Estate Group')}
+            {t('Bilingual REALTOR at Faircloth Real Estate Group', 'Agente Inmobiliaria Bilingüe en Faircloth Real Estate Group')}
           </p>
           <p
             className="font-[family-name:var(--font-playfair)] text-2xl md:text-3xl italic mb-12 transition-colors duration-500"
@@ -241,7 +241,7 @@ export default function Home() {
               </p>
               <p className="text-[#3D3D3D] text-lg leading-relaxed mb-8">
                 {t(
-                  "As a bilingual Realtor®, I guide Spanish and English-speaking clients through every step of buying or selling on the Grand Strand. Whether you're a first-time buyer or looking for your next investment, I'm here to make the journey personal.",
+                  "As a bilingual REALTOR, I guide Spanish and English-speaking clients through every step of buying or selling on the Grand Strand. Whether you're a first-time buyer or looking for your next investment, I'm here to make the journey personal.",
                   "Como Agente Inmobiliaria bilingüe, guío a clientes hispanohablantes e angloparlantes a través de cada paso de compra o venta en el Grand Strand. Ya sea que seas un comprador primerizo o estés buscando tu próxima inversión, estoy aquí para hacer el viaje personal."
                 )}
               </p>
