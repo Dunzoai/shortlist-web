@@ -41,7 +41,11 @@ export default function AdminPropertiesList() {
       .order('display_order', { ascending: true });
 
     if (data) {
+      console.log('Fetched properties:', data);
       setProperties(data);
+    }
+    if (error) {
+      console.error('Error fetching properties:', error);
     }
     setLoading(false);
   };
@@ -333,6 +337,7 @@ export default function AdminPropertiesList() {
                           <Link
                             href={`/admin/properties/${property.id}`}
                             className="flex items-center gap-1.5 text-[#C4A25A] hover:text-[#1B365D] transition-colors font-medium text-sm"
+                            onClick={() => console.log('Editing property with ID:', property.id)}
                           >
                             <Edit size={16} />
                             <span>Edit</span>

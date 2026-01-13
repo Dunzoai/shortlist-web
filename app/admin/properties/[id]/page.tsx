@@ -51,6 +51,8 @@ export default function EditProperty({ params }: { params: { id: string } }) {
   }, [params.id]);
 
   const fetchProperty = async () => {
+    console.log('Fetching property with ID:', params.id);
+
     const { data, error } = await supabase
       .from('featured_properties')
       .select('*')
@@ -59,7 +61,7 @@ export default function EditProperty({ params }: { params: { id: string } }) {
 
     if (error) {
       console.error('Error fetching property:', error);
-      setError('Failed to load property. It may not exist or the database table may not be set up.');
+      setError(`Failed to load property: ${error.message}. ID: ${params.id}`);
       setLoading(false);
       return;
     }
