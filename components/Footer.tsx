@@ -49,23 +49,24 @@ export default function Footer() {
 
           {/* Vertical Divider */}
           <div className="hidden md:block md:col-span-1">
-            <div className="h-full w-px bg-white/20 mx-auto"></div>
+            <div className="h-full w-px bg-white/30 mx-auto"></div>
           </div>
 
           {/* Faircloth and Social Icons Section */}
-          <div className="md:col-span-5 flex flex-col items-end">
-            {/* Faircloth Real Estate Logo */}
-            <div className="relative w-[300px] h-[75px] md:w-[500px] md:h-[125px]">
-              <Image
-                src="/faircloth-real-estate-logo.png"
-                alt="Faircloth Real Estate Group"
-                fill
-                className="object-contain brightness-0 invert"
-              />
-            </div>
+          <div className="md:col-span-5">
+            <div className="flex flex-col items-end gap-6">
+              {/* Faircloth Real Estate Logo */}
+              <div className="relative w-[400px] h-[100px] md:w-[600px] md:h-[150px]">
+                <Image
+                  src="/faircloth-real-estate-logo.png"
+                  alt="Faircloth Real Estate Group"
+                  fill
+                  className="object-contain brightness-0 invert"
+                />
+              </div>
 
-            {/* Social Icons - aligned with North Myrtle Beach line */}
-            <div className="flex gap-3 mt-[68px]">
+              {/* Social Icons */}
+              <div className="flex gap-3">
               <a
                 href="https://www.facebook.com/daniampudiazv/"
                 target="_blank"
