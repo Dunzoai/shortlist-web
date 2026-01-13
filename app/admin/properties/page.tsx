@@ -4,7 +4,7 @@ import { useEffect, useState, useMemo } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { supabase } from '@/lib/supabase';
-import { Trash2, Edit, Home, DollarSign, TrendingUp, ArrowUp, ArrowDown } from 'lucide-react';
+import { Trash2, Edit, Home, DollarSign, TrendingUp, ArrowUp, ArrowDown, ArrowLeft } from 'lucide-react';
 
 interface Property {
   id: string;
@@ -153,6 +153,14 @@ export default function AdminPropertiesList() {
     <div className="min-h-screen bg-[#FAF9F7] p-6">
       {/* Welcome Header */}
       <div className="max-w-7xl mx-auto mb-8">
+        <Link
+          href="/admin"
+          className="inline-flex items-center gap-2 text-[#3D3D3D] hover:text-[#C4A25A] transition-colors mb-6"
+        >
+          <ArrowLeft size={20} />
+          <span>Back to Dashboard</span>
+        </Link>
+
         <div className="flex justify-between items-start mb-8">
           <div>
             <h1 className="font-[family-name:var(--font-playfair)] text-4xl text-[#1B365D] mb-2">
