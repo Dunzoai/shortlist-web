@@ -1,11 +1,13 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useLanguage } from './LanguageContext';
 
 export default function ParallaxSection() {
   const { language, t } = useLanguage();
   const [isMobile, setIsMobile] = useState(false);
+  const imageRef = useRef<HTMLDivElement>(null);
+  const sectionRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const checkMobile = () => setIsMobile(window.innerWidth < 1024);
@@ -14,19 +16,38 @@ export default function ParallaxSection() {
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
+  useEffect(() => {
+    if (!isMobile) return;
+
+    const handleScroll = () => {
+      if (!imageRef.current || !sectionRef.current) return;
+
+      const rect = sectionRef.current.getBoundingClientRect();
+      const scrollProgress = -rect.top;
+
+      // Only apply effect when section is in view
+      if (rect.top < window.innerHeight && rect.bottom > 0) {
+        imageRef.current.style.transform = `translateY(${scrollProgress * 0.3}px)`;
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [isMobile]);
+
   if (isMobile) {
-    // Mobile: Use a simple static image with overlay
     return (
-      <section className="relative h-[60vh] w-full overflow-hidden">
+      <section ref={sectionRef} className="relative h-[60vh] w-full overflow-hidden">
         <div
-          className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+          ref={imageRef}
+          className="absolute top-0 left-0 w-full h-[120%] bg-cover bg-no-repeat will-change-transform"
           style={{
             backgroundImage: 'url(/dani-phone-laptop.jpg)',
             backgroundPosition: 'center 35%'
           }}
         />
-        <div className="absolute inset-0 bg-[#1B365D]/30" />
-        <div className="relative z-10 h-full flex items-center justify-center">
+        <div className="absolute inset-0 bg-[#1B365D]/30 z-10" />
+        <div className="relative z-20 h-full flex items-center justify-center">
           <h2 className="text-white text-3xl md:text-4xl font-[family-name:var(--font-playfair)] font-bold text-center px-6 drop-shadow-lg">
             {t('From Global Roots to Local Roofs', 'De Raíces Globales a Techos Locales')}
           </h2>
@@ -35,11 +56,11 @@ export default function ParallaxSection() {
     );
   }
 
-  // Desktop: Use CSS parallax
+  // Desktop: Use CSS parallax (background-attachment: fixed works here)
   return (
     <div className="parallax-section">
-      <div className="absolute inset-0 bg-[#1B365D]/30"></div>
-      <div className="relative text-center px-6 z-10">
+      <div className="absolute inset-0 bg-[#1B365D]/30" />
+      <div className="relative z-10 text-center px-6">
         <h2 className="text-white text-4xl md:text-5xl lg:text-6xl font-[family-name:var(--font-playfair)] font-bold drop-shadow-lg">
           {t('From Global Roots to Local Roofs', 'De Raíces Globales a Techos Locales')}
         </h2>
