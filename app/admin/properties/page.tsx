@@ -169,8 +169,9 @@ export default function AdminPropertiesList() {
 
         <div className="flex justify-between items-start mb-8">
           <div>
-            <h1 className="font-[family-name:var(--font-playfair)] text-4xl text-[#1B365D] mb-2">
-              Featured Properties 🏡
+            <h1 className="font-[family-name:var(--font-playfair)] text-4xl text-[#1B365D] mb-2 flex items-center gap-3">
+              Featured Properties
+              <Home className="text-[#C4A25A]" size={36} />
             </h1>
             <p className="text-[#3D3D3D] text-lg">Manage your property listings</p>
             {encouragement && (

@@ -4,7 +4,7 @@ import { useEffect, useState, useMemo } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { supabase } from '@/lib/supabase';
-import { Trash2, ExternalLink, Search, Edit, FileText, CheckCircle, Calendar, ArrowLeft } from 'lucide-react';
+import { Trash2, ExternalLink, Search, Edit, FileText, CheckCircle, Calendar, ArrowLeft, Sparkles } from 'lucide-react';
 import { getRandomEncouragement } from '@/lib/encouragements';
 
 interface BlogPost {
@@ -204,8 +204,9 @@ export default function AdminBlogList() {
 
         <div className="flex justify-between items-start mb-8">
           <div>
-            <h1 className="font-[family-name:var(--font-playfair)] text-4xl text-[#1B365D] mb-2">
-              Welcome back, Dani ✨
+            <h1 className="font-[family-name:var(--font-playfair)] text-4xl text-[#1B365D] mb-2 flex items-center gap-3">
+              Welcome back, Dani
+              <Sparkles className="text-[#C4A25A]" size={32} />
             </h1>
             <p className="text-[#3D3D3D] text-lg">Manage your blog content</p>
             {encouragement && (

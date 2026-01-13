@@ -109,6 +109,23 @@ export default function ListingDetailPage() {
   useEffect(() => {
     async function translateListing() {
       if (language === 'es' && listing && !translating) {
+        // Check cache first
+        const cacheKey = `listing_translation_${listing.id}`;
+        const cached = localStorage.getItem(cacheKey);
+
+        if (cached) {
+          try {
+            const parsedCache = JSON.parse(cached);
+            // Check if cached translation matches current content
+            if (parsedCache.original_description === listing.description) {
+              setTranslatedContent(parsedCache.translated);
+              return;
+            }
+          } catch (e) {
+            // Invalid cache, continue to fetch
+          }
+        }
+
         setTranslating(true);
         try {
           const response = await fetch('/api/listings/translate', {
@@ -124,6 +141,17 @@ export default function ListingDetailPage() {
           if (response.ok) {
             const translated = await response.json();
             setTranslatedContent(translated);
+
+            // Cache the translation
+            try {
+              localStorage.setItem(cacheKey, JSON.stringify({
+                original_description: listing.description,
+                translated: translated,
+                timestamp: Date.now()
+              }));
+            } catch (e) {
+              // Ignore storage errors
+            }
           }
         } catch (error) {
           console.error('Failed to translate listing:', error);
@@ -281,7 +309,15 @@ export default function ListingDetailPage() {
                   <h2 className="font-[family-name:var(--font-playfair)] text-2xl text-[#1B365D] mb-4">
                     {t('Description', 'Descripción')}
                   </h2>
-                  <div className="text-[#3D3D3D] leading-relaxed whitespace-pre-line">
+                  <div className="text-[#3D3D3D] leading-relaxed whitespace-pre-line relative">
+                    {translating && language === 'es' && (
+                      <div className="absolute inset-0 bg-white/80 backdrop-blur-sm flex items-center justify-center">
+                        <div className="flex items-center gap-2 text-[#C4A25A]">
+                          <div className="animate-spin h-4 w-4 border-2 border-[#C4A25A] border-t-transparent rounded-full"></div>
+                          <span className="text-sm">Traduciendo...</span>
+                        </div>
+                      </div>
+                    )}
                     {translatedContent?.description || listing.description}
                   </div>
                 </div>
