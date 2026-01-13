@@ -106,12 +106,27 @@ export default function FAQsPage() {
   };
 
   const handleDragEnd = (event: any, info: any) => {
-    const swipeThreshold = 100;
-    if (Math.abs(info.offset.x) > swipeThreshold) {
-      if (info.offset.x > 0 && currentIndex > 0) {
-        handlePrevious();
-      } else if (info.offset.x < 0 && currentIndex < faqs.length) {
-        handleNext();
+    const swipeVelocity = info.velocity.x;
+    const swipeOffset = info.offset.x;
+
+    // Use velocity for flicks, or offset for slower drags
+    const threshold = 50; // Much lower threshold
+    const velocityThreshold = 500;
+
+    // If there's velocity (flick), use that to determine direction
+    if (Math.abs(swipeVelocity) > velocityThreshold) {
+      if (swipeVelocity > 0 && currentIndex > 0) {
+        handlePrevious(); // Flicked right, go to previous
+      } else if (swipeVelocity < 0 && currentIndex < faqs.length) {
+        handleNext(); // Flicked left, go to next
+      }
+    }
+    // Otherwise use offset for slower drags
+    else if (Math.abs(swipeOffset) > threshold) {
+      if (swipeOffset > 0 && currentIndex > 0) {
+        handlePrevious(); // Dragged right, go to previous
+      } else if (swipeOffset < 0 && currentIndex < faqs.length) {
+        handleNext(); // Dragged left, go to next
       }
     }
   };
@@ -202,7 +217,7 @@ export default function FAQsPage() {
                       }}
                       drag="x"
                       dragConstraints={{ left: 0, right: 0 }}
-                      dragElastic={0.7}
+                      dragElastic={1}
                       onDragEnd={handleDragEnd}
                       className="absolute w-full cursor-grab active:cursor-grabbing"
                     >
