@@ -64,7 +64,7 @@ p, span, a, li, label, input, textarea, button {
 
 /* Parallax Section 2 */
 .parallax-section-2 {
-  background-image: url('/dani-paralax.png');
+  background-image: url('/front-door-paralax.png');
   height: 70vh;
   background-attachment: fixed;
   background-position: center center;
