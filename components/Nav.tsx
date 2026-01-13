@@ -9,6 +9,7 @@ const navItems = [
   { href: '/', labelEn: 'Home', labelEs: 'Inicio' },
   { href: '/buyers', labelEn: 'Buyers', labelEs: 'Compradores' },
   { href: '/sellers', labelEn: 'Sellers', labelEs: 'Vendedores' },
+  { href: '/international', labelEn: 'International', labelEs: 'Internacional' },
   { href: '/about', labelEn: 'About', labelEs: 'Acerca' },
   { href: '/blog', labelEn: 'Blog', labelEs: 'Blog' },
 ];

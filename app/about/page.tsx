@@ -107,31 +107,83 @@ export default function AboutPage() {
               <div className="space-y-6 text-[#3D3D3D] text-lg leading-relaxed">
                 <p>
                   {t(
-                    "Originally from Colombia, I moved to Myrtle Beach in 2018 and found more than a new home—I found my family. After purchasing and renovating my first home with my husband in 2019, I discovered my passion for helping others find their perfect place.",
-                    "Originaria de Colombia, me mudé a Myrtle Beach en 2018 y encontré más que un nuevo hogar: encontré a mi familia. Después de comprar y renovar mi primera casa con mi esposo en 2019, descubrí mi pasión por ayudar a otros a encontrar su lugar perfecto."
+                    "I am a bilingual Realtor and the voice behind From Global Roots to Local Roofs.",
+                    "Soy una agente inmobiliaria bilingüe y la voz detrás de De Raíces Globales a Techos Locales."
                   )}
                 </p>
 
                 <p>
                   {t(
-                    "As a bilingual Realtor®, I guide Spanish and English-speaking clients through every step of buying or selling on the Grand Strand. Whether you're a first-time buyer or looking for your next investment, I'm here to make the journey personal.",
-                    "Como Agente Inmobiliaria bilingüe, guío a clientes hispanohablantes e angloparlantes a través de cada paso de compra o venta en el Grand Strand. Ya sea que seas un comprador primerizo o estés buscando tu próxima inversión, estoy aquí para hacer el viaje personal."
+                    "Originally from Colombia, I came to Myrtle Beach, SC, in 2018, with big dreams, and learned firsthand what it means to start over in a new country with a new language. That journey shaped everything I do today.",
+                    "Originaria de Colombia, llegué a Myrtle Beach, SC, en 2018, con grandes sueños, y aprendí de primera mano lo que significa empezar de nuevo en un país nuevo con un idioma nuevo. Ese viaje moldeó todo lo que hago hoy."
                   )}
                 </p>
 
                 <p>
                   {t(
-                    "My passion for real estate goes beyond transactions. I believe that finding the right home is about finding where your story continues. Every family I work with has a unique journey, and I consider it an honor to be part of that next chapter.",
-                    "Mi pasión por los bienes raíces va más allá de las transacciones. Creo que encontrar el hogar correcto es encontrar donde tu historia continúa. Cada familia con la que trabajo tiene un viaje único, y considero un honor ser parte de ese próximo capítulo."
+                    "I don't just help you buy or sell homes - I help you feel grounded, informed, and confident while making one of the biggest decisions of your life.",
+                    "No solo te ayudo a comprar o vender casas - te ayudo a sentirte arraigado, informado y seguro mientras tomas una de las decisiones más grandes de tu vida."
                   )}
                 </p>
 
                 <p>
                   {t(
-                    "Being bilingual in English and Spanish isn't just a professional skill for me—it's a bridge. A bridge that helps families communicate their dreams, concerns, and questions in the language they're most comfortable with. Because when it comes to one of the biggest decisions of your life, you deserve to be understood completely.",
-                    "Ser bilingüe en inglés y español no es solo una habilidad profesional para mí—es un puente. Un puente que ayuda a las familias a comunicar sus sueños, preocupaciones y preguntas en el idioma en el que se sienten más cómodos. Porque cuando se trata de una de las decisiones más grandes de tu vida, mereces ser entendido completamente."
+                    "Whether you're relocating from another state, moving to the U.S., investing from abroad, or buying your first home, I understand the questions you're afraid to ask, the details others overlook, and the emotional weight behind every decision. I've been there.",
+                    "Ya sea que te estés mudando desde otro estado, mudándote a los EE. UU., invirtiendo desde el extranjero, o comprando tu primera casa, entiendo las preguntas que tienes miedo de hacer, los detalles que otros pasan por alto, y el peso emocional detrás de cada decisión. He estado allí."
                   )}
                 </p>
+
+                <p>
+                  {t(
+                    "I specialize in helping relocators, first-time buyers and sellers, and international clients navigate the Myrtle Beach and Horry County market with transparency, education, and a human-first mindset.",
+                    "Me especializo en ayudar a personas que se reubican, compradores y vendedores primerizos, y clientes internacionales a navegar el mercado de Myrtle Beach y el Condado de Horry con transparencia, educación, y una mentalidad que pone a las personas primero."
+                  )}
+                </p>
+
+                <p className="font-semibold">
+                  {t(
+                    "My approach is simple: clarity over confusion, strategy over pressure, and guidance over transactions.",
+                    "Mi enfoque es simple: claridad sobre confusión, estrategia sobre presión, y orientación sobre transacciones."
+                  )}
+                </p>
+
+                <p>
+                  {t(
+                    "If you're chosen agent who listens, explains, protects your interests, and truly shows up.",
+                    "Si buscas un agente que escucha, explica, protege tus intereses, y realmente se presenta."
+                  )}
+                </p>
+              </div>
+
+              {/* Contact Info and Logo */}
+              <div className="mt-8 pt-8 border-t border-[#D6BFAE]/30">
+                <div className="space-y-3 mb-6">
+                  <a
+                    href="tel:+18435035038"
+                    className="block text-[#3D3D3D] hover:text-[#C4A25A] transition-colors text-lg font-medium"
+                  >
+                    (843) 503-5038
+                  </a>
+                  <a
+                    href="mailto:danidiazrealestate@gmail.com"
+                    className="block text-[#3D3D3D] hover:text-[#C4A25A] transition-colors"
+                  >
+                    danidiazrealestate@gmail.com
+                  </a>
+                </div>
+
+                {/* Faircloth Real Estate Logo */}
+                <div className="relative w-48 h-12">
+                  <Image
+                    src="/faircloth-real-estate-logo.png"
+                    alt="Faircloth Real Estate Group"
+                    fill
+                    className="object-contain"
+                    style={{
+                      filter: 'brightness(0) saturate(100%) invert(16%) sepia(47%) saturate(1634%) hue-rotate(194deg) brightness(94%) contrast(92%)'
+                    }}
+                  />
+                </div>
               </div>
             </motion.div>
           </motion.div>

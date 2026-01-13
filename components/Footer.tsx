@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import { Facebook, Instagram, Linkedin } from 'lucide-react';
 import { useLanguage } from './LanguageContext';
 
@@ -25,16 +26,16 @@ export default function Footer() {
             </h3>
             <div className="space-y-3">
               <a
-                href="tel:+18437994566"
+                href="tel:+18435035038"
                 className="block text-white hover:text-[#C4A25A] transition-colors"
               >
-                (843) 799-4566
+                (843) 503-5038
               </a>
               <a
                 href="mailto:danidiazrealestate@gmail.com"
-                className="block text-white hover:text-[#C4A25A] transition-colors uppercase text-sm"
+                className="block text-white hover:text-[#C4A25A] transition-colors text-sm"
               >
-                DANIDIAZREALESTATE@GMAIL.COM
+                danidiazrealestate@gmail.com
               </a>
             </div>
           </div>
@@ -56,7 +57,21 @@ export default function Footer() {
           </div>
 
           {/* Social Icons Section */}
-          <div className="md:col-span-5 flex items-start justify-start md:justify-end">
+          <div className="md:col-span-5 flex flex-col items-start md:items-end justify-start gap-6">
+            {/* Faircloth Real Estate Logo */}
+            <div className="relative w-48 h-12">
+              <Image
+                src="/faircloth-real-estate-logo.png"
+                alt="Faircloth Real Estate Group"
+                fill
+                className="object-contain"
+                style={{
+                  filter: 'brightness(0) saturate(100%) invert(16%) sepia(47%) saturate(1634%) hue-rotate(194deg) brightness(94%) contrast(92%)'
+                }}
+              />
+            </div>
+
+            {/* Social Icons */}
             <div className="flex gap-3">
               <a
                 href="https://www.facebook.com/daniampudiazv/"
@@ -120,6 +135,12 @@ export default function Footer() {
               className="text-white hover:text-[#C4A25A] transition-colors text-sm font-semibold tracking-wider"
             >
               {t('SELLERS', 'VENDEDORES')}
+            </a>
+            <a
+              href="/international"
+              className="text-white hover:text-[#C4A25A] transition-colors text-sm font-semibold tracking-wider"
+            >
+              {t('INTERNATIONAL', 'INTERNACIONAL')}
             </a>
             <a
               href="/#contact"

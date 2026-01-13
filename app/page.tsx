@@ -30,28 +30,49 @@ const staggerContainer = {
 };
 
 
-// Placeholder testimonials
+// Client testimonials
 const testimonials = [
   {
     id: 1,
-    text: "Dani made our home buying experience seamless. Her bilingual skills were invaluable for our family!",
-    textEs: "Dani hizo que nuestra experiencia de compra de casa fuera perfecta. ¡Sus habilidades bilingües fueron invaluables para nuestra familia!",
-    author: 'Maria & Carlos Rodriguez',
-    location: 'Myrtle Beach'
+    text: "Throughout our home-buying process, Dani was incredibly communicative. She promptly answered every time our calls and emails, keeping us informed about every detail of the process. She took the time to understand our preferences and needs and helped us with the whole negotiation, which gave us a really good deal. She gave us more than a 5-star treatment, and even after the purchase, she kept helping us.",
+    textEs: "Durante todo nuestro proceso de compra de casa, Dani fue increíblemente comunicativa. Respondió puntualmente cada vez a nuestras llamadas y correos, manteniéndonos informados sobre cada detalle del proceso. Se tomó el tiempo para entender nuestras preferencias y necesidades y nos ayudó con toda la negociación, lo que nos dio un muy buen trato. Nos dio más que un tratamiento de 5 estrellas, e incluso después de la compra, siguió ayudándonos.",
+    author: 'Rudy Duarte',
+    location: ''
   },
   {
     id: 2,
-    text: "Professional, knowledgeable, and always available. Dani found us our dream beach home.",
-    textEs: "Profesional, conocedora y siempre disponible. Dani nos encontró la casa de playa de nuestros sueños.",
-    author: 'The Thompson Family',
-    location: 'Pawleys Island'
+    text: "Dani is such an amazing Realtor and a very kind person! I absolutely recommend her; she makes the process easier. She really cares about her clients, always responds to our answers, and helps us with everything!!!",
+    textEs: "¡Dani es una agente inmobiliaria increíble y una persona muy amable! La recomiendo absolutamente; ella hace el proceso más fácil. ¡Realmente se preocupa por sus clientes, siempre responde a nuestras preguntas y nos ayuda con todo!!!",
+    author: 'Katherin Chaparro',
+    location: ''
   },
   {
     id: 3,
-    text: "Her global perspective and local expertise made all the difference in our relocation.",
-    textEs: "Su perspectiva global y experiencia local marcaron toda la diferencia en nuestra reubicación.",
-    author: 'James & Linda Park',
-    location: 'Surfside Beach'
+    text: "Dani helped me buy and sell at the same time, and she was incredibly diligent throughout the entire process. She always made sure I felt comfortable with the numbers without being unrealistic, which gave me so much confidence. She did an amazing job marketing my property and negotiated exceptionally well, always looking out for my best interests and going above and beyond to get me the best possible deal.",
+    textEs: "Dani me ayudó a comprar y vender al mismo tiempo, y fue increíblemente diligente durante todo el proceso. Siempre se aseguró de que me sintiera cómodo con los números sin ser poco realista, lo que me dio tanta confianza. Hizo un trabajo increíble comercializando mi propiedad y negoció excepcionalmente bien, siempre cuidando mis mejores intereses y yendo más allá para conseguirme el mejor trato posible.",
+    author: 'Mario Leguisamo',
+    location: ''
+  },
+  {
+    id: 4,
+    text: "Any time we contacted Dani, she was very responsive and professional. She listened to our needs and was able to share multiple property listings with us throughout our search. Dani was always able to adapt to our schedule and show us properties when we were in the area. She was also very supportive during the process of making an offer and the process of closing.",
+    textEs: "Cada vez que contactamos a Dani, fue muy receptiva y profesional. Escuchó nuestras necesidades y pudo compartir múltiples listados de propiedades con nosotros durante nuestra búsqueda. Dani siempre pudo adaptarse a nuestro horario y mostrarnos propiedades cuando estábamos en la zona. También fue muy solidaria durante el proceso de hacer una oferta y el proceso de cierre.",
+    author: 'Joshua Feichtel',
+    location: ''
+  },
+  {
+    id: 5,
+    text: "Me sentí muy bien trabajando con usted Dani Diaz ya que es una excelente agente 100% recomendable capaz y profesional en su trabajo. La verdad, nunca me sentí tan cómodo e impresionado con su manera de trabajar y ayudarme. Excelente servicio y profesionalismo, gracias.",
+    textEs: "Me sentí muy bien trabajando con usted Dani Diaz ya que es una excelente agente 100% recomendable capaz y profesional en su trabajo. La verdad, nunca me sentí tan cómodo e impresionado con su manera de trabajar y ayudarme. Excelente servicio y profesionalismo, gracias.",
+    author: 'Ismael Arguello',
+    location: ''
+  },
+  {
+    id: 6,
+    text: "Estoy muy agradecida con Dani Diaz, Yo pensaba que iba a ser imposible o muy difícil comprar mi primera casa, pero Dani fue muy paciente y siempre tuvo en mente el tipo de propiedad que queríamos y cuáles eran nuestras necesidades. Pudo negociar un buen precio en nuestra casa e incluso nos ayudó a conseguir crédito para nuestro cierre. Siempre nos explicó muy bien todo el proceso y me sentí muy a gusto. Es una gran profesional.",
+    textEs: "Estoy muy agradecida con Dani Diaz, Yo pensaba que iba a ser imposible o muy difícil comprar mi primera casa, pero Dani fue muy paciente y siempre tuvo en mente el tipo de propiedad que queríamos y cuáles eran nuestras necesidades. Pudo negociar un buen precio en nuestra casa e incluso nos ayudó a conseguir crédito para nuestro cierre. Siempre nos explicó muy bien todo el proceso y me sentí muy a gusto. Es una gran profesional.",
+    author: 'Elvira',
+    location: ''
   }
 ];
 
@@ -439,7 +460,7 @@ export default function Home() {
             </motion.div>
 
             <motion.div variants={fadeInUp} className="grid md:grid-cols-3 gap-8">
-              {testimonials.map((testimonial) => (
+              {testimonials.slice(0, 3).map((testimonial) => (
                 <div
                   key={testimonial.id}
                   className="bg-white/10 backdrop-blur p-8 border border-white/20"
