@@ -59,7 +59,7 @@ export default function Footer() {
           {/* Social Icons Section */}
           <div className="md:col-span-5 flex flex-col items-start md:items-end justify-start gap-6">
             {/* Faircloth Real Estate Logo */}
-            <div className="relative w-[600px] h-[150px]">
+            <div className="relative w-[600px] h-[150px] md:w-[1200px] md:h-[300px]">
               <Image
                 src="/faircloth-real-estate-logo.png"
                 alt="Faircloth Real Estate Group"

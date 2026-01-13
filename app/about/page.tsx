@@ -149,8 +149,8 @@ export default function AboutPage() {
 
                 <p>
                   {t(
-                    "If you're chosen agent who listens, explains, protects your interests, and truly shows up.",
-                    "Si buscas un agente que escucha, explica, protege tus intereses, y realmente se presenta."
+                    "I'm your chosen agent who listens, explains, protects your interests, and truly shows up.",
+                    "Soy tu agente elegida que escucha, explica, protege tus intereses, y realmente se presenta."
                   )}
                 </p>
               </div>

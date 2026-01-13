@@ -62,14 +62,14 @@ const testimonials = [
   },
   {
     id: 5,
-    text: "Me sentí muy bien trabajando con usted Dani Diaz ya que es una excelente agente 100% recomendable capaz y profesional en su trabajo. La verdad, nunca me sentí tan cómodo e impresionado con su manera de trabajar y ayudarme. Excelente servicio y profesionalismo, gracias.",
+    text: "I felt very good working with you Dani Diaz as she is an excellent 100% recommendable, capable and professional agent in her work. The truth is, I never felt so comfortable and impressed with her way of working and helping me. Excellent service and professionalism, thank you.",
     textEs: "Me sentí muy bien trabajando con usted Dani Diaz ya que es una excelente agente 100% recomendable capaz y profesional en su trabajo. La verdad, nunca me sentí tan cómodo e impresionado con su manera de trabajar y ayudarme. Excelente servicio y profesionalismo, gracias.",
     author: 'Ismael Arguello',
     location: ''
   },
   {
     id: 6,
-    text: "Estoy muy agradecida con Dani Diaz, Yo pensaba que iba a ser imposible o muy difícil comprar mi primera casa, pero Dani fue muy paciente y siempre tuvo en mente el tipo de propiedad que queríamos y cuáles eran nuestras necesidades. Pudo negociar un buen precio en nuestra casa e incluso nos ayudó a conseguir crédito para nuestro cierre. Siempre nos explicó muy bien todo el proceso y me sentí muy a gusto. Es una gran profesional.",
+    text: "I am very grateful to Dani Diaz. I thought it was going to be impossible or very difficult to buy my first house, but Dani was very patient and always kept in mind the type of property we wanted and what our needs were. She was able to negotiate a good price on our home and even helped us secure credit for our closing. She always explained the whole process to us very well and I felt very comfortable. She is a great professional.",
     textEs: "Estoy muy agradecida con Dani Diaz, Yo pensaba que iba a ser imposible o muy difícil comprar mi primera casa, pero Dani fue muy paciente y siempre tuvo en mente el tipo de propiedad que queríamos y cuáles eran nuestras necesidades. Pudo negociar un buen precio en nuestra casa e incluso nos ayudó a conseguir crédito para nuestro cierre. Siempre nos explicó muy bien todo el proceso y me sentí muy a gusto. Es una gran profesional.",
     author: 'Elvira',
     location: ''
@@ -597,7 +597,7 @@ export default function Home() {
               </div>
 
               {/* Faircloth Real Estate Logo */}
-              <div className="mt-6 relative w-[600px] h-[150px]">
+              <div className="mt-6 relative w-[600px] h-[150px] md:w-[1200px] md:h-[300px]">
                 <Image
                   src="/faircloth-real-estate-logo.png"
                   alt="Faircloth Real Estate Group"
