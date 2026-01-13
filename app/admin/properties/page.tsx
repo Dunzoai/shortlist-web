@@ -5,6 +5,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { supabase } from '@/lib/supabase';
 import { Trash2, Edit, Home, DollarSign, TrendingUp, ArrowUp, ArrowDown, ArrowLeft } from 'lucide-react';
+import { getRandomEncouragement } from '@/lib/encouragements';
 
 interface Property {
   id: string;
@@ -28,6 +29,11 @@ export default function AdminPropertiesList() {
   const [properties, setProperties] = useState<Property[]>([]);
   const [loading, setLoading] = useState(true);
   const [statusFilter, setStatusFilter] = useState<StatusFilter>('all');
+  const [encouragement, setEncouragement] = useState('');
+
+  useEffect(() => {
+    setEncouragement(getRandomEncouragement('properties'));
+  }, []);
 
   useEffect(() => {
     fetchProperties();
@@ -167,6 +173,11 @@ export default function AdminPropertiesList() {
               Featured Properties 🏡
             </h1>
             <p className="text-[#3D3D3D] text-lg">Manage your property listings</p>
+            {encouragement && (
+              <p className="text-[#C4A25A]/80 italic text-sm mt-2 font-[family-name:var(--font-lora)]">
+                "{encouragement}"
+              </p>
+            )}
           </div>
           <Link
             href="/admin/properties/new"

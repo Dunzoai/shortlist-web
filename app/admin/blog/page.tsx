@@ -5,6 +5,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { supabase } from '@/lib/supabase';
 import { Trash2, ExternalLink, Search, Edit, FileText, CheckCircle, Calendar, ArrowLeft } from 'lucide-react';
+import { getRandomEncouragement } from '@/lib/encouragements';
 
 interface BlogPost {
   id: string;
@@ -27,6 +28,11 @@ export default function AdminBlogList() {
   const [categoryFilter, setCategoryFilter] = useState<CategoryFilter>('all');
   const [sortOrder, setSortOrder] = useState<SortOrder>('newest');
   const [searchQuery, setSearchQuery] = useState('');
+  const [encouragement, setEncouragement] = useState('');
+
+  useEffect(() => {
+    setEncouragement(getRandomEncouragement('blog'));
+  }, []);
 
   useEffect(() => {
     fetchPosts();
@@ -202,6 +208,11 @@ export default function AdminBlogList() {
               Welcome back, Dani ✨
             </h1>
             <p className="text-[#3D3D3D] text-lg">Manage your blog content</p>
+            {encouragement && (
+              <p className="text-[#C4A25A]/80 italic text-sm mt-2 font-[family-name:var(--font-lora)]">
+                "{encouragement}"
+              </p>
+            )}
           </div>
           <Link
             href="/admin/blog/new"
