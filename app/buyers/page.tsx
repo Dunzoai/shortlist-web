@@ -91,7 +91,8 @@ const buyerResources = [
     descEn: 'Local school ratings and info',
     descEs: 'Calificaciones e información escolar',
     icon: GraduationCap,
-    link: '#'
+    link: 'https://www.greatschools.org/south-carolina/myrtle-beach/',
+    external: true
   },
   {
     titleEn: 'Area Guide',
@@ -99,7 +100,7 @@ const buyerResources = [
     descEn: 'Explore Myrtle Beach neighborhoods',
     descEs: 'Explora los vecindarios',
     icon: MapPin,
-    link: '#'
+    link: '/#neighborhoods'
   },
 ];
 
@@ -159,6 +160,7 @@ export default function BuyersPage() {
           <div className="flex md:grid md:grid-cols-2 lg:grid-cols-4 gap-6 overflow-x-auto md:overflow-x-visible snap-x snap-mandatory md:snap-none scrollbar-hide pb-4 md:pb-0 -mx-6 md:mx-0 px-6 md:px-0">
             {buyerResources.map((resource, index) => {
               const IconComponent = resource.icon;
+              const isExternal = resource.external || false;
               return (
                 <motion.div
                   key={index}
@@ -167,20 +169,39 @@ export default function BuyersPage() {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.5, delay: index * 0.1 }}
                 >
-                  <Link
-                    href={resource.link}
-                    className="block bg-[#F7F7F7] p-6 text-center hover:shadow-lg transition-shadow h-full"
-                  >
-                    <div className="flex justify-center mb-4">
-                      <IconComponent size={32} className="text-[#1B365D]" />
-                    </div>
-                    <h3 className="font-[family-name:var(--font-playfair)] text-lg text-[#1B365D] mb-2">
-                      {language === 'en' ? resource.titleEn : resource.titleEs}
-                    </h3>
-                    <p className="text-sm text-[#3D3D3D]">
-                      {language === 'en' ? resource.descEn : resource.descEs}
-                    </p>
-                  </Link>
+                  {isExternal ? (
+                    <a
+                      href={resource.link}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="block bg-[#F7F7F7] p-6 text-center hover:shadow-lg transition-shadow h-full"
+                    >
+                      <div className="flex justify-center mb-4">
+                        <IconComponent size={32} className="text-[#1B365D]" />
+                      </div>
+                      <h3 className="font-[family-name:var(--font-playfair)] text-lg text-[#1B365D] mb-2">
+                        {language === 'en' ? resource.titleEn : resource.titleEs}
+                      </h3>
+                      <p className="text-sm text-[#3D3D3D]">
+                        {language === 'en' ? resource.descEn : resource.descEs}
+                      </p>
+                    </a>
+                  ) : (
+                    <Link
+                      href={resource.link}
+                      className="block bg-[#F7F7F7] p-6 text-center hover:shadow-lg transition-shadow h-full"
+                    >
+                      <div className="flex justify-center mb-4">
+                        <IconComponent size={32} className="text-[#1B365D]" />
+                      </div>
+                      <h3 className="font-[family-name:var(--font-playfair)] text-lg text-[#1B365D] mb-2">
+                        {language === 'en' ? resource.titleEn : resource.titleEs}
+                      </h3>
+                      <p className="text-sm text-[#3D3D3D]">
+                        {language === 'en' ? resource.descEn : resource.descEs}
+                      </p>
+                    </Link>
+                  )}
                 </motion.div>
               );
             })}

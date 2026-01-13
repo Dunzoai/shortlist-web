@@ -74,28 +74,32 @@ const sellerResources = [
     titleEs: 'Valuación de Casa',
     descEn: 'Get a free market analysis',
     descEs: 'Obtén un análisis gratuito',
-    icon: Home
+    icon: Home,
+    link: '/sellers/valuation'
   },
   {
     titleEn: 'Seller Checklist',
     titleEs: 'Lista del Vendedor',
     descEn: 'Prepare your home for sale',
     descEs: 'Prepara tu casa para vender',
-    icon: ClipboardCheck
+    icon: ClipboardCheck,
+    link: '/sellers/checklist'
   },
   {
     titleEn: 'Market Report',
     titleEs: 'Reporte del Mercado',
     descEn: 'Current market conditions',
     descEs: 'Condiciones actuales del mercado',
-    icon: TrendingUp
+    icon: TrendingUp,
+    link: '/sellers/market-report'
   },
   {
     titleEn: 'Net Proceeds',
     titleEs: 'Ganancias Netas',
     descEn: 'Estimate your sale proceeds',
     descEs: 'Estima tus ganancias de venta',
-    icon: Calculator
+    icon: Calculator,
+    link: '/sellers/net-proceeds'
   },
 ];
 
@@ -185,20 +189,25 @@ export default function SellersPage() {
               return (
                 <motion.div
                   key={index}
-                  className="flex-shrink-0 w-[280px] md:w-auto snap-center md:snap-align-none bg-[#F7F7F7] p-6 text-center hover:shadow-lg transition-shadow cursor-pointer"
+                  className="flex-shrink-0 w-[280px] md:w-auto snap-center md:snap-align-none"
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.5, delay: index * 0.1 }}
                 >
-                  <div className="flex justify-center mb-4">
-                    <IconComponent size={32} className="text-[#1B365D]" />
-                  </div>
-                  <h3 className="font-[family-name:var(--font-playfair)] text-lg text-[#1B365D] mb-2">
-                    {language === 'en' ? resource.titleEn : resource.titleEs}
-                  </h3>
-                  <p className="text-sm text-[#3D3D3D]">
-                    {language === 'en' ? resource.descEn : resource.descEs}
-                  </p>
+                  <Link
+                    href={resource.link}
+                    className="block bg-[#F7F7F7] p-6 text-center hover:shadow-lg transition-shadow h-full"
+                  >
+                    <div className="flex justify-center mb-4">
+                      <IconComponent size={32} className="text-[#1B365D]" />
+                    </div>
+                    <h3 className="font-[family-name:var(--font-playfair)] text-lg text-[#1B365D] mb-2">
+                      {language === 'en' ? resource.titleEn : resource.titleEs}
+                    </h3>
+                    <p className="text-sm text-[#3D3D3D]">
+                      {language === 'en' ? resource.descEn : resource.descEs}
+                    </p>
+                  </Link>
                 </motion.div>
               );
             })}
