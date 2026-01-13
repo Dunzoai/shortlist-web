@@ -19,7 +19,7 @@ interface Listing {
   beds: number;
   baths: number;
   sqft: number;
-  photos: string[];
+  images: string[];
   status: string;
   description: string;
   property_type: string;
@@ -40,7 +40,7 @@ const placeholderListing: Listing = {
   beds: 4,
   baths: 3,
   sqft: 2450,
-  photos: [
+  images: [
     'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=1200&q=80',
     'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=1200&q=80',
     'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=1200&q=80',
@@ -81,7 +81,7 @@ export default function ListingDetailPage() {
   useEffect(() => {
     async function fetchListing() {
       const { data, error } = await supabase
-        .from('listings')
+        .from('featured_properties')
         .select('*')
         .eq('id', params.id)
         .eq('client_id', '3c125122-f3d9-4f75-91d9-69cf84d6d20e')
@@ -143,9 +143,8 @@ export default function ListingDetailPage() {
       {/* Image Gallery */}
       <section className="pt-24">
         <div className="relative h-[60vh] min-h-[500px]">
-          {/* TODO: Replace with actual listing photos */}
           <Image
-            src={listing.photos?.[selectedImage] || 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=1200&q=80'}
+            src={listing.images?.[selectedImage] || 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=1200&q=80'}
             alt={listing.address}
             fill
             className="object-cover"
@@ -164,11 +163,11 @@ export default function ListingDetailPage() {
         </div>
 
         {/* Thumbnails */}
-        {listing.photos && listing.photos.length > 1 && (
+        {listing.images && listing.images.length > 1 && (
           <div className="bg-white py-4">
             <div className="max-w-7xl mx-auto px-6">
               <div className="flex gap-4 overflow-x-auto pb-2">
-                {listing.photos.map((photo, index) => (
+                {listing.images.map((photo, index) => (
                   <button
                     key={index}
                     onClick={() => setSelectedImage(index)}
@@ -303,9 +302,8 @@ export default function ListingDetailPage() {
                 className="bg-[#F7F7F7] p-8 sticky top-24"
               >
                 <div className="text-center mb-6">
-                  {/* TODO: Replace with actual agent photo */}
                   <Image
-                    src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=200&q=80"
+                    src="/dani-hero.jpg"
                     alt="Dani Díaz"
                     width={100}
                     height={100}
