@@ -25,27 +25,37 @@ function generateEmpanadas(): FlyingEmpanada[] {
   return Array.from({ length: 8 }, (_, i) => ({
     id: i,
     ...empanadas[i % empanadas.length],
-    size: 60 + Math.random() * 80, // 60-140px
-    startY: 10 + Math.random() * 70, // 10-80% from top
-    duration: 8 + Math.random() * 6, // 8-14 seconds
-    delay: Math.random() * 5, // 0-5 second delay
+    size: 50 + Math.random() * 70, // 50-120px
+    startY: 15 + Math.random() * 60, // 15-75% from top
+    duration: 10 + Math.random() * 8, // 10-18 seconds
+    delay: i * 0.8, // Stagger the start
     rotation: Math.random() * 360,
   }));
 }
 
 export function AnimatedHero() {
   const [flyingEmpanadas] = useState<FlyingEmpanada[]>(generateEmpanadas);
-  const [showText, setShowText] = useState(false);
-  const [showSubtext, setShowSubtext] = useState(false);
+
+  // Animation sequence states
+  const [showLogo, setShowLogo] = useState(false);
+  const [showDamian, setShowDamian] = useState(false);
+  const [showHeadline, setShowHeadline] = useState(false);
+  const [showSubtitle, setShowSubtitle] = useState(false);
+  const [showEmpanadas, setShowEmpanadas] = useState(false);
+  const [showButton, setShowButton] = useState(false);
 
   useEffect(() => {
-    // Show text after Damian slides up
-    const textTimer = setTimeout(() => setShowText(true), 1200);
-    const subtextTimer = setTimeout(() => setShowSubtext(true), 2000);
-    return () => {
-      clearTimeout(textTimer);
-      clearTimeout(subtextTimer);
-    };
+    // Animation sequence timing
+    const timers = [
+      setTimeout(() => setShowLogo(true), 100),           // 1. Logo fades in
+      setTimeout(() => setShowDamian(true), 800),         // 2. Damian slides up
+      setTimeout(() => setShowHeadline(true), 1600),      // 3. Headline typewriter
+      setTimeout(() => setShowSubtitle(true), 2800),      // 4. Subtitle fades in
+      setTimeout(() => setShowEmpanadas(true), 3400),     // 5. Empanadas start flying
+      setTimeout(() => setShowButton(true), 3800),        // 6. Button smacks in
+    ];
+
+    return () => timers.forEach(clearTimeout);
   }, []);
 
   const scrollToSchedule = () => {
@@ -56,108 +66,134 @@ export function AnimatedHero() {
   };
 
   return (
-    <section className="relative min-h-screen bg-[#D4C5A9] overflow-hidden">
-      {/* Flying Empanadas Layer - Behind everything */}
-      <div className="absolute inset-0 z-0 overflow-hidden">
-        {flyingEmpanadas.map((empanada) => (
-          <motion.div
-            key={empanada.id}
-            className="absolute"
-            style={{
-              top: `${empanada.startY}%`,
-              width: empanada.size,
-              height: empanada.size,
-            }}
-            initial={{ x: '-150px', rotate: empanada.rotation }}
-            animate={{
-              x: ['calc(-150px)', 'calc(100vw + 150px)'],
-              rotate: [empanada.rotation, empanada.rotation + 360],
-            }}
-            transition={{
-              duration: empanada.duration,
-              delay: empanada.delay,
-              repeat: Infinity,
-              ease: 'linear',
-            }}
-          >
-            <Image
-              src={empanada.src}
-              alt={empanada.alt}
-              fill
-              className="object-contain opacity-70"
-            />
-          </motion.div>
-        ))}
+    <section className="relative min-h-screen bg-[#D4C5A9] overflow-hidden flex flex-col items-center justify-center px-6 py-12">
+
+      {/* Flying Empanadas Layer - Behind everything (z-0) */}
+      <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
+        <AnimatePresence>
+          {showEmpanadas && flyingEmpanadas.map((empanada) => (
+            <motion.div
+              key={empanada.id}
+              className="absolute"
+              style={{
+                top: `${empanada.startY}%`,
+                width: empanada.size,
+                height: empanada.size,
+              }}
+              initial={{ x: '-150px', rotate: empanada.rotation, opacity: 0 }}
+              animate={{
+                x: ['calc(-150px)', 'calc(100vw + 150px)'],
+                rotate: [empanada.rotation, empanada.rotation + 180],
+                opacity: [0, 0.6, 0.6, 0],
+              }}
+              transition={{
+                duration: empanada.duration,
+                delay: empanada.delay,
+                repeat: Infinity,
+                ease: 'linear',
+              }}
+            >
+              <Image
+                src={empanada.src}
+                alt={empanada.alt}
+                fill
+                className="object-contain"
+              />
+            </motion.div>
+          ))}
+        </AnimatePresence>
       </div>
 
-      {/* Logo Layer - Center */}
-      <div className="absolute inset-0 z-10 flex items-center justify-center pointer-events-none">
-        <motion.div
-          className="relative w-[300px] h-[300px] md:w-[500px] md:h-[500px] lg:w-[600px] lg:h-[600px] opacity-30"
-          initial={{ scale: 0.8, opacity: 0 }}
-          animate={{ scale: 1, opacity: 0.3 }}
-          transition={{ duration: 1, ease: 'easeOut' }}
-        >
-          <Image
-            src="/nitos-logo.avif"
-            alt="Nito's Empanadas Logo"
-            fill
-            className="object-contain"
-          />
-        </motion.div>
-      </div>
+      {/* Main Content Container - Centered vertically */}
+      <div className="relative z-10 flex flex-col items-center justify-center w-full max-w-4xl">
 
-      {/* Content Layer */}
-      <div className="relative z-20 min-h-screen flex flex-col md:flex-row items-center justify-between px-6 md:px-12 lg:px-20 py-20">
-        {/* Left Side - Text */}
-        <div className="flex-1 flex flex-col justify-center items-center md:items-start text-center md:text-left order-2 md:order-1 mt-8 md:mt-0">
+        {/* Logo - BIG and centered (main focus) */}
+        <AnimatePresence>
+          {showLogo && (
+            <motion.div
+              className="relative w-[280px] h-[280px] sm:w-[350px] sm:h-[350px] md:w-[450px] md:h-[450px] lg:w-[550px] lg:h-[550px] mb-8"
+              initial={{ scale: 0.5, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={{
+                duration: 0.8,
+                ease: [0.34, 1.56, 0.64, 1], // Bounce ease
+              }}
+            >
+              <Image
+                src="/nitos-logo.avif"
+                alt="Nito's Empanadas Logo"
+                fill
+                className="object-contain"
+                priority
+              />
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* Text Content - Centered below logo */}
+        <div className="text-center">
+          {/* Headline */}
           <AnimatePresence>
-            {showText && (
+            {showHeadline && (
               <motion.h1
-                className="text-4xl md:text-5xl lg:text-7xl font-bold text-[#2D5A3D] italic mb-4 md:mb-6"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6 }}
+                className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-[#2D5A3D] italic mb-4"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.3 }}
               >
-                <TypewriterText text="You want empanadas?" />
+                <TypewriterText text="You want empanadas?" speed={40} />
               </motion.h1>
             )}
           </AnimatePresence>
 
+          {/* Subtitle */}
           <AnimatePresence>
-            {showSubtext && (
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
+            {showSubtitle && (
+              <motion.p
+                className="text-lg sm:text-xl md:text-2xl text-[#4A5A3C] mb-8"
+                initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6 }}
+                transition={{ duration: 0.5 }}
               >
-                <p className="text-xl md:text-2xl lg:text-3xl text-[#4A5A3C] mb-8 md:mb-12">
-                  Come to Nito's — best empanadas in town!
-                </p>
-                <motion.button
-                  onClick={scrollToSchedule}
-                  className="bg-[#C4A052] hover:bg-[#B8944A] text-[#2D5A3D] px-8 py-4 text-lg font-semibold tracking-wide transition-colors rounded-full shadow-lg hover:shadow-xl"
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                >
-                  Find Us This Week
-                </motion.button>
-              </motion.div>
+                Come to Nito's — best empanadas in town!
+              </motion.p>
+            )}
+          </AnimatePresence>
+
+          {/* Button - Smacks in with bounce */}
+          <AnimatePresence>
+            {showButton && (
+              <motion.button
+                onClick={scrollToSchedule}
+                className="bg-[#C4A052] hover:bg-[#B8944A] text-[#2D5A3D] px-8 py-4 text-lg font-semibold tracking-wide rounded-full shadow-lg hover:shadow-xl transition-colors"
+                initial={{ scale: 0, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                transition={{
+                  type: 'spring',
+                  stiffness: 500,
+                  damping: 15,
+                }}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                Find Us This Week
+              </motion.button>
             )}
           </AnimatePresence>
         </div>
+      </div>
 
-        {/* Right Side - Damian */}
-        <div className="flex-1 flex justify-center md:justify-end items-end order-1 md:order-2 relative h-[300px] md:h-[500px] lg:h-[600px] w-full md:w-auto">
+      {/* Damian - Bottom right corner, smaller (z-20) */}
+      <AnimatePresence>
+        {showDamian && (
           <motion.div
-            className="relative w-[250px] h-[350px] md:w-[350px] md:h-[500px] lg:w-[400px] lg:h-[600px]"
-            initial={{ y: '100vh' }}
+            className="absolute bottom-0 right-4 sm:right-8 md:right-12 lg:right-20 z-20 w-[120px] h-[180px] sm:w-[150px] sm:h-[220px] md:w-[180px] md:h-[270px] lg:w-[220px] lg:h-[330px]"
+            initial={{ y: '100%' }}
             animate={{ y: 0 }}
             transition={{
               type: 'spring',
-              stiffness: 50,
+              stiffness: 80,
               damping: 15,
-              duration: 1,
             }}
           >
             <Image
@@ -165,33 +201,38 @@ export function AnimatedHero() {
               alt="Damian from Nito's Empanadas"
               fill
               className="object-contain object-bottom"
-              priority
             />
           </motion.div>
-        </div>
-      </div>
+        )}
+      </AnimatePresence>
 
       {/* Scroll Indicator */}
       <motion.div
-        className="absolute bottom-8 left-1/2 -translate-x-1/2 z-30"
-        animate={{ y: [0, 10, 0] }}
-        transition={{ duration: 1.5, repeat: Infinity }}
+        className="absolute bottom-6 left-1/2 -translate-x-1/2 z-10"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 4, duration: 0.5 }}
       >
-        <svg
-          className="w-6 h-6 text-[#2D5A3D]/60"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
+        <motion.div
+          animate={{ y: [0, 8, 0] }}
+          transition={{ duration: 1.5, repeat: Infinity }}
         >
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
-        </svg>
+          <svg
+            className="w-6 h-6 text-[#2D5A3D]/50"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+          </svg>
+        </motion.div>
       </motion.div>
     </section>
   );
 }
 
 // Typewriter effect component
-function TypewriterText({ text }: { text: string }) {
+function TypewriterText({ text, speed = 50 }: { text: string; speed?: number }) {
   const [displayedText, setDisplayedText] = useState('');
   const [currentIndex, setCurrentIndex] = useState(0);
 
@@ -200,21 +241,20 @@ function TypewriterText({ text }: { text: string }) {
       const timer = setTimeout(() => {
         setDisplayedText(text.slice(0, currentIndex + 1));
         setCurrentIndex(currentIndex + 1);
-      }, 50);
+      }, speed);
       return () => clearTimeout(timer);
     }
-  }, [currentIndex, text]);
+  }, [currentIndex, text, speed]);
 
   return (
     <>
       {displayedText}
       {currentIndex < text.length && (
         <motion.span
+          className="inline-block w-[3px] h-[1em] bg-[#2D5A3D] ml-1 align-middle"
           animate={{ opacity: [1, 0] }}
-          transition={{ duration: 0.5, repeat: Infinity }}
-        >
-          |
-        </motion.span>
+          transition={{ duration: 0.4, repeat: Infinity }}
+        />
       )}
     </>
   );
