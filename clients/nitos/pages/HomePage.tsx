@@ -98,11 +98,11 @@ export function HomePage() {
   return (
     <main className="font-sans">
       {/* Hero Section */}
-      <section className="relative min-h-screen flex items-center justify-center bg-gradient-to-br from-[#2D5A3D] via-[#1E3D29] to-[#152A1C]">
+      <section className="relative min-h-screen flex items-center justify-center bg-[#D4C5A9]">
         {/* Decorative overlay pattern */}
-        <div className="absolute inset-0 opacity-10">
+        <div className="absolute inset-0 opacity-5">
           <div className="absolute inset-0" style={{
-            backgroundImage: 'radial-gradient(circle at 2px 2px, white 1px, transparent 0)',
+            backgroundImage: 'radial-gradient(circle at 2px 2px, #2D5A3D 1px, transparent 0)',
             backgroundSize: '40px 40px'
           }} />
         </div>
@@ -114,16 +114,16 @@ export function HomePage() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.2 }}
         >
-          <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold text-white mb-6 tracking-tight">
+          <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold text-[#2D5A3D] mb-6 tracking-tight">
             Nito's Empanadas
           </h1>
-          <p className="text-xl md:text-2xl text-white/90 mb-12 font-light tracking-wide">
+          <p className="text-xl md:text-2xl text-[#4A5A3C] mb-12 font-light tracking-wide">
             Flavors of the World. Straight to Your Hands.
           </p>
 
           <button
             onClick={scrollToSchedule}
-            className="bg-[#C4A052] hover:bg-[#B8944A] text-white px-8 py-4 text-lg font-semibold tracking-wide transition-colors rounded-full shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-300"
+            className="bg-[#C4A052] hover:bg-[#B8944A] text-[#2D5A3D] px-8 py-4 text-lg font-semibold tracking-wide transition-colors rounded-full shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-300"
           >
             Find Us This Week
           </button>
@@ -136,7 +136,7 @@ export function HomePage() {
           transition={{ duration: 1.5, repeat: Infinity }}
         >
           <svg
-            className="w-6 h-6 text-white/80"
+            className="w-6 h-6 text-[#2D5A3D]/60"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -197,7 +197,7 @@ export function HomePage() {
       <ParallaxSection imageSrc="/empanada-paralax.png" />
 
       {/* Schedule Section */}
-      <section id="schedule" className="py-24 bg-[#F5F1E8]">
+      <section id="schedule" className="py-24 bg-[#D4C5A9]">
         <div className="max-w-7xl mx-auto px-6">
           <motion.div
             initial="initial"
@@ -368,7 +368,7 @@ export function HomePage() {
       </section>
 
       {/* Footer */}
-      <footer className="bg-[#F5F1E8] py-16 border-t border-[#D4C5A9]">
+      <footer className="bg-[#D4C5A9] py-16 border-t border-[#C4A052]/30">
         <div className="max-w-7xl mx-auto px-6">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
