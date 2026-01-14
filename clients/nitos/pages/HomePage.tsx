@@ -2,6 +2,7 @@
 
 import { motion } from 'framer-motion';
 import Image from 'next/image';
+import { FoodTruckTimeline } from '@/clients/nitos/components/FoodTruckTimeline';
 
 const fadeInUp = {
   initial: { opacity: 0, y: 30 },
@@ -106,26 +107,16 @@ export function HomePage() {
             whileInView="animate"
             viewport={{ once: true }}
             variants={staggerContainer}
-            className="text-center"
           >
             <motion.h2
               variants={fadeInUp}
-              className="text-4xl md:text-5xl font-bold text-[#2D5A3D] mb-8"
+              className="text-4xl md:text-5xl font-bold text-[#2D5A3D] mb-8 text-center"
             >
               Where to Find Us
             </motion.h2>
 
             <motion.div variants={fadeInUp}>
-              {/* TODO: This is where the truck animation will go */}
-              <div className="bg-white rounded-2xl shadow-lg p-12 max-w-2xl mx-auto">
-                <div className="text-6xl mb-6">🚚</div>
-                <p className="text-xl text-gray-600">
-                  Schedule coming soon
-                </p>
-                <p className="text-gray-400 mt-4 text-sm">
-                  Check back for our weekly locations!
-                </p>
-              </div>
+              <FoodTruckTimeline />
             </motion.div>
           </motion.div>
         </div>
