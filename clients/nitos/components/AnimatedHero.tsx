@@ -10,49 +10,94 @@ const empanadaImages = [
   { src: '/sweet-empanada.png', alt: 'Sweet Empanada' },
 ];
 
+type Direction = 'left-to-right' | 'right-to-left' | 'diagonal-down' | 'diagonal-up';
+
 interface FlyingEmpanada {
   id: number;
   src: string;
   alt: string;
   size: number;
+  startX: number;
   startY: number;
+  endX: number;
+  endY: number;
   duration: number;
   delay: number;
   rotation: number;
+  direction: Direction;
 }
 
 function generateEmpanadas(): FlyingEmpanada[] {
-  return Array.from({ length: 8 }, (_, i) => ({
-    id: i,
-    ...empanadaImages[i % empanadaImages.length],
-    size: Math.round(80 + Math.random() * 60), // 80-140px (rounded for Image component)
-    startY: Math.round(10 + Math.random() * 70), // 10-80% from top
-    duration: 12 + Math.random() * 8, // 12-20 seconds
-    delay: i * 1.5, // Stagger the start more
-    rotation: Math.round(Math.random() * 360),
-  }));
+  const directions: Direction[] = ['left-to-right', 'right-to-left', 'diagonal-down', 'diagonal-up'];
+
+  return Array.from({ length: 12 }, (_, i) => {
+    const direction = directions[i % directions.length];
+    const size = Math.round(60 + Math.random() * 80); // 60-140px
+
+    // Different start/end positions based on direction
+    let startX: number, startY: number, endX: number, endY: number;
+
+    switch (direction) {
+      case 'left-to-right':
+        startX = -15; // Start just off left edge
+        startY = Math.round(5 + Math.random() * 80);
+        endX = 110; // End past right edge
+        endY = startY + Math.round(-10 + Math.random() * 20); // slight vertical drift
+        break;
+      case 'right-to-left':
+        startX = 110; // start from right
+        startY = Math.round(5 + Math.random() * 80);
+        endX = -15;
+        endY = startY + Math.round(-10 + Math.random() * 20);
+        break;
+      case 'diagonal-down':
+        startX = -15 + Math.round(Math.random() * 30);
+        startY = -10;
+        endX = 80 + Math.round(Math.random() * 30);
+        endY = 110;
+        break;
+      case 'diagonal-up':
+        startX = 80 + Math.round(Math.random() * 30);
+        startY = 110;
+        endX = -15 + Math.round(Math.random() * 30);
+        endY = -10;
+        break;
+    }
+
+    return {
+      id: i,
+      ...empanadaImages[i % empanadaImages.length],
+      size,
+      startX,
+      startY,
+      endX,
+      endY,
+      duration: 8 + Math.random() * 12, // 8-20 seconds (varied speeds)
+      delay: (i * 0.8) % 6, // Stagger but cycle within 6 seconds so some start immediately
+      rotation: Math.round(Math.random() * 360),
+      direction,
+    };
+  });
 }
 
 export function AnimatedHero() {
   const [flyingEmpanadas] = useState<FlyingEmpanada[]>(generateEmpanadas);
 
-  // Animation sequence states
+  // Animation sequence states - empanadas always visible
   const [showLogo, setShowLogo] = useState(false);
   const [showDamian, setShowDamian] = useState(false);
   const [showHeadline, setShowHeadline] = useState(false);
   const [showSubtitle, setShowSubtitle] = useState(false);
-  const [showEmpanadas, setShowEmpanadas] = useState(false);
   const [showButton, setShowButton] = useState(false);
 
   useEffect(() => {
-    // Animation sequence timing
+    // Animation sequence timing - empanadas already flying (no state needed)
     const timers = [
-      setTimeout(() => setShowLogo(true), 100),           // 1. Logo fades in
-      setTimeout(() => setShowDamian(true), 800),         // 2. Damian slides up
-      setTimeout(() => setShowHeadline(true), 1600),      // 3. Headline typewriter
-      setTimeout(() => setShowSubtitle(true), 2800),      // 4. Subtitle fades in
-      setTimeout(() => setShowEmpanadas(true), 3400),     // 5. Empanadas start flying
-      setTimeout(() => setShowButton(true), 3800),        // 6. Button smacks in
+      setTimeout(() => setShowLogo(true), 100),           // 1. Logo fades in immediately
+      setTimeout(() => setShowDamian(true), 500),         // 2. Damian pops up at 0.5s
+      setTimeout(() => setShowHeadline(true), 1200),      // 3. Headline typewriter after Damian
+      setTimeout(() => setShowSubtitle(true), 2400),      // 4. Subtitle fades in
+      setTimeout(() => setShowButton(true), 2800),        // 5. Button slams in last
     ];
 
     return () => timers.forEach(clearTimeout);
@@ -68,55 +113,67 @@ export function AnimatedHero() {
   return (
     <section className="relative min-h-screen bg-[#D4C5A9] overflow-hidden flex flex-col items-center justify-center px-6 py-12">
 
-      {/* Flying Empanadas Layer - z-[1] behind logo but visible */}
-      {showEmpanadas && (
-        <div className="absolute inset-0 z-[1] pointer-events-none overflow-hidden">
-          {flyingEmpanadas.map((empanada) => (
-            <motion.div
-              key={empanada.id}
-              className="absolute"
-              style={{
-                top: `${empanada.startY}%`,
-                left: '-150px',
-                width: empanada.size,
-                height: empanada.size,
-              }}
-              animate={{
-                x: ['0px', 'calc(100vw + 150px)'],
-                rotate: [empanada.rotation, empanada.rotation + 360],
-              }}
-              transition={{
-                duration: empanada.duration,
-                delay: empanada.delay,
-                repeat: Infinity,
-                ease: 'linear',
-              }}
-            >
-              <Image
-                src={empanada.src}
-                alt={empanada.alt}
-                width={empanada.size}
-                height={empanada.size}
-                className="object-contain opacity-80"
-              />
-            </motion.div>
-          ))}
-        </div>
-      )}
+      {/* Noise texture overlay */}
+      <div
+        className="absolute inset-0 z-0 opacity-[0.4] pointer-events-none"
+        style={{
+          backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E")`,
+          backgroundRepeat: 'repeat',
+          backgroundSize: '128px 128px',
+        }}
+      />
+
+      {/* Flying Empanadas Layer - ALWAYS visible, z-[1] */}
+      <div className="absolute inset-0 z-[1] pointer-events-none overflow-hidden">
+        {flyingEmpanadas.map((empanada) => (
+          <motion.div
+            key={empanada.id}
+            className="absolute"
+            style={{
+              width: empanada.size,
+              height: empanada.size,
+            }}
+            initial={{
+              left: `${empanada.startX}%`,
+              top: `${empanada.startY}%`,
+              rotate: empanada.rotation,
+            }}
+            animate={{
+              left: [`${empanada.startX}%`, `${empanada.endX}%`],
+              top: [`${empanada.startY}%`, `${empanada.endY}%`],
+              rotate: [empanada.rotation, empanada.rotation + (empanada.direction === 'right-to-left' ? -360 : 360)],
+            }}
+            transition={{
+              duration: empanada.duration,
+              delay: empanada.delay,
+              repeat: Infinity,
+              ease: 'linear',
+            }}
+          >
+            <Image
+              src={empanada.src}
+              alt={empanada.alt}
+              width={empanada.size}
+              height={empanada.size}
+              className="object-contain opacity-70"
+            />
+          </motion.div>
+        ))}
+      </div>
 
       {/* Damian - Background layer, BIGGER (z-[5]) */}
       {showDamian && (
         <motion.div
           className="absolute bottom-0 right-0 sm:right-4 md:right-8 lg:right-16 z-[5]"
           style={{
-            width: 'clamp(200px, 40vw, 350px)',
-            height: 'clamp(300px, 60vw, 500px)',
+            width: 'clamp(180px, 35vw, 350px)',
+            height: 'clamp(270px, 55vw, 500px)',
           }}
           initial={{ y: '100%' }}
           animate={{ y: 0 }}
           transition={{
-            duration: 1.2,
-            ease: [0.25, 0.46, 0.45, 0.94], // easeOut
+            duration: 0.8,
+            ease: [0.25, 0.46, 0.45, 0.94],
           }}
         >
           <Image
@@ -134,12 +191,12 @@ export function AnimatedHero() {
         {/* Logo - BIG and centered (main focus) */}
         {showLogo && (
           <motion.div
-            className="relative w-[280px] h-[280px] sm:w-[350px] sm:h-[350px] md:w-[450px] md:h-[450px] lg:w-[550px] lg:h-[550px] mb-8"
+            className="relative w-[280px] h-[280px] sm:w-[350px] sm:h-[350px] md:w-[450px] md:h-[450px] lg:w-[550px] lg:h-[550px] mb-4 sm:mb-8"
             initial={{ scale: 0.5, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             transition={{
               duration: 0.8,
-              ease: [0.34, 1.56, 0.64, 1], // Bounce ease
+              ease: [0.34, 1.56, 0.64, 1],
             }}
           >
             <Image
@@ -152,12 +209,12 @@ export function AnimatedHero() {
           </motion.div>
         )}
 
-        {/* Text Content - Centered below logo */}
-        <div className="text-center">
-          {/* Headline */}
+        {/* Text Content - Left aligned on mobile, centered on larger screens */}
+        <div className="w-full text-left sm:text-center pr-[35%] sm:pr-0">
+          {/* Headline - moved up on mobile */}
           {showHeadline && (
             <motion.h1
-              className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-[#2D5A3D] italic mb-4"
+              className="text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-[#2D5A3D] italic mb-2 sm:mb-4"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 0.3 }}
@@ -166,29 +223,31 @@ export function AnimatedHero() {
             </motion.h1>
           )}
 
-          {/* Subtitle */}
+          {/* Subtitle - two lines on mobile */}
           {showSubtitle && (
-            <motion.p
-              className="text-lg sm:text-xl md:text-2xl text-[#4A5A3C] mb-8"
+            <motion.div
+              className="text-base sm:text-xl md:text-2xl text-[#4A5A3C] mb-6 sm:mb-8"
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5 }}
             >
-              Come to Nito's — best empanadas in town!
-            </motion.p>
+              <span className="block sm:inline">Come to Nito's</span>
+              <span className="hidden sm:inline"> — </span>
+              <span className="block sm:inline">Best empanadas in town!</span>
+            </motion.div>
           )}
 
-          {/* Button - z-[30] ABOVE Damian, smacks in with bounce */}
+          {/* Button - z-[30] ABOVE Damian, slams in last */}
           {showButton && (
             <motion.button
               onClick={scrollToSchedule}
-              className="relative z-[30] bg-[#C4A052] hover:bg-[#B8944A] text-[#2D5A3D] px-8 py-4 text-lg font-semibold tracking-wide rounded-full shadow-lg hover:shadow-xl transition-colors"
-              initial={{ scale: 0, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
+              className="relative z-[30] bg-[#C4A052] hover:bg-[#B8944A] text-[#2D5A3D] px-6 sm:px-8 py-3 sm:py-4 text-base sm:text-lg font-semibold tracking-wide rounded-full shadow-lg hover:shadow-xl transition-colors"
+              initial={{ scale: 0, opacity: 0, rotate: -10 }}
+              animate={{ scale: 1, opacity: 1, rotate: 0 }}
               transition={{
                 type: 'spring',
-                stiffness: 500,
-                damping: 15,
+                stiffness: 600,
+                damping: 12,
               }}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
@@ -204,7 +263,7 @@ export function AnimatedHero() {
         className="absolute bottom-6 left-1/2 -translate-x-1/2 z-[15]"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ delay: 4, duration: 0.5 }}
+        transition={{ delay: 3.5, duration: 0.5 }}
       >
         <motion.div
           animate={{ y: [0, 8, 0] }}
