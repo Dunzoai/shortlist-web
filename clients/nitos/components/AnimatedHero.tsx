@@ -39,13 +39,13 @@ function generateEmpanadas(): FlyingEmpanada[] {
 
     switch (direction) {
       case 'left-to-right':
-        startX = -15; // Start just off left edge
+        startX = -15;
         startY = Math.round(5 + Math.random() * 80);
-        endX = 110; // End past right edge
-        endY = startY + Math.round(-10 + Math.random() * 20); // slight vertical drift
+        endX = 110;
+        endY = startY + Math.round(-10 + Math.random() * 20);
         break;
       case 'right-to-left':
-        startX = 110; // start from right
+        startX = 110;
         startY = Math.round(5 + Math.random() * 80);
         endX = -15;
         endY = startY + Math.round(-10 + Math.random() * 20);
@@ -72,8 +72,8 @@ function generateEmpanadas(): FlyingEmpanada[] {
       startY,
       endX,
       endY,
-      duration: 8 + Math.random() * 12, // 8-20 seconds (varied speeds)
-      delay: (i * 0.8) % 6, // Stagger but cycle within 6 seconds so some start immediately
+      duration: 8 + Math.random() * 12,
+      delay: (i * 0.8) % 6,
       rotation: Math.round(Math.random() * 360),
       direction,
     };
@@ -83,21 +83,21 @@ function generateEmpanadas(): FlyingEmpanada[] {
 export function AnimatedHero() {
   const [flyingEmpanadas] = useState<FlyingEmpanada[]>(generateEmpanadas);
 
-  // Animation sequence states - empanadas always visible
-  const [showLogo, setShowLogo] = useState(false);
+  // Animation sequence states
   const [showDamian, setShowDamian] = useState(false);
   const [showHeadline, setShowHeadline] = useState(false);
   const [showSubtitle, setShowSubtitle] = useState(false);
   const [showButton, setShowButton] = useState(false);
 
   useEffect(() => {
-    // Animation sequence timing - empanadas already flying (no state needed)
+    // Animation sequence timing
+    // Logo is static (no animation needed)
+    // Empanadas already flying
     const timers = [
-      setTimeout(() => setShowLogo(true), 100),           // 1. Logo fades in immediately
-      setTimeout(() => setShowDamian(true), 500),         // 2. Damian pops up at 0.5s
-      setTimeout(() => setShowHeadline(true), 1200),      // 3. Headline typewriter after Damian
-      setTimeout(() => setShowSubtitle(true), 2400),      // 4. Subtitle fades in
-      setTimeout(() => setShowButton(true), 2800),        // 5. Button slams in last
+      setTimeout(() => setShowDamian(true), 500),         // 1. Damian slides up at 0.5s
+      setTimeout(() => setShowHeadline(true), 1800),      // 2. Headline typewriter starts after Damian settles
+      setTimeout(() => setShowSubtitle(true), 4200),      // 3. Subtitle fades in after typing completes (~2.4s for 19 chars at 80ms + pause)
+      setTimeout(() => setShowButton(true), 4800),        // 4. Button slams in last
     ];
 
     return () => timers.forEach(clearTimeout);
@@ -161,18 +161,18 @@ export function AnimatedHero() {
         ))}
       </div>
 
-      {/* Damian - Background layer, BIGGER (z-[5]) */}
+      {/* Damian - Background layer, 1.5x BIGGER (z-[5]) */}
       {showDamian && (
         <motion.div
           className="absolute bottom-0 right-0 sm:right-4 md:right-8 lg:right-16 z-[5]"
           style={{
-            width: 'clamp(180px, 35vw, 350px)',
-            height: 'clamp(270px, 55vw, 500px)',
+            width: 'clamp(270px, 52vw, 525px)',
+            height: 'clamp(405px, 82vw, 750px)',
           }}
           initial={{ y: '100%' }}
           animate={{ y: 0 }}
           transition={{
-            duration: 0.8,
+            duration: 1.2,
             ease: [0.25, 0.46, 0.45, 0.94],
           }}
         >
@@ -188,48 +188,38 @@ export function AnimatedHero() {
       {/* Main Content Container - z-[10] above Damian */}
       <div className="relative z-[10] flex flex-col items-center justify-center w-full max-w-4xl">
 
-        {/* Logo - BIG and centered (main focus) */}
-        {showLogo && (
-          <motion.div
-            className="relative w-[280px] h-[280px] sm:w-[350px] sm:h-[350px] md:w-[450px] md:h-[450px] lg:w-[550px] lg:h-[550px] mb-4 sm:mb-8"
-            initial={{ scale: 0.5, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            transition={{
-              duration: 0.8,
-              ease: [0.34, 1.56, 0.64, 1],
-            }}
-          >
-            <Image
-              src="/nitos-logo.avif"
-              alt="Nito's Empanadas Logo"
-              fill
-              className="object-contain"
-              priority
-            />
-          </motion.div>
-        )}
+        {/* Logo - STATIC, no animation, 1.25x bigger on mobile, larger on desktop */}
+        <div className="relative w-[350px] h-[350px] sm:w-[420px] sm:h-[420px] md:w-[520px] md:h-[520px] lg:w-[680px] lg:h-[680px] mb-2 sm:mb-6">
+          <Image
+            src="/nitos-logo.avif"
+            alt="Nito's Empanadas Logo"
+            fill
+            className="object-contain"
+            priority
+          />
+        </div>
 
         {/* Text Content - Left aligned on mobile, centered on larger screens */}
-        <div className="w-full text-left sm:text-center pr-[35%] sm:pr-0">
-          {/* Headline - moved up on mobile */}
+        <div className="w-full text-left sm:text-center pr-[40%] sm:pr-0">
+          {/* Headline - BIGGER and BOLDER on mobile, tighter line spacing */}
           {showHeadline && (
             <motion.h1
-              className="text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-[#2D5A3D] italic mb-2 sm:mb-4"
+              className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-[#2D5A3D] italic mb-1 sm:mb-4 leading-[0.95] sm:leading-tight"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 0.3 }}
             >
-              <TypewriterText text="You want empanadas?" speed={40} />
+              <TypewriterText text="You want empanadas?" speed={80} />
             </motion.h1>
           )}
 
-          {/* Subtitle - two lines on mobile */}
+          {/* Subtitle - fades in after pause */}
           {showSubtitle && (
             <motion.div
-              className="text-base sm:text-xl md:text-2xl text-[#4A5A3C] mb-6 sm:mb-8"
+              className="text-lg sm:text-xl md:text-2xl text-[#4A5A3C] mb-6 sm:mb-8"
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5 }}
+              transition={{ duration: 0.6, ease: 'easeOut' }}
             >
               <span className="block sm:inline">Come to Nito's</span>
               <span className="hidden sm:inline"> — </span>
@@ -263,7 +253,7 @@ export function AnimatedHero() {
         className="absolute bottom-6 left-1/2 -translate-x-1/2 z-[15]"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ delay: 3.5, duration: 0.5 }}
+        transition={{ delay: 5.5, duration: 0.5 }}
       >
         <motion.div
           animate={{ y: [0, 8, 0] }}
@@ -283,17 +273,19 @@ export function AnimatedHero() {
   );
 }
 
-// Typewriter effect component
-function TypewriterText({ text, speed = 50 }: { text: string; speed?: number }) {
+// Typewriter effect component - slower and smoother
+function TypewriterText({ text, speed = 80 }: { text: string; speed?: number }) {
   const [displayedText, setDisplayedText] = useState('');
   const [currentIndex, setCurrentIndex] = useState(0);
 
   useEffect(() => {
     if (currentIndex < text.length) {
+      // Add slight variation to make it feel more natural
+      const variation = Math.random() * 30;
       const timer = setTimeout(() => {
         setDisplayedText(text.slice(0, currentIndex + 1));
         setCurrentIndex(currentIndex + 1);
-      }, speed);
+      }, speed + variation);
       return () => clearTimeout(timer);
     }
   }, [currentIndex, text, speed]);
@@ -305,7 +297,7 @@ function TypewriterText({ text, speed = 50 }: { text: string; speed?: number }) 
         <motion.span
           className="inline-block w-[3px] h-[1em] bg-[#2D5A3D] ml-1 align-middle"
           animate={{ opacity: [1, 0] }}
-          transition={{ duration: 0.4, repeat: Infinity }}
+          transition={{ duration: 0.5, repeat: Infinity }}
         />
       )}
     </>
