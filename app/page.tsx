@@ -1,6 +1,7 @@
 import { headers } from 'next/headers';
 import { getClient } from '@/lib/getClient';
 import { HomePage as DaniDiazHomePage } from '@/clients/danidiaz/pages/HomePage';
+import { HomePage as NitosHomePage } from '@/clients/nitos/pages/HomePage';
 
 // Coming Soon placeholder for clients without a HomePage yet
 function ComingSoonPage() {
@@ -21,8 +22,7 @@ export default async function Page() {
 
   // Route to client-specific HomePage based on slug
   if (client?.slug === 'nitos') {
-    // TODO: Create /clients/nitos/pages/HomePage.tsx
-    return <ComingSoonPage />;
+    return <NitosHomePage />;
   }
 
   // Default to danidiaz
