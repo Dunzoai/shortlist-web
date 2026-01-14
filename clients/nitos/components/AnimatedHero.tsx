@@ -163,8 +163,8 @@ export function AnimatedHero() {
           className="absolute -right-4 sm:-right-2 md:-right-4 lg:-right-8 z-[5]"
           style={{
             bottom: 'clamp(24px, 4vh, 40px)',
-            width: 'clamp(160px, 32vw, 400px)',
-            height: 'clamp(240px, 48vw, 580px)',
+            width: 'clamp(192px, 38vw, 400px)',
+            height: 'clamp(288px, 58vw, 580px)',
           }}
           initial={{ y: '100%' }}
           animate={{ y: 0 }}
