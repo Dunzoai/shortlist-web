@@ -6,6 +6,7 @@ import Image from 'next/image';
 import { FoodTruckTimeline } from '@/clients/nitos/components/FoodTruckTimeline';
 import { ParallaxSection } from '@/clients/nitos/components/ParallaxSection';
 import { AnimatedHero } from '@/clients/nitos/components/AnimatedHero';
+import { Header } from '@/clients/nitos/components/Header';
 
 const fadeInUp = {
   initial: { opacity: 0, y: 30 },
@@ -91,6 +92,9 @@ export function HomePage() {
 
   return (
     <main className="font-sans">
+      {/* Header */}
+      <Header />
+
       {/* Animated Hero Section */}
       <AnimatedHero />
 

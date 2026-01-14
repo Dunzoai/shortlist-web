@@ -111,7 +111,7 @@ export function AnimatedHero() {
   };
 
   return (
-    <section className="relative min-h-screen bg-[#D4C5A9] overflow-hidden flex flex-col items-center justify-center px-6 py-12">
+    <section className="relative min-h-screen bg-[#D4C5A9] overflow-hidden flex flex-col items-center justify-center px-6 pt-20 pb-12">
 
       {/* Noise texture overlay */}
       <div
@@ -161,13 +161,13 @@ export function AnimatedHero() {
         ))}
       </div>
 
-      {/* Damian - Background layer, 1.5x BIGGER (z-[5]) */}
+      {/* Damian - Background layer, scaled down 10% mobile / 15% desktop, nudged right */}
       {showDamian && (
         <motion.div
-          className="absolute bottom-0 right-0 sm:right-4 md:right-8 lg:right-16 z-[5]"
+          className="absolute bottom-0 -right-4 sm:-right-2 md:-right-4 lg:-right-8 z-[5]"
           style={{
-            width: 'clamp(270px, 52vw, 525px)',
-            height: 'clamp(405px, 82vw, 750px)',
+            width: 'clamp(243px, 44vw, 446px)',
+            height: 'clamp(365px, 70vw, 638px)',
           }}
           initial={{ y: '100%' }}
           animate={{ y: 0 }}
@@ -200,51 +200,49 @@ export function AnimatedHero() {
         </div>
 
         {/* Text Content - Left aligned on mobile, centered on larger screens */}
-        <div className="w-full text-left sm:text-center pr-[40%] sm:pr-0">
+        {/* Fixed min-height to prevent layout shift during typing animation */}
+        <div className="w-full text-left sm:text-center pr-[40%] sm:pr-0 min-h-[180px] sm:min-h-[200px]">
           {/* Headline - BIGGER and BOLDER on mobile, tighter line spacing */}
-          {showHeadline && (
-            <motion.h1
-              className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-[#2D5A3D] italic mb-1 sm:mb-4 leading-[0.95] sm:leading-tight"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.3 }}
-            >
-              <TypewriterText text="You want empanadas?" speed={80} />
-            </motion.h1>
-          )}
+          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-[#2D5A3D] italic mb-1 sm:mb-4 leading-[0.95] sm:leading-tight min-h-[2.5em] sm:min-h-[1.5em]">
+            {showHeadline && <TypewriterText text="You want empanadas?" speed={80} />}
+          </h1>
 
           {/* Subtitle - fades in after pause */}
-          {showSubtitle && (
-            <motion.div
-              className="text-lg sm:text-xl md:text-2xl text-[#4A5A3C] mb-6 sm:mb-8"
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, ease: 'easeOut' }}
-            >
-              <span className="block sm:inline">Come to Nito's</span>
-              <span className="hidden sm:inline"> — </span>
-              <span className="block sm:inline">Best empanadas in town!</span>
-            </motion.div>
-          )}
+          <div className="min-h-[3.5em] sm:min-h-[2em]">
+            {showSubtitle && (
+              <motion.div
+                className="text-lg sm:text-xl md:text-2xl text-[#4A5A3C] mb-6 sm:mb-8"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, ease: 'easeOut' }}
+              >
+                <span className="block sm:inline">Come to Nito's</span>
+                <span className="hidden sm:inline"> — </span>
+                <span className="block sm:inline">Best empanadas in town!</span>
+              </motion.div>
+            )}
+          </div>
 
           {/* Button - z-[30] ABOVE Damian, slams in last */}
-          {showButton && (
-            <motion.button
-              onClick={scrollToSchedule}
-              className="relative z-[30] bg-[#C4A052] hover:bg-[#B8944A] text-[#2D5A3D] px-6 sm:px-8 py-3 sm:py-4 text-base sm:text-lg font-semibold tracking-wide rounded-full shadow-lg hover:shadow-xl transition-colors"
-              initial={{ scale: 0, opacity: 0, rotate: -10 }}
-              animate={{ scale: 1, opacity: 1, rotate: 0 }}
-              transition={{
-                type: 'spring',
-                stiffness: 600,
-                damping: 12,
-              }}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              Find Us This Week
-            </motion.button>
-          )}
+          <div className="min-h-[56px]">
+            {showButton && (
+              <motion.button
+                onClick={scrollToSchedule}
+                className="relative z-[30] bg-[#C4A052] hover:bg-[#B8944A] text-[#2D5A3D] px-6 sm:px-8 py-3 sm:py-4 text-base sm:text-lg font-semibold tracking-wide rounded-full shadow-lg hover:shadow-xl transition-colors"
+                initial={{ scale: 0, opacity: 0, rotate: -10 }}
+                animate={{ scale: 1, opacity: 1, rotate: 0 }}
+                transition={{
+                  type: 'spring',
+                  stiffness: 600,
+                  damping: 12,
+                }}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                Find Us This Week
+              </motion.button>
+            )}
+          </div>
         </div>
       </div>
 
