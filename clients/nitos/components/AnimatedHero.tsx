@@ -107,7 +107,7 @@ export function AnimatedHero() {
   };
 
   return (
-    <section className="relative h-screen bg-[#D4C5A9] overflow-hidden">
+    <section className="relative h-[100dvh] bg-[#D4C5A9] overflow-hidden">
 
       {/* Noise texture overlay */}
       <div
@@ -157,13 +157,14 @@ export function AnimatedHero() {
         ))}
       </div>
 
-      {/* Damian - Absolutely positioned at bottom right */}
+      {/* Damian - Positioned on the "floor line" (same as button bottom) */}
       {showDamian && (
         <motion.div
-          className="absolute bottom-0 -right-4 sm:-right-2 md:-right-4 lg:-right-8 z-[5]"
+          className="absolute -right-4 sm:-right-2 md:-right-4 lg:-right-8 z-[5]"
           style={{
-            width: 'clamp(200px, 38vw, 400px)',
-            height: 'clamp(300px, 60vw, 580px)',
+            bottom: 'clamp(24px, 4vh, 40px)',
+            width: 'clamp(160px, 32vw, 400px)',
+            height: 'clamp(240px, 48vw, 580px)',
           }}
           initial={{ y: '100%' }}
           animate={{ y: 0 }}
@@ -185,7 +186,7 @@ export function AnimatedHero() {
       <div
         className="absolute left-1/2 -translate-x-1/2 z-[10]"
         style={{
-          top: 'clamp(80px, 10vh, 120px)',
+          top: 'clamp(70px, 8vh, 100px)',
           width: 'clamp(280px, 50vw, 580px)',
           height: 'clamp(280px, 50vw, 580px)',
         }}
@@ -199,11 +200,11 @@ export function AnimatedHero() {
         />
       </div>
 
-      {/* Text Content - Absolutely positioned below logo */}
+      {/* Text Content - Positioned so button bottom aligns with Damian's feet */}
       <div
         className="absolute left-0 right-0 z-[10] px-6"
         style={{
-          bottom: 'clamp(60px, 12vh, 140px)',
+          bottom: 'clamp(24px, 4vh, 40px)',
         }}
       >
         <div className="max-w-4xl mx-auto text-left sm:text-center pr-[35%] sm:pr-0">
@@ -252,9 +253,9 @@ export function AnimatedHero() {
         </div>
       </div>
 
-      {/* Scroll Indicator */}
+      {/* Scroll Indicator - hidden on mobile, visible on desktop */}
       <motion.div
-        className="absolute bottom-4 left-1/2 -translate-x-1/2 z-[15]"
+        className="absolute bottom-2 left-1/2 -translate-x-1/2 z-[15] hidden sm:block"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 5.5, duration: 0.5 }}
