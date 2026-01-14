@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
 import { FoodTruckTimeline } from '@/clients/nitos/components/FoodTruckTimeline';
 import { ParallaxSection } from '@/clients/nitos/components/ParallaxSection';
+import { AnimatedHero } from '@/clients/nitos/components/AnimatedHero';
 
 const fadeInUp = {
   initial: { opacity: 0, y: 30 },
@@ -86,65 +87,12 @@ const menuItems: MenuItem[] = [
 export function HomePage() {
   const [menuCategory, setMenuCategory] = useState<'savory' | 'sweet'>('savory');
 
-  const scrollToSchedule = () => {
-    const scheduleSection = document.getElementById('schedule');
-    if (scheduleSection) {
-      scheduleSection.scrollIntoView({ behavior: 'smooth' });
-    }
-  };
-
   const filteredMenuItems = menuItems.filter(item => item.category === menuCategory);
 
   return (
     <main className="font-sans">
-      {/* Hero Section */}
-      <section className="relative min-h-screen flex items-center justify-center bg-[#D4C5A9]">
-        {/* Decorative overlay pattern */}
-        <div className="absolute inset-0 opacity-5">
-          <div className="absolute inset-0" style={{
-            backgroundImage: 'radial-gradient(circle at 2px 2px, #2D5A3D 1px, transparent 0)',
-            backgroundSize: '40px 40px'
-          }} />
-        </div>
-
-        {/* Hero Content */}
-        <motion.div
-          className="relative z-10 text-center px-6 max-w-4xl"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.2 }}
-        >
-          <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold text-[#2D5A3D] mb-6 tracking-tight">
-            Nito's Empanadas
-          </h1>
-          <p className="text-xl md:text-2xl text-[#4A5A3C] mb-12 font-light tracking-wide">
-            Flavors of the World. Straight to Your Hands.
-          </p>
-
-          <button
-            onClick={scrollToSchedule}
-            className="bg-[#C4A052] hover:bg-[#B8944A] text-[#2D5A3D] px-8 py-4 text-lg font-semibold tracking-wide transition-colors rounded-full shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-300"
-          >
-            Find Us This Week
-          </button>
-        </motion.div>
-
-        {/* Scroll Indicator */}
-        <motion.div
-          className="absolute bottom-8 left-1/2 -translate-x-1/2"
-          animate={{ y: [0, 10, 0] }}
-          transition={{ duration: 1.5, repeat: Infinity }}
-        >
-          <svg
-            className="w-6 h-6 text-[#2D5A3D]/60"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
-          </svg>
-        </motion.div>
-      </section>
+      {/* Animated Hero Section */}
+      <AnimatedHero />
 
       {/* About Section */}
       <section className="py-24 bg-[#D4C5A9]">
