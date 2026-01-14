@@ -25,11 +25,11 @@ function generateEmpanadas(): FlyingEmpanada[] {
   return Array.from({ length: 8 }, (_, i) => ({
     id: i,
     ...empanadaImages[i % empanadaImages.length],
-    size: 80 + Math.random() * 60, // 80-140px
-    startY: 10 + Math.random() * 70, // 10-80% from top
+    size: Math.round(80 + Math.random() * 60), // 80-140px (rounded for Image component)
+    startY: Math.round(10 + Math.random() * 70), // 10-80% from top
     duration: 12 + Math.random() * 8, // 12-20 seconds
     delay: i * 1.5, // Stagger the start more
-    rotation: Math.random() * 360,
+    rotation: Math.round(Math.random() * 360),
   }));
 }
 
@@ -70,19 +70,19 @@ export function AnimatedHero() {
 
       {/* Flying Empanadas Layer - z-[1] behind logo but visible */}
       {showEmpanadas && (
-        <div className="absolute inset-0 z-[1] pointer-events-none">
+        <div className="absolute inset-0 z-[1] pointer-events-none overflow-hidden">
           {flyingEmpanadas.map((empanada) => (
             <motion.div
               key={empanada.id}
               className="absolute"
               style={{
                 top: `${empanada.startY}%`,
-                left: -150,
+                left: '-150px',
                 width: empanada.size,
                 height: empanada.size,
               }}
               animate={{
-                left: ['calc(-150px)', 'calc(100vw + 150px)'],
+                x: ['0px', 'calc(100vw + 150px)'],
                 rotate: [empanada.rotation, empanada.rotation + 360],
               }}
               transition={{
