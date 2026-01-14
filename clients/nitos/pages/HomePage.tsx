@@ -123,7 +123,7 @@ export function HomePage() {
 
           <button
             onClick={scrollToSchedule}
-            className="bg-[#F5A623] hover:bg-[#E09000] text-white px-8 py-4 text-lg font-semibold tracking-wide transition-colors rounded-full shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-300"
+            className="bg-[#C4A052] hover:bg-[#B8944A] text-white px-8 py-4 text-lg font-semibold tracking-wide transition-colors rounded-full shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-300"
           >
             Find Us This Week
           </button>
@@ -183,8 +183,8 @@ export function HomePage() {
                 — Damian, Nito's Empanadas
               </p>
 
-              <blockquote className="border-l-4 border-[#2D5A3D] pl-6 py-4 bg-white/50 rounded-r-xl">
-                <p className="text-3xl md:text-4xl lg:text-5xl font-bold text-[#2D5A3D] italic">
+              <blockquote className="border-l-4 border-[#C4A052] pl-6 py-4 bg-white/50 rounded-r-xl">
+                <p className="text-3xl md:text-4xl lg:text-5xl font-bold text-[#C4A052] italic">
                   "You want empanadas?"
                 </p>
               </blockquote>
@@ -197,7 +197,7 @@ export function HomePage() {
       <ParallaxSection imageSrc="/empanada-paralax.png" />
 
       {/* Schedule Section */}
-      <section id="schedule" className="py-24 bg-[#FFFBF5]">
+      <section id="schedule" className="py-24 bg-[#F5F1E8]">
         <div className="max-w-7xl mx-auto px-6">
           <motion.div
             initial="initial"
@@ -262,14 +262,14 @@ export function HomePage() {
                   className="rounded relative overflow-hidden"
                   style={{
                     background: 'linear-gradient(180deg, #1a1a1a 0%, #0d0d0d 100%)',
-                    boxShadow: 'inset 0 0 60px rgba(0,0,0,0.8), inset 0 0 20px rgba(245, 166, 35, 0.1)',
+                    boxShadow: 'inset 0 0 60px rgba(0,0,0,0.8), inset 0 0 20px rgba(196, 160, 82, 0.1)',
                   }}
                 >
                   {/* Subtle backlight glow */}
                   <div
                     className="absolute inset-0 opacity-20"
                     style={{
-                      background: 'radial-gradient(ellipse at center, rgba(245, 166, 35, 0.3) 0%, transparent 70%)',
+                      background: 'radial-gradient(ellipse at center, rgba(196, 160, 82, 0.3) 0%, transparent 70%)',
                     }}
                   />
 
@@ -329,8 +329,8 @@ export function HomePage() {
                                 <h3
                                   className="text-xl md:text-2xl font-bold"
                                   style={{
-                                    color: '#F5A623',
-                                    textShadow: '0 0 20px rgba(245, 166, 35, 0.5), 0 0 40px rgba(245, 166, 35, 0.3)',
+                                    color: '#C4A052',
+                                    textShadow: '0 0 20px rgba(196, 160, 82, 0.5), 0 0 40px rgba(196, 160, 82, 0.3)',
                                   }}
                                 >
                                   {item.name}
@@ -338,8 +338,8 @@ export function HomePage() {
                                 <span
                                   className="text-xl font-bold ml-4 shrink-0"
                                   style={{
-                                    color: '#F5A623',
-                                    textShadow: '0 0 20px rgba(245, 166, 35, 0.5), 0 0 40px rgba(245, 166, 35, 0.3)',
+                                    color: '#C4A052',
+                                    textShadow: '0 0 20px rgba(196, 160, 82, 0.5), 0 0 40px rgba(196, 160, 82, 0.3)',
                                   }}
                                 >
                                   {item.price}
@@ -368,7 +368,7 @@ export function HomePage() {
       </section>
 
       {/* Footer */}
-      <footer className="bg-[#152A1C] py-16">
+      <footer className="bg-[#F5F1E8] py-16 border-t border-[#D4C5A9]">
         <div className="max-w-7xl mx-auto px-6">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -377,24 +377,24 @@ export function HomePage() {
             transition={{ duration: 0.6 }}
             className="text-center"
           >
-            <h3 className="text-3xl font-bold text-white mb-6">
+            <h3 className="text-3xl font-bold text-[#2D5A3D] mb-6">
               Nito's Empanadas
             </h3>
 
             <div className="space-y-4 mb-8">
-              <div className="flex items-center justify-center gap-3 text-white/80">
+              <div className="flex items-center justify-center gap-3 text-[#4A5A3C]">
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                 </svg>
                 <span>hello@nitosempanadas.com</span>
               </div>
-              <div className="flex items-center justify-center gap-3 text-white/80">
+              <div className="flex items-center justify-center gap-3 text-[#4A5A3C]">
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
                 </svg>
                 <span>(555) 123-4567</span>
               </div>
-              <div className="flex items-center justify-center gap-3 text-white/80">
+              <div className="flex items-center justify-center gap-3 text-[#4A5A3C]">
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -407,7 +407,7 @@ export function HomePage() {
             <div className="flex justify-center gap-4 mb-8">
               <a
                 href="#"
-                className="w-12 h-12 rounded-full bg-white/10 flex items-center justify-center text-white hover:bg-[#F5A623] transition-colors"
+                className="w-12 h-12 rounded-full bg-[#2D5A3D] flex items-center justify-center text-white hover:bg-[#C4A052] transition-colors"
                 aria-label="Instagram"
               >
                 <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
@@ -416,7 +416,7 @@ export function HomePage() {
               </a>
               <a
                 href="#"
-                className="w-12 h-12 rounded-full bg-white/10 flex items-center justify-center text-white hover:bg-[#F5A623] transition-colors"
+                className="w-12 h-12 rounded-full bg-[#2D5A3D] flex items-center justify-center text-white hover:bg-[#C4A052] transition-colors"
                 aria-label="Facebook"
               >
                 <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
@@ -425,7 +425,7 @@ export function HomePage() {
               </a>
               <a
                 href="#"
-                className="w-12 h-12 rounded-full bg-white/10 flex items-center justify-center text-white hover:bg-[#F5A623] transition-colors"
+                className="w-12 h-12 rounded-full bg-[#2D5A3D] flex items-center justify-center text-white hover:bg-[#C4A052] transition-colors"
                 aria-label="TikTok"
               >
                 <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
@@ -434,7 +434,7 @@ export function HomePage() {
               </a>
             </div>
 
-            <p className="text-white/40 text-sm">
+            <p className="text-[#4A5A3C]/60 text-sm">
               © {new Date().getFullYear()} Nito's Empanadas. All rights reserved.
             </p>
           </motion.div>
