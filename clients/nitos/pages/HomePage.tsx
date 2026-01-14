@@ -3,6 +3,7 @@
 import { motion } from 'framer-motion';
 import Image from 'next/image';
 import { FoodTruckTimeline } from '@/clients/nitos/components/FoodTruckTimeline';
+import { ParallaxSection } from '@/clients/nitos/components/ParallaxSection';
 
 const fadeInUp = {
   initial: { opacity: 0, y: 30 },
@@ -146,6 +147,9 @@ export function HomePage() {
         </div>
       </section>
 
+      {/* Parallax - Empanada */}
+      <ParallaxSection imageSrc="/empanada-paralax.png" />
+
       {/* Schedule Section */}
       <section id="schedule" className="py-24 bg-[#FFFBF5]">
         <div className="max-w-7xl mx-auto px-6">
@@ -168,6 +172,9 @@ export function HomePage() {
           </motion.div>
         </div>
       </section>
+
+      {/* Parallax - Truck Line */}
+      <ParallaxSection imageSrc="/truck-line-paralax.png" />
 
       {/* Menu Section */}
       <section className="py-24 bg-white">
