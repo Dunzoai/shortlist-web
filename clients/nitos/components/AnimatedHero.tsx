@@ -32,9 +32,8 @@ function generateEmpanadas(): FlyingEmpanada[] {
 
   return Array.from({ length: 12 }, (_, i) => {
     const direction = directions[i % directions.length];
-    const size = Math.round(60 + Math.random() * 80); // 60-140px
+    const size = Math.round(60 + Math.random() * 80);
 
-    // Different start/end positions based on direction
     let startX: number, startY: number, endX: number, endY: number;
 
     switch (direction) {
@@ -90,14 +89,11 @@ export function AnimatedHero() {
   const [showButton, setShowButton] = useState(false);
 
   useEffect(() => {
-    // Animation sequence timing
-    // Logo is static (no animation needed)
-    // Empanadas already flying
     const timers = [
-      setTimeout(() => setShowDamian(true), 500),         // 1. Damian slides up at 0.5s
-      setTimeout(() => setShowHeadline(true), 1800),      // 2. Headline typewriter starts after Damian settles
-      setTimeout(() => setShowSubtitle(true), 4200),      // 3. Subtitle fades in after typing completes (~2.4s for 19 chars at 80ms + pause)
-      setTimeout(() => setShowButton(true), 4800),        // 4. Button slams in last
+      setTimeout(() => setShowDamian(true), 500),
+      setTimeout(() => setShowHeadline(true), 1800),
+      setTimeout(() => setShowSubtitle(true), 4200),
+      setTimeout(() => setShowButton(true), 4800),
     ];
 
     return () => timers.forEach(clearTimeout);
@@ -111,7 +107,7 @@ export function AnimatedHero() {
   };
 
   return (
-    <section className="relative min-h-screen bg-[#D4C5A9] overflow-hidden flex flex-col items-center justify-center px-6 pt-20 pb-12">
+    <section className="relative h-screen bg-[#D4C5A9] overflow-hidden">
 
       {/* Noise texture overlay */}
       <div
@@ -161,13 +157,13 @@ export function AnimatedHero() {
         ))}
       </div>
 
-      {/* Damian - Background layer, scaled down 10% mobile / 15% desktop, nudged right */}
+      {/* Damian - Absolutely positioned at bottom right */}
       {showDamian && (
         <motion.div
           className="absolute bottom-0 -right-4 sm:-right-2 md:-right-4 lg:-right-8 z-[5]"
           style={{
-            width: 'clamp(243px, 44vw, 446px)',
-            height: 'clamp(365px, 70vw, 638px)',
+            width: 'clamp(200px, 38vw, 400px)',
+            height: 'clamp(300px, 60vw, 580px)',
           }}
           initial={{ y: '100%' }}
           animate={{ y: 0 }}
@@ -185,33 +181,41 @@ export function AnimatedHero() {
         </motion.div>
       )}
 
-      {/* Main Content Container - z-[10] above Damian */}
-      <div className="relative z-[10] flex flex-col items-center justify-center w-full max-w-4xl">
+      {/* Logo - Absolutely positioned, higher up */}
+      <div
+        className="absolute left-1/2 -translate-x-1/2 z-[10]"
+        style={{
+          top: 'clamp(80px, 10vh, 120px)',
+          width: 'clamp(280px, 50vw, 580px)',
+          height: 'clamp(280px, 50vw, 580px)',
+        }}
+      >
+        <Image
+          src="/nitos-logo.avif"
+          alt="Nito's Empanadas Logo"
+          fill
+          className="object-contain"
+          priority
+        />
+      </div>
 
-        {/* Logo - STATIC, no animation, 1.25x bigger on mobile, larger on desktop */}
-        <div className="relative w-[350px] h-[350px] sm:w-[420px] sm:h-[420px] md:w-[520px] md:h-[520px] lg:w-[680px] lg:h-[680px] mb-2 sm:mb-6">
-          <Image
-            src="/nitos-logo.avif"
-            alt="Nito's Empanadas Logo"
-            fill
-            className="object-contain"
-            priority
-          />
-        </div>
-
-        {/* Text Content - Left aligned on mobile, centered on larger screens */}
-        {/* Fixed min-height to prevent layout shift during typing animation */}
-        <div className="w-full text-left sm:text-center pr-[40%] sm:pr-0 min-h-[180px] sm:min-h-[200px]">
-          {/* Headline - BIGGER and BOLDER on mobile, tighter line spacing */}
-          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-[#2D5A3D] italic mb-1 sm:mb-4 leading-[0.95] sm:leading-tight min-h-[2.5em] sm:min-h-[1.5em]">
-            {showHeadline && <TypewriterText text="You want empanadas?" speed={80} />}
+      {/* Text Content - Absolutely positioned below logo */}
+      <div
+        className="absolute left-0 right-0 z-[10] px-6"
+        style={{
+          bottom: 'clamp(60px, 12vh, 140px)',
+        }}
+      >
+        <div className="max-w-4xl mx-auto text-left sm:text-center pr-[35%] sm:pr-0">
+          {/* Headline */}
+          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-[#2D5A3D] italic mb-2 sm:mb-4 leading-[0.95] sm:leading-tight">
+            {showHeadline ? <TypewriterText text="You want empanadas?" speed={80} /> : <span className="invisible">You want empanadas?</span>}
           </h1>
 
-          {/* Subtitle - fades in after pause */}
-          <div className="min-h-[3.5em] sm:min-h-[2em]">
-            {showSubtitle && (
+          {/* Subtitle */}
+          <div className="text-lg sm:text-xl md:text-2xl text-[#4A5A3C] mb-4 sm:mb-6">
+            {showSubtitle ? (
               <motion.div
-                className="text-lg sm:text-xl md:text-2xl text-[#4A5A3C] mb-6 sm:mb-8"
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, ease: 'easeOut' }}
@@ -220,11 +224,13 @@ export function AnimatedHero() {
                 <span className="hidden sm:inline"> — </span>
                 <span className="block sm:inline">Best empanadas in town!</span>
               </motion.div>
+            ) : (
+              <span className="invisible block sm:inline">Come to Nito's — Best empanadas in town!</span>
             )}
           </div>
 
-          {/* Button - z-[30] ABOVE Damian, slams in last */}
-          <div className="min-h-[56px]">
+          {/* Button */}
+          <div className="h-[52px] sm:h-[56px]">
             {showButton && (
               <motion.button
                 onClick={scrollToSchedule}
@@ -248,7 +254,7 @@ export function AnimatedHero() {
 
       {/* Scroll Indicator */}
       <motion.div
-        className="absolute bottom-6 left-1/2 -translate-x-1/2 z-[15]"
+        className="absolute bottom-4 left-1/2 -translate-x-1/2 z-[15]"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 5.5, duration: 0.5 }}
@@ -271,14 +277,13 @@ export function AnimatedHero() {
   );
 }
 
-// Typewriter effect component - slower and smoother
+// Typewriter effect component
 function TypewriterText({ text, speed = 80 }: { text: string; speed?: number }) {
   const [displayedText, setDisplayedText] = useState('');
   const [currentIndex, setCurrentIndex] = useState(0);
 
   useEffect(() => {
     if (currentIndex < text.length) {
-      // Add slight variation to make it feel more natural
       const variation = Math.random() * 30;
       const timer = setTimeout(() => {
         setDisplayedText(text.slice(0, currentIndex + 1));
