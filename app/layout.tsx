@@ -1,8 +1,11 @@
 import type { Metadata } from "next";
 import { Playfair_Display, Lora } from "next/font/google";
+import { headers } from "next/headers";
 import "./globals.css";
 import { LanguageProvider } from "@/clients/danidiaz/components/LanguageContext";
 import { StyleProvider } from "@/clients/danidiaz/components/StyleContext";
+import { ClientProvider } from "@/lib/ClientContext";
+import { getClient } from "@/lib/getClient";
 
 const playfair = Playfair_Display({
   variable: "--font-playfair",
@@ -61,21 +64,30 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  // Get hostname from request headers
+  const headersList = await headers();
+  const hostname = headersList.get('host') || 'localhost:3000';
+
+  // Get client data based on hostname
+  const client = await getClient(hostname);
+
   return (
     <html lang="en">
       <body
         className={`${playfair.variable} ${lora.variable} antialiased bg-[#F7F7F7] text-[#3D3D3D]`}
       >
-        <LanguageProvider>
-          <StyleProvider>
-            {children}
-          </StyleProvider>
-        </LanguageProvider>
+        <ClientProvider client={client}>
+          <LanguageProvider>
+            <StyleProvider>
+              {children}
+            </StyleProvider>
+          </LanguageProvider>
+        </ClientProvider>
       </body>
     </html>
   );
