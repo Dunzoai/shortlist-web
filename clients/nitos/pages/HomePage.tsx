@@ -99,6 +99,53 @@ export function HomePage() {
         </motion.div>
       </section>
 
+      {/* About Section */}
+      <section className="py-24 bg-[#D4C5A9]">
+        <div className="max-w-7xl mx-auto px-6">
+          <motion.div
+            className="grid md:grid-cols-2 gap-12 items-center"
+            initial="initial"
+            whileInView="animate"
+            viewport={{ once: true }}
+            variants={staggerContainer}
+          >
+            <motion.div variants={fadeInUp} className="relative">
+              <div className="w-full aspect-square relative rounded-2xl overflow-hidden shadow-2xl">
+                <Image
+                  src="/damian-truck-window.png"
+                  alt="Damian at the Nito's Empanadas truck window"
+                  fill
+                  className="object-cover"
+                />
+              </div>
+            </motion.div>
+
+            <motion.div variants={fadeInUp}>
+              <h2 className="text-4xl md:text-5xl font-bold text-[#2D5A3D] mb-8">
+                The Name Behind the Truck
+              </h2>
+
+              <p className="text-[#3D3D3D] text-lg leading-relaxed mb-6">
+                I'm Damian — but this truck isn't named after me. It's named after my abuelo, Nito, who started making empanadas for his neighbors back in Uruguay in 1975. My dad carried on the tradition, and now it's my turn.
+              </p>
+              <p className="text-[#3D3D3D] text-lg leading-relaxed mb-6">
+                I studied culinary, spent 15 years in construction, and one day realized: if I don't chase this now, I never will. So here we are. Same fold. Same fillings. Same love. Rolling through Myrtle Beach with the name that means the most to me.
+              </p>
+
+              <p className="text-[#2D5A3D] font-semibold text-lg mb-10">
+                — Damian, Nito's Empanadas
+              </p>
+
+              <blockquote className="border-l-4 border-[#2D5A3D] pl-6 py-4 bg-white/50 rounded-r-xl">
+                <p className="text-3xl md:text-4xl lg:text-5xl font-bold text-[#2D5A3D] italic">
+                  "You want empanadas?"
+                </p>
+              </blockquote>
+            </motion.div>
+          </motion.div>
+        </div>
+      </section>
+
       {/* Schedule Section */}
       <section id="schedule" className="py-24 bg-[#FFFBF5]">
         <div className="max-w-7xl mx-auto px-6">
@@ -162,49 +209,6 @@ export function HomePage() {
                   </p>
                 </div>
               ))}
-            </motion.div>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* About Section */}
-      <section className="py-24 bg-[#2D5A3D]">
-        <div className="max-w-7xl mx-auto px-6">
-          <motion.div
-            className="grid md:grid-cols-2 gap-12 items-center"
-            initial="initial"
-            whileInView="animate"
-            viewport={{ once: true }}
-            variants={staggerContainer}
-          >
-            <motion.div variants={fadeInUp} className="relative">
-              {/* TODO: Replace with actual photo of Damian */}
-              <div className="w-full aspect-square bg-gradient-to-br from-[#1E3D29] to-[#152A1C] rounded-2xl flex items-center justify-center">
-                <div className="text-center text-white/60">
-                  <div className="text-8xl mb-4">👨‍🍳</div>
-                  <p className="text-sm">Photo placeholder</p>
-                </div>
-              </div>
-            </motion.div>
-
-            <motion.div variants={fadeInUp}>
-              <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
-                Meet Damian
-              </h2>
-
-              {/* TODO: Pull bio from web_clients table */}
-              <p className="text-white/90 text-lg leading-relaxed mb-6">
-                Born with a passion for bringing people together through food, Damian started Nito's Empanadas to share the authentic flavors of his heritage with the community.
-              </p>
-              <p className="text-white/90 text-lg leading-relaxed mb-8">
-                Each empanada is handcrafted with love, using family recipes passed down through generations. From our kitchen to your hands, we bring you a taste of tradition.
-              </p>
-
-              <blockquote className="border-l-4 border-[#F5A623] pl-6 py-2">
-                <p className="text-2xl md:text-3xl font-bold text-[#F5A623] italic">
-                  "You want empanadas?"
-                </p>
-              </blockquote>
             </motion.div>
           </motion.div>
         </div>
