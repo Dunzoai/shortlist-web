@@ -5,9 +5,9 @@ import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
 import { Calculator, ClipboardCheck, GraduationCap, MapPin } from 'lucide-react';
-import Nav from '@/components/Nav';
-import Footer from '@/components/Footer';
-import { useLanguage } from '@/components/LanguageContext';
+import Nav from '@/clients/danidiaz/components/Nav';
+import Footer from '@/clients/danidiaz/components/Footer';
+import { useLanguage } from '@/clients/danidiaz/components/LanguageContext';
 import { supabase } from '@/lib/supabase';
 
 interface BlogPost {

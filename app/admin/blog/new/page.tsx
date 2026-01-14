@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
-import RichTextEditor from '@/components/admin/RichTextEditor';
+import RichTextEditor from '@/clients/danidiaz/components/admin/RichTextEditor';
 
 export default function NewBlogPost() {
   const router = useRouter();

@@ -4,9 +4,9 @@ import { useState } from 'react';
 import { motion, AnimatePresence, useMotionValue, useTransform } from 'framer-motion';
 import Link from 'next/link';
 import { HelpCircle, ChevronLeft, ChevronRight, RotateCcw } from 'lucide-react';
-import Nav from '@/components/Nav';
-import Footer from '@/components/Footer';
-import { useLanguage } from '@/components/LanguageContext';
+import Nav from '@/clients/danidiaz/components/Nav';
+import Footer from '@/clients/danidiaz/components/Footer';
+import { useLanguage } from '@/clients/danidiaz/components/LanguageContext';
 
 interface FAQ {
   questionEn: string;

@@ -3,9 +3,9 @@
 import { motion } from 'framer-motion';
 import Link from 'next/link';
 import { KeyRound, UserCheck, ListChecks, Search, FileText, ClipboardCheck, Home } from 'lucide-react';
-import Nav from '@/components/Nav';
-import Footer from '@/components/Footer';
-import { useLanguage } from '@/components/LanguageContext';
+import Nav from '@/clients/danidiaz/components/Nav';
+import Footer from '@/clients/danidiaz/components/Footer';
+import { useLanguage } from '@/clients/danidiaz/components/LanguageContext';
 
 const checklistSteps = [
   {

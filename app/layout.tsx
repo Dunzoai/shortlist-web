@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import { Playfair_Display, Lora } from "next/font/google";
 import "./globals.css";
-import { LanguageProvider } from "@/components/LanguageContext";
-import { StyleProvider } from "@/components/StyleContext";
+import { LanguageProvider } from "@/clients/danidiaz/components/LanguageContext";
+import { StyleProvider } from "@/clients/danidiaz/components/StyleContext";
 
 const playfair = Playfair_Display({
   variable: "--font-playfair",

@@ -5,7 +5,7 @@ import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronLeft, ChevronRight, X, Check } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
-import { useLanguage } from '@/components/LanguageContext';
+import { useLanguage } from '@/clients/danidiaz/components/LanguageContext';
 
 interface Neighborhood {
   id: string;

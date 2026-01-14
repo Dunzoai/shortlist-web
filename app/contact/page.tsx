@@ -4,8 +4,8 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { useState } from 'react';
-import Nav from '@/components/Nav';
-import { useLanguage } from '@/components/LanguageContext';
+import Nav from '@/clients/danidiaz/components/Nav';
+import { useLanguage } from '@/clients/danidiaz/components/LanguageContext';
 
 const fadeInUp = {
   initial: { opacity: 0, y: 30 },

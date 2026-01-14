@@ -1,10 +1,10 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import Nav from '@/components/Nav';
-import Footer from '@/components/Footer';
-import MortgageCalculator from '@/components/MortgageCalculator';
-import { useLanguage } from '@/components/LanguageContext';
+import Nav from '@/clients/danidiaz/components/Nav';
+import Footer from '@/clients/danidiaz/components/Footer';
+import MortgageCalculator from '@/clients/danidiaz/components/MortgageCalculator';
+import { useLanguage } from '@/clients/danidiaz/components/LanguageContext';
 import Link from 'next/link';
 
 export default function CalculatorPage() {

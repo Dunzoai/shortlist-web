@@ -5,15 +5,15 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { Instagram, Facebook, Linkedin } from 'lucide-react';
-import Nav from '@/components/Nav';
-import { useLanguage } from '@/components/LanguageContext';
-import { useStyle } from '@/components/StyleContext';
+import Nav from '@/clients/danidiaz/components/Nav';
+import { useLanguage } from '@/clients/danidiaz/components/LanguageContext';
+import { useStyle } from '@/clients/danidiaz/components/StyleContext';
 import { supabase } from '@/lib/supabase';
-import InstagramFeed from '@/components/InstagramFeed';
-import NeighborhoodGuides from '@/components/NeighborhoodGuides';
-import ParallaxSection from '@/components/ParallaxSection';
-import ParallaxSection2 from '@/components/ParallaxSection2';
-import Footer from '@/components/Footer';
+import InstagramFeed from '@/clients/danidiaz/components/InstagramFeed';
+import NeighborhoodGuides from '@/clients/danidiaz/components/NeighborhoodGuides';
+import ParallaxSection from '@/clients/danidiaz/components/ParallaxSection';
+import ParallaxSection2 from '@/clients/danidiaz/components/ParallaxSection2';
+import Footer from '@/clients/danidiaz/components/Footer';
 
 const fadeInUp = {
   initial: { opacity: 0, y: 30 },
