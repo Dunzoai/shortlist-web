@@ -182,19 +182,26 @@ export function AnimatedHero() {
         )}
       </AnimatePresence>
 
-      {/* TRUCK - Back of truck anchored to swipe edge (hero's left edge) */}
+      {/* TRUCK - Center anchored to swipe boundary, straddles reveal and pull */}
       <AnimatePresence>
         {showTruck && (
           <motion.div
             className="fixed z-[9999] pointer-events-none"
             style={{
               top: '50%',
-              width: 'clamp(350px, 55vw, 700px)',
-              height: 'clamp(210px, 33vw, 420px)',
-              transform: 'translateY(-50%)',
+              width: 'clamp(400px, 60vw, 800px)',
+              height: 'clamp(240px, 36vw, 480px)',
             }}
-            initial={{ left: 0 }}
-            animate={{ left: '100vw' }}
+            initial={{
+              left: 0,
+              x: '-50%',
+              y: '-50%'
+            }}
+            animate={{
+              left: '100vw',
+              x: '-50%',
+              y: '-50%'
+            }}
             transition={{ duration: 3.2, ease: [0.25, 0.1, 0.25, 1] }}
           >
             <Image
@@ -202,54 +209,56 @@ export function AnimatedHero() {
               alt="Nito's Food Truck"
               fill
               className="object-contain"
-              style={{ filter: 'drop-shadow(0 20px 40px rgba(0,0,0,0.4))' }}
+              style={{ filter: 'drop-shadow(0 25px 50px rgba(0,0,0,0.5))' }}
               priority
             />
           </motion.div>
         )}
       </AnimatePresence>
 
-      {/* HERO OVERLAY - Gets pulled away, follows the truck */}
+      {/* HERO OVERLAY - Gets pulled away to the right, revealing schedule underneath */}
       <AnimatePresence>
         {showTruck && (
           <motion.div
-            className="fixed z-[9998] bg-[#D4C5A9] overflow-hidden"
+            className="fixed z-[9998] overflow-hidden"
             style={{
               top: 0,
               width: '100vw',
               height: '100vh',
             }}
-            initial={{ left: 0 }}
-            animate={{ left: '100vw' }}
+            initial={{ clipPath: 'inset(0 0 0 0)' }}
+            animate={{ clipPath: 'inset(0 0 0 100%)' }}
             transition={{ duration: 3.2, ease: [0.25, 0.1, 0.25, 1] }}
           >
-            {/* Film grain */}
-            <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
-              <div
-                className="absolute inset-[-100%] opacity-[0.35] animate-grain"
-                style={{
-                  backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.7' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E")`,
-                  backgroundRepeat: 'repeat',
-                  backgroundSize: '256px 256px',
-                }}
-              />
-            </div>
+            <div className="absolute inset-0 bg-[#D4C5A9]">
+              {/* Film grain */}
+              <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
+                <div
+                  className="absolute inset-[-100%] opacity-[0.35] animate-grain"
+                  style={{
+                    backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.7' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E")`,
+                    backgroundRepeat: 'repeat',
+                    backgroundSize: '256px 256px',
+                  }}
+                />
+              </div>
 
-            {/* Logo */}
-            <div
-              className="absolute left-1/2 -translate-x-1/2 z-[10]"
-              style={{
-                top: 'clamp(70px, 8vh, 100px)',
-                width: 'clamp(280px, 50vw, 580px)',
-                height: 'clamp(280px, 50vw, 580px)',
-              }}
-            >
-              <Image
-                src="/nitos-logo.avif"
-                alt="Nito's Empanadas Logo"
-                fill
-                className="object-contain"
-              />
+              {/* Logo */}
+              <div
+                className="absolute left-1/2 -translate-x-1/2 z-[10]"
+                style={{
+                  top: 'clamp(70px, 8vh, 100px)',
+                  width: 'clamp(280px, 50vw, 580px)',
+                  height: 'clamp(280px, 50vw, 580px)',
+                }}
+              >
+                <Image
+                  src="/nitos-logo.avif"
+                  alt="Nito's Empanadas Logo"
+                  fill
+                  className="object-contain"
+                />
+              </div>
             </div>
           </motion.div>
         )}
