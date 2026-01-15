@@ -82,3 +82,35 @@ p, span, a, li, label, input, textarea, button {
     background-attachment: scroll;
   }
 }
+
+/* SmartPage Widget Positioning Override - Move to top-right under nav */
+/* Target the widget container and button */
+[id*="smartpage"],
+[id*="slp-"],
+[class*="smartpage"],
+[class*="slp-"],
+iframe[src*="shortlistpass"],
+div[data-smartpage],
+div[data-slp] {
+  bottom: auto !important;
+  top: 80px !important;
+  right: 24px !important;
+}
+
+/* Target common chat widget button patterns */
+[id*="smartpage"] button,
+[class*="slp-"] button,
+[id*="slp-widget"] {
+  bottom: auto !important;
+  top: 80px !important;
+}
+
+/* Ensure the chat window opens downward, not upward */
+[id*="smartpage"] iframe,
+[class*="slp-"] iframe,
+[id*="smartpage"] [class*="chat"],
+[class*="slp-"] [class*="chat"] {
+  bottom: auto !important;
+  top: 130px !important;
+  max-height: calc(100vh - 150px) !important;
+}
