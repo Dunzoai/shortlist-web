@@ -182,8 +182,8 @@ export function AnimatedHero() {
           className="absolute -right-4 sm:-right-2 md:-right-4 lg:-right-8 z-[5]"
           style={{
             bottom: 'clamp(24px, 4vh, 40px)',
-            width: 'clamp(192px, 38vw, 400px)',
-            height: 'clamp(288px, 58vw, 580px)',
+            width: 'clamp(221px, 44vw, 400px)',
+            height: 'clamp(331px, 67vw, 580px)',
           }}
           initial={{ y: '100%' }}
           animate={{ y: 0 }}
@@ -219,12 +219,9 @@ export function AnimatedHero() {
         />
       </div>
 
-      {/* Text Content - Positioned so button bottom aligns with Damian's feet */}
+      {/* Text Content - Nudged up on mobile, aligned with floor on desktop */}
       <div
-        className="absolute left-0 right-0 z-[10] px-6"
-        style={{
-          bottom: 'clamp(24px, 4vh, 40px)',
-        }}
+        className="absolute left-0 right-0 z-[10] px-6 bottom-[60px] sm:bottom-[40px]"
       >
         <div className="max-w-4xl mx-auto text-left sm:text-center pr-[35%] sm:pr-0">
           {/* Headline */}
