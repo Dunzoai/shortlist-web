@@ -118,15 +118,11 @@ export function AnimatedHero() {
     setIsPanning(true);
     setShowScheduleOverlay(true);
 
-    // Increment key and delay truck animation slightly to ensure proper mount
+    // Increment key for fresh animation
     setTruckKey(prev => prev + 1);
 
-    // Small delay to ensure DOM is ready before animation
-    requestAnimationFrame(() => {
-      requestAnimationFrame(() => {
-        setShowTruck(true);
-      });
-    });
+    // Show truck immediately - no delay needed with inline animation
+    setShowTruck(true);
 
     // After truck animation completes, hide the truck but keep schedule visible
     setTimeout(() => {
@@ -222,37 +218,38 @@ export function AnimatedHero() {
         )}
       </AnimatePresence>
 
-      {/* TRUCK - Using CSS animation to avoid Framer Motion SSR issues */}
+      {/* TRUCK - Using inline animation to ensure it works on first render */}
       {showTruck && (
-        <div
-          key={`truck-${truckKey}`}
-          className="fixed z-[9999] pointer-events-none animate-truck-drive"
-          style={{
-            top: '50%',
-            width: 'clamp(800px, 120vw, 1600px)',
-            height: 'clamp(480px, 72vw, 960px)',
-            transform: 'translateY(-50%)',
-          }}
-        >
-          <Image
-            src="/nitos-truck.png"
-            alt="Nito's Food Truck"
-            fill
-            className="object-contain"
-            style={{ filter: 'drop-shadow(0 25px 50px rgba(0,0,0,0.5))' }}
-            priority
-          />
-        </div>
+        <>
+          <style>{`
+            @keyframes truck-drive-anim {
+              0% { left: -1000px; }
+              100% { left: calc(100vw + 1000px); }
+            }
+          `}</style>
+          <div
+            key={`truck-${truckKey}`}
+            className="fixed z-[9999] pointer-events-none"
+            style={{
+              top: '50%',
+              width: 'clamp(800px, 120vw, 1600px)',
+              height: 'clamp(480px, 72vw, 960px)',
+              transform: 'translateY(-50%)',
+              animation: 'truck-drive-anim 3.2s cubic-bezier(0.25, 0.1, 0.25, 1) forwards',
+              left: '-1000px',
+            }}
+          >
+            <Image
+              src="/nitos-truck.png"
+              alt="Nito's Food Truck"
+              fill
+              className="object-contain"
+              style={{ filter: 'drop-shadow(0 25px 50px rgba(0,0,0,0.5))' }}
+              priority
+            />
+          </div>
+        </>
       )}
-      <style jsx>{`
-        @keyframes truck-drive {
-          0% { left: -1000px; }
-          100% { left: calc(100vw + 1000px); }
-        }
-        .animate-truck-drive {
-          animation: truck-drive 3.2s cubic-bezier(0.25, 0.1, 0.25, 1) forwards;
-        }
-      `}</style>
 
       {/* HERO OVERLAY - Gets pulled away to the right, revealing schedule underneath */}
       {showTruck && (
@@ -370,7 +367,7 @@ export function AnimatedHero() {
       {/* Easter egg: Click Damian to hear his voice! */}
       {showDamian && (
         <motion.div
-          className="absolute -right-4 sm:-right-2 md:-right-4 lg:-right-8 z-[5] cursor-pointer"
+          className="absolute -right-4 sm:-right-2 md:-right-4 lg:-right-8 z-[15] cursor-pointer"
           style={{
             bottom: 'clamp(24px, 4vh, 40px)',
             width: 'clamp(221px, 44vw, 400px)',
