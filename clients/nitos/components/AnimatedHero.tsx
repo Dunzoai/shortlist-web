@@ -107,40 +107,19 @@ export function AnimatedHero() {
   const handleFindUsClick = () => {
     if (showTruck || isPanning) return;
 
-    // Trigger truck animation and horizontal pan
+    // Trigger truck animation and wipe reveal
     setShowTruck(true);
     setIsPanning(true);
 
-    // Optional: Play horn sound
-    // if (audioRef.current) {
-    //   audioRef.current.currentTime = 0;
-    //   audioRef.current.play().catch(() => {});
-    // }
-
-    // Get the main element and add horizontal pan animation
-    const mainElement = document.querySelector('main');
-    if (mainElement) {
-      mainElement.style.transition = 'transform 2.2s cubic-bezier(0.25, 0.1, 0.25, 1)';
-      mainElement.style.transform = 'translateX(-100vw)';
-    }
-
-    // After animation completes, snap to schedule section
+    // After animation completes, scroll to schedule section
     setTimeout(() => {
       const scheduleSection = document.getElementById('schedule');
-      if (scheduleSection && mainElement) {
-        // Instantly reset transform and scroll to schedule
-        mainElement.style.transition = 'none';
-        mainElement.style.transform = 'translateX(0)';
+      if (scheduleSection) {
         scheduleSection.scrollIntoView({ behavior: 'auto' });
-
-        // Re-enable transitions after a frame
-        requestAnimationFrame(() => {
-          mainElement.style.transition = '';
-        });
       }
       setShowTruck(false);
       setIsPanning(false);
-    }, 2300);
+    }, 2400);
   };
 
   return (
@@ -149,108 +128,111 @@ export function AnimatedHero() {
       {/* Optional: Audio element for truck horn */}
       {/* <audio ref={audioRef} src="/truck-horn.mp3" preload="auto" /> */}
 
-      {/* TRUCK ANIMATION - MASSIVE truck flies across, page pans horizontally */}
+      {/* TRUCK ANIMATION - Truck wipes across screen revealing schedule section */}
       <AnimatePresence>
         {showTruck && (
-          <motion.div
-            className="fixed inset-0 z-[9999] pointer-events-none"
-            initial={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.3 }}
-          >
-            {/* Dust trail particles - bigger and more dramatic */}
+          <>
+            {/* Wipe reveal overlay - shows schedule section underneath */}
             <motion.div
-              className="absolute top-[50%] -translate-y-1/2"
-              initial={{ left: '-400px' }}
-              animate={{ left: 'calc(100vw + 400px)' }}
+              className="fixed inset-0 z-[9998] overflow-hidden"
+              initial={{ clipPath: 'inset(0 100% 0 0)' }}
+              animate={{ clipPath: 'inset(0 0% 0 0)' }}
               transition={{ duration: 2.2, ease: [0.25, 0.1, 0.25, 1] }}
             >
-              {[...Array(12)].map((_, i) => (
-                <motion.div
-                  key={i}
-                  className="absolute rounded-full bg-[#C4A052]/40"
-                  style={{
-                    width: 30 + Math.random() * 60,
-                    height: 30 + Math.random() * 60,
-                    left: -150 - i * 80,
-                    top: Math.random() * 300 - 150,
-                  }}
-                  initial={{ opacity: 0.7, scale: 0.3 }}
-                  animate={{
-                    opacity: [0.7, 0.4, 0],
-                    scale: [0.3, 1.5, 2.5],
-                    y: [0, -30 + Math.random() * 60],
-                  }}
-                  transition={{
-                    duration: 1.2,
-                    delay: i * 0.08,
-                    ease: 'easeOut',
-                  }}
-                />
-              ))}
+              {/* Schedule section preview */}
+              <div className="w-full h-full bg-[#D4C5A9] flex items-center justify-center">
+                <div className="text-center">
+                  <h2 className="text-4xl md:text-5xl font-bold text-[#2D5A3D] mb-4">
+                    Where to Find Us
+                  </h2>
+                  <p className="text-[#4A5A3C] text-lg">Loading schedule...</p>
+                </div>
+              </div>
             </motion.div>
 
-            {/* The TRUCK - MASSIVE (1000-1200px desktop, 600-800px mobile) */}
+            {/* The TRUCK - drives left to right */}
             <motion.div
-              className="absolute top-[50%] -translate-y-1/2"
+              className="fixed z-[9999] pointer-events-none"
               style={{
-                width: 'clamp(600px, 90vw, 1200px)',
-                height: 'clamp(360px, 54vw, 720px)',
+                top: '50%',
+                transform: 'translateY(-50%)',
+                width: 'clamp(500px, 70vw, 900px)',
+                height: 'clamp(300px, 42vw, 540px)',
               }}
-              initial={{
-                left: '-1200px',
-                rotate: 0,
-              }}
-              animate={{
-                left: 'calc(100vw + 200px)',
-                rotate: [0, -1.5, 1.5, -1, 1, -0.5, 0.5, 0],
-              }}
-              transition={{
-                left: {
-                  duration: 2.2,
-                  ease: [0.25, 0.1, 0.25, 1],
-                },
-                rotate: {
-                  duration: 0.4,
-                  repeat: 5,
-                  ease: 'easeInOut',
-                }
-              }}
+              initial={{ left: '-900px' }}
+              animate={{ left: 'calc(100vw + 100px)' }}
+              transition={{ duration: 2.2, ease: [0.25, 0.1, 0.25, 1] }}
             >
-              {/* Motion blur effect - multiple offset copies for speed lines */}
-              <div className="absolute inset-0 opacity-15 -translate-x-16 blur-[2px]">
+              {/* Dust cloud behind truck */}
+              <div className="absolute right-full top-1/2 -translate-y-1/2 w-[400px] h-[300px]">
+                {[...Array(8)].map((_, i) => (
+                  <motion.div
+                    key={i}
+                    className="absolute rounded-full bg-[#C4A052]/30"
+                    style={{
+                      width: 40 + Math.random() * 60,
+                      height: 40 + Math.random() * 60,
+                      right: i * 40,
+                      top: `${30 + Math.random() * 40}%`,
+                    }}
+                    animate={{
+                      opacity: [0.5, 0.2, 0],
+                      scale: [0.5, 1.5, 2],
+                      x: [-20, -100],
+                    }}
+                    transition={{
+                      duration: 1,
+                      delay: i * 0.1,
+                      repeat: Infinity,
+                      ease: 'easeOut',
+                    }}
+                  />
+                ))}
+              </div>
+
+              {/* Motion blur trails */}
+              <div className="absolute inset-0 opacity-20" style={{ transform: 'translateX(-40px)' }}>
                 <Image
                   src="/nitos-truck.png"
                   alt=""
                   fill
-                  className="object-contain"
+                  className="object-contain blur-[3px]"
                 />
               </div>
-              <div className="absolute inset-0 opacity-25 -translate-x-10 blur-[1px]">
+              <div className="absolute inset-0 opacity-40" style={{ transform: 'translateX(-20px)' }}>
                 <Image
                   src="/nitos-truck.png"
                   alt=""
                   fill
-                  className="object-contain"
+                  className="object-contain blur-[1px]"
                 />
               </div>
-              <div className="absolute inset-0 opacity-35 -translate-x-5">
-                <Image
-                  src="/nitos-truck.png"
-                  alt=""
-                  fill
-                  className="object-contain"
-                />
-              </div>
-              {/* Main truck */}
+
+              {/* Main truck image */}
               <Image
                 src="/nitos-truck.png"
                 alt="Nito's Food Truck"
                 fill
-                className="object-contain drop-shadow-2xl"
+                className="object-contain"
+                style={{ filter: 'drop-shadow(0 20px 40px rgba(0,0,0,0.4))' }}
+                priority
               />
+
+              {/* Bounce animation for wheels */}
+              <motion.div
+                className="absolute inset-0"
+                animate={{ y: [0, -8, 0, -4, 0] }}
+                transition={{ duration: 0.3, repeat: Infinity, ease: 'easeInOut' }}
+              >
+                <Image
+                  src="/nitos-truck.png"
+                  alt=""
+                  fill
+                  className="object-contain opacity-0"
+                />
+              </motion.div>
             </motion.div>
-          </motion.div>
+          </>
         )}
       </AnimatePresence>
 
