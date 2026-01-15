@@ -83,26 +83,5 @@ p, span, a, li, label, input, textarea, button {
   }
 }
 
-/* SmartPage Widget - Force position to bottom-right corner */
-[id*="smartpage"],
-[id*="slp-"],
-[class*="smartpage"],
-[class*="slp-"],
-iframe[src*="shortlistpass"],
-div[style*="position: fixed"][style*="bottom"],
-body > div[style*="fixed"] {
-  right: 16px !important;
-  bottom: 16px !important;
-}
-
-/* Target the widget button/pill specifically */
-[id*="smartpage"] > *,
-[class*="slp-"] > *,
-button[class*="smartpage"],
-button[class*="slp-"],
-div[class*="launcher"],
-div[class*="widget-button"],
-div[class*="chat-button"] {
-  right: 16px !important;
-  bottom: 16px !important;
-}
+/* SmartPage Widget - Let it use default positioning */
+/* The EN/ES toggle is positioned at bottom: 70px to sit above the widget */
