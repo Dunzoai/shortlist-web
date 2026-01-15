@@ -63,18 +63,20 @@ export default function ChatLanguageControls() {
   }, []);
 
   return (
-    <div className="fixed bottom-[90px] right-6 z-[9999] flex flex-col items-end gap-3">
-      {/* Language Toggle - Hidden when chat is expanded, sits above the chat widget */}
+    <>
+      {/* Language Toggle - Centered above the chat widget pill */}
       {!isChatExpanded && (
-        <button
-          onClick={() => setLanguage(language === 'en' ? 'es' : 'en')}
-          className="flex items-center gap-2 bg-white text-[#1B365D] text-sm border border-[#1B365D]/30 rounded-full px-4 py-2 hover:bg-[#F7F7F7] transition-all shadow-lg"
-        >
-          <span className={language === 'en' ? 'font-semibold' : 'opacity-60'}>EN</span>
-          <span className="text-[#1B365D]/40">|</span>
-          <span className={language === 'es' ? 'font-semibold' : 'opacity-60'}>ES</span>
-        </button>
+        <div className="fixed bottom-[70px] right-[24px] z-[9999] flex justify-center" style={{ width: '280px' }}>
+          <button
+            onClick={() => setLanguage(language === 'en' ? 'es' : 'en')}
+            className="flex items-center gap-2 bg-white text-[#1B365D] text-sm border border-[#1B365D]/30 rounded-full px-4 py-2 hover:bg-[#F7F7F7] transition-all shadow-lg"
+          >
+            <span className={language === 'en' ? 'font-semibold' : 'opacity-60'}>EN</span>
+            <span className="text-[#1B365D]/40">|</span>
+            <span className={language === 'es' ? 'font-semibold' : 'opacity-60'}>ES</span>
+          </button>
+        </div>
       )}
-    </div>
+    </>
   );
 }

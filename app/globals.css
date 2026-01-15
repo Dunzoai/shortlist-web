@@ -83,6 +83,12 @@ p, span, a, li, label, input, textarea, button {
   }
 }
 
-/* SmartPage Widget - Keep at bottom-right (default position) */
-/* No positioning overrides needed - widget stays at bottom-right */
-/* The EN/ES toggle sits above it at bottom: 90px */
+/* SmartPage Widget - Position at bottom-right with consistent spacing */
+[id*="smartpage"],
+[id*="slp-"],
+[class*="smartpage"],
+[class*="slp-"],
+iframe[src*="shortlistpass"] {
+  right: 24px !important;
+  bottom: 24px !important;
+}
