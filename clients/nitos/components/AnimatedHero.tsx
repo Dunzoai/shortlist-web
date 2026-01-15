@@ -128,7 +128,7 @@ export function AnimatedHero() {
     setTimeout(() => {
       setShowTruck(false);
       setIsPanning(false);
-    }, 3700);
+    }, 4500);
   };
 
   // Close schedule overlay when clicking the back button or scrolling
@@ -235,7 +235,7 @@ export function AnimatedHero() {
               width: 'clamp(800px, 120vw, 1600px)',
               height: 'clamp(480px, 72vw, 960px)',
               transform: 'translateY(-50%)',
-              animation: 'truck-drive-anim 3.2s cubic-bezier(0.25, 0.1, 0.25, 1) forwards',
+              animation: 'truck-drive-anim 4s cubic-bezier(0.25, 0.1, 0.25, 1) 0.15s forwards',
               left: '-1000px',
             }}
           >
@@ -263,7 +263,7 @@ export function AnimatedHero() {
           }}
           initial={{ left: 0 }}
           animate={{ left: 'calc(100vw + 100px)' }}
-          transition={{ duration: 3.2, ease: [0.25, 0.1, 0.25, 1] }}
+          transition={{ duration: 4, delay: 0.15, ease: [0.25, 0.1, 0.25, 1] }}
         >
             {/* Film grain */}
             <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
