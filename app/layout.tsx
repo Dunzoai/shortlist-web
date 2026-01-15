@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Playfair_Display, Lora } from "next/font/google";
 import { headers } from "next/headers";
+import Script from "next/script";
 import "./globals.css";
 import { LanguageProvider } from "@/clients/danidiaz/components/LanguageContext";
 import { StyleProvider } from "@/clients/danidiaz/components/StyleContext";
@@ -88,6 +89,15 @@ export default async function RootLayout({
             </StyleProvider>
           </LanguageProvider>
         </ClientProvider>
+
+        {/* SmartPage AI Assistant Widget - Only for Dani Diaz site */}
+        {client?.slug !== 'nitos' && (
+          <Script
+            src="https://www.shortlistpass.com/widget.js"
+            data-slp-subdomain="danidiaz"
+            strategy="afterInteractive"
+          />
+        )}
       </body>
     </html>
   );
