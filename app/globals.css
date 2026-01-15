@@ -83,48 +83,6 @@ p, span, a, li, label, input, textarea, button {
   }
 }
 
-/* SmartPage Widget Positioning Override - Move to top-right below language toggle */
-/* Target the widget container and button - position below the EN/ES toggle */
-@media (min-width: 768px) {
-  [id*="smartpage"],
-  [id*="slp-"],
-  [class*="smartpage"],
-  [class*="slp-"],
-  iframe[src*="shortlistpass"],
-  div[data-smartpage],
-  div[data-slp] {
-    bottom: auto !important;
-    top: 125px !important;
-    right: 24px !important;
-  }
-
-  /* Target common chat widget button patterns */
-  [id*="smartpage"] button,
-  [class*="slp-"] button,
-  [id*="slp-widget"] {
-    bottom: auto !important;
-    top: 125px !important;
-  }
-
-  /* Ensure the chat window opens downward, not upward */
-  [id*="smartpage"] iframe,
-  [class*="slp-"] iframe,
-  [id*="smartpage"] [class*="chat"],
-  [class*="slp-"] [class*="chat"] {
-    bottom: auto !important;
-    top: 125px !important;
-    max-height: calc(100vh - 150px) !important;
-  }
-}
-
-/* Mobile - keep widget at bottom right */
-@media (max-width: 767px) {
-  [id*="smartpage"],
-  [id*="slp-"],
-  [class*="smartpage"],
-  [class*="slp-"] {
-    bottom: 24px !important;
-    top: auto !important;
-    right: 24px !important;
-  }
-}
+/* SmartPage Widget - Keep at bottom-right (default position) */
+/* No positioning overrides needed - widget stays at bottom-right */
+/* The EN/ES toggle sits above it at bottom: 90px */
