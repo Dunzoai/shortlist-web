@@ -179,67 +179,22 @@ export function AnimatedHero() {
         )}
       </AnimatePresence>
 
-      {/* TRUCK ANIMATION - Drives across screen */}
+      {/* TRUCK ANIMATION - Anchored to wipe edge, straddles the transition */}
       <AnimatePresence>
         {showTruck && (
           <motion.div
             className="fixed z-[9999] pointer-events-none"
             style={{
               top: '50%',
-              transform: 'translateY(-50%)',
+              left: 0,
               width: 'clamp(500px, 70vw, 900px)',
               height: 'clamp(300px, 42vw, 540px)',
             }}
-            initial={{ left: '-900px' }}
-            animate={{ left: 'calc(100vw + 100px)' }}
+            initial={{ x: '-50%', y: '-50%' }}
+            animate={{ x: 'calc(100vw - 50%)' }}
             exit={{ opacity: 0 }}
             transition={{ duration: 3.2, ease: [0.25, 0.1, 0.25, 1] }}
           >
-            {/* Dust cloud behind truck */}
-            <div className="absolute right-full top-1/2 -translate-y-1/2 w-[400px] h-[300px]">
-              {[...Array(8)].map((_, i) => (
-                <motion.div
-                  key={i}
-                  className="absolute rounded-full bg-[#C4A052]/30"
-                  style={{
-                    width: 40 + Math.random() * 60,
-                    height: 40 + Math.random() * 60,
-                    right: i * 40,
-                    top: `${30 + Math.random() * 40}%`,
-                  }}
-                  animate={{
-                    opacity: [0.5, 0.2, 0],
-                    scale: [0.5, 1.5, 2],
-                    x: [-20, -100],
-                  }}
-                  transition={{
-                    duration: 1,
-                    delay: i * 0.1,
-                    repeat: Infinity,
-                    ease: 'easeOut',
-                  }}
-                />
-              ))}
-            </div>
-
-            {/* Motion blur trails */}
-            <div className="absolute inset-0 opacity-20" style={{ transform: 'translateX(-40px)' }}>
-              <Image
-                src="/nitos-truck.png"
-                alt=""
-                fill
-                className="object-contain blur-[3px]"
-              />
-            </div>
-            <div className="absolute inset-0 opacity-40" style={{ transform: 'translateX(-20px)' }}>
-              <Image
-                src="/nitos-truck.png"
-                alt=""
-                fill
-                className="object-contain blur-[1px]"
-              />
-            </div>
-
             {/* Main truck image */}
             <Image
               src="/nitos-truck.png"
