@@ -1,9 +1,8 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import Image from 'next/image';
-import { FoodTruckTimeline } from './FoodTruckTimeline';
 
 const empanadaImages = [
   { src: '/empanada.png', alt: 'Empanada' },
@@ -116,33 +115,27 @@ export function AnimatedHero() {
     return () => timers.forEach(clearTimeout);
   }, []);
 
-  // State for showing the revealed schedule section
-  const [showScheduleOverlay, setShowScheduleOverlay] = useState(false);
-
   const handleFindUsClick = () => {
     if (showTruck || isPanning) return;
 
-    // Set panning state and show schedule immediately
     setIsPanning(true);
-    setShowScheduleOverlay(true);
-
-    // Increment key for fresh animation
     setTruckKey(prev => prev + 1);
-
-    // Show truck immediately - no delay needed with inline animation
     setShowTruck(true);
 
-    // After truck animation completes, hide the truck but keep schedule visible
-    // Desktop is slower (6s), mobile is 4s, plus 0.15s delay + buffer
+    // After truck animation completes, scroll to schedule section
+    // Desktop is slower (8.75s), mobile is 4s, plus 0.15s delay
+    const animationDuration = isDesktop ? 9200 : 4500;
+
     setTimeout(() => {
       setShowTruck(false);
       setIsPanning(false);
-    }, isDesktop ? 9200 : 4500);
-  };
 
-  // Close schedule overlay when clicking the back button or scrolling
-  const handleCloseSchedule = () => {
-    setShowScheduleOverlay(false);
+      // Scroll to the schedule section in the main page
+      const scheduleSection = document.getElementById('schedule');
+      if (scheduleSection) {
+        scheduleSection.scrollIntoView({ behavior: 'smooth' });
+      }
+    }, animationDuration);
   };
 
   // Easter egg: Damian shake and voice
@@ -178,54 +171,6 @@ export function AnimatedHero() {
         preload="auto"
         playsInline
       />
-
-      {/* SCHEDULE OVERLAY - Sits behind, revealed as hero is pulled away */}
-      <AnimatePresence>
-        {showScheduleOverlay && (
-          <motion.div
-            className="fixed inset-0 z-[9997] overflow-hidden bg-[#D4C5A9]"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.3 }}
-          >
-            {/* Back button - matches Find Us button style */}
-            <motion.button
-              onClick={handleCloseSchedule}
-              className="absolute top-20 left-4 sm:top-6 sm:left-6 z-10 flex items-center gap-2 bg-[#C4A052] hover:bg-[#B8944A] text-[#2D5A3D] px-5 py-3 rounded-full font-semibold shadow-lg transition-colors"
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 3, duration: 0.4 }}
-            >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-              </svg>
-              Back
-            </motion.button>
-
-            {/* Schedule section content */}
-            <div className="w-full h-full flex flex-col items-center justify-center px-6 py-20">
-              <motion.h2
-                className="text-4xl md:text-5xl font-bold text-[#2D5A3D] mb-8 text-center"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 2.5, duration: 0.5 }}
-              >
-                Where to Find Us
-              </motion.h2>
-
-              <motion.div
-                className="w-full max-w-4xl"
-                initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 2.8, duration: 0.5 }}
-              >
-                <FoodTruckTimeline />
-              </motion.div>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
 
       {/* TRUCK - Using inline animation to ensure it works on first render */}
       {showTruck && (
