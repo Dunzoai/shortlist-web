@@ -134,26 +134,29 @@ export function AnimatedHero() {
       {/* Optional: Audio element for truck horn */}
       {/* <audio ref={audioRef} src="/truck-horn.mp3" preload="auto" /> */}
 
-      {/* SCHEDULE OVERLAY - Revealed by truck wipe, stays visible */}
+      {/* SCHEDULE OVERLAY - Sits behind, revealed as hero is pulled away */}
       <AnimatePresence>
         {showScheduleOverlay && (
           <motion.div
-            className="fixed inset-0 z-[9998] overflow-hidden bg-[#D4C5A9]"
-            initial={{ clipPath: 'inset(0 100% 0 0)' }}
-            animate={{ clipPath: 'inset(0 0% 0 0)' }}
-            exit={{ clipPath: 'inset(0 0 0 100%)' }}
-            transition={{ duration: showTruck ? 3.2 : 0.5, ease: [0.25, 0.1, 0.25, 1] }}
+            className="fixed inset-0 z-[9997] overflow-hidden bg-[#D4C5A9]"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}
           >
-            {/* Back button */}
-            <button
+            {/* Back button - more prominent */}
+            <motion.button
               onClick={handleCloseSchedule}
-              className="absolute top-6 left-6 z-10 flex items-center gap-2 text-[#2D5A3D] hover:text-[#C4A052] transition-colors font-medium"
+              className="absolute top-20 left-4 sm:top-6 sm:left-6 z-10 flex items-center gap-2 bg-[#2D5A3D] text-white px-4 py-2 rounded-full font-semibold shadow-lg hover:bg-[#C4A052] transition-colors"
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 3, duration: 0.4 }}
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
               </svg>
               Back
-            </button>
+            </motion.button>
 
             {/* Schedule section content */}
             <div className="w-full h-full flex flex-col items-center justify-center px-6 py-20">
@@ -179,31 +182,73 @@ export function AnimatedHero() {
         )}
       </AnimatePresence>
 
-      {/* TRUCK ANIMATION - Anchored to wipe edge, straddles the transition */}
+      {/* HERO PULL OVERLAY + TRUCK - Move together, truck pulls the page */}
       <AnimatePresence>
         {showTruck && (
           <motion.div
-            className="fixed z-[9999] pointer-events-none"
+            className="fixed z-[9998] overflow-visible"
             style={{
-              top: '50%',
+              top: 0,
               left: 0,
-              width: 'clamp(500px, 70vw, 900px)',
-              height: 'clamp(300px, 42vw, 540px)',
+              width: '100vw',
+              height: '100vh',
             }}
-            initial={{ x: '-50%', y: '-50%' }}
-            animate={{ x: 'calc(100vw - 50%)' }}
-            exit={{ opacity: 0 }}
+            initial={{ x: 0 }}
+            animate={{ x: '100vw' }}
             transition={{ duration: 3.2, ease: [0.25, 0.1, 0.25, 1] }}
           >
-            {/* Main truck image */}
-            <Image
-              src="/nitos-truck.png"
-              alt="Nito's Food Truck"
-              fill
-              className="object-contain"
-              style={{ filter: 'drop-shadow(0 20px 40px rgba(0,0,0,0.4))' }}
-              priority
-            />
+            {/* The hero content that gets pulled away */}
+            <div className="absolute inset-0 bg-[#D4C5A9] overflow-hidden">
+              {/* Film grain */}
+              <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
+                <div
+                  className="absolute inset-[-100%] opacity-[0.35] animate-grain"
+                  style={{
+                    backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.7' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E")`,
+                    backgroundRepeat: 'repeat',
+                    backgroundSize: '256px 256px',
+                  }}
+                />
+              </div>
+
+              {/* Logo */}
+              <div
+                className="absolute left-1/2 -translate-x-1/2 z-[10]"
+                style={{
+                  top: 'clamp(70px, 8vh, 100px)',
+                  width: 'clamp(280px, 50vw, 580px)',
+                  height: 'clamp(280px, 50vw, 580px)',
+                }}
+              >
+                <Image
+                  src="/nitos-logo.avif"
+                  alt="Nito's Empanadas Logo"
+                  fill
+                  className="object-contain"
+                />
+              </div>
+            </div>
+
+            {/* TRUCK - Positioned to the LEFT of the hero overlay, pulling it */}
+            <div
+              className="absolute z-[9999] pointer-events-none"
+              style={{
+                top: '50%',
+                right: '100%',
+                transform: 'translateY(-50%)',
+                width: 'clamp(350px, 55vw, 700px)',
+                height: 'clamp(210px, 33vw, 420px)',
+              }}
+            >
+              <Image
+                src="/nitos-truck.png"
+                alt="Nito's Food Truck"
+                fill
+                className="object-contain"
+                style={{ filter: 'drop-shadow(0 20px 40px rgba(0,0,0,0.4))' }}
+                priority
+              />
+            </div>
           </motion.div>
         )}
       </AnimatePresence>
