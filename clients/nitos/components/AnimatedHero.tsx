@@ -96,6 +96,14 @@ export function AnimatedHero() {
   const [showTruck, setShowTruck] = useState(false);
   const [isPanning, setIsPanning] = useState(false);
   const [truckKey, setTruckKey] = useState(0);
+  const [isDesktop, setIsDesktop] = useState(false);
+
+  useEffect(() => {
+    const checkDesktop = () => setIsDesktop(window.innerWidth >= 1024);
+    checkDesktop();
+    window.addEventListener('resize', checkDesktop);
+    return () => window.removeEventListener('resize', checkDesktop);
+  }, []);
 
   useEffect(() => {
     const timers = [
@@ -125,10 +133,11 @@ export function AnimatedHero() {
     setShowTruck(true);
 
     // After truck animation completes, hide the truck but keep schedule visible
+    // Desktop is slower (6s), mobile is 4s, plus 0.15s delay + buffer
     setTimeout(() => {
       setShowTruck(false);
       setIsPanning(false);
-    }, 4500);
+    }, isDesktop ? 6500 : 4500);
   };
 
   // Close schedule overlay when clicking the back button or scrolling
@@ -226,16 +235,23 @@ export function AnimatedHero() {
               0% { left: -1000px; }
               100% { left: calc(100vw + 1000px); }
             }
+            .truck-animate {
+              animation: truck-drive-anim 4s cubic-bezier(0.25, 0.1, 0.25, 1) 0.15s forwards;
+            }
+            @media (min-width: 1024px) {
+              .truck-animate {
+                animation: truck-drive-anim 6s cubic-bezier(0.25, 0.1, 0.25, 1) 0.15s forwards;
+              }
+            }
           `}</style>
           <div
             key={`truck-${truckKey}`}
-            className="fixed z-[9999] pointer-events-none"
+            className="fixed z-[9999] pointer-events-none truck-animate"
             style={{
               top: '50%',
               width: 'clamp(800px, 120vw, 1600px)',
               height: 'clamp(480px, 72vw, 960px)',
               transform: 'translateY(-50%)',
-              animation: 'truck-drive-anim 4s cubic-bezier(0.25, 0.1, 0.25, 1) 0.15s forwards',
               left: '-1000px',
             }}
           >
@@ -263,7 +279,7 @@ export function AnimatedHero() {
           }}
           initial={{ left: 0 }}
           animate={{ left: 'calc(100vw + 100px)' }}
-          transition={{ duration: 4, delay: 0.15, ease: [0.25, 0.1, 0.25, 1] }}
+          transition={{ duration: isDesktop ? 6 : 4, delay: 0.15, ease: [0.25, 0.1, 0.25, 1] }}
         >
             {/* Film grain */}
             <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
