@@ -1,7 +1,7 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
+import { useState, useEffect, useRef } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
 
 const empanadaImages = [
@@ -81,12 +81,16 @@ function generateEmpanadas(): FlyingEmpanada[] {
 
 export function AnimatedHero() {
   const [flyingEmpanadas] = useState<FlyingEmpanada[]>(generateEmpanadas);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
 
   // Animation sequence states
   const [showDamian, setShowDamian] = useState(false);
   const [showHeadline, setShowHeadline] = useState(false);
   const [showSubtitle, setShowSubtitle] = useState(false);
   const [showButton, setShowButton] = useState(false);
+
+  // Truck animation state
+  const [showTruck, setShowTruck] = useState(false);
 
   useEffect(() => {
     const timers = [
@@ -99,15 +103,129 @@ export function AnimatedHero() {
     return () => timers.forEach(clearTimeout);
   }, []);
 
-  const scrollToSchedule = () => {
-    const scheduleSection = document.getElementById('schedule');
-    if (scheduleSection) {
-      scheduleSection.scrollIntoView({ behavior: 'smooth' });
-    }
+  const handleFindUsClick = () => {
+    // Trigger truck animation
+    setShowTruck(true);
+
+    // Optional: Play horn sound (user-initiated, so browsers allow it)
+    // Uncomment if you add a horn.mp3 to public folder
+    // if (audioRef.current) {
+    //   audioRef.current.currentTime = 0;
+    //   audioRef.current.play().catch(() => {});
+    // }
+
+    // After truck animation completes, scroll to schedule
+    setTimeout(() => {
+      setShowTruck(false);
+      const scheduleSection = document.getElementById('schedule');
+      if (scheduleSection) {
+        scheduleSection.scrollIntoView({ behavior: 'smooth' });
+      }
+    }, 1400); // 1.4 seconds for truck to cross
   };
 
   return (
     <section className="relative h-[100dvh] bg-[#D4C5A9] overflow-hidden">
+
+      {/* Optional: Audio element for truck horn */}
+      {/* <audio ref={audioRef} src="/truck-horn.mp3" preload="auto" /> */}
+
+      {/* TRUCK ANIMATION - Flies across screen on button click */}
+      <AnimatePresence>
+        {showTruck && (
+          <motion.div
+            className="fixed inset-0 z-[100] pointer-events-none overflow-hidden"
+            initial={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+          >
+            {/* Dust trail particles */}
+            <motion.div
+              className="absolute top-[45%] -translate-y-1/2"
+              initial={{ left: '-200px' }}
+              animate={{ left: 'calc(100vw + 200px)' }}
+              transition={{ duration: 1.3, ease: [0.25, 0.1, 0.25, 1] }}
+            >
+              {[...Array(8)].map((_, i) => (
+                <motion.div
+                  key={i}
+                  className="absolute rounded-full bg-[#C4A052]/30"
+                  style={{
+                    width: 20 + Math.random() * 40,
+                    height: 20 + Math.random() * 40,
+                    left: -100 - i * 60,
+                    top: Math.random() * 200 - 100,
+                  }}
+                  initial={{ opacity: 0.6, scale: 0.5 }}
+                  animate={{
+                    opacity: [0.6, 0.3, 0],
+                    scale: [0.5, 1.5, 2],
+                    y: [0, -20 + Math.random() * 40],
+                  }}
+                  transition={{
+                    duration: 0.8,
+                    delay: i * 0.05,
+                    ease: 'easeOut',
+                  }}
+                />
+              ))}
+            </motion.div>
+
+            {/* The TRUCK - HUGE and dramatic */}
+            <motion.div
+              className="absolute top-[45%] -translate-y-1/2"
+              style={{
+                width: 'clamp(500px, 70vw, 800px)',
+                height: 'clamp(300px, 42vw, 480px)',
+              }}
+              initial={{
+                left: '-800px',
+                rotate: 0,
+              }}
+              animate={{
+                left: 'calc(100vw + 100px)',
+                rotate: [0, -2, 2, -1, 1, 0],
+              }}
+              transition={{
+                left: {
+                  duration: 1.3,
+                  ease: [0.25, 0.1, 0.25, 1], // Fast start, smooth end
+                },
+                rotate: {
+                  duration: 0.3,
+                  repeat: 4,
+                  ease: 'easeInOut',
+                }
+              }}
+            >
+              {/* Motion blur effect - multiple slightly offset copies */}
+              <div className="absolute inset-0 opacity-20 -translate-x-8">
+                <Image
+                  src="/nitos-truck.png"
+                  alt=""
+                  fill
+                  className="object-contain"
+                />
+              </div>
+              <div className="absolute inset-0 opacity-30 -translate-x-4">
+                <Image
+                  src="/nitos-truck.png"
+                  alt=""
+                  fill
+                  className="object-contain"
+                />
+              </div>
+              {/* Main truck */}
+              <Image
+                src="/nitos-truck.png"
+                alt="Nito's Food Truck"
+                fill
+                className="object-contain drop-shadow-2xl"
+              />
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Animated film grain overlay */}
       <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
@@ -250,8 +368,9 @@ export function AnimatedHero() {
           <div className="h-[52px] sm:h-[56px]">
             {showButton && (
               <motion.button
-                onClick={scrollToSchedule}
-                className="relative z-[30] bg-[#C4A052] hover:bg-[#B8944A] text-[#2D5A3D] px-6 sm:px-8 py-3 sm:py-4 text-base sm:text-lg font-semibold tracking-wide rounded-full shadow-lg hover:shadow-xl transition-colors"
+                onClick={handleFindUsClick}
+                disabled={showTruck}
+                className="relative z-[30] bg-[#C4A052] hover:bg-[#B8944A] text-[#2D5A3D] px-6 sm:px-8 py-3 sm:py-4 text-base sm:text-lg font-semibold tracking-wide rounded-full shadow-lg hover:shadow-xl transition-colors disabled:opacity-70 disabled:cursor-not-allowed"
                 initial={{ scale: 0, opacity: 0, rotate: -10 }}
                 animate={{ scale: 1, opacity: 1, rotate: 0 }}
                 transition={{
@@ -259,8 +378,8 @@ export function AnimatedHero() {
                   stiffness: 600,
                   damping: 12,
                 }}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
+                whileHover={{ scale: showTruck ? 1 : 1.05 }}
+                whileTap={{ scale: showTruck ? 1 : 0.95 }}
               >
                 Find Us This Week
               </motion.button>
