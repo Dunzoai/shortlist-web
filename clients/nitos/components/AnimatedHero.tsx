@@ -114,19 +114,25 @@ export function AnimatedHero() {
   const handleFindUsClick = () => {
     if (showTruck || isPanning) return;
 
-    // Increment key to force fresh mount of truck animation
-    setTruckKey(prev => prev + 1);
-
-    // Trigger truck animation and wipe reveal
-    setShowTruck(true);
+    // Set panning state and show schedule immediately
     setIsPanning(true);
     setShowScheduleOverlay(true);
+
+    // Increment key and delay truck animation slightly to ensure proper mount
+    setTruckKey(prev => prev + 1);
+
+    // Small delay to ensure DOM is ready before animation
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        setShowTruck(true);
+      });
+    });
 
     // After truck animation completes, hide the truck but keep schedule visible
     setTimeout(() => {
       setShowTruck(false);
       setIsPanning(false);
-    }, 3600);
+    }, 3700);
   };
 
   // Close schedule overlay when clicking the back button or scrolling
@@ -217,48 +223,45 @@ export function AnimatedHero() {
       </AnimatePresence>
 
       {/* TRUCK - Center anchored to swipe boundary (hero's left edge) */}
-      <AnimatePresence mode="wait">
-        {showTruck && (
-          <motion.div
-            key={`truck-${truckKey}`}
-            className="fixed z-[9999] pointer-events-none"
-            style={{
-              top: '50%',
-              width: 'clamp(800px, 120vw, 1600px)',
-              height: 'clamp(480px, 72vw, 960px)',
-              transform: 'translateY(-50%)',
-            }}
-            initial={{ left: '-1000px' }}
-            animate={{ left: 'calc(100vw + 1000px)' }}
-            transition={{ duration: 3.2, ease: [0.25, 0.1, 0.25, 1] }}
-          >
-            <Image
-              src="/nitos-truck.png"
-              alt="Nito's Food Truck"
-              fill
-              className="object-contain"
-              style={{ filter: 'drop-shadow(0 25px 50px rgba(0,0,0,0.5))' }}
-              priority
-            />
-          </motion.div>
-        )}
-      </AnimatePresence>
+      {showTruck && (
+        <motion.div
+          key={`truck-${truckKey}`}
+          className="fixed z-[9999] pointer-events-none"
+          style={{
+            top: '50%',
+            width: 'clamp(800px, 120vw, 1600px)',
+            height: 'clamp(480px, 72vw, 960px)',
+            transform: 'translateY(-50%)',
+          }}
+          initial={{ left: '-1000px', opacity: 1 }}
+          animate={{ left: 'calc(100vw + 1000px)', opacity: 1 }}
+          transition={{ duration: 3.2, ease: [0.25, 0.1, 0.25, 1] }}
+        >
+          <Image
+            src="/nitos-truck.png"
+            alt="Nito's Food Truck"
+            fill
+            className="object-contain"
+            style={{ filter: 'drop-shadow(0 25px 50px rgba(0,0,0,0.5))' }}
+            priority
+          />
+        </motion.div>
+      )}
 
       {/* HERO OVERLAY - Gets pulled away to the right, revealing schedule underneath */}
-      <AnimatePresence mode="wait">
-        {showTruck && (
-          <motion.div
-            key={`hero-overlay-${truckKey}`}
-            className="fixed z-[9998] bg-[#D4C5A9] overflow-hidden"
-            style={{
-              top: 0,
-              width: '100vw',
-              height: '100vh',
-            }}
-            initial={{ left: 0 }}
-            animate={{ left: 'calc(100vw + 100px)' }}
-            transition={{ duration: 3.2, ease: [0.25, 0.1, 0.25, 1] }}
-          >
+      {showTruck && (
+        <motion.div
+          key={`hero-overlay-${truckKey}`}
+          className="fixed z-[9998] bg-[#D4C5A9] overflow-hidden"
+          style={{
+            top: 0,
+            width: '100vw',
+            height: '100vh',
+          }}
+          initial={{ left: 0 }}
+          animate={{ left: 'calc(100vw + 100px)' }}
+          transition={{ duration: 3.2, ease: [0.25, 0.1, 0.25, 1] }}
+        >
             {/* Film grain */}
             <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
               <div
@@ -289,7 +292,6 @@ export function AnimatedHero() {
             </div>
           </motion.div>
         )}
-      </AnimatePresence>
 
       {/* Animated film grain overlay */}
       <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
