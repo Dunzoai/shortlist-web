@@ -189,8 +189,8 @@ export function AnimatedHero() {
             className="fixed z-[9999] pointer-events-none"
             style={{
               top: '50%',
-              width: 'clamp(400px, 60vw, 800px)',
-              height: 'clamp(240px, 36vw, 480px)',
+              width: 'clamp(800px, 120vw, 1600px)',
+              height: 'clamp(480px, 72vw, 960px)',
             }}
             initial={{
               left: 0,
@@ -198,7 +198,7 @@ export function AnimatedHero() {
               y: '-50%'
             }}
             animate={{
-              left: '100vw',
+              left: 'calc(100vw + 800px)',
               x: '-50%',
               y: '-50%'
             }}
