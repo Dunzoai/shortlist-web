@@ -222,20 +222,17 @@ export function AnimatedHero() {
         )}
       </AnimatePresence>
 
-      {/* TRUCK - Center anchored to swipe boundary (hero's left edge) */}
+      {/* TRUCK - Using CSS animation to avoid Framer Motion SSR issues */}
       {showTruck && (
-        <motion.div
+        <div
           key={`truck-${truckKey}`}
-          className="fixed z-[9999] pointer-events-none"
+          className="fixed z-[9999] pointer-events-none animate-truck-drive"
           style={{
             top: '50%',
             width: 'clamp(800px, 120vw, 1600px)',
             height: 'clamp(480px, 72vw, 960px)',
             transform: 'translateY(-50%)',
           }}
-          initial={{ left: '-1000px', opacity: 1 }}
-          animate={{ left: 'calc(100vw + 1000px)', opacity: 1 }}
-          transition={{ duration: 3.2, ease: [0.25, 0.1, 0.25, 1] }}
         >
           <Image
             src="/nitos-truck.png"
@@ -245,8 +242,17 @@ export function AnimatedHero() {
             style={{ filter: 'drop-shadow(0 25px 50px rgba(0,0,0,0.5))' }}
             priority
           />
-        </motion.div>
+        </div>
       )}
+      <style jsx>{`
+        @keyframes truck-drive {
+          0% { left: -1000px; }
+          100% { left: calc(100vw + 1000px); }
+        }
+        .animate-truck-drive {
+          animation: truck-drive 3.2s cubic-bezier(0.25, 0.1, 0.25, 1) forwards;
+        }
+      `}</style>
 
       {/* HERO OVERLAY - Gets pulled away to the right, revealing schedule underneath */}
       {showTruck && (
@@ -421,9 +427,20 @@ export function AnimatedHero() {
         className="absolute left-0 right-0 z-[10] px-6 bottom-[60px] sm:bottom-[40px]"
       >
         <div className="max-w-4xl mx-auto text-left sm:text-center pr-[35%] sm:pr-0">
-          {/* Headline */}
-          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-[#2D5A3D] italic mb-2 sm:mb-4 leading-[0.95] sm:leading-tight">
-            {showHeadline ? <TypewriterText text="You want empanadas?" speed={80} /> : <span className="invisible">You want empanadas?</span>}
+          {/* Headline - breaks after "want" on mobile */}
+          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-[#2D5A3D] italic mb-2 sm:mb-4 leading-[0.95] sm:leading-tight whitespace-pre-line">
+            {showHeadline ? (
+              <>
+                <span className="sm:hidden">
+                  <TypewriterText text={"You want\nempanadas?"} speed={80} />
+                </span>
+                <span className="hidden sm:inline">
+                  <TypewriterText text="You want empanadas?" speed={80} />
+                </span>
+              </>
+            ) : (
+              <span className="invisible">{"You want\nempanadas?"}</span>
+            )}
           </h1>
 
           {/* Subtitle */}
