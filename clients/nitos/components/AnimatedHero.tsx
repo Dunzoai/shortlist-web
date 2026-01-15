@@ -96,6 +96,13 @@ export function AnimatedHero() {
   const [showTruck, setShowTruck] = useState(false);
   const [isPanning, setIsPanning] = useState(false);
 
+  // Track if component has mounted (fixes hydration issues with animations)
+  const [hasMounted, setHasMounted] = useState(false);
+
+  useEffect(() => {
+    setHasMounted(true);
+  }, []);
+
   useEffect(() => {
     const timers = [
       setTimeout(() => setShowDamian(true), 500),
@@ -214,7 +221,7 @@ export function AnimatedHero() {
 
       {/* TRUCK - Center anchored to swipe boundary (hero's left edge) */}
       <AnimatePresence>
-        {showTruck && (
+        {hasMounted && showTruck && (
           <motion.div
             className="fixed z-[9999] pointer-events-none"
             style={{
@@ -241,7 +248,7 @@ export function AnimatedHero() {
 
       {/* HERO OVERLAY - Gets pulled away to the right, revealing schedule underneath */}
       <AnimatePresence>
-        {showTruck && (
+        {hasMounted && showTruck && (
           <motion.div
             className="fixed z-[9998] bg-[#D4C5A9] overflow-hidden"
             style={{
