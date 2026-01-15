@@ -87,18 +87,14 @@ export default async function RootLayout({
           <LanguageProvider>
             <StyleProvider>
               {children}
-              {/* Language Toggle + Chat Widget Controls - Only for Dani Diaz site (desktop) */}
-              {client?.slug !== 'nitos' && (
-                <div className="hidden md:block">
-                  <ChatLanguageControls />
-                </div>
-              )}
+              {/* Language Toggle + Chat Widget Controls - Show for Dani Diaz (and when client is null/danidiaz fallback) */}
+              {(!client || client.slug !== 'nitos') && <ChatLanguageControls />}
             </StyleProvider>
           </LanguageProvider>
         </ClientProvider>
 
         {/* SmartPage AI Assistant Widget - Only for Dani Diaz site */}
-        {client?.slug !== 'nitos' && (
+        {(!client || client.slug !== 'nitos') && (
           <Script
             src="https://www.shortlistpass.com/widget.js"
             data-slp-subdomain="danidiaz"

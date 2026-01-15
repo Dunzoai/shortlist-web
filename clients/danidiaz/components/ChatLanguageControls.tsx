@@ -10,37 +10,35 @@ export default function ChatLanguageControls() {
 
   useEffect(() => {
     // Observe DOM for SmartPage widget expansion
-    // The widget typically adds/removes classes or changes dimensions when expanded
     const checkChatState = () => {
-      // Look for common SmartPage widget expanded states
-      const widgetElements = document.querySelectorAll(
-        '[id*="smartpage"], [id*="slp-"], [class*="smartpage"], [class*="slp-"], iframe[src*="shortlistpass"]'
-      );
+      // Look for iframes which indicate the chat is open
+      const chatIframes = document.querySelectorAll('iframe[src*="shortlistpass"], iframe[src*="smartpage"]');
 
       let expanded = false;
-      widgetElements.forEach((el) => {
-        const rect = el.getBoundingClientRect();
-        // If widget is larger than typical pill size (e.g., > 100px height), it's expanded
-        if (rect.height > 100 || rect.width > 200) {
-          expanded = true;
-        }
-        // Also check for expanded class names
-        if (
-          el.classList.contains('expanded') ||
-          el.classList.contains('open') ||
-          el.classList.contains('active') ||
-          el.getAttribute('data-state') === 'open' ||
-          el.getAttribute('data-expanded') === 'true'
-        ) {
+      chatIframes.forEach((iframe) => {
+        const rect = iframe.getBoundingClientRect();
+        // Chat window is typically > 300px tall when open
+        if (rect.height > 300) {
           expanded = true;
         }
       });
 
+      // Also check for any element with expanded/open data attributes
+      const expandedElements = document.querySelectorAll('[data-state="open"], [data-expanded="true"], [aria-expanded="true"]');
+      if (expandedElements.length > 0) {
+        expandedElements.forEach((el) => {
+          // Only count if it looks like a chat widget
+          if (el.closest('[class*="smartpage"]') || el.closest('[class*="slp"]') || el.closest('[id*="smartpage"]')) {
+            expanded = true;
+          }
+        });
+      }
+
       setIsChatExpanded(expanded);
     };
 
-    // Initial check
-    checkChatState();
+    // Initial check after a short delay to let widget load
+    const initialTimeout = setTimeout(checkChatState, 1000);
 
     // Set up MutationObserver to watch for widget changes
     const observer = new MutationObserver(() => {
@@ -52,13 +50,14 @@ export default function ChatLanguageControls() {
       childList: true,
       subtree: true,
       attributes: true,
-      attributeFilter: ['class', 'style', 'data-state', 'data-expanded'],
+      attributeFilter: ['class', 'style', 'data-state', 'data-expanded', 'aria-expanded'],
     });
 
-    // Also poll periodically as a fallback (some widgets don't trigger mutations)
-    const interval = setInterval(checkChatState, 500);
+    // Also poll periodically as a fallback
+    const interval = setInterval(checkChatState, 1000);
 
     return () => {
+      clearTimeout(initialTimeout);
       observer.disconnect();
       clearInterval(interval);
     };
