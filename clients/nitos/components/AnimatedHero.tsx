@@ -229,12 +229,12 @@ export function AnimatedHero() {
               </div>
             </div>
 
-            {/* TRUCK - Positioned to the LEFT of the hero overlay, pulling it */}
+            {/* TRUCK - On the RIGHT, pulling the hero. Rear (left side of truck) attached to hero's right edge */}
             <div
               className="absolute z-[9999] pointer-events-none"
               style={{
                 top: '50%',
-                right: '100%',
+                left: '100%',
                 transform: 'translateY(-50%)',
                 width: 'clamp(350px, 55vw, 700px)',
                 height: 'clamp(210px, 33vw, 420px)',
