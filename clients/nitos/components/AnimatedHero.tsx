@@ -137,7 +137,7 @@ export function AnimatedHero() {
     setTimeout(() => {
       setShowTruck(false);
       setIsPanning(false);
-    }, isDesktop ? 6500 : 4500);
+    }, isDesktop ? 7500 : 4500);
   };
 
   // Close schedule overlay when clicking the back button or scrolling
@@ -240,7 +240,7 @@ export function AnimatedHero() {
             }
             @media (min-width: 1024px) {
               .truck-animate {
-                animation: truck-drive-anim 6s cubic-bezier(0.25, 0.1, 0.25, 1) 0.15s forwards;
+                animation: truck-drive-anim 7s cubic-bezier(0.25, 0.1, 0.25, 1) 0.15s forwards;
               }
             }
           `}</style>
@@ -279,7 +279,7 @@ export function AnimatedHero() {
           }}
           initial={{ left: 0 }}
           animate={{ left: 'calc(100vw + 100px)' }}
-          transition={{ duration: isDesktop ? 6 : 4, delay: 0.15, ease: [0.25, 0.1, 0.25, 1] }}
+          transition={{ duration: isDesktop ? 7 : 4, delay: 0.15, ease: [0.25, 0.1, 0.25, 1] }}
         >
             {/* Film grain */}
             <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
