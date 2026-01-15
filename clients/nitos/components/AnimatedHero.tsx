@@ -95,13 +95,7 @@ export function AnimatedHero() {
   // Truck animation state
   const [showTruck, setShowTruck] = useState(false);
   const [isPanning, setIsPanning] = useState(false);
-
-  // Track if component has mounted (fixes hydration issues with animations)
-  const [hasMounted, setHasMounted] = useState(false);
-
-  useEffect(() => {
-    setHasMounted(true);
-  }, []);
+  const [truckKey, setTruckKey] = useState(0);
 
   useEffect(() => {
     const timers = [
@@ -119,6 +113,9 @@ export function AnimatedHero() {
 
   const handleFindUsClick = () => {
     if (showTruck || isPanning) return;
+
+    // Increment key to force fresh mount of truck animation
+    setTruckKey(prev => prev + 1);
 
     // Trigger truck animation and wipe reveal
     setShowTruck(true);
@@ -220,9 +217,10 @@ export function AnimatedHero() {
       </AnimatePresence>
 
       {/* TRUCK - Center anchored to swipe boundary (hero's left edge) */}
-      <AnimatePresence>
-        {hasMounted && showTruck && (
+      <AnimatePresence mode="wait">
+        {showTruck && (
           <motion.div
+            key={`truck-${truckKey}`}
             className="fixed z-[9999] pointer-events-none"
             style={{
               top: '50%',
@@ -230,8 +228,8 @@ export function AnimatedHero() {
               height: 'clamp(480px, 72vw, 960px)',
               transform: 'translateY(-50%)',
             }}
-            initial={{ left: '-60vw' }}
-            animate={{ left: 'calc(100vw + 60vw)' }}
+            initial={{ left: '-1000px' }}
+            animate={{ left: 'calc(100vw + 1000px)' }}
             transition={{ duration: 3.2, ease: [0.25, 0.1, 0.25, 1] }}
           >
             <Image
@@ -247,9 +245,10 @@ export function AnimatedHero() {
       </AnimatePresence>
 
       {/* HERO OVERLAY - Gets pulled away to the right, revealing schedule underneath */}
-      <AnimatePresence>
-        {hasMounted && showTruck && (
+      <AnimatePresence mode="wait">
+        {showTruck && (
           <motion.div
+            key={`hero-overlay-${truckKey}`}
             className="fixed z-[9998] bg-[#D4C5A9] overflow-hidden"
             style={{
               top: 0,
