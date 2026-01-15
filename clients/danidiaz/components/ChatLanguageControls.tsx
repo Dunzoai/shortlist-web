@@ -66,7 +66,7 @@ export default function ChatLanguageControls() {
     <>
       {/* Language Toggle - Centered above the chat widget pill */}
       {!isChatExpanded && (
-        <div className="fixed bottom-[70px] right-[24px] z-[9999] flex justify-center" style={{ width: '280px' }}>
+        <div className="fixed bottom-[60px] right-[16px] z-[9999] flex justify-center" style={{ width: '260px' }}>
           <button
             onClick={() => setLanguage(language === 'en' ? 'es' : 'en')}
             className="flex items-center gap-2 bg-white text-[#1B365D] text-sm border border-[#1B365D]/30 rounded-full px-4 py-2 hover:bg-[#F7F7F7] transition-all shadow-lg"
