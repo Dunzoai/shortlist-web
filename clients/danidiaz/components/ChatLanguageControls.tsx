@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 import { useLanguage } from './LanguageContext';
 
 export default function ChatLanguageControls() {
@@ -66,22 +65,16 @@ export default function ChatLanguageControls() {
   return (
     <div className="fixed bottom-[90px] right-6 z-[9999] flex flex-col items-end gap-3">
       {/* Language Toggle - Hidden when chat is expanded, sits above the chat widget */}
-      <AnimatePresence>
-        {!isChatExpanded && (
-          <motion.button
-            initial={{ opacity: 0, y: 10, scale: 0.9 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 10, scale: 0.9 }}
-            transition={{ duration: 0.2 }}
-            onClick={() => setLanguage(language === 'en' ? 'es' : 'en')}
-            className="flex items-center gap-2 bg-white text-[#1B365D] text-sm border border-[#1B365D]/30 rounded-full px-4 py-2 hover:bg-[#F7F7F7] transition-colors shadow-lg"
-          >
-            <span className={language === 'en' ? 'font-semibold' : 'opacity-60'}>EN</span>
-            <span className="text-[#1B365D]/40">|</span>
-            <span className={language === 'es' ? 'font-semibold' : 'opacity-60'}>ES</span>
-          </motion.button>
-        )}
-      </AnimatePresence>
+      {!isChatExpanded && (
+        <button
+          onClick={() => setLanguage(language === 'en' ? 'es' : 'en')}
+          className="flex items-center gap-2 bg-white text-[#1B365D] text-sm border border-[#1B365D]/30 rounded-full px-4 py-2 hover:bg-[#F7F7F7] transition-all shadow-lg"
+        >
+          <span className={language === 'en' ? 'font-semibold' : 'opacity-60'}>EN</span>
+          <span className="text-[#1B365D]/40">|</span>
+          <span className={language === 'es' ? 'font-semibold' : 'opacity-60'}>ES</span>
+        </button>
+      )}
     </div>
   );
 }
