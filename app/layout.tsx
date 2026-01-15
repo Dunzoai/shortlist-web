@@ -1,13 +1,11 @@
 import type { Metadata } from "next";
 import { Playfair_Display, Lora } from "next/font/google";
 import { headers } from "next/headers";
-import Script from "next/script";
 import "./globals.css";
 import { LanguageProvider } from "@/clients/danidiaz/components/LanguageContext";
 import { StyleProvider } from "@/clients/danidiaz/components/StyleContext";
 import { ClientProvider } from "@/lib/ClientContext";
 import { getClient } from "@/lib/getClient";
-import ChatLanguageControls from "@/clients/danidiaz/components/ChatLanguageControls";
 
 const playfair = Playfair_Display({
   variable: "--font-playfair",
@@ -87,13 +85,12 @@ export default async function RootLayout({
           <LanguageProvider>
             <StyleProvider>
               {children}
-              {/* Language Toggle + Chat Widget Controls - Show for Dani Diaz (and when client is null/danidiaz fallback) */}
-              {(!client || client.slug !== 'nitos') && <ChatLanguageControls />}
             </StyleProvider>
           </LanguageProvider>
         </ClientProvider>
 
-        {/* SmartPage AI Assistant Widget - Only for Dani Diaz site */}
+        {/* SmartPage AI Assistant Widget - TEMPORARILY HIDDEN */}
+        {/* TODO: Re-enable once positioning is figured out
         {(!client || client.slug !== 'nitos') && (
           <Script
             src="https://www.shortlistpass.com/widget.js"
@@ -101,6 +98,7 @@ export default async function RootLayout({
             strategy="afterInteractive"
           />
         )}
+        */}
       </body>
     </html>
   );

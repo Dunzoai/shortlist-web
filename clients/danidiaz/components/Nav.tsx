@@ -52,7 +52,18 @@ export default function Nav() {
                 </Link>
               </li>
             ))}
-            {/* Language toggle moved to ChatLanguageControls component */}
+
+            {/* Language Toggle */}
+            <li>
+              <button
+                onClick={() => setLanguage(language === 'en' ? 'es' : 'en')}
+                className="flex items-center gap-2 text-white text-sm border border-white/30 rounded-full px-3 py-1 hover:bg-white/10 transition-colors"
+              >
+                <span className={language === 'en' ? 'font-semibold' : 'opacity-60'}>EN</span>
+                <span className="text-white/40">|</span>
+                <span className={language === 'es' ? 'font-semibold' : 'opacity-60'}>ES</span>
+              </button>
+            </li>
           </ul>
 
           {/* Mobile Menu Button */}
