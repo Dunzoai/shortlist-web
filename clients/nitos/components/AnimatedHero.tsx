@@ -83,9 +83,11 @@ function generateEmpanadas(): FlyingEmpanada[] {
 export function AnimatedHero() {
   const [flyingEmpanadas] = useState<FlyingEmpanada[]>(generateEmpanadas);
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const damianAudioRef = useRef<HTMLAudioElement | null>(null);
 
   // Animation sequence states
   const [showDamian, setShowDamian] = useState(false);
+  const [isDamianShaking, setIsDamianShaking] = useState(false);
   const [showHeadline, setShowHeadline] = useState(false);
   const [showSubtitle, setShowSubtitle] = useState(false);
   const [showButton, setShowButton] = useState(false);
@@ -128,11 +130,27 @@ export function AnimatedHero() {
     setShowScheduleOverlay(false);
   };
 
+  // Easter egg: Damian shake and voice
+  const handleDamianClick = () => {
+    // Trigger shake animation
+    setIsDamianShaking(true);
+    setTimeout(() => setIsDamianShaking(false), 500);
+
+    // Play voice audio
+    if (damianAudioRef.current) {
+      damianAudioRef.current.currentTime = 0;
+      damianAudioRef.current.play().catch(() => {});
+    }
+  };
+
   return (
     <section className="relative h-[100dvh] bg-[#D4C5A9] overflow-hidden">
 
       {/* Optional: Audio element for truck horn */}
       {/* <audio ref={audioRef} src="/truck-horn.mp3" preload="auto" /> */}
+
+      {/* Hidden audio for Damian easter egg */}
+      <audio ref={damianAudioRef} src="/nitos-voice.m4a" preload="auto" />
 
       {/* SCHEDULE OVERLAY - Sits behind, revealed as hero is pulled away */}
       <AnimatePresence>
@@ -330,20 +348,33 @@ export function AnimatedHero() {
       </div>
 
       {/* Damian - Positioned on the "floor line" (same as button bottom) */}
+      {/* Easter egg: Click Damian to hear his voice! */}
       {showDamian && (
         <motion.div
-          className="absolute -right-4 sm:-right-2 md:-right-4 lg:-right-8 z-[5]"
+          className="absolute -right-4 sm:-right-2 md:-right-4 lg:-right-8 z-[5] cursor-pointer"
           style={{
             bottom: 'clamp(24px, 4vh, 40px)',
             width: 'clamp(221px, 44vw, 400px)',
             height: 'clamp(331px, 67vw, 580px)',
           }}
           initial={{ y: '100%' }}
-          animate={{ y: 0 }}
-          transition={{
-            duration: 1.2,
-            ease: [0.25, 0.46, 0.45, 0.94],
+          animate={{
+            y: 0,
+            x: isDamianShaking ? [0, -10, 10, -10, 10, -5, 5, 0] : 0,
           }}
+          transition={{
+            y: {
+              duration: 1.2,
+              ease: [0.25, 0.46, 0.45, 0.94],
+            },
+            x: {
+              duration: 0.5,
+              ease: 'easeInOut',
+            },
+          }}
+          onClick={handleDamianClick}
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.98 }}
         >
           <Image
             src="/damian-sneakers.png"
