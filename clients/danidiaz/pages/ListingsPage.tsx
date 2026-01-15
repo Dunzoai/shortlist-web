@@ -145,15 +145,60 @@ export function ListingsPage() {
 
   useEffect(() => {
     async function fetchListings() {
-      const { data, error } = await supabase
-        .from('listings')
-        .select('*')
-        .eq('client_id', '3c125122-f3d9-4f75-91d9-69cf84d6d20e')
-        .order('created_at', { ascending: false });
+      // Fetch from both listings and featured_properties tables
+      const [listingsResult, featuredResult] = await Promise.all([
+        supabase
+          .from('listings')
+          .select('*')
+          .eq('client_id', '3c125122-f3d9-4f75-91d9-69cf84d6d20e')
+          .order('created_at', { ascending: false }),
+        supabase
+          .from('featured_properties')
+          .select('*')
+          .eq('client_id', '3c125122-f3d9-4f75-91d9-69cf84d6d20e')
+          .order('display_order', { ascending: true })
+      ]);
 
-      if (data && data.length > 0) {
-        setListings(data);
-        setFilteredListings(data);
+      const allListings: Listing[] = [];
+      const seenIds = new Set<string>();
+
+      // Add featured properties first (they appear at top)
+      if (featuredResult.data && featuredResult.data.length > 0) {
+        for (const prop of featuredResult.data) {
+          if (!seenIds.has(prop.id)) {
+            seenIds.add(prop.id);
+            allListings.push({
+              id: prop.id,
+              address: prop.address || prop.title || 'Property',
+              city: prop.city || 'Myrtle Beach',
+              state: prop.state || 'SC',
+              zip: prop.zip || '',
+              price: prop.price || 0,
+              beds: prop.beds || 0,
+              baths: prop.baths || 0,
+              sqft: prop.sqft || 0,
+              photos: prop.photos || (prop.image ? [prop.image] : []),
+              status: prop.status || 'active',
+              description: prop.description || '',
+              property_type: prop.property_type || 'Single Family'
+            });
+          }
+        }
+      }
+
+      // Add regular listings (skip duplicates)
+      if (listingsResult.data && listingsResult.data.length > 0) {
+        for (const listing of listingsResult.data) {
+          if (!seenIds.has(listing.id)) {
+            seenIds.add(listing.id);
+            allListings.push(listing);
+          }
+        }
+      }
+
+      if (allListings.length > 0) {
+        setListings(allListings);
+        setFilteredListings(allListings);
       }
       setLoading(false);
     }
