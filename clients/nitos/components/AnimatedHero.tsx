@@ -109,15 +109,34 @@ export function AnimatedHero() {
   return (
     <section className="relative h-[100dvh] bg-[#D4C5A9] overflow-hidden">
 
-      {/* Noise texture overlay */}
-      <div
-        className="absolute inset-0 z-0 opacity-[0.4] pointer-events-none"
-        style={{
-          backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E")`,
-          backgroundRepeat: 'repeat',
-          backgroundSize: '128px 128px',
-        }}
-      />
+      {/* Animated film grain overlay */}
+      <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
+        <div
+          className="absolute inset-[-100%] opacity-[0.35] animate-grain"
+          style={{
+            backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.7' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E")`,
+            backgroundRepeat: 'repeat',
+            backgroundSize: '256px 256px',
+          }}
+        />
+      </div>
+      <style jsx>{`
+        @keyframes grain {
+          0%, 100% { transform: translate(0, 0); }
+          10% { transform: translate(-2%, -3%); }
+          20% { transform: translate(3%, 2%); }
+          30% { transform: translate(-1%, 4%); }
+          40% { transform: translate(4%, -1%); }
+          50% { transform: translate(-3%, 3%); }
+          60% { transform: translate(2%, -4%); }
+          70% { transform: translate(-4%, 1%); }
+          80% { transform: translate(1%, -2%); }
+          90% { transform: translate(3%, 4%); }
+        }
+        .animate-grain {
+          animation: grain 0.8s steps(10) infinite;
+        }
+      `}</style>
 
       {/* Flying Empanadas Layer - ALWAYS visible, z-[1] */}
       <div className="absolute inset-0 z-[1] pointer-events-none overflow-hidden">
