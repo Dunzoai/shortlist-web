@@ -120,7 +120,7 @@ export function AnimatedHero() {
     setTimeout(() => {
       setShowTruck(false);
       setIsPanning(false);
-    }, 2400);
+    }, 3600);
   };
 
   // Close schedule overlay when clicking the back button or scrolling
@@ -142,7 +142,7 @@ export function AnimatedHero() {
             initial={{ clipPath: 'inset(0 100% 0 0)' }}
             animate={{ clipPath: 'inset(0 0% 0 0)' }}
             exit={{ clipPath: 'inset(0 0 0 100%)' }}
-            transition={{ duration: showTruck ? 2.2 : 0.5, ease: [0.25, 0.1, 0.25, 1] }}
+            transition={{ duration: showTruck ? 3.2 : 0.5, ease: [0.25, 0.1, 0.25, 1] }}
           >
             {/* Back button */}
             <button
@@ -161,7 +161,7 @@ export function AnimatedHero() {
                 className="text-4xl md:text-5xl font-bold text-[#2D5A3D] mb-8 text-center"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 1.8, duration: 0.5 }}
+                transition={{ delay: 2.5, duration: 0.5 }}
               >
                 Where to Find Us
               </motion.h2>
@@ -170,7 +170,7 @@ export function AnimatedHero() {
                 className="w-full max-w-4xl"
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 2, duration: 0.5 }}
+                transition={{ delay: 2.8, duration: 0.5 }}
               >
                 <FoodTruckTimeline />
               </motion.div>
@@ -193,7 +193,7 @@ export function AnimatedHero() {
             initial={{ left: '-900px' }}
             animate={{ left: 'calc(100vw + 100px)' }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 2.2, ease: [0.25, 0.1, 0.25, 1] }}
+            transition={{ duration: 3.2, ease: [0.25, 0.1, 0.25, 1] }}
           >
             {/* Dust cloud behind truck */}
             <div className="absolute right-full top-1/2 -translate-y-1/2 w-[400px] h-[300px]">
