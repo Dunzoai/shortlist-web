@@ -91,6 +91,7 @@ export function AnimatedHero() {
 
   // Truck animation state
   const [showTruck, setShowTruck] = useState(false);
+  const [isPanning, setIsPanning] = useState(false);
 
   useEffect(() => {
     const timers = [
@@ -104,24 +105,42 @@ export function AnimatedHero() {
   }, []);
 
   const handleFindUsClick = () => {
-    // Trigger truck animation
-    setShowTruck(true);
+    if (showTruck || isPanning) return;
 
-    // Optional: Play horn sound (user-initiated, so browsers allow it)
-    // Uncomment if you add a horn.mp3 to public folder
+    // Trigger truck animation and horizontal pan
+    setShowTruck(true);
+    setIsPanning(true);
+
+    // Optional: Play horn sound
     // if (audioRef.current) {
     //   audioRef.current.currentTime = 0;
     //   audioRef.current.play().catch(() => {});
     // }
 
-    // After truck animation completes, scroll to schedule
+    // Get the main element and add horizontal pan animation
+    const mainElement = document.querySelector('main');
+    if (mainElement) {
+      mainElement.style.transition = 'transform 2.2s cubic-bezier(0.25, 0.1, 0.25, 1)';
+      mainElement.style.transform = 'translateX(-100vw)';
+    }
+
+    // After animation completes, snap to schedule section
     setTimeout(() => {
-      setShowTruck(false);
       const scheduleSection = document.getElementById('schedule');
-      if (scheduleSection) {
-        scheduleSection.scrollIntoView({ behavior: 'smooth' });
+      if (scheduleSection && mainElement) {
+        // Instantly reset transform and scroll to schedule
+        mainElement.style.transition = 'none';
+        mainElement.style.transform = 'translateX(0)';
+        scheduleSection.scrollIntoView({ behavior: 'auto' });
+
+        // Re-enable transitions after a frame
+        requestAnimationFrame(() => {
+          mainElement.style.transition = '';
+        });
       }
-    }, 1400); // 1.4 seconds for truck to cross
+      setShowTruck(false);
+      setIsPanning(false);
+    }, 2300);
   };
 
   return (
@@ -130,76 +149,76 @@ export function AnimatedHero() {
       {/* Optional: Audio element for truck horn */}
       {/* <audio ref={audioRef} src="/truck-horn.mp3" preload="auto" /> */}
 
-      {/* TRUCK ANIMATION - Flies across screen on button click */}
+      {/* TRUCK ANIMATION - MASSIVE truck flies across, page pans horizontally */}
       <AnimatePresence>
         {showTruck && (
           <motion.div
-            className="fixed inset-0 z-[100] pointer-events-none overflow-hidden"
+            className="fixed inset-0 z-[9999] pointer-events-none"
             initial={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.2 }}
+            transition={{ duration: 0.3 }}
           >
-            {/* Dust trail particles */}
+            {/* Dust trail particles - bigger and more dramatic */}
             <motion.div
-              className="absolute top-[45%] -translate-y-1/2"
-              initial={{ left: '-200px' }}
-              animate={{ left: 'calc(100vw + 200px)' }}
-              transition={{ duration: 1.3, ease: [0.25, 0.1, 0.25, 1] }}
+              className="absolute top-[50%] -translate-y-1/2"
+              initial={{ left: '-400px' }}
+              animate={{ left: 'calc(100vw + 400px)' }}
+              transition={{ duration: 2.2, ease: [0.25, 0.1, 0.25, 1] }}
             >
-              {[...Array(8)].map((_, i) => (
+              {[...Array(12)].map((_, i) => (
                 <motion.div
                   key={i}
-                  className="absolute rounded-full bg-[#C4A052]/30"
+                  className="absolute rounded-full bg-[#C4A052]/40"
                   style={{
-                    width: 20 + Math.random() * 40,
-                    height: 20 + Math.random() * 40,
-                    left: -100 - i * 60,
-                    top: Math.random() * 200 - 100,
+                    width: 30 + Math.random() * 60,
+                    height: 30 + Math.random() * 60,
+                    left: -150 - i * 80,
+                    top: Math.random() * 300 - 150,
                   }}
-                  initial={{ opacity: 0.6, scale: 0.5 }}
+                  initial={{ opacity: 0.7, scale: 0.3 }}
                   animate={{
-                    opacity: [0.6, 0.3, 0],
-                    scale: [0.5, 1.5, 2],
-                    y: [0, -20 + Math.random() * 40],
+                    opacity: [0.7, 0.4, 0],
+                    scale: [0.3, 1.5, 2.5],
+                    y: [0, -30 + Math.random() * 60],
                   }}
                   transition={{
-                    duration: 0.8,
-                    delay: i * 0.05,
+                    duration: 1.2,
+                    delay: i * 0.08,
                     ease: 'easeOut',
                   }}
                 />
               ))}
             </motion.div>
 
-            {/* The TRUCK - HUGE and dramatic */}
+            {/* The TRUCK - MASSIVE (1000-1200px desktop, 600-800px mobile) */}
             <motion.div
-              className="absolute top-[45%] -translate-y-1/2"
+              className="absolute top-[50%] -translate-y-1/2"
               style={{
-                width: 'clamp(500px, 70vw, 800px)',
-                height: 'clamp(300px, 42vw, 480px)',
+                width: 'clamp(600px, 90vw, 1200px)',
+                height: 'clamp(360px, 54vw, 720px)',
               }}
               initial={{
-                left: '-800px',
+                left: '-1200px',
                 rotate: 0,
               }}
               animate={{
-                left: 'calc(100vw + 100px)',
-                rotate: [0, -2, 2, -1, 1, 0],
+                left: 'calc(100vw + 200px)',
+                rotate: [0, -1.5, 1.5, -1, 1, -0.5, 0.5, 0],
               }}
               transition={{
                 left: {
-                  duration: 1.3,
-                  ease: [0.25, 0.1, 0.25, 1], // Fast start, smooth end
+                  duration: 2.2,
+                  ease: [0.25, 0.1, 0.25, 1],
                 },
                 rotate: {
-                  duration: 0.3,
-                  repeat: 4,
+                  duration: 0.4,
+                  repeat: 5,
                   ease: 'easeInOut',
                 }
               }}
             >
-              {/* Motion blur effect - multiple slightly offset copies */}
-              <div className="absolute inset-0 opacity-20 -translate-x-8">
+              {/* Motion blur effect - multiple offset copies for speed lines */}
+              <div className="absolute inset-0 opacity-15 -translate-x-16 blur-[2px]">
                 <Image
                   src="/nitos-truck.png"
                   alt=""
@@ -207,7 +226,15 @@ export function AnimatedHero() {
                   className="object-contain"
                 />
               </div>
-              <div className="absolute inset-0 opacity-30 -translate-x-4">
+              <div className="absolute inset-0 opacity-25 -translate-x-10 blur-[1px]">
+                <Image
+                  src="/nitos-truck.png"
+                  alt=""
+                  fill
+                  className="object-contain"
+                />
+              </div>
+              <div className="absolute inset-0 opacity-35 -translate-x-5">
                 <Image
                   src="/nitos-truck.png"
                   alt=""
@@ -369,7 +396,7 @@ export function AnimatedHero() {
             {showButton && (
               <motion.button
                 onClick={handleFindUsClick}
-                disabled={showTruck}
+                disabled={showTruck || isPanning}
                 className="relative z-[30] bg-[#C4A052] hover:bg-[#B8944A] text-[#2D5A3D] px-6 sm:px-8 py-3 sm:py-4 text-base sm:text-lg font-semibold tracking-wide rounded-full shadow-lg hover:shadow-xl transition-colors disabled:opacity-70 disabled:cursor-not-allowed"
                 initial={{ scale: 0, opacity: 0, rotate: -10 }}
                 animate={{ scale: 1, opacity: 1, rotate: 0 }}
@@ -378,8 +405,8 @@ export function AnimatedHero() {
                   stiffness: 600,
                   damping: 12,
                 }}
-                whileHover={{ scale: showTruck ? 1 : 1.05 }}
-                whileTap={{ scale: showTruck ? 1 : 0.95 }}
+                whileHover={{ scale: (showTruck || isPanning) ? 1 : 1.05 }}
+                whileTap={{ scale: (showTruck || isPanning) ? 1 : 0.95 }}
               >
                 Find Us This Week
               </motion.button>
