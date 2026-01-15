@@ -177,7 +177,7 @@ export function ListingsPage() {
               beds: prop.beds || 0,
               baths: prop.baths || 0,
               sqft: prop.sqft || 0,
-              photos: prop.photos || (prop.image ? [prop.image] : []),
+              photos: prop.images || prop.photos || [],
               status: prop.status || 'active',
               description: prop.description || '',
               property_type: prop.property_type || 'Single Family'
