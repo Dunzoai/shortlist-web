@@ -221,17 +221,10 @@ export function AnimatedHero() {
               top: '50%',
               width: 'clamp(800px, 120vw, 1600px)',
               height: 'clamp(480px, 72vw, 960px)',
+              transform: 'translateY(-50%)',
             }}
-            initial={{
-              left: 0,
-              x: '-50%',
-              y: '-50%'
-            }}
-            animate={{
-              left: 'calc(100vw + 800px)',
-              x: '-50%',
-              y: '-50%'
-            }}
+            initial={{ left: '-60vw' }}
+            animate={{ left: 'calc(100vw + 60vw)' }}
             transition={{ duration: 3.2, ease: [0.25, 0.1, 0.25, 1] }}
           >
             <Image
