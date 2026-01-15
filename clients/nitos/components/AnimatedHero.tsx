@@ -278,7 +278,7 @@ export function AnimatedHero() {
             height: '100vh',
           }}
           initial={{ left: 0 }}
-          animate={{ left: 'calc(100vw + 100px)' }}
+          animate={{ left: 'calc(100vw + 2000px)' }}
           transition={{ duration: isDesktop ? 8.75 : 4, delay: 0.15, ease: [0.25, 0.1, 0.25, 1] }}
         >
             {/* Film grain */}
