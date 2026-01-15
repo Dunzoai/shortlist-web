@@ -7,6 +7,7 @@ import { LanguageProvider } from "@/clients/danidiaz/components/LanguageContext"
 import { StyleProvider } from "@/clients/danidiaz/components/StyleContext";
 import { ClientProvider } from "@/lib/ClientContext";
 import { getClient } from "@/lib/getClient";
+import ChatLanguageControls from "@/clients/danidiaz/components/ChatLanguageControls";
 
 const playfair = Playfair_Display({
   variable: "--font-playfair",
@@ -86,6 +87,12 @@ export default async function RootLayout({
           <LanguageProvider>
             <StyleProvider>
               {children}
+              {/* Language Toggle + Chat Widget Controls - Only for Dani Diaz site (desktop) */}
+              {client?.slug !== 'nitos' && (
+                <div className="hidden md:block">
+                  <ChatLanguageControls />
+                </div>
+              )}
             </StyleProvider>
           </LanguageProvider>
         </ClientProvider>
