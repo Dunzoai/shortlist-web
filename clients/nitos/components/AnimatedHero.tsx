@@ -137,9 +137,16 @@ export function AnimatedHero() {
     setTimeout(() => setIsDamianShaking(false), 500);
 
     // Play voice audio
-    if (damianAudioRef.current) {
-      damianAudioRef.current.currentTime = 0;
-      damianAudioRef.current.play().catch(() => {});
+    const audio = damianAudioRef.current;
+    if (audio) {
+      audio.currentTime = 0;
+      // Try to play, handle any autoplay restrictions
+      const playPromise = audio.play();
+      if (playPromise !== undefined) {
+        playPromise.catch((error) => {
+          console.log('Audio play failed:', error);
+        });
+      }
     }
   };
 
@@ -150,7 +157,12 @@ export function AnimatedHero() {
       {/* <audio ref={audioRef} src="/truck-horn.mp3" preload="auto" /> */}
 
       {/* Hidden audio for Damian easter egg */}
-      <audio ref={damianAudioRef} src="/nitos-voice.m4a" preload="auto" />
+      <audio
+        ref={damianAudioRef}
+        src="/nitos-voice.m4a"
+        preload="auto"
+        playsInline
+      />
 
       {/* SCHEDULE OVERLAY - Sits behind, revealed as hero is pulled away */}
       <AnimatePresence>
@@ -216,7 +228,7 @@ export function AnimatedHero() {
               y: '-50%'
             }}
             animate={{
-              left: '100vw',
+              left: 'calc(100vw + 800px)',
               x: '-50%',
               y: '-50%'
             }}
@@ -245,7 +257,7 @@ export function AnimatedHero() {
               height: '100vh',
             }}
             initial={{ left: 0 }}
-            animate={{ left: '100vw' }}
+            animate={{ left: 'calc(100vw + 100px)' }}
             transition={{ duration: 3.2, ease: [0.25, 0.1, 0.25, 1] }}
           >
             {/* Film grain */}
