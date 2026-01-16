@@ -99,7 +99,7 @@ export function HomePage() {
       <AnimatedHero />
 
       {/* About Section */}
-      <section className="py-24 bg-[#D4C5A9]">
+      <section className="py-24 bg-[#FAF8F5]">
         <div className="max-w-7xl mx-auto px-6">
           <motion.div
             className="grid md:grid-cols-2 gap-12 items-center"
