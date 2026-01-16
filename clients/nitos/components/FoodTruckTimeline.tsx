@@ -4,6 +4,17 @@ import { useRef, useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import Image from "next/image";
 
+interface EventData {
+  id: string;
+  title: string;
+  description: string | null;
+  event_date: string;
+  start_time: string;
+  end_time: string;
+  city: string;
+  state: string;
+}
+
 interface DayData {
   day: string;
   fullDay: string;
@@ -11,15 +22,36 @@ interface DayData {
   details: string;
 }
 
-const scheduleData: DayData[] = [
-  { day: "Mon", fullDay: "MONDAY", location: "Downtown Lunch", details: "11am - 2pm at Main St Plaza" },
-  { day: "Tue", fullDay: "TUESDAY", location: "Brewery Night", details: "5pm - 9pm at Coastal Brewing" },
-  { day: "Wed", fullDay: "WEDNESDAY", location: "Private Event", details: "Booked for corporate catering" },
-  { day: "Thu", fullDay: "THURSDAY", location: "Market Pop-Up", details: "4pm - 8pm at Farmer's Market" },
-  { day: "Fri", fullDay: "FRIDAY", location: "Food Truck Friday", details: "11am - 10pm at Waterfront Park" },
-  { day: "Sat", fullDay: "SATURDAY", location: "Festival", details: "All day at Summer Fest" },
-  { day: "Sun", fullDay: "SUNDAY", location: "Closed", details: "Back Monday!" },
-];
+// Format time from "14:30:00" to "2:30pm"
+function formatTime(time: string): string {
+  const [hours, minutes] = time.split(":");
+  const hour = parseInt(hours, 10);
+  const ampm = hour >= 12 ? "pm" : "am";
+  const hour12 = hour % 12 || 12;
+  return `${hour12}:${minutes}${ampm}`;
+}
+
+// Get day abbreviation from date
+function getDayAbbrev(dateStr: string): string {
+  const date = new Date(dateStr + "T00:00:00");
+  return date.toLocaleDateString("en-US", { weekday: "short" });
+}
+
+// Get full day name from date
+function getFullDay(dateStr: string): string {
+  const date = new Date(dateStr + "T00:00:00");
+  return date.toLocaleDateString("en-US", { weekday: "long" }).toUpperCase();
+}
+
+// Transform API events to component format
+function transformEvents(events: EventData[]): DayData[] {
+  return events.map((event) => ({
+    day: getDayAbbrev(event.event_date),
+    fullDay: getFullDay(event.event_date),
+    location: event.title,
+    details: `${formatTime(event.start_time)} - ${formatTime(event.end_time)} in ${event.city}, ${event.state}`,
+  }));
+}
 
 export function FoodTruckTimeline() {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
@@ -27,9 +59,39 @@ export function FoodTruckTimeline() {
   const [truckX, setTruckX] = useState(0);
   const cardRefs = useRef<(HTMLDivElement | null)[]>([]);
 
+  const [scheduleData, setScheduleData] = useState<DayData[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  // Fetch events from SmartPage API
+  useEffect(() => {
+    async function fetchEvents() {
+      try {
+        const response = await fetch(
+          "https://app.shortlistpass.com/api/smartpage/nitos/events"
+        );
+
+        if (!response.ok) {
+          throw new Error("Failed to fetch events");
+        }
+
+        const data = await response.json();
+        const transformed = transformEvents(data.events || []);
+        setScheduleData(transformed);
+      } catch (err) {
+        console.error("Error fetching events:", err);
+        setError("Could not load schedule");
+      } finally {
+        setIsLoading(false);
+      }
+    }
+
+    fetchEvents();
+  }, []);
+
   useEffect(() => {
     const container = scrollContainerRef.current;
-    if (!container) return;
+    if (!container || scheduleData.length === 0) return;
 
     const handleScroll = () => {
       const containerRect = container.getBoundingClientRect();
@@ -57,7 +119,8 @@ export function FoodTruckTimeline() {
       if (activeCard && container) {
         const cardRect = activeCard.getBoundingClientRect();
         const containerRect = container.getBoundingClientRect();
-        const cardCenterRelative = cardRect.left - containerRect.left + cardRect.width / 2;
+        const cardCenterRelative =
+          cardRect.left - containerRect.left + cardRect.width / 2;
         setTruckX(cardCenterRelative);
       }
     };
@@ -66,7 +129,7 @@ export function FoodTruckTimeline() {
     setTimeout(handleScroll, 100);
 
     return () => container.removeEventListener("scroll", handleScroll);
-  }, []);
+  }, [scheduleData]);
 
   const scrollToCard = (index: number) => {
     const card = cardRefs.current[index];
@@ -74,19 +137,73 @@ export function FoodTruckTimeline() {
     if (card && container) {
       const cardRect = card.getBoundingClientRect();
       const containerRect = container.getBoundingClientRect();
-      const scrollLeft = container.scrollLeft + (cardRect.left - containerRect.left) - (containerRect.width / 2) + (cardRect.width / 2);
+      const scrollLeft =
+        container.scrollLeft +
+        (cardRect.left - containerRect.left) -
+        containerRect.width / 2 +
+        cardRect.width / 2;
       container.scrollTo({ left: scrollLeft, behavior: "smooth" });
     }
   };
+
+  // Loading state
+  if (isLoading) {
+    return (
+      <div className="relative">
+        <div
+          className="relative rounded-[28px] p-6 md:p-8 overflow-hidden"
+          style={{
+            background:
+              "linear-gradient(180deg, rgba(45, 90, 61, 0.95) 0%, rgba(30, 60, 40, 0.98) 100%)",
+            border: "1px solid rgba(255, 255, 255, 0.1)",
+            boxShadow:
+              "0 40px 80px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.05)",
+          }}
+        >
+          <div className="text-center py-12">
+            <div className="animate-pulse text-[#F4F1EC]/60">
+              Loading schedule...
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Error or no events state
+  if (error || scheduleData.length === 0) {
+    return (
+      <div className="relative">
+        <div
+          className="relative rounded-[28px] p-6 md:p-8 overflow-hidden"
+          style={{
+            background:
+              "linear-gradient(180deg, rgba(45, 90, 61, 0.95) 0%, rgba(30, 60, 40, 0.98) 100%)",
+            border: "1px solid rgba(255, 255, 255, 0.1)",
+            boxShadow:
+              "0 40px 80px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.05)",
+          }}
+        >
+          <div className="text-center py-12">
+            <p className="text-[#F4F1EC]/60">
+              {error || "No upcoming events scheduled. Check back soon! 🚚"}
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="relative">
       <div
         className="relative rounded-[28px] p-6 md:p-8 overflow-hidden"
         style={{
-          background: "linear-gradient(180deg, rgba(45, 90, 61, 0.95) 0%, rgba(30, 60, 40, 0.98) 100%)",
+          background:
+            "linear-gradient(180deg, rgba(45, 90, 61, 0.95) 0%, rgba(30, 60, 40, 0.98) 100%)",
           border: "1px solid rgba(255, 255, 255, 0.1)",
-          boxShadow: "0 40px 80px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.05)",
+          boxShadow:
+            "0 40px 80px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.05)",
         }}
       >
         <div className="text-center mb-6">
@@ -133,8 +250,10 @@ export function FoodTruckTimeline() {
 
           {scheduleData.map((day, index) => (
             <div
-              key={day.day}
-              ref={(el) => { cardRefs.current[index] = el; }}
+              key={index}
+              ref={(el) => {
+                cardRefs.current[index] = el;
+              }}
               onClick={() => scrollToCard(index)}
               className="shrink-0 w-[280px] snap-center cursor-pointer"
             >
@@ -146,29 +265,43 @@ export function FoodTruckTimeline() {
                 }}
                 transition={{ duration: 0.3 }}
                 style={{
-                  background: index === activeIndex
-                    ? "rgba(255, 255, 255, 0.9)"
-                    : "rgba(255, 255, 255, 0.4)",
-                  border: index === activeIndex
-                    ? "1px solid rgba(43, 58, 68, 0.2)"
-                    : "1px solid rgba(43, 58, 68, 0.08)",
+                  background:
+                    index === activeIndex
+                      ? "rgba(255, 255, 255, 0.9)"
+                      : "rgba(255, 255, 255, 0.4)",
+                  border:
+                    index === activeIndex
+                      ? "1px solid rgba(43, 58, 68, 0.2)"
+                      : "1px solid rgba(43, 58, 68, 0.08)",
                 }}
               >
                 <div>
-                  <p className={`text-[10px] uppercase tracking-[0.2em] mb-2 font-medium ${
-                    index === activeIndex ? "text-[#2D5A3D]" : "text-[#5A6570]/40"
-                  }`}>
+                  <p
+                    className={`text-[10px] uppercase tracking-[0.2em] mb-2 font-medium ${
+                      index === activeIndex
+                        ? "text-[#2D5A3D]"
+                        : "text-[#5A6570]/40"
+                    }`}
+                  >
                     {day.fullDay}
                   </p>
-                  <h4 className={`text-xl font-bold italic ${
-                    index === activeIndex ? "text-[#222222]" : "text-[#222222]/50"
-                  }`}>
+                  <h4
+                    className={`text-xl font-bold italic ${
+                      index === activeIndex
+                        ? "text-[#222222]"
+                        : "text-[#222222]/50"
+                    }`}
+                  >
                     {day.location}
                   </h4>
                 </div>
-                <p className={`text-sm ${
-                  index === activeIndex ? "text-[#5A6570]" : "text-[#5A6570]/40"
-                }`}>
+                <p
+                  className={`text-sm ${
+                    index === activeIndex
+                      ? "text-[#5A6570]"
+                      : "text-[#5A6570]/40"
+                  }`}
+                >
                   {day.details}
                 </p>
               </motion.div>
@@ -178,15 +311,16 @@ export function FoodTruckTimeline() {
           <div className="shrink-0 w-[calc(50%-140px)]" />
         </div>
 
+        {/* Day pills */}
         <div className="flex justify-center gap-2 mt-4">
           {scheduleData.map((day, index) => (
             <button
-              key={day.day}
+              key={index}
               onClick={() => scrollToCard(index)}
-              className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all duration-300 ${
+              className={`px-3 py-1 rounded-full text-xs font-medium transition-all ${
                 index === activeIndex
-                  ? "bg-[#D4C5A9] text-[#2D5A3D]"
-                  : "bg-[#F4F1EC]/10 text-[#F4F1EC]/60 hover:bg-[#F4F1EC]/20 hover:text-[#F4F1EC]"
+                  ? "bg-white text-[#2D5A3D]"
+                  : "bg-white/20 text-white/60 hover:bg-white/30"
               }`}
             >
               {day.day}
