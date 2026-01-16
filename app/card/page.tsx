@@ -5,8 +5,10 @@ import Image from 'next/image';
 import { motion } from 'framer-motion';
 import { QRCodeSVG } from 'qrcode.react';
 import { downloadVCard } from '@/lib/vcard';
+import { useLanguage } from '@/clients/danidiaz/components/LanguageContext';
 
 export default function DigitalCardPage() {
+  const { t } = useLanguage();
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState('');
 
@@ -18,8 +20,11 @@ export default function DigitalCardPage() {
 
   const handleShare = async () => {
     const shareData = {
-      title: 'Dani Díaz - Bilingual Realtor',
-      text: 'Connect with Dani Díaz, your bilingual real estate expert on the Grand Strand.',
+      title: t('Dani Díaz - Bilingual Realtor', 'Dani Díaz - Agente Inmobiliaria Bilingüe'),
+      text: t(
+        'Connect with Dani Díaz, your bilingual real estate expert on the Grand Strand.',
+        'Conecta con Dani Díaz, tu experta bilingüe en bienes raíces en el Grand Strand.'
+      ),
       url: 'https://demo-danidiaz.shortlistpass.com/card',
     };
 
@@ -37,12 +42,12 @@ export default function DigitalCardPage() {
 
   const copyToClipboard = () => {
     navigator.clipboard.writeText('https://demo-danidiaz.shortlistpass.com/card');
-    showNotification('Link copied!');
+    showNotification(t('Link copied!', '¡Enlace copiado!'));
   };
 
   const handleSaveContact = () => {
     downloadVCard();
-    showNotification('Contact saved!');
+    showNotification(t('Contact saved!', '¡Contacto guardado!'));
   };
 
   // Animation variants
@@ -137,7 +142,7 @@ export default function DigitalCardPage() {
                 alt="Dani Díaz"
                 width={192}
                 height={192}
-                className="w-full h-full object-cover"
+                className="w-full h-full object-cover object-top"
                 priority
               />
             </div>
@@ -158,7 +163,7 @@ export default function DigitalCardPage() {
           variants={itemVariants}
           className="font-[family-name:var(--font-lora)] text-[#C4A25A] text-lg md:text-xl mb-1"
         >
-          Bilingual Realtor®
+          {t('Bilingual Realtor®', 'Agente Inmobiliaria Bilingüe®')}
         </motion.p>
 
         <motion.p
@@ -181,7 +186,7 @@ export default function DigitalCardPage() {
             className="flex items-center justify-center gap-3 w-full py-4 px-6 rounded-full border-2 border-[#C4A25A] text-white hover:bg-[#C4A25A]/10 transition-all duration-300 font-[family-name:var(--font-lora)]"
           >
             <span className="text-xl">📞</span>
-            <span>Call</span>
+            <span>{t('Call', 'Llamar')}</span>
           </a>
 
           <a
@@ -189,7 +194,7 @@ export default function DigitalCardPage() {
             className="flex items-center justify-center gap-3 w-full py-4 px-6 rounded-full border-2 border-[#C4A25A] text-white hover:bg-[#C4A25A]/10 transition-all duration-300 font-[family-name:var(--font-lora)]"
           >
             <span className="text-xl">✉️</span>
-            <span>Email</span>
+            <span>{t('Email', 'Correo')}</span>
           </a>
 
           <a
@@ -199,7 +204,7 @@ export default function DigitalCardPage() {
             className="flex items-center justify-center gap-3 w-full py-4 px-6 rounded-full border-2 border-[#C4A25A] text-white hover:bg-[#C4A25A]/10 transition-all duration-300 font-[family-name:var(--font-lora)]"
           >
             <span className="text-xl">🌐</span>
-            <span>Website</span>
+            <span>{t('Website', 'Sitio Web')}</span>
           </a>
 
           <div className="flex items-center justify-center gap-3 w-full py-4 px-6 rounded-full border-2 border-white/20 text-white/70 font-[family-name:var(--font-lora)]">
@@ -253,14 +258,14 @@ export default function DigitalCardPage() {
             onClick={handleSaveContact}
             className="w-full py-4 px-6 rounded-full bg-[#C4A25A] text-white font-semibold hover:bg-[#b3923f] transition-all duration-300 shadow-lg shadow-[#C4A25A]/30 font-[family-name:var(--font-lora)] text-lg"
           >
-            Save Contact
+            {t('Save Contact', 'Guardar Contacto')}
           </button>
 
           <button
             onClick={handleShare}
             className="w-full py-4 px-6 rounded-full border-2 border-white/30 text-white hover:bg-white/10 transition-all duration-300 font-[family-name:var(--font-lora)]"
           >
-            Share
+            {t('Share', 'Compartir')}
           </button>
         </motion.div>
 
@@ -276,7 +281,7 @@ export default function DigitalCardPage() {
             />
           </div>
           <p className="text-white/50 text-sm font-[family-name:var(--font-lora)]">
-            Scan to save my contact
+            {t('Scan to save my contact', 'Escanea para guardar mi contacto')}
           </p>
         </motion.div>
 
