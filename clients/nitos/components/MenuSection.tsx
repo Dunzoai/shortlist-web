@@ -368,7 +368,7 @@ export function MenuSection() {
                       damping: 20,
                       delay: 0.4,
                     }}
-                    className="absolute -bottom-8 left-0 -translate-x-1/3 z-10"
+                    className="absolute -bottom-16 left-0 -translate-x-1/3 z-10"
                   >
                     <Image
                       src="/sweet-empanada.png"
@@ -381,7 +381,7 @@ export function MenuSection() {
                 </div>
 
                 {/* Spacer for the overlapping image */}
-                <div className="h-16" />
+                <div className="h-20" />
               </div>
 
               {/* Desktop: Sweet empanada RIGHT */}
