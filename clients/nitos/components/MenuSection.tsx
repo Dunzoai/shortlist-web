@@ -306,7 +306,7 @@ export function MenuSection() {
                       damping: 20,
                       delay: 0.4,
                     }}
-                    className="absolute -bottom-16 right-0 translate-x-1/3 z-10"
+                    className="absolute -bottom-16 right-0 translate-x-1/2 z-10"
                   >
                     <Image
                       src="/empanada-tower.png"
@@ -368,7 +368,7 @@ export function MenuSection() {
                       damping: 20,
                       delay: 0.4,
                     }}
-                    className="absolute -bottom-12 left-0 -translate-x-1/3 z-10"
+                    className="absolute -bottom-8 left-0 -translate-x-1/3 z-10"
                   >
                     <Image
                       src="/sweet-empanada.png"
