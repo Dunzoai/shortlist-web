@@ -45,8 +45,11 @@ export function ParallaxSection({ imageSrc, height = '350px' }: ParallaxSectionP
     return (
       <section
         ref={sectionRef}
-        className="relative w-full overflow-hidden border-y-4 border-[#2D5A3D]"
-        style={{ height }}
+        className="relative w-full overflow-hidden"
+        style={{
+          height,
+          boxShadow: 'inset 0 8px 16px -4px rgba(0,0,0,0.3), inset 0 -8px 16px -4px rgba(0,0,0,0.3)',
+        }}
       >
         <div
           ref={imageRef}
@@ -66,8 +69,11 @@ export function ParallaxSection({ imageSrc, height = '350px' }: ParallaxSectionP
   // Desktop: Use CSS parallax (background-attachment: fixed works here)
   return (
     <div
-      className="relative w-full overflow-hidden border-y-4 border-[#2D5A3D]"
-      style={{ height: desktopHeight }}
+      className="relative w-full overflow-hidden"
+      style={{
+        height: desktopHeight,
+        boxShadow: 'inset 0 12px 24px -6px rgba(0,0,0,0.35), inset 0 -12px 24px -6px rgba(0,0,0,0.35)',
+      }}
     >
       <div
         className="absolute inset-0 w-full h-full bg-cover bg-center bg-no-repeat"
