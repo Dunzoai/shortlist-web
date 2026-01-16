@@ -142,7 +142,7 @@ export default function DigitalCardPage() {
                 alt="Dani Díaz"
                 width={192}
                 height={192}
-                className="w-full h-full object-cover object-top"
+                className="w-full h-full object-cover object-[center_15%] scale-150"
                 priority
               />
             </div>
@@ -182,7 +182,7 @@ export default function DigitalCardPage() {
         {/* Contact buttons */}
         <motion.div variants={itemVariants} className="w-full max-w-sm space-y-3 mb-8">
           <a
-            href="tel:+18435550123"
+            href="tel:+18435035038"
             className="flex items-center justify-center gap-3 w-full py-4 px-6 rounded-full border-2 border-[#C4A25A] text-white hover:bg-[#C4A25A]/10 transition-all duration-300 font-[family-name:var(--font-lora)]"
           >
             <span className="text-xl">📞</span>
@@ -190,7 +190,7 @@ export default function DigitalCardPage() {
           </a>
 
           <a
-            href="mailto:dani@example.com"
+            href="mailto:danidiazrealestate@gmail.com"
             className="flex items-center justify-center gap-3 w-full py-4 px-6 rounded-full border-2 border-[#C4A25A] text-white hover:bg-[#C4A25A]/10 transition-all duration-300 font-[family-name:var(--font-lora)]"
           >
             <span className="text-xl">✉️</span>
@@ -216,7 +216,7 @@ export default function DigitalCardPage() {
         {/* Social icons */}
         <motion.div variants={itemVariants} className="flex gap-4 mb-8">
           <a
-            href="https://instagram.com/danidiaz"
+            href="https://www.instagram.com/dani.globalhomes/"
             target="_blank"
             rel="noopener noreferrer"
             className="w-12 h-12 rounded-full border-2 border-[#C4A25A]/50 flex items-center justify-center text-white hover:bg-[#C4A25A]/20 hover:border-[#C4A25A] transition-all duration-300"
@@ -228,7 +228,7 @@ export default function DigitalCardPage() {
           </a>
 
           <a
-            href="https://facebook.com/danidiazrealtor"
+            href="https://www.facebook.com/daniampudiazv/"
             target="_blank"
             rel="noopener noreferrer"
             className="w-12 h-12 rounded-full border-2 border-[#C4A25A]/50 flex items-center justify-center text-white hover:bg-[#C4A25A]/20 hover:border-[#C4A25A] transition-all duration-300"
@@ -240,7 +240,7 @@ export default function DigitalCardPage() {
           </a>
 
           <a
-            href="https://linkedin.com/in/danidiaz"
+            href="https://www.linkedin.com/in/danidiazrealtor"
             target="_blank"
             rel="noopener noreferrer"
             className="w-12 h-12 rounded-full border-2 border-[#C4A25A]/50 flex items-center justify-center text-white hover:bg-[#C4A25A]/20 hover:border-[#C4A25A] transition-all duration-300"

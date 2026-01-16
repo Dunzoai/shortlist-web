@@ -5,8 +5,8 @@ FN:Dani Díaz
 N:Díaz;Dani;;;
 TITLE:Bilingual Realtor®
 ORG:Faircloth Real Estate Group
-TEL;TYPE=CELL:+18435550123
-EMAIL:dani@example.com
+TEL;TYPE=CELL:+18435035038
+EMAIL:danidiazrealestate@gmail.com
 URL:https://demo-danidiaz.shortlistpass.com
 ADR;TYPE=WORK:;;Myrtle Beach;SC;;USA
 NOTE:Your bilingual real estate expert on the Grand Strand.
