@@ -147,27 +147,27 @@ export function HomePage() {
           className="w-full h-auto"
         />
 
-        {/* Text Content - Positioned on the bottom white area */}
-        <div className="absolute inset-0 flex items-end justify-center">
+        {/* Text Content - Positioned on the bottom white area only */}
+        <div className="absolute bottom-0 left-0 right-0 h-[38%]">
           <motion.div
             initial="initial"
             whileInView="animate"
             viewport={{ once: true }}
             variants={staggerContainer}
-            className="w-full px-6 pb-8 pt-4"
+            className="h-full flex flex-col justify-center px-5 py-3"
           >
-            <motion.h2 variants={fadeInUp} className="text-2xl font-bold text-[#2D5A3D] mb-3">
+            <motion.h2 variants={fadeInUp} className="text-lg font-bold text-[#2D5A3D] mb-2">
               The Name Behind the Truck
             </motion.h2>
 
-            <motion.p variants={fadeInUp} className="text-[#3D3D3D] text-sm leading-relaxed mb-3">
+            <motion.p variants={fadeInUp} className="text-[#3D3D3D] text-xs leading-relaxed mb-2">
               I'm Damian — but this truck isn't named after me. It's named after my abuelo, Nito, who started making empanadas for his neighbors back in Uruguay in 1975. My dad carried on the tradition, and now it's my turn.
             </motion.p>
-            <motion.p variants={fadeInUp} className="text-[#3D3D3D] text-sm leading-relaxed mb-3">
-              I studied culinary, spent 15 years in construction, and one day realized: if I don't chase this now, I never will. So here we are. Same fold. Same fillings. Same love. Rolling through Myrtle Beach with the name that means the most to me.
+            <motion.p variants={fadeInUp} className="text-[#3D3D3D] text-xs leading-relaxed mb-2">
+              I studied culinary, spent 15 years in construction, and one day realized: if I don't chase this now, I never will. So here we are. Same fold. Same fillings. Same love.
             </motion.p>
 
-            <motion.p variants={fadeInUp} className="text-[#2D5A3D] font-semibold text-sm">
+            <motion.p variants={fadeInUp} className="text-[#2D5A3D] font-semibold text-xs">
               — Damian, Nito's Empanadas
             </motion.p>
           </motion.div>
