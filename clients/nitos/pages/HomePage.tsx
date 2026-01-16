@@ -98,46 +98,46 @@ export function HomePage() {
       {/* Animated Hero Section */}
       <AnimatedHero />
 
-      {/* About Section */}
-      <section className="relative min-h-[600px] md:min-h-[700px]">
-        {/* Full-width background image */}
-        <div className="absolute inset-0">
+      {/* About Section - Full-width image */}
+      <section className="relative w-full">
+        <div className="w-full">
           <Image
             src="/nitos-name-behind-truck.png"
-            alt="The Name Behind the Truck"
-            fill
-            className="object-cover"
+            alt="The Name Behind the Truck - Damian at Nito's Empanadas"
+            width={1920}
+            height={800}
+            className="w-full h-auto"
             priority
           />
-          {/* Overlay for text readability */}
-          <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/50 to-transparent" />
         </div>
+      </section>
 
-        {/* Content */}
-        <div className="relative z-10 max-w-7xl mx-auto px-6 py-24 flex items-center min-h-[600px] md:min-h-[700px]">
+      {/* About Text Section */}
+      <section className="py-24 bg-[#FAF8F5]">
+        <div className="max-w-4xl mx-auto px-6">
           <motion.div
-            className="max-w-2xl"
             initial="initial"
             whileInView="animate"
             viewport={{ once: true }}
             variants={staggerContainer}
+            className="text-center"
           >
-            <motion.h2 variants={fadeInUp} className="text-4xl md:text-5xl font-bold text-white mb-8">
+            <motion.h2 variants={fadeInUp} className="text-4xl md:text-5xl font-bold text-[#2D5A3D] mb-8">
               The Name Behind the Truck
             </motion.h2>
 
-            <motion.p variants={fadeInUp} className="text-white/90 text-lg leading-relaxed mb-6">
+            <motion.p variants={fadeInUp} className="text-[#3D3D3D] text-lg leading-relaxed mb-6">
               I'm Damian — but this truck isn't named after me. It's named after my abuelo, Nito, who started making empanadas for his neighbors back in Uruguay in 1975. My dad carried on the tradition, and now it's my turn.
             </motion.p>
-            <motion.p variants={fadeInUp} className="text-white/90 text-lg leading-relaxed mb-6">
+            <motion.p variants={fadeInUp} className="text-[#3D3D3D] text-lg leading-relaxed mb-6">
               I studied culinary, spent 15 years in construction, and one day realized: if I don't chase this now, I never will. So here we are. Same fold. Same fillings. Same love. Rolling through Myrtle Beach with the name that means the most to me.
             </motion.p>
 
-            <motion.p variants={fadeInUp} className="text-[#C4A052] font-semibold text-lg mb-10">
+            <motion.p variants={fadeInUp} className="text-[#2D5A3D] font-semibold text-lg mb-10">
               — Damian, Nito's Empanadas
             </motion.p>
 
-            <motion.blockquote variants={fadeInUp} className="border-l-4 border-[#C4A052] pl-6 py-4 bg-black/30 backdrop-blur-sm rounded-r-xl">
+            <motion.blockquote variants={fadeInUp} className="border-l-4 border-[#C4A052] pl-6 py-4 bg-white/50 rounded-r-xl text-left max-w-xl mx-auto">
               <p className="text-3xl md:text-4xl lg:text-5xl font-bold text-[#C4A052] italic">
                 "You want empanadas?"
               </p>
