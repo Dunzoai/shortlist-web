@@ -31,6 +31,19 @@ export function MenuSection() {
   const sectionRef = useRef(null);
   const isInView = useInView(sectionRef, { once: true, margin: "-100px" });
 
+  // Swipe handling for mobile
+  const handleDragEnd = (
+    _: MouseEvent | TouchEvent | PointerEvent,
+    info: { offset: { x: number } }
+  ) => {
+    const swipeThreshold = 50;
+    if (info.offset.x < -swipeThreshold && activeTab === "Savory") {
+      setActiveTab("Sweet");
+    } else if (info.offset.x > swipeThreshold && activeTab === "Sweet") {
+      setActiveTab("Savory");
+    }
+  };
+
   // Fetch menu from SmartPage API
   useEffect(() => {
     async function fetchMenu() {
@@ -280,8 +293,14 @@ export function MenuSection() {
                 />
               </motion.div>
 
-              {/* Mobile: Toggle + Menu with images below */}
-              <div className="lg:hidden w-full relative flex flex-col items-center">
+              {/* Mobile: Toggle + Menu with images below - SWIPEABLE */}
+              <motion.div
+                className="lg:hidden w-full relative flex flex-col items-center cursor-grab active:cursor-grabbing"
+                drag="x"
+                dragConstraints={{ left: 0, right: 0 }}
+                dragElastic={0.2}
+                onDragEnd={handleDragEnd}
+              >
                 {/* Toggle directly above menu */}
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
@@ -292,13 +311,13 @@ export function MenuSection() {
                   {Toggle}
                 </motion.div>
 
-                {/* Menu - reduced size on mobile (w-[65%] for savory - 15% smaller) */}
+                {/* Menu - reduced size on mobile */}
                 <div className="w-[65%]">
                   {ChalkboardMenu}
                 </div>
 
-                {/* Images below menu with hover animation */}
-                <div className="flex justify-center items-end gap-4 mt-6">
+                {/* Images below menu with hover animation - 1.5x size */}
+                <div className="flex justify-center items-end gap-2 -mt-8">
                   <motion.div
                     initial={{ opacity: 0, y: 30 }}
                     animate={isInView ? { opacity: 1, y: 0 } : {}}
@@ -315,8 +334,8 @@ export function MenuSection() {
                       <Image
                         src="/empanada-tower.png"
                         alt="Savory Empanadas"
-                        width={140}
-                        height={140}
+                        width={210}
+                        height={210}
                         className="drop-shadow-2xl"
                       />
                     </motion.div>
@@ -338,14 +357,14 @@ export function MenuSection() {
                       <Image
                         src="/empanada.png"
                         alt="Empanada"
-                        width={120}
-                        height={120}
+                        width={180}
+                        height={180}
                         className="drop-shadow-2xl"
                       />
                     </motion.div>
                   </motion.div>
                 </div>
-              </div>
+              </motion.div>
 
               {/* Desktop: Menu RIGHT */}
               <div className="hidden lg:block lg:w-3/5">
@@ -367,8 +386,14 @@ export function MenuSection() {
                 {ChalkboardMenu}
               </div>
 
-              {/* Mobile: Toggle + Menu with images below */}
-              <div className="lg:hidden w-full relative flex flex-col items-center">
+              {/* Mobile: Toggle + Menu with images below - SWIPEABLE */}
+              <motion.div
+                className="lg:hidden w-full relative flex flex-col items-center cursor-grab active:cursor-grabbing"
+                drag="x"
+                dragConstraints={{ left: 0, right: 0 }}
+                dragElastic={0.2}
+                onDragEnd={handleDragEnd}
+              >
                 {/* Toggle directly above menu */}
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
@@ -379,13 +404,13 @@ export function MenuSection() {
                   {Toggle}
                 </motion.div>
 
-                {/* Menu - reduced size on mobile (w-[75%]) */}
+                {/* Menu - reduced size on mobile */}
                 <div className="w-[75%]">
                   {ChalkboardMenu}
                 </div>
 
-                {/* Images below menu with hover animation */}
-                <div className="flex justify-center items-end gap-4 mt-6">
+                {/* Images below menu with hover animation - 1.5x size */}
+                <div className="flex justify-center items-end gap-2 -mt-6">
                   <motion.div
                     initial={{ opacity: 0, y: 30 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -402,8 +427,8 @@ export function MenuSection() {
                       <Image
                         src="/sweet-empanada.png"
                         alt="Sweet Empanada"
-                        width={130}
-                        height={130}
+                        width={195}
+                        height={195}
                         className="drop-shadow-2xl"
                       />
                     </motion.div>
@@ -425,14 +450,14 @@ export function MenuSection() {
                       <Image
                         src="/sweet-empanada-2.png"
                         alt="Sweet Empanada"
-                        width={120}
-                        height={120}
+                        width={180}
+                        height={180}
                         className="drop-shadow-2xl"
                       />
                     </motion.div>
                   </motion.div>
                 </div>
-              </div>
+              </motion.div>
 
               {/* Desktop: Sweet empanada RIGHT */}
               <motion.div
