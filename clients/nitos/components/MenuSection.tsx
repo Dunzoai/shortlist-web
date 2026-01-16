@@ -292,8 +292,8 @@ export function MenuSection() {
                   {Toggle}
                 </motion.div>
 
-                {/* Menu - reduced size on mobile (w-[75%]) */}
-                <div className="w-[75%]">
+                {/* Menu - reduced size on mobile (w-[65%] for savory - 15% smaller) */}
+                <div className="w-[65%]">
                   {ChalkboardMenu}
                 </div>
 
