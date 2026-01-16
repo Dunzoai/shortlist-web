@@ -1,12 +1,11 @@
 'use client';
 
-import { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import Image from 'next/image';
+import { motion } from 'framer-motion';
 import { FoodTruckTimeline } from '@/clients/nitos/components/FoodTruckTimeline';
 import { ParallaxSection } from '@/clients/nitos/components/ParallaxSection';
 import { AnimatedHero } from '@/clients/nitos/components/AnimatedHero';
 import { Header } from '@/clients/nitos/components/Header';
+import { MenuSection } from '@/clients/nitos/components/MenuSection';
 
 const fadeInUp = {
   initial: { opacity: 0, y: 30 },
@@ -22,74 +21,7 @@ const staggerContainer = {
   }
 };
 
-// TODO: Replace with SmartPage API data - this is placeholder
-interface MenuItem {
-  id: number;
-  name: string;
-  description: string;
-  price: string;
-  category: 'savory' | 'sweet';
-}
-
-const menuItems: MenuItem[] = [
-  // Savory
-  {
-    id: 1,
-    name: 'Steak and Cheese Empanada',
-    description: 'Shaved beef, American cheese, onions, and peppers',
-    price: '$6',
-    category: 'savory',
-  },
-  {
-    id: 2,
-    name: 'Mexican Street Corn Empanada',
-    description: 'Corn, crema, cotija cheese, Tajin, onions, and Hot Cheetos',
-    price: '$6',
-    category: 'savory',
-  },
-  {
-    id: 3,
-    name: 'Bacon Cheeseburger Empanada',
-    description: 'Ground beef, bacon, American cheese, and onions',
-    price: '$6',
-    category: 'savory',
-  },
-  {
-    id: 4,
-    name: 'Chicken Empanada',
-    description: 'Chicken, cheddar cheese, onions, and peppers',
-    price: '$6',
-    category: 'savory',
-  },
-  {
-    id: 5,
-    name: 'Buffalo Chicken Empanada',
-    description: 'Chicken marinated in buffalo sauce and cream cheese',
-    price: '$6',
-    category: 'savory',
-  },
-  // Sweet
-  {
-    id: 6,
-    name: 'Guava and Brie Empanada',
-    description: 'The name says it all!',
-    price: '$4',
-    category: 'sweet',
-  },
-  {
-    id: 7,
-    name: 'Pumpkin Pecan Cheesecake Empanada',
-    description: 'The name says it all!',
-    price: '$4',
-    category: 'sweet',
-  },
-];
-
 export function HomePage() {
-  const [menuCategory, setMenuCategory] = useState<'savory' | 'sweet'>('savory');
-
-  const filteredMenuItems = menuItems.filter(item => item.category === menuCategory);
-
   return (
     <main className="font-sans">
       {/* Header */}
@@ -200,150 +132,8 @@ export function HomePage() {
         </div>
       </section>
 
-      {/* Menu Section - Food Truck Order Window */}
-      <section className="py-24 bg-[#2D5A3D]">
-        <div className="max-w-4xl mx-auto px-6">
-          <motion.div
-            initial="initial"
-            whileInView="animate"
-            viewport={{ once: true }}
-            variants={staggerContainer}
-          >
-            <motion.h2
-              variants={fadeInUp}
-              className="text-4xl md:text-5xl font-bold text-white mb-12 text-center"
-            >
-              Our Menu
-            </motion.h2>
-
-            {/* Metal Frame Container */}
-            <motion.div
-              variants={fadeInUp}
-              className="relative rounded-lg overflow-hidden"
-              style={{
-                background: 'linear-gradient(145deg, #8a8a8a 0%, #c0c0c0 10%, #a0a0a0 20%, #d4d4d4 50%, #a0a0a0 80%, #c0c0c0 90%, #8a8a8a 100%)',
-                padding: '12px',
-                boxShadow: '0 10px 40px rgba(0,0,0,0.5), inset 0 2px 0 rgba(255,255,255,0.3), inset 0 -2px 0 rgba(0,0,0,0.2)',
-              }}
-            >
-              {/* Inner metal border */}
-              <div
-                className="rounded-md overflow-hidden"
-                style={{
-                  background: 'linear-gradient(180deg, #606060 0%, #909090 5%, #707070 95%, #505050 100%)',
-                  padding: '8px',
-                  boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.3)',
-                }}
-              >
-                {/* Backlit Menu Board */}
-                <div
-                  className="rounded relative overflow-hidden"
-                  style={{
-                    background: 'linear-gradient(180deg, #1a1a1a 0%, #0d0d0d 100%)',
-                    boxShadow: 'inset 0 0 60px rgba(0,0,0,0.8), inset 0 0 20px rgba(196, 160, 82, 0.1)',
-                  }}
-                >
-                  {/* Subtle backlight glow */}
-                  <div
-                    className="absolute inset-0 opacity-20"
-                    style={{
-                      background: 'radial-gradient(ellipse at center, rgba(196, 160, 82, 0.3) 0%, transparent 70%)',
-                    }}
-                  />
-
-                  <div className="relative z-10 p-8">
-                    {/* Toggle Tabs */}
-                    <div className="flex justify-center gap-4 mb-8">
-                      <button
-                        onClick={() => setMenuCategory('savory')}
-                        className="relative px-8 py-3 font-bold text-sm uppercase tracking-widest transition-all duration-300"
-                        style={{
-                          background: menuCategory === 'savory'
-                            ? 'linear-gradient(180deg, #d4d4d4 0%, #a0a0a0 50%, #b8b8b8 100%)'
-                            : 'linear-gradient(180deg, #404040 0%, #2a2a2a 50%, #353535 100%)',
-                          color: menuCategory === 'savory' ? '#1a1a1a' : '#666666',
-                          boxShadow: menuCategory === 'savory'
-                            ? '0 4px 12px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.5), inset 0 -1px 0 rgba(0,0,0,0.2)'
-                            : 'inset 0 2px 4px rgba(0,0,0,0.5)',
-                          borderRadius: '4px',
-                          border: menuCategory === 'savory' ? '1px solid #888' : '1px solid #333',
-                        }}
-                      >
-                        Savory
-                      </button>
-                      <button
-                        onClick={() => setMenuCategory('sweet')}
-                        className="relative px-8 py-3 font-bold text-sm uppercase tracking-widest transition-all duration-300"
-                        style={{
-                          background: menuCategory === 'sweet'
-                            ? 'linear-gradient(180deg, #d4d4d4 0%, #a0a0a0 50%, #b8b8b8 100%)'
-                            : 'linear-gradient(180deg, #404040 0%, #2a2a2a 50%, #353535 100%)',
-                          color: menuCategory === 'sweet' ? '#1a1a1a' : '#666666',
-                          boxShadow: menuCategory === 'sweet'
-                            ? '0 4px 12px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.5), inset 0 -1px 0 rgba(0,0,0,0.2)'
-                            : 'inset 0 2px 4px rgba(0,0,0,0.5)',
-                          borderRadius: '4px',
-                          border: menuCategory === 'sweet' ? '1px solid #888' : '1px solid #333',
-                        }}
-                      >
-                        Sweet
-                      </button>
-                    </div>
-
-                    {/* Menu Items */}
-                    <div className="min-h-[320px]">
-                      <AnimatePresence mode="wait">
-                        <motion.div
-                          key={menuCategory}
-                          initial={{ opacity: 0, y: 20 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          exit={{ opacity: 0, y: -20 }}
-                          transition={{ duration: 0.3 }}
-                          className="space-y-6"
-                        >
-                          {filteredMenuItems.map((item) => (
-                            <div key={item.id} className="border-b border-white/10 pb-5 last:border-b-0">
-                              <div className="flex justify-between items-baseline mb-2">
-                                <h3
-                                  className="text-xl md:text-2xl font-bold"
-                                  style={{
-                                    color: '#C4A052',
-                                    textShadow: '0 0 20px rgba(196, 160, 82, 0.5), 0 0 40px rgba(196, 160, 82, 0.3)',
-                                  }}
-                                >
-                                  {item.name}
-                                </h3>
-                                <span
-                                  className="text-xl font-bold ml-4 shrink-0"
-                                  style={{
-                                    color: '#C4A052',
-                                    textShadow: '0 0 20px rgba(196, 160, 82, 0.5), 0 0 40px rgba(196, 160, 82, 0.3)',
-                                  }}
-                                >
-                                  {item.price}
-                                </span>
-                              </div>
-                              <p
-                                className="text-sm md:text-base"
-                                style={{
-                                  color: 'rgba(255, 255, 255, 0.7)',
-                                  textShadow: '0 0 10px rgba(255, 255, 255, 0.2)',
-                                }}
-                              >
-                                {item.description}
-                              </p>
-                            </div>
-                          ))}
-                        </motion.div>
-                      </AnimatePresence>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </motion.div>
-          </motion.div>
-        </div>
-      </section>
+      {/* Menu Section */}
+      <MenuSection />
 
       {/* Footer */}
       <footer className="bg-[#D4C5A9] py-16 border-t border-[#C4A052]/30">
