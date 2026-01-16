@@ -280,7 +280,7 @@ export function MenuSection() {
                 />
               </motion.div>
 
-              {/* Mobile: Toggle + Menu with overlapping image */}
+              {/* Mobile: Toggle + Menu with images below */}
               <div className="lg:hidden w-full relative flex flex-col items-center">
                 {/* Toggle directly above menu */}
                 <motion.div
@@ -293,33 +293,58 @@ export function MenuSection() {
                 </motion.div>
 
                 {/* Menu - reduced size on mobile (w-[75%]) */}
-                <div className="relative w-[75%]">
+                <div className="w-[75%]">
                   {ChalkboardMenu}
-
-                  {/* Overlapping image at bottom */}
-                  <motion.div
-                    initial={{ opacity: 0, y: 50 }}
-                    animate={isInView ? { opacity: 1, y: 0 } : {}}
-                    transition={{
-                      type: "spring",
-                      stiffness: 100,
-                      damping: 20,
-                      delay: 0.4,
-                    }}
-                    className="absolute -bottom-16 right-0 translate-x-1/2 z-10"
-                  >
-                    <Image
-                      src="/empanada-tower.png"
-                      alt="Savory Empanadas"
-                      width={180}
-                      height={180}
-                      className="drop-shadow-2xl"
-                    />
-                  </motion.div>
                 </div>
 
-                {/* Spacer for the overlapping image */}
-                <div className="h-20" />
+                {/* Images below menu with hover animation */}
+                <div className="flex justify-center items-end gap-4 mt-6">
+                  <motion.div
+                    initial={{ opacity: 0, y: 30 }}
+                    animate={isInView ? { opacity: 1, y: 0 } : {}}
+                    transition={{ delay: 0.4 }}
+                  >
+                    <motion.div
+                      animate={{ y: [0, -8, 0] }}
+                      transition={{
+                        duration: 3,
+                        repeat: Infinity,
+                        ease: "easeInOut",
+                      }}
+                    >
+                      <Image
+                        src="/empanada-tower.png"
+                        alt="Savory Empanadas"
+                        width={140}
+                        height={140}
+                        className="drop-shadow-2xl"
+                      />
+                    </motion.div>
+                  </motion.div>
+                  <motion.div
+                    initial={{ opacity: 0, y: 30 }}
+                    animate={isInView ? { opacity: 1, y: 0 } : {}}
+                    transition={{ delay: 0.5 }}
+                  >
+                    <motion.div
+                      animate={{ y: [0, -6, 0] }}
+                      transition={{
+                        duration: 2.5,
+                        repeat: Infinity,
+                        ease: "easeInOut",
+                        delay: 0.5,
+                      }}
+                    >
+                      <Image
+                        src="/empanada.png"
+                        alt="Empanada"
+                        width={120}
+                        height={120}
+                        className="drop-shadow-2xl"
+                      />
+                    </motion.div>
+                  </motion.div>
+                </div>
               </div>
 
               {/* Desktop: Menu RIGHT */}
@@ -342,7 +367,7 @@ export function MenuSection() {
                 {ChalkboardMenu}
               </div>
 
-              {/* Mobile: Toggle + Menu with overlapping image */}
+              {/* Mobile: Toggle + Menu with images below */}
               <div className="lg:hidden w-full relative flex flex-col items-center">
                 {/* Toggle directly above menu */}
                 <motion.div
@@ -355,33 +380,58 @@ export function MenuSection() {
                 </motion.div>
 
                 {/* Menu - reduced size on mobile (w-[75%]) */}
-                <div className="relative w-[75%]">
+                <div className="w-[75%]">
                   {ChalkboardMenu}
-
-                  {/* Overlapping image at bottom */}
-                  <motion.div
-                    initial={{ opacity: 0, y: 50 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{
-                      type: "spring",
-                      stiffness: 100,
-                      damping: 20,
-                      delay: 0.4,
-                    }}
-                    className="absolute -bottom-16 left-0 -translate-x-1/3 z-10"
-                  >
-                    <Image
-                      src="/sweet-empanada.png"
-                      alt="Sweet Empanadas"
-                      width={160}
-                      height={160}
-                      className="drop-shadow-2xl"
-                    />
-                  </motion.div>
                 </div>
 
-                {/* Spacer for the overlapping image */}
-                <div className="h-20" />
+                {/* Images below menu with hover animation */}
+                <div className="flex justify-center items-end gap-4 mt-6">
+                  <motion.div
+                    initial={{ opacity: 0, y: 30 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.4 }}
+                  >
+                    <motion.div
+                      animate={{ y: [0, -6, 0] }}
+                      transition={{
+                        duration: 2.8,
+                        repeat: Infinity,
+                        ease: "easeInOut",
+                      }}
+                    >
+                      <Image
+                        src="/sweet-empanada.png"
+                        alt="Sweet Empanada"
+                        width={130}
+                        height={130}
+                        className="drop-shadow-2xl"
+                      />
+                    </motion.div>
+                  </motion.div>
+                  <motion.div
+                    initial={{ opacity: 0, y: 30 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.5 }}
+                  >
+                    <motion.div
+                      animate={{ y: [0, -8, 0] }}
+                      transition={{
+                        duration: 3.2,
+                        repeat: Infinity,
+                        ease: "easeInOut",
+                        delay: 0.4,
+                      }}
+                    >
+                      <Image
+                        src="/sweet-empanada-2.png"
+                        alt="Sweet Empanada"
+                        width={120}
+                        height={120}
+                        className="drop-shadow-2xl"
+                      />
+                    </motion.div>
+                  </motion.div>
+                </div>
               </div>
 
               {/* Desktop: Sweet empanada RIGHT */}
