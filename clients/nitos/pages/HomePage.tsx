@@ -148,7 +148,7 @@ export function HomePage() {
         />
 
         {/* Text Content - Positioned on the bottom white area only */}
-        <div className="absolute bottom-0 left-0 right-0 h-[42%]">
+        <div className="absolute bottom-0 left-0 right-0 h-[47%]">
           <motion.div
             initial="initial"
             whileInView="animate"
