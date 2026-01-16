@@ -98,6 +98,9 @@ export function HomePage() {
       {/* Animated Hero Section */}
       <AnimatedHero />
 
+      {/* Parallax - Truck Line */}
+      <ParallaxSection imageSrc="/truck-line-paralax.png" />
+
       {/* About Section - Full-width image with text overlay */}
       <section className="relative w-full">
         {/* Background Image */}
@@ -128,15 +131,9 @@ export function HomePage() {
               I studied culinary, spent 15 years in construction, and one day realized: if I don't chase this now, I never will. So here we are. Same fold. Same fillings. Same love. Rolling through Myrtle Beach with the name that means the most to me.
             </motion.p>
 
-            <motion.p variants={fadeInUp} className="text-[#2D5A3D] font-semibold text-sm md:text-base lg:text-lg mb-4 md:mb-6">
+            <motion.p variants={fadeInUp} className="text-[#2D5A3D] font-semibold text-sm md:text-base lg:text-lg">
               — Damian, Nito's Empanadas
             </motion.p>
-
-            <motion.blockquote variants={fadeInUp} className="border-l-4 border-[#C4A052] pl-4 md:pl-6 py-2 md:py-4 bg-white/50 rounded-r-xl">
-              <p className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-[#C4A052] italic">
-                "You want empanadas?"
-              </p>
-            </motion.blockquote>
           </motion.div>
         </div>
       </section>
@@ -166,9 +163,6 @@ export function HomePage() {
           </motion.div>
         </div>
       </section>
-
-      {/* Parallax - Truck Line */}
-      <ParallaxSection imageSrc="/truck-line-paralax.png" />
 
       {/* Menu Section - Food Truck Order Window */}
       <section className="py-24 bg-[#2D5A3D]">
