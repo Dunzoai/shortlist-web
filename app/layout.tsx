@@ -25,7 +25,7 @@ export const metadata: Metadata = {
   authors: [{ name: "Dani Díaz" }],
   creator: "Dani Díaz",
   publisher: "Faircloth Real Estate Group",
-  metadataBase: new URL('https://danidiaz.com'),
+  metadataBase: new URL('https://demo-danidiaz.shortlistpass.com'),
   alternates: {
     canonical: '/',
   },
@@ -39,7 +39,7 @@ export const metadata: Metadata = {
     description: 'Your bilingual real estate expert on the Grand Strand. Helping buyers and sellers in Myrtle Beach, SC.',
     images: [
       {
-        url: '/dani-og-image.jpg',
+        url: '/dani-diaz-home-about.JPG',
         width: 1200,
         height: 630,
         alt: 'Dani Díaz - Bilingual Realtor',
@@ -50,7 +50,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'Dani Díaz | Bilingual Realtor Myrtle Beach',
     description: 'Your bilingual real estate expert on the Grand Strand. Helping buyers and sellers in Myrtle Beach, SC.',
-    images: ['/dani-og-image.jpg'],
+    images: ['/dani-diaz-home-about.JPG'],
   },
   robots: {
     index: true,
