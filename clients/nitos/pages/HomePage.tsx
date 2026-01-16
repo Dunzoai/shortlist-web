@@ -98,45 +98,42 @@ export function HomePage() {
       {/* Animated Hero Section */}
       <AnimatedHero />
 
-      {/* About Section - Full-width image */}
+      {/* About Section - Full-width image with text overlay */}
       <section className="relative w-full">
-        <div className="w-full">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src="/nitos-name-behind-truck.png"
-            alt="The Name Behind the Truck - Damian at Nito's Empanadas"
-            className="w-full h-auto"
-          />
-        </div>
-      </section>
+        {/* Background Image */}
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src="/nitos-name-behind-truck.png"
+          alt="The Name Behind the Truck - Damian at Nito's Empanadas"
+          className="w-full h-auto"
+        />
 
-      {/* About Text Section */}
-      <section className="py-24 bg-[#FAF8F5]">
-        <div className="max-w-4xl mx-auto px-6">
+        {/* Text Content - Positioned on the right white area */}
+        <div className="absolute inset-0 flex items-center justify-end">
           <motion.div
             initial="initial"
             whileInView="animate"
             viewport={{ once: true }}
             variants={staggerContainer}
-            className="text-center"
+            className="w-full md:w-[45%] lg:w-[40%] px-6 md:px-8 lg:px-12 py-8"
           >
-            <motion.h2 variants={fadeInUp} className="text-4xl md:text-5xl font-bold text-[#2D5A3D] mb-8">
+            <motion.h2 variants={fadeInUp} className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-[#2D5A3D] mb-4 md:mb-6">
               The Name Behind the Truck
             </motion.h2>
 
-            <motion.p variants={fadeInUp} className="text-[#3D3D3D] text-lg leading-relaxed mb-6">
+            <motion.p variants={fadeInUp} className="text-[#3D3D3D] text-sm md:text-base lg:text-lg leading-relaxed mb-3 md:mb-4">
               I'm Damian — but this truck isn't named after me. It's named after my abuelo, Nito, who started making empanadas for his neighbors back in Uruguay in 1975. My dad carried on the tradition, and now it's my turn.
             </motion.p>
-            <motion.p variants={fadeInUp} className="text-[#3D3D3D] text-lg leading-relaxed mb-6">
+            <motion.p variants={fadeInUp} className="text-[#3D3D3D] text-sm md:text-base lg:text-lg leading-relaxed mb-3 md:mb-4">
               I studied culinary, spent 15 years in construction, and one day realized: if I don't chase this now, I never will. So here we are. Same fold. Same fillings. Same love. Rolling through Myrtle Beach with the name that means the most to me.
             </motion.p>
 
-            <motion.p variants={fadeInUp} className="text-[#2D5A3D] font-semibold text-lg mb-10">
+            <motion.p variants={fadeInUp} className="text-[#2D5A3D] font-semibold text-sm md:text-base lg:text-lg mb-4 md:mb-6">
               — Damian, Nito's Empanadas
             </motion.p>
 
-            <motion.blockquote variants={fadeInUp} className="border-l-4 border-[#C4A052] pl-6 py-4 bg-white/50 rounded-r-xl text-left max-w-xl mx-auto">
-              <p className="text-3xl md:text-4xl lg:text-5xl font-bold text-[#C4A052] italic">
+            <motion.blockquote variants={fadeInUp} className="border-l-4 border-[#C4A052] pl-4 md:pl-6 py-2 md:py-4 bg-white/50 rounded-r-xl">
+              <p className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-[#C4A052] italic">
                 "You want empanadas?"
               </p>
             </motion.blockquote>
