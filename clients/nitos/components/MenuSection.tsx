@@ -70,7 +70,7 @@ export function MenuSection() {
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       transition={{ duration: 0.4 }}
-      className="w-full lg:w-1/2"
+      className="w-full lg:w-2/3"
     >
       <div
         className="relative rounded-lg p-8 md:p-10"
@@ -262,7 +262,7 @@ export function MenuSection() {
               </motion.div>
 
               {/* Desktop: Menu left */}
-              <div className="hidden lg:block lg:w-1/2">
+              <div className="hidden lg:block lg:w-2/3">
                 {ChalkboardMenu}
               </div>
 
@@ -276,14 +276,14 @@ export function MenuSection() {
                 initial={{ opacity: 0, x: 150 }}
                 animate={isInView ? { opacity: 1, x: 0 } : {}}
                 transition={{ type: "spring", stiffness: 100, damping: 20, delay: 0.3 }}
-                className="hidden lg:flex w-1/2 justify-center items-center"
+                className="hidden lg:flex w-1/3 justify-center items-center"
               >
                 <Image
                   src="/empanada-tower.png"
                   alt="Savory Empanadas"
-                  width={450}
-                  height={450}
-                  className="drop-shadow-2xl"
+                  width={500}
+                  height={500}
+                  className="drop-shadow-2xl max-w-none"
                 />
               </motion.div>
             </motion.div>
@@ -318,14 +318,14 @@ export function MenuSection() {
                 initial={{ opacity: 0, x: -100 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ type: "spring", stiffness: 100, damping: 20, delay: 0.2 }}
-                className="hidden lg:flex w-1/2 justify-center items-center"
+                className="hidden lg:flex w-1/3 justify-center items-center"
               >
                 <Image
                   src="/sweet-empanada.png"
                   alt="Sweet Empanadas"
-                  width={400}
-                  height={400}
-                  className="drop-shadow-2xl"
+                  width={500}
+                  height={500}
+                  className="drop-shadow-2xl max-w-none"
                 />
               </motion.div>
 
@@ -335,7 +335,7 @@ export function MenuSection() {
               </div>
 
               {/* Desktop: Menu right */}
-              <div className="hidden lg:block lg:w-1/2">
+              <div className="hidden lg:block lg:w-2/3">
                 {ChalkboardMenu}
               </div>
             </motion.div>
