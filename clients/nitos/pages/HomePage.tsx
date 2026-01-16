@@ -101,13 +101,11 @@ export function HomePage() {
       {/* About Section - Full-width image */}
       <section className="relative w-full">
         <div className="w-full">
-          <Image
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
             src="/nitos-name-behind-truck.png"
             alt="The Name Behind the Truck - Damian at Nito's Empanadas"
-            width={1920}
-            height={800}
             className="w-full h-auto"
-            priority
           />
         </div>
       </section>
