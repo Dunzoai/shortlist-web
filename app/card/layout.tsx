@@ -1,19 +1,22 @@
 import type { Metadata } from "next";
 
+const baseUrl = 'https://demo-danidiaz.shortlistpass.com';
+
 export const metadata: Metadata = {
+  metadataBase: new URL(baseUrl),
   title: "Dani Díaz | Digital Business Card",
   description: "Connect with Dani Díaz, your bilingual real estate expert on the Grand Strand. Save my contact or reach out directly.",
   openGraph: {
     type: 'profile',
     locale: 'en_US',
     alternateLocale: 'es_ES',
-    url: 'https://demo-danidiaz.shortlistpass.com/card',
+    url: `${baseUrl}/card`,
     siteName: 'Dani Díaz Real Estate',
     title: 'Dani Díaz | Bilingual Realtor®',
     description: 'Your bilingual real estate expert on the Grand Strand. Tap to save my contact!',
     images: [
       {
-        url: '/dani-diaz-home-about.JPG',
+        url: `${baseUrl}/dani-diaz-home-about.JPG`,
         width: 1200,
         height: 630,
         alt: 'Dani Díaz - Bilingual Realtor',
@@ -24,7 +27,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'Dani Díaz | Bilingual Realtor®',
     description: 'Your bilingual real estate expert on the Grand Strand. Tap to save my contact!',
-    images: ['/dani-diaz-home-about.JPG'],
+    images: [`${baseUrl}/dani-diaz-home-about.JPG`],
   },
 };
 
