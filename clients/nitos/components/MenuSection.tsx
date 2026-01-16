@@ -27,18 +27,9 @@ export function MenuSection() {
   const [activeTab, setActiveTab] = useState<"Savory" | "Sweet">("Savory");
   const [offerings, setOfferings] = useState<OfferingsResponse | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [hasAnimatedIn, setHasAnimatedIn] = useState(false);
 
   const sectionRef = useRef(null);
   const isInView = useInView(sectionRef, { once: true, margin: "-100px" });
-
-  // Track when initial animation completes
-  useEffect(() => {
-    if (isInView && !hasAnimatedIn) {
-      const timer = setTimeout(() => setHasAnimatedIn(true), 800);
-      return () => clearTimeout(timer);
-    }
-  }, [isInView, hasAnimatedIn]);
 
   // Fetch menu from SmartPage API
   useEffect(() => {
@@ -70,44 +61,16 @@ export function MenuSection() {
     description: "rgba(255,255,255,0.6)",
   };
 
-  // Desktop layout: Savory = menu left + empanada right, Sweet = empanada left + menu right
   const isSavory = activeTab === "Savory";
-
-  const EmpanadaImage = (
-    <motion.div
-      key={`image-${activeTab}`}
-      initial={{
-        opacity: 0,
-        x: !hasAnimatedIn ? -200 : isSavory ? 200 : -200,
-      }}
-      animate={{ opacity: 1, x: 0 }}
-      exit={{ opacity: 0, x: isSavory ? -200 : 200 }}
-      transition={{ type: "spring", stiffness: 200, damping: 25 }}
-      className="w-full lg:w-1/3 flex justify-center"
-    >
-      <Image
-        src={isSavory ? "/empanada-tower.png" : "/sweet-empanada.png"}
-        alt={`${activeTab} Empanada`}
-        width={300}
-        height={300}
-        className="drop-shadow-2xl"
-      />
-    </motion.div>
-  );
 
   const ChalkboardMenu = (
     <motion.div
       key={`menu-${activeTab}`}
-      initial={{ opacity: 0, x: isSavory ? -100 : 100 }}
-      animate={{ opacity: 1, x: 0 }}
-      exit={{ opacity: 0, x: isSavory ? 100 : -100 }}
-      transition={{
-        type: "spring",
-        stiffness: 200,
-        damping: 25,
-        delay: 0.1,
-      }}
-      className="w-full lg:w-2/3"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.4 }}
+      className="w-full lg:w-1/2"
     >
       <div
         className="relative rounded-lg p-8 md:p-10"
@@ -270,33 +233,113 @@ export function MenuSection() {
           </div>
         </motion.div>
 
-        {/* Menu Content - Desktop: swap positions based on tab */}
+        {/* Menu Content */}
         <AnimatePresence mode="wait">
-          <div
-            key={activeTab}
-            className="flex flex-col lg:flex-row items-center gap-8 lg:gap-12"
-          >
-            {/* Mobile: always image first, then menu */}
-            <div className="lg:hidden w-full flex flex-col items-center gap-8">
-              {EmpanadaImage}
-              {ChalkboardMenu}
-            </div>
+          {isSavory ? (
+            /* SAVORY: Menu LEFT, Empanada Tower RIGHT */
+            <motion.div
+              key="savory-layout"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.4 }}
+              className="flex flex-col lg:flex-row items-center gap-8 lg:gap-12"
+            >
+              {/* Mobile: image first */}
+              <motion.div
+                initial={{ opacity: 0, x: 100 }}
+                animate={isInView ? { opacity: 1, x: 0 } : {}}
+                transition={{ type: "spring", stiffness: 100, damping: 20, delay: 0.3 }}
+                className="w-full lg:hidden flex justify-center"
+              >
+                <Image
+                  src="/empanada-tower.png"
+                  alt="Savory Empanadas"
+                  width={400}
+                  height={400}
+                  className="drop-shadow-2xl"
+                />
+              </motion.div>
 
-            {/* Desktop: Savory = menu left + empanada right, Sweet = empanada left + menu right */}
-            <div className="hidden lg:flex lg:flex-row items-center gap-12 w-full">
-              {isSavory ? (
-                <>
-                  {ChalkboardMenu}
-                  {EmpanadaImage}
-                </>
-              ) : (
-                <>
-                  {EmpanadaImage}
-                  {ChalkboardMenu}
-                </>
-              )}
-            </div>
-          </div>
+              {/* Desktop: Menu left */}
+              <div className="hidden lg:block lg:w-1/2">
+                {ChalkboardMenu}
+              </div>
+
+              {/* Mobile: menu */}
+              <div className="lg:hidden w-full">
+                {ChalkboardMenu}
+              </div>
+
+              {/* Desktop: Empanada Tower right - slides in from right on scroll */}
+              <motion.div
+                initial={{ opacity: 0, x: 150 }}
+                animate={isInView ? { opacity: 1, x: 0 } : {}}
+                transition={{ type: "spring", stiffness: 100, damping: 20, delay: 0.3 }}
+                className="hidden lg:flex w-1/2 justify-center items-center"
+              >
+                <Image
+                  src="/empanada-tower.png"
+                  alt="Savory Empanadas"
+                  width={450}
+                  height={450}
+                  className="drop-shadow-2xl"
+                />
+              </motion.div>
+            </motion.div>
+          ) : (
+            /* SWEET: Sweet Empanada LEFT, Menu RIGHT */
+            <motion.div
+              key="sweet-layout"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.4 }}
+              className="flex flex-col lg:flex-row items-center gap-8 lg:gap-12"
+            >
+              {/* Mobile: image first */}
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.4, delay: 0.2 }}
+                className="w-full lg:hidden flex justify-center"
+              >
+                <Image
+                  src="/sweet-empanada.png"
+                  alt="Sweet Empanadas"
+                  width={350}
+                  height={350}
+                  className="drop-shadow-2xl"
+                />
+              </motion.div>
+
+              {/* Desktop: Sweet empanada left */}
+              <motion.div
+                initial={{ opacity: 0, x: -100 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ type: "spring", stiffness: 100, damping: 20, delay: 0.2 }}
+                className="hidden lg:flex w-1/2 justify-center items-center"
+              >
+                <Image
+                  src="/sweet-empanada.png"
+                  alt="Sweet Empanadas"
+                  width={400}
+                  height={400}
+                  className="drop-shadow-2xl"
+                />
+              </motion.div>
+
+              {/* Mobile: menu */}
+              <div className="lg:hidden w-full">
+                {ChalkboardMenu}
+              </div>
+
+              {/* Desktop: Menu right */}
+              <div className="hidden lg:block lg:w-1/2">
+                {ChalkboardMenu}
+              </div>
+            </motion.div>
+          )}
         </AnimatePresence>
       </div>
     </section>
