@@ -14,20 +14,11 @@ export const metadata: Metadata = {
     siteName: 'Dani Díaz Real Estate',
     title: 'Dani Díaz | Bilingual Realtor®',
     description: 'Your bilingual real estate expert on the Grand Strand. Tap to save my contact!',
-    images: [
-      {
-        url: `${baseUrl}/dani-diaz-home-about.JPG`,
-        width: 1200,
-        height: 630,
-        alt: 'Dani Díaz - Bilingual Realtor',
-      },
-    ],
   },
   twitter: {
     card: 'summary_large_image',
     title: 'Dani Díaz | Bilingual Realtor®',
     description: 'Your bilingual real estate expert on the Grand Strand. Tap to save my contact!',
-    images: [`${baseUrl}/dani-diaz-home-about.JPG`],
   },
 };
 
