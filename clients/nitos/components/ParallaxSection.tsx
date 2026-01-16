@@ -8,6 +8,8 @@ interface ParallaxSectionProps {
 }
 
 export function ParallaxSection({ imageSrc, height = '350px' }: ParallaxSectionProps) {
+  // Larger height on desktop
+  const desktopHeight = '500px';
   const [isMobile, setIsMobile] = useState(false);
   const imageRef = useRef<HTMLDivElement>(null);
   const sectionRef = useRef<HTMLDivElement>(null);
@@ -43,7 +45,7 @@ export function ParallaxSection({ imageSrc, height = '350px' }: ParallaxSectionP
     return (
       <section
         ref={sectionRef}
-        className="relative w-full overflow-hidden"
+        className="relative w-full overflow-hidden border-y-4 border-[#2D5A3D]"
         style={{ height }}
       >
         <div
@@ -64,8 +66,8 @@ export function ParallaxSection({ imageSrc, height = '350px' }: ParallaxSectionP
   // Desktop: Use CSS parallax (background-attachment: fixed works here)
   return (
     <div
-      className="relative w-full overflow-hidden"
-      style={{ height }}
+      className="relative w-full overflow-hidden border-y-4 border-[#2D5A3D]"
+      style={{ height: desktopHeight }}
     >
       <div
         className="absolute inset-0 w-full h-full bg-cover bg-center bg-no-repeat"

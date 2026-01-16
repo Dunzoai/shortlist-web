@@ -142,7 +142,7 @@ export function HomePage() {
       <ParallaxSection imageSrc="/truck-line-paralax.png" />
 
       {/* Schedule Section */}
-      <section id="schedule" className="py-24 bg-[#D4C5A9]">
+      <section id="schedule" className="py-24 bg-[#D4C5A9] border-y-4 border-[#2D5A3D]">
         <div className="max-w-7xl mx-auto px-6">
           <motion.div
             initial="initial"
@@ -165,7 +165,7 @@ export function HomePage() {
       </section>
 
       {/* Menu Section - Food Truck Order Window */}
-      <section className="py-24 bg-[#2D5A3D]">
+      <section className="py-24 bg-[#2D5A3D] border-y-4 border-[#C4A052]">
         <div className="max-w-4xl mx-auto px-6">
           <motion.div
             initial="initial"
