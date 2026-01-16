@@ -18,9 +18,25 @@ interface EventData {
 interface DayData {
   day: string;
   fullDay: string;
+  date: string;
   location: string;
   details: string;
+  isPlaceholder: boolean;
 }
+
+// Fun placeholder messages for days without events
+const PLACEHOLDER_MESSAGES = [
+  { location: "Prepping empanadas 🥟", details: "Getting ready for the next stop" },
+  { location: "Restocking the truck", details: "Fresh ingredients incoming" },
+  { location: "Secret recipe testing", details: "Something delicious brewing" },
+  { location: "Family day", details: "Back on the road soon!" },
+  { location: "Catering prep", details: "Working on a private event" },
+  { location: "Scouting new spots", details: "Finding the best locations for you" },
+  { location: "Truck TLC day", details: "Keeping the wheels rolling" },
+  { location: "Creating new flavors", details: "Expanding the menu..." },
+  { location: "Behind the scenes", details: "Making the magic happen" },
+  { location: "Recharging", details: "Even empanada trucks need rest" },
+];
 
 // Format time from "14:30:00" to "2:30pm"
 function formatTime(time: string): string {
@@ -32,25 +48,84 @@ function formatTime(time: string): string {
 }
 
 // Get day abbreviation from date
-function getDayAbbrev(dateStr: string): string {
-  const date = new Date(dateStr + "T00:00:00");
+function getDayAbbrev(date: Date): string {
   return date.toLocaleDateString("en-US", { weekday: "short" });
 }
 
 // Get full day name from date
-function getFullDay(dateStr: string): string {
-  const date = new Date(dateStr + "T00:00:00");
+function getFullDay(date: Date): string {
   return date.toLocaleDateString("en-US", { weekday: "long" }).toUpperCase();
 }
 
-// Transform API events to component format
-function transformEvents(events: EventData[]): DayData[] {
-  return events.map((event) => ({
-    day: getDayAbbrev(event.event_date),
-    fullDay: getFullDay(event.event_date),
-    location: event.title,
-    details: `${formatTime(event.start_time)} - ${formatTime(event.end_time)} in ${event.city}, ${event.state}`,
-  }));
+// Get date string in YYYY-MM-DD format
+function getDateString(date: Date): string {
+  return date.toISOString().split("T")[0];
+}
+
+// Get the current week (Monday to Sunday)
+function getCurrentWeek(): Date[] {
+  const today = new Date();
+  const dayOfWeek = today.getDay();
+  // Adjust so Monday is 0, Sunday is 6
+  const mondayOffset = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
+
+  const monday = new Date(today);
+  monday.setDate(today.getDate() + mondayOffset);
+
+  const week: Date[] = [];
+  for (let i = 0; i < 7; i++) {
+    const day = new Date(monday);
+    day.setDate(monday.getDate() + i);
+    week.push(day);
+  }
+  return week;
+}
+
+// Get a consistent "random" placeholder based on the date
+function getPlaceholderForDate(dateStr: string): { location: string; details: string } {
+  // Use the date string to generate a consistent index
+  const hash = dateStr.split("").reduce((acc, char) => acc + char.charCodeAt(0), 0);
+  const index = hash % PLACEHOLDER_MESSAGES.length;
+  return PLACEHOLDER_MESSAGES[index];
+}
+
+// Build the week schedule, merging real events with placeholders
+function buildWeekSchedule(events: EventData[]): DayData[] {
+  const week = getCurrentWeek();
+
+  // Create a map of events by date
+  const eventsByDate: Record<string, EventData> = {};
+  events.forEach((event) => {
+    eventsByDate[event.event_date] = event;
+  });
+
+  return week.map((date) => {
+    const dateStr = getDateString(date);
+    const event = eventsByDate[dateStr];
+
+    if (event) {
+      // Real event
+      return {
+        day: getDayAbbrev(date),
+        fullDay: getFullDay(date),
+        date: dateStr,
+        location: event.title,
+        details: `${formatTime(event.start_time)} - ${formatTime(event.end_time)} in ${event.city}, ${event.state}`,
+        isPlaceholder: false,
+      };
+    } else {
+      // Placeholder
+      const placeholder = getPlaceholderForDate(dateStr);
+      return {
+        day: getDayAbbrev(date),
+        fullDay: getFullDay(date),
+        date: dateStr,
+        location: placeholder.location,
+        details: placeholder.details,
+        isPlaceholder: true,
+      };
+    }
+  });
 }
 
 export function FoodTruckTimeline() {
@@ -61,7 +136,6 @@ export function FoodTruckTimeline() {
 
   const [scheduleData, setScheduleData] = useState<DayData[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
 
   // Fetch events from SmartPage API
   useEffect(() => {
@@ -76,11 +150,20 @@ export function FoodTruckTimeline() {
         }
 
         const data = await response.json();
-        const transformed = transformEvents(data.events || []);
-        setScheduleData(transformed);
+        const weekSchedule = buildWeekSchedule(data.events || []);
+        setScheduleData(weekSchedule);
+
+        // Set initial active index to today
+        const today = getDateString(new Date());
+        const todayIndex = weekSchedule.findIndex((day) => day.date === today);
+        if (todayIndex !== -1) {
+          setActiveIndex(todayIndex);
+        }
       } catch (err) {
         console.error("Error fetching events:", err);
-        setError("Could not load schedule");
+        // Even on error, show the week with all placeholders
+        const weekSchedule = buildWeekSchedule([]);
+        setScheduleData(weekSchedule);
       } finally {
         setIsLoading(false);
       }
@@ -89,6 +172,7 @@ export function FoodTruckTimeline() {
     fetchEvents();
   }, []);
 
+  // Scroll handling for truck animation
   useEffect(() => {
     const container = scrollContainerRef.current;
     if (!container || scheduleData.length === 0) return;
@@ -131,6 +215,15 @@ export function FoodTruckTimeline() {
     return () => container.removeEventListener("scroll", handleScroll);
   }, [scheduleData]);
 
+  // Auto-scroll to today on load
+  useEffect(() => {
+    if (scheduleData.length > 0 && !isLoading) {
+      setTimeout(() => {
+        scrollToCard(activeIndex);
+      }, 200);
+    }
+  }, [isLoading, scheduleData.length]);
+
   const scrollToCard = (index: number) => {
     const card = cardRefs.current[index];
     const container = scrollContainerRef.current;
@@ -164,30 +257,6 @@ export function FoodTruckTimeline() {
             <div className="animate-pulse text-[#F4F1EC]/60">
               Loading schedule...
             </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  // Error or no events state
-  if (error || scheduleData.length === 0) {
-    return (
-      <div className="relative">
-        <div
-          className="relative rounded-[28px] p-6 md:p-8 overflow-hidden"
-          style={{
-            background:
-              "linear-gradient(180deg, rgba(45, 90, 61, 0.95) 0%, rgba(30, 60, 40, 0.98) 100%)",
-            border: "1px solid rgba(255, 255, 255, 0.1)",
-            boxShadow:
-              "0 40px 80px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.05)",
-          }}
-        >
-          <div className="text-center py-12">
-            <p className="text-[#F4F1EC]/60">
-              {error || "No upcoming events scheduled. Check back soon! 🚚"}
-            </p>
           </div>
         </div>
       </div>
@@ -250,7 +319,7 @@ export function FoodTruckTimeline() {
 
           {scheduleData.map((day, index) => (
             <div
-              key={index}
+              key={day.date}
               ref={(el) => {
                 cardRefs.current[index] = el;
               }}
@@ -267,11 +336,15 @@ export function FoodTruckTimeline() {
                 style={{
                   background:
                     index === activeIndex
-                      ? "rgba(255, 255, 255, 0.9)"
+                      ? day.isPlaceholder
+                        ? "rgba(255, 255, 255, 0.7)"
+                        : "rgba(255, 255, 255, 0.95)"
                       : "rgba(255, 255, 255, 0.4)",
                   border:
                     index === activeIndex
-                      ? "1px solid rgba(43, 58, 68, 0.2)"
+                      ? day.isPlaceholder
+                        ? "1px dashed rgba(43, 58, 68, 0.3)"
+                        : "1px solid rgba(43, 58, 68, 0.2)"
                       : "1px solid rgba(43, 58, 68, 0.08)",
                 }}
               >
@@ -286,9 +359,13 @@ export function FoodTruckTimeline() {
                     {day.fullDay}
                   </p>
                   <h4
-                    className={`text-xl font-bold italic ${
+                    className={`text-xl font-bold ${
+                      day.isPlaceholder ? "" : "italic"
+                    } ${
                       index === activeIndex
-                        ? "text-[#222222]"
+                        ? day.isPlaceholder
+                          ? "text-[#222222]/70"
+                          : "text-[#222222]"
                         : "text-[#222222]/50"
                     }`}
                   >
@@ -298,7 +375,9 @@ export function FoodTruckTimeline() {
                 <p
                   className={`text-sm ${
                     index === activeIndex
-                      ? "text-[#5A6570]"
+                      ? day.isPlaceholder
+                        ? "text-[#5A6570]/60 italic"
+                        : "text-[#5A6570]"
                       : "text-[#5A6570]/40"
                   }`}
                 >
@@ -315,11 +394,13 @@ export function FoodTruckTimeline() {
         <div className="flex justify-center gap-2 mt-4">
           {scheduleData.map((day, index) => (
             <button
-              key={index}
+              key={day.date}
               onClick={() => scrollToCard(index)}
               className={`px-3 py-1 rounded-full text-xs font-medium transition-all ${
                 index === activeIndex
-                  ? "bg-white text-[#2D5A3D]"
+                  ? day.isPlaceholder
+                    ? "bg-white/80 text-[#2D5A3D]/70"
+                    : "bg-white text-[#2D5A3D]"
                   : "bg-white/20 text-white/60 hover:bg-white/30"
               }`}
             >
