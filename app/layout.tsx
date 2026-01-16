@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Playfair_Display, Lora } from "next/font/google";
+import { Playfair_Display, Lora, Permanent_Marker } from "next/font/google";
 import { headers } from "next/headers";
 import "./globals.css";
 import { LanguageProvider } from "@/clients/danidiaz/components/LanguageContext";
@@ -16,6 +16,12 @@ const playfair = Playfair_Display({
 const lora = Lora({
   variable: "--font-lora",
   subsets: ["latin"],
+});
+
+const permanentMarker = Permanent_Marker({
+  variable: "--font-permanent-marker",
+  subsets: ["latin"],
+  weight: "400",
 });
 
 export const metadata: Metadata = {
@@ -80,7 +86,7 @@ export default async function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${playfair.variable} ${lora.variable} antialiased bg-[#F7F7F7] text-[#3D3D3D]`}
+        className={`${playfair.variable} ${lora.variable} ${permanentMarker.variable} antialiased bg-[#F7F7F7] text-[#3D3D3D]`}
       >
         <ClientProvider client={client}>
           <LanguageProvider>
