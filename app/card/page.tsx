@@ -133,7 +133,7 @@ export default function DigitalCardPage() {
           <div className="w-40 h-40 md:w-48 md:h-48 rounded-full p-1 bg-gradient-to-br from-[#C4A25A] via-[#d4b46a] to-[#C4A25A] shadow-2xl">
             <div className="w-full h-full rounded-full overflow-hidden bg-[#1B365D]">
               <Image
-                src="/dani-headshot.png"
+                src="/dani-diaz-home-about.JPG"
                 alt="Dani Díaz"
                 width={192}
                 height={192}
@@ -144,17 +144,6 @@ export default function DigitalCardPage() {
           </div>
           {/* Subtle glow effect */}
           <div className="absolute inset-0 rounded-full bg-[#C4A25A] opacity-20 blur-xl -z-10" />
-        </motion.div>
-
-        {/* Signature/Logo */}
-        <motion.div variants={itemVariants} className="mb-4">
-          <Image
-            src="/dani-signature.png"
-            alt="Dani Díaz Signature"
-            width={150}
-            height={40}
-            className="opacity-80"
-          />
         </motion.div>
 
         {/* Name and title */}
