@@ -102,14 +102,7 @@ export function MenuSection() {
   );
 
   const ChalkboardMenu = (
-    <motion.div
-      key={`menu-${activeTab}`}
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      transition={{ duration: 0.4 }}
-      className="w-full"
-    >
+    <div className="w-full">
       <div
         className="relative rounded-lg p-5 md:p-10"
         style={{
@@ -216,7 +209,7 @@ export function MenuSection() {
           <p className="text-xs md:text-sm">* Prices do not include tax</p>
         </div>
       </div>
-    </motion.div>
+    </div>
   );
 
   return (
@@ -266,10 +259,10 @@ export function MenuSection() {
             /* SAVORY: Empanada Tower LEFT, Menu RIGHT */
             <motion.div
               key="savory-layout"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.4 }}
+              initial={{ x: -20 }}
+              animate={{ x: 0 }}
+              exit={{ x: 20 }}
+              transition={{ type: "spring", stiffness: 300, damping: 30 }}
               className="flex flex-col lg:flex-row items-center gap-8 lg:gap-8"
             >
               {/* Desktop: Empanada Tower LEFT - slides in from left on scroll */}
@@ -359,7 +352,7 @@ export function MenuSection() {
                         alt="Empanada"
                         width={180}
                         height={180}
-                        className="drop-shadow-2xl"
+                        className="drop-shadow-2xl rotate-90"
                       />
                     </motion.div>
                   </motion.div>
@@ -375,10 +368,10 @@ export function MenuSection() {
             /* SWEET: Menu LEFT, Sweet Empanada RIGHT */
             <motion.div
               key="sweet-layout"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.4 }}
+              initial={{ x: 20 }}
+              animate={{ x: 0 }}
+              exit={{ x: -20 }}
+              transition={{ type: "spring", stiffness: 300, damping: 30 }}
               className="flex flex-col lg:flex-row items-center gap-8 lg:gap-8"
             >
               {/* Desktop: Menu LEFT */}
