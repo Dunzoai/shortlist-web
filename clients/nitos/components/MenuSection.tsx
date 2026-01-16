@@ -98,7 +98,7 @@ export function MenuSection() {
       className="w-full"
     >
       <div
-        className="relative rounded-lg p-8 md:p-10"
+        className="relative rounded-lg p-5 md:p-10"
         style={{
           background:
             "linear-gradient(145deg, #1a1a1a 0%, #2d2d2d 50%, #1a1a1a 100%)",
@@ -117,9 +117,9 @@ export function MenuSection() {
         />
 
         {/* Menu Header */}
-        <div className="relative text-center mb-6">
+        <div className="relative text-center mb-4 md:mb-6">
           <h3
-            className="text-3xl md:text-4xl font-bold uppercase tracking-wide"
+            className="text-2xl md:text-4xl font-bold uppercase tracking-wide"
             style={{
               color: isSavory ? colors.savoryHeader : colors.sweetHeader,
               textShadow: "2px 2px 4px rgba(0,0,0,0.5)",
@@ -130,7 +130,7 @@ export function MenuSection() {
           </h3>
           {/* Price info */}
           <p
-            className="text-lg mt-2 font-bold"
+            className="text-sm md:text-lg mt-1 md:mt-2 font-bold"
             style={{
               color: colors.price,
               fontFamily: "var(--font-permanent-marker), cursive, sans-serif",
@@ -150,7 +150,7 @@ export function MenuSection() {
         {isLoading ? (
           <div className="text-white/60 text-center py-8">Loading menu...</div>
         ) : (
-          <div className="relative space-y-5">
+          <div className="relative space-y-3 md:space-y-5">
             {currentItems.map((item, index) => (
               <motion.div
                 key={item.id}
@@ -170,7 +170,7 @@ export function MenuSection() {
                 </span>
                 <div className="flex-1">
                   <h4
-                    className="text-xl md:text-2xl font-bold uppercase tracking-wide"
+                    className="text-base md:text-2xl font-bold uppercase tracking-wide"
                     style={{
                       color: colors.item,
                       textShadow: "1px 1px 2px rgba(0,0,0,0.5)",
@@ -181,7 +181,7 @@ export function MenuSection() {
                     {item.title.replace(" Empanada", "")}
                   </h4>
                   <p
-                    className="text-sm mt-1"
+                    className="text-xs md:text-sm mt-1"
                     style={{ color: colors.description }}
                   >
                     {item.description}
@@ -194,13 +194,13 @@ export function MenuSection() {
 
         {/* Footer note */}
         <div
-          className="mt-8 pt-4 border-t border-white/10 text-center"
+          className="mt-4 md:mt-8 pt-3 md:pt-4 border-t border-white/10 text-center"
           style={{
             color: colors.price,
             fontFamily: "var(--font-permanent-marker), cursive, sans-serif",
           }}
         >
-          <p className="text-sm">* Prices do not include tax</p>
+          <p className="text-xs md:text-sm">* Prices do not include tax</p>
         </div>
       </div>
     </motion.div>
@@ -208,14 +208,13 @@ export function MenuSection() {
 
   return (
     <section ref={sectionRef} className="relative py-20 px-4 overflow-hidden">
-      {/* Background image with low opacity */}
-      <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+      {/* Background image with low opacity - fills entire section */}
+      <div className="absolute inset-0 pointer-events-none">
         <Image
           src="/empanada-to-go.png"
           alt=""
-          width={800}
-          height={800}
-          className="opacity-30 object-contain"
+          fill
+          className="opacity-30 object-cover"
         />
       </div>
 
@@ -282,7 +281,7 @@ export function MenuSection() {
               </motion.div>
 
               {/* Mobile: Toggle + Menu with overlapping image */}
-              <div className="lg:hidden w-full relative">
+              <div className="lg:hidden w-full relative flex flex-col items-center">
                 {/* Toggle directly above menu */}
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
@@ -293,8 +292,8 @@ export function MenuSection() {
                   {Toggle}
                 </motion.div>
 
-                {/* Menu */}
-                <div className="relative">
+                {/* Menu - reduced size on mobile (w-[75%]) */}
+                <div className="relative w-[75%]">
                   {ChalkboardMenu}
 
                   {/* Overlapping image at bottom */}
@@ -307,13 +306,13 @@ export function MenuSection() {
                       damping: 20,
                       delay: 0.4,
                     }}
-                    className="absolute -bottom-16 right-0 translate-x-1/4 z-10"
+                    className="absolute -bottom-16 right-0 translate-x-1/3 z-10"
                   >
                     <Image
                       src="/empanada-tower.png"
                       alt="Savory Empanadas"
-                      width={200}
-                      height={200}
+                      width={180}
+                      height={180}
                       className="drop-shadow-2xl"
                     />
                   </motion.div>
@@ -344,7 +343,7 @@ export function MenuSection() {
               </div>
 
               {/* Mobile: Toggle + Menu with overlapping image */}
-              <div className="lg:hidden w-full relative">
+              <div className="lg:hidden w-full relative flex flex-col items-center">
                 {/* Toggle directly above menu */}
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
@@ -355,8 +354,8 @@ export function MenuSection() {
                   {Toggle}
                 </motion.div>
 
-                {/* Menu */}
-                <div className="relative">
+                {/* Menu - reduced size on mobile (w-[75%]) */}
+                <div className="relative w-[75%]">
                   {ChalkboardMenu}
 
                   {/* Overlapping image at bottom */}
@@ -369,13 +368,13 @@ export function MenuSection() {
                       damping: 20,
                       delay: 0.4,
                     }}
-                    className="absolute -bottom-12 left-0 -translate-x-1/4 z-10"
+                    className="absolute -bottom-12 left-0 -translate-x-1/3 z-10"
                   >
                     <Image
                       src="/sweet-empanada.png"
                       alt="Sweet Empanadas"
-                      width={180}
-                      height={180}
+                      width={160}
+                      height={160}
                       className="drop-shadow-2xl"
                     />
                   </motion.div>
