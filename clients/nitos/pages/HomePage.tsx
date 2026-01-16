@@ -156,7 +156,7 @@ export function HomePage() {
             variants={staggerContainer}
             className="h-full flex flex-col justify-center px-5 py-3"
           >
-            <motion.h2 variants={fadeInUp} className="text-lg font-bold text-[#2D5A3D] mb-2">
+            <motion.h2 variants={fadeInUp} className="text-2xl font-extrabold text-[#2D5A3D] mb-3 leading-tight">
               The Name Behind the Truck
             </motion.h2>
 
