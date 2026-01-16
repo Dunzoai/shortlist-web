@@ -52,8 +52,11 @@ export function ParallaxSection({ imageSrc, height = '350px' }: ParallaxSectionP
           style={{
             backgroundImage: `url(${imageSrc})`,
             backgroundPosition: 'center center',
+            filter: 'brightness(0.85) saturate(0.9)',
           }}
         />
+        {/* Green overlay */}
+        <div className="absolute inset-0 bg-[#2D5A3D]/20" />
       </section>
     );
   }
@@ -61,12 +64,19 @@ export function ParallaxSection({ imageSrc, height = '350px' }: ParallaxSectionP
   // Desktop: Use CSS parallax (background-attachment: fixed works here)
   return (
     <div
-      className="w-full bg-cover bg-center bg-no-repeat"
-      style={{
-        backgroundImage: `url(${imageSrc})`,
-        backgroundAttachment: 'fixed',
-        height,
-      }}
-    />
+      className="relative w-full overflow-hidden"
+      style={{ height }}
+    >
+      <div
+        className="absolute inset-0 w-full h-full bg-cover bg-center bg-no-repeat"
+        style={{
+          backgroundImage: `url(${imageSrc})`,
+          backgroundAttachment: 'fixed',
+          filter: 'brightness(0.85) saturate(0.9)',
+        }}
+      />
+      {/* Green overlay */}
+      <div className="absolute inset-0 bg-[#2D5A3D]/20" />
+    </div>
   );
 }

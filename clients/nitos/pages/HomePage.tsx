@@ -98,8 +98,8 @@ export function HomePage() {
       {/* Animated Hero Section */}
       <AnimatedHero />
 
-      {/* Parallax - Truck Line */}
-      <ParallaxSection imageSrc="/truck-line-paralax.png" />
+      {/* Parallax - Empanada */}
+      <ParallaxSection imageSrc="/empanada-paralax.png" />
 
       {/* About Section - Full-width image with text overlay */}
       <section className="relative w-full">
@@ -138,8 +138,8 @@ export function HomePage() {
         </div>
       </section>
 
-      {/* Parallax - Empanada */}
-      <ParallaxSection imageSrc="/empanada-paralax.png" />
+      {/* Parallax - Truck Line */}
+      <ParallaxSection imageSrc="/truck-line-paralax.png" />
 
       {/* Schedule Section */}
       <section id="schedule" className="py-24 bg-[#D4C5A9]">
