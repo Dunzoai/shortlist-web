@@ -63,6 +63,31 @@ export function MenuSection() {
 
   const isSavory = activeTab === "Savory";
 
+  const Toggle = (
+    <div className="bg-[#2D5A3D]/10 rounded-full p-1 flex gap-1">
+      <button
+        onClick={() => setActiveTab("Savory")}
+        className={`px-6 py-2 rounded-full text-sm font-bold uppercase tracking-wide transition-all ${
+          activeTab === "Savory"
+            ? "bg-[#2D5A3D] text-white"
+            : "text-[#2D5A3D] hover:bg-[#2D5A3D]/10"
+        }`}
+      >
+        Savory
+      </button>
+      <button
+        onClick={() => setActiveTab("Sweet")}
+        className={`px-6 py-2 rounded-full text-sm font-bold uppercase tracking-wide transition-all ${
+          activeTab === "Sweet"
+            ? "bg-[#2D5A3D] text-white"
+            : "text-[#2D5A3D] hover:bg-[#2D5A3D]/10"
+        }`}
+      >
+        Sweet
+      </button>
+    </div>
+  );
+
   const ChalkboardMenu = (
     <motion.div
       key={`menu-${activeTab}`}
@@ -182,8 +207,19 @@ export function MenuSection() {
   );
 
   return (
-    <section ref={sectionRef} className="py-20 px-4 overflow-hidden">
-      <div className="max-w-6xl mx-auto">
+    <section ref={sectionRef} className="relative py-20 px-4 overflow-hidden">
+      {/* Background image with low opacity */}
+      <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+        <Image
+          src="/empanada-to-go.png"
+          alt=""
+          width={800}
+          height={800}
+          className="opacity-30 object-contain"
+        />
+      </div>
+
+      <div className="relative max-w-6xl mx-auto">
         {/* Section Header */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
@@ -202,35 +238,14 @@ export function MenuSection() {
           </p>
         </motion.div>
 
-        {/* Toggle */}
+        {/* Desktop Toggle - centered above content */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.6, delay: 0.2 }}
-          className="flex justify-center mb-12"
+          className="hidden lg:flex justify-center mb-12"
         >
-          <div className="bg-[#2D5A3D]/10 rounded-full p-1 flex gap-1">
-            <button
-              onClick={() => setActiveTab("Savory")}
-              className={`px-6 py-2 rounded-full text-sm font-bold uppercase tracking-wide transition-all ${
-                activeTab === "Savory"
-                  ? "bg-[#2D5A3D] text-white"
-                  : "text-[#2D5A3D] hover:bg-[#2D5A3D]/10"
-              }`}
-            >
-              Savory
-            </button>
-            <button
-              onClick={() => setActiveTab("Sweet")}
-              className={`px-6 py-2 rounded-full text-sm font-bold uppercase tracking-wide transition-all ${
-                activeTab === "Sweet"
-                  ? "bg-[#2D5A3D] text-white"
-                  : "text-[#2D5A3D] hover:bg-[#2D5A3D]/10"
-              }`}
-            >
-              Sweet
-            </button>
-          </div>
+          {Toggle}
         </motion.div>
 
         {/* Menu Content */}
@@ -245,27 +260,16 @@ export function MenuSection() {
               transition={{ duration: 0.4 }}
               className="flex flex-col lg:flex-row items-center gap-8 lg:gap-8"
             >
-              {/* Mobile: image first */}
-              <motion.div
-                initial={{ opacity: 0, x: -100 }}
-                animate={isInView ? { opacity: 1, x: 0 } : {}}
-                transition={{ type: "spring", stiffness: 100, damping: 20, delay: 0.3 }}
-                className="w-full lg:hidden flex justify-center"
-              >
-                <Image
-                  src="/empanada-tower.png"
-                  alt="Savory Empanadas"
-                  width={400}
-                  height={400}
-                  className="drop-shadow-2xl"
-                />
-              </motion.div>
-
               {/* Desktop: Empanada Tower LEFT - slides in from left on scroll */}
               <motion.div
                 initial={{ opacity: 0, x: -150 }}
                 animate={isInView ? { opacity: 1, x: 0 } : {}}
-                transition={{ type: "spring", stiffness: 100, damping: 20, delay: 0.3 }}
+                transition={{
+                  type: "spring",
+                  stiffness: 100,
+                  damping: 20,
+                  delay: 0.3,
+                }}
                 className="hidden lg:flex w-2/5 justify-center items-center"
               >
                 <Image
@@ -277,9 +281,46 @@ export function MenuSection() {
                 />
               </motion.div>
 
-              {/* Mobile: menu */}
-              <div className="lg:hidden w-full">
-                {ChalkboardMenu}
+              {/* Mobile: Toggle + Menu with overlapping image */}
+              <div className="lg:hidden w-full relative">
+                {/* Toggle directly above menu */}
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={isInView ? { opacity: 1, y: 0 } : {}}
+                  transition={{ duration: 0.6, delay: 0.2 }}
+                  className="flex justify-center mb-4"
+                >
+                  {Toggle}
+                </motion.div>
+
+                {/* Menu */}
+                <div className="relative">
+                  {ChalkboardMenu}
+
+                  {/* Overlapping image at bottom */}
+                  <motion.div
+                    initial={{ opacity: 0, y: 50 }}
+                    animate={isInView ? { opacity: 1, y: 0 } : {}}
+                    transition={{
+                      type: "spring",
+                      stiffness: 100,
+                      damping: 20,
+                      delay: 0.4,
+                    }}
+                    className="absolute -bottom-16 right-0 translate-x-1/4 z-10"
+                  >
+                    <Image
+                      src="/empanada-tower.png"
+                      alt="Savory Empanadas"
+                      width={200}
+                      height={200}
+                      className="drop-shadow-2xl"
+                    />
+                  </motion.div>
+                </div>
+
+                {/* Spacer for the overlapping image */}
+                <div className="h-20" />
               </div>
 
               {/* Desktop: Menu RIGHT */}
@@ -297,37 +338,63 @@ export function MenuSection() {
               transition={{ duration: 0.4 }}
               className="flex flex-col lg:flex-row items-center gap-8 lg:gap-8"
             >
-              {/* Mobile: image first */}
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 0.4, delay: 0.2 }}
-                className="w-full lg:hidden flex justify-center"
-              >
-                <Image
-                  src="/sweet-empanada.png"
-                  alt="Sweet Empanadas"
-                  width={350}
-                  height={350}
-                  className="drop-shadow-2xl"
-                />
-              </motion.div>
-
               {/* Desktop: Menu LEFT */}
               <div className="hidden lg:block lg:w-3/5">
                 {ChalkboardMenu}
               </div>
 
-              {/* Mobile: menu */}
-              <div className="lg:hidden w-full">
-                {ChalkboardMenu}
+              {/* Mobile: Toggle + Menu with overlapping image */}
+              <div className="lg:hidden w-full relative">
+                {/* Toggle directly above menu */}
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6, delay: 0.2 }}
+                  className="flex justify-center mb-4"
+                >
+                  {Toggle}
+                </motion.div>
+
+                {/* Menu */}
+                <div className="relative">
+                  {ChalkboardMenu}
+
+                  {/* Overlapping image at bottom */}
+                  <motion.div
+                    initial={{ opacity: 0, y: 50 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{
+                      type: "spring",
+                      stiffness: 100,
+                      damping: 20,
+                      delay: 0.4,
+                    }}
+                    className="absolute -bottom-12 left-0 -translate-x-1/4 z-10"
+                  >
+                    <Image
+                      src="/sweet-empanada.png"
+                      alt="Sweet Empanadas"
+                      width={180}
+                      height={180}
+                      className="drop-shadow-2xl"
+                    />
+                  </motion.div>
+                </div>
+
+                {/* Spacer for the overlapping image */}
+                <div className="h-16" />
               </div>
 
               {/* Desktop: Sweet empanada RIGHT */}
               <motion.div
                 initial={{ opacity: 0, x: 100 }}
                 animate={{ opacity: 1, x: 0 }}
-                transition={{ type: "spring", stiffness: 100, damping: 20, delay: 0.2 }}
+                transition={{
+                  type: "spring",
+                  stiffness: 100,
+                  damping: 20,
+                  delay: 0.2,
+                }}
                 className="hidden lg:flex w-2/5 justify-center items-center"
               >
                 <Image
