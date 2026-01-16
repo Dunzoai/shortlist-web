@@ -99,48 +99,49 @@ export function HomePage() {
       <AnimatedHero />
 
       {/* About Section */}
-      <section className="py-24 bg-[#FAF8F5]">
-        <div className="max-w-7xl mx-auto px-6">
+      <section className="relative min-h-[600px] md:min-h-[700px]">
+        {/* Full-width background image */}
+        <div className="absolute inset-0">
+          <Image
+            src="/nitos-name-behind-truck.png"
+            alt="The Name Behind the Truck"
+            fill
+            className="object-cover"
+            priority
+          />
+          {/* Overlay for text readability */}
+          <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/50 to-transparent" />
+        </div>
+
+        {/* Content */}
+        <div className="relative z-10 max-w-7xl mx-auto px-6 py-24 flex items-center min-h-[600px] md:min-h-[700px]">
           <motion.div
-            className="grid md:grid-cols-2 gap-12 items-center"
+            className="max-w-2xl"
             initial="initial"
             whileInView="animate"
             viewport={{ once: true }}
             variants={staggerContainer}
           >
-            <motion.div variants={fadeInUp} className="relative">
-              <div className="w-full aspect-square relative rounded-2xl overflow-hidden shadow-2xl">
-                <Image
-                  src="/damian-truck-window.png"
-                  alt="Damian at the Nito's Empanadas truck window"
-                  fill
-                  className="object-cover"
-                />
-              </div>
-            </motion.div>
+            <motion.h2 variants={fadeInUp} className="text-4xl md:text-5xl font-bold text-white mb-8">
+              The Name Behind the Truck
+            </motion.h2>
 
-            <motion.div variants={fadeInUp}>
-              <h2 className="text-4xl md:text-5xl font-bold text-[#2D5A3D] mb-8">
-                The Name Behind the Truck
-              </h2>
+            <motion.p variants={fadeInUp} className="text-white/90 text-lg leading-relaxed mb-6">
+              I'm Damian — but this truck isn't named after me. It's named after my abuelo, Nito, who started making empanadas for his neighbors back in Uruguay in 1975. My dad carried on the tradition, and now it's my turn.
+            </motion.p>
+            <motion.p variants={fadeInUp} className="text-white/90 text-lg leading-relaxed mb-6">
+              I studied culinary, spent 15 years in construction, and one day realized: if I don't chase this now, I never will. So here we are. Same fold. Same fillings. Same love. Rolling through Myrtle Beach with the name that means the most to me.
+            </motion.p>
 
-              <p className="text-[#3D3D3D] text-lg leading-relaxed mb-6">
-                I'm Damian — but this truck isn't named after me. It's named after my abuelo, Nito, who started making empanadas for his neighbors back in Uruguay in 1975. My dad carried on the tradition, and now it's my turn.
+            <motion.p variants={fadeInUp} className="text-[#C4A052] font-semibold text-lg mb-10">
+              — Damian, Nito's Empanadas
+            </motion.p>
+
+            <motion.blockquote variants={fadeInUp} className="border-l-4 border-[#C4A052] pl-6 py-4 bg-black/30 backdrop-blur-sm rounded-r-xl">
+              <p className="text-3xl md:text-4xl lg:text-5xl font-bold text-[#C4A052] italic">
+                "You want empanadas?"
               </p>
-              <p className="text-[#3D3D3D] text-lg leading-relaxed mb-6">
-                I studied culinary, spent 15 years in construction, and one day realized: if I don't chase this now, I never will. So here we are. Same fold. Same fillings. Same love. Rolling through Myrtle Beach with the name that means the most to me.
-              </p>
-
-              <p className="text-[#2D5A3D] font-semibold text-lg mb-10">
-                — Damian, Nito's Empanadas
-              </p>
-
-              <blockquote className="border-l-4 border-[#C4A052] pl-6 py-4 bg-white/50 rounded-r-xl">
-                <p className="text-3xl md:text-4xl lg:text-5xl font-bold text-[#C4A052] italic">
-                  "You want empanadas?"
-                </p>
-              </blockquote>
-            </motion.div>
+            </motion.blockquote>
           </motion.div>
         </div>
       </section>
