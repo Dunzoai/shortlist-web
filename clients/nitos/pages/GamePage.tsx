@@ -376,8 +376,8 @@ export function GamePage() {
           } else if (customer.state === 'satisfied') {
             const newX = customer.x - 4;
 
-            // Drop a tip randomly as they walk back (30% chance, only once)
-            if (!customer.droppedTip && Math.random() < 0.02) {
+            // Drop a tip randomly as they walk back (~25% of customers drop a tip)
+            if (!customer.droppedTip && Math.random() < 0.005) {
               const tipData = getRandomTip();
               newTips.push({
                 id: idCounterRef.current++,
@@ -674,7 +674,7 @@ export function GamePage() {
                 textShadow: '2px 2px 4px rgba(0,0,0,0.5)',
               }}
               initial={{ opacity: 1, y: 0, scale: 1 }}
-              animate={{ opacity: 0, y: -50, scale: 1.5 }}
+              animate={{ opacity: 0, y: -120, scale: 1.8 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.8, ease: 'easeOut' }}
             >
@@ -770,27 +770,27 @@ export function GamePage() {
 
       {/* Mobile Controls - Now includes left/right */}
       <div className="w-full max-w-[800px] flex justify-between items-center mt-4 px-4 md:hidden">
-        {/* D-pad style controls */}
-        <div className="flex flex-col items-center gap-1">
+        {/* D-pad style controls - BIGGER buttons */}
+        <div className="flex flex-col items-center gap-2">
           <motion.button
             onClick={() => moveDamianVertical('up')}
-            className="bg-[#2D5A3D] text-white w-14 h-10 rounded-lg text-xl font-bold shadow-lg active:bg-[#1a3a24]"
+            className="bg-[#2D5A3D] text-white w-20 h-14 rounded-xl text-2xl font-bold shadow-lg active:bg-[#1a3a24]"
             whileTap={{ scale: 0.9 }}
           >
             ▲
           </motion.button>
-          <div className="flex gap-1">
+          <div className="flex gap-2">
             <motion.button
               onClick={() => moveDamianHorizontal('left')}
-              className="bg-[#2D5A3D] text-white w-10 h-10 rounded-lg text-xl font-bold shadow-lg active:bg-[#1a3a24]"
+              className="bg-[#2D5A3D] text-white w-14 h-14 rounded-xl text-2xl font-bold shadow-lg active:bg-[#1a3a24]"
               whileTap={{ scale: 0.9 }}
             >
               ◀
             </motion.button>
-            <div className="w-10 h-10" /> {/* Spacer */}
+            <div className="w-14 h-14" /> {/* Spacer */}
             <motion.button
               onClick={() => moveDamianHorizontal('right')}
-              className="bg-[#2D5A3D] text-white w-10 h-10 rounded-lg text-xl font-bold shadow-lg active:bg-[#1a3a24]"
+              className="bg-[#2D5A3D] text-white w-14 h-14 rounded-xl text-2xl font-bold shadow-lg active:bg-[#1a3a24]"
               whileTap={{ scale: 0.9 }}
             >
               ▶
@@ -798,7 +798,7 @@ export function GamePage() {
           </div>
           <motion.button
             onClick={() => moveDamianVertical('down')}
-            className="bg-[#2D5A3D] text-white w-14 h-10 rounded-lg text-xl font-bold shadow-lg active:bg-[#1a3a24]"
+            className="bg-[#2D5A3D] text-white w-20 h-14 rounded-xl text-2xl font-bold shadow-lg active:bg-[#1a3a24]"
             whileTap={{ scale: 0.9 }}
           >
             ▼
@@ -807,7 +807,7 @@ export function GamePage() {
 
         <motion.button
           onClick={throwEmpanada}
-          className="bg-[#C4A052] text-[#2D5A3D] w-24 h-24 rounded-full text-4xl font-bold shadow-lg active:bg-[#d4b062]"
+          className="bg-[#C4A052] text-[#2D5A3D] w-28 h-28 rounded-full text-5xl font-bold shadow-lg active:bg-[#d4b062]"
           whileTap={{ scale: 0.9 }}
         >
           🥟
