@@ -67,7 +67,7 @@ export function GamePage() {
   const [plates, setPlates] = useState<Plate[]>([]);
 
   // Refs for game loop
-  const gameLoopRef = useRef<number>();
+  const gameLoopRef = useRef<number | null>(null);
   const lastSpawnRef = useRef(0);
   const idCounterRef = useRef(0);
   const keysPressed = useRef<Set<string>>(new Set());
