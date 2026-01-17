@@ -189,24 +189,71 @@ export function GamePage() {
     };
   }, [moveDamian, throwEmpanada, gameState]);
 
+  // Refs to track current state for game loop
+  const customersRef = useRef<Customer[]>([]);
+  const empanadasRef = useRef<Empanada[]>([]);
+
+  // Keep refs in sync with state
+  useEffect(() => {
+    customersRef.current = customers;
+  }, [customers]);
+
+  useEffect(() => {
+    empanadasRef.current = empanadas;
+  }, [empanadas]);
+
   // Main game loop
   useEffect(() => {
     if (gameState !== 'playing') return;
 
     const gameLoop = () => {
       const now = Date.now();
+      const currentCustomers = customersRef.current;
+      const currentEmpanadas = empanadasRef.current;
 
       // Spawn customers
       const spawnInterval = Math.max(2000 - level * 150, 800);
       if (now - lastSpawnRef.current > spawnInterval) {
-        setCustomers(prev => {
-          const newCustomer = spawnCustomer(prev);
-          if (newCustomer) {
-            lastSpawnRef.current = now;
-            return [...prev, newCustomer];
+        const newCustomer = spawnCustomer(currentCustomers);
+        if (newCustomer) {
+          lastSpawnRef.current = now;
+          setCustomers(prev => [...prev, newCustomer]);
+        }
+      }
+
+      // Track which customers got hit this frame
+      const hitCustomerIds = new Set<number>();
+      const empanadasToRemove = new Set<number>();
+
+      // Check empanada collisions FIRST
+      for (const emp of currentEmpanadas) {
+        const newEmpX = emp.x - EMPANADA_SPEED;
+
+        // Find walking customers in this lane, sorted by x (rightmost first)
+        const walkingInLane = currentCustomers
+          .filter(c => c.lane === emp.lane && c.state === 'walking' && !hitCustomerIds.has(c.id))
+          .sort((a, b) => b.x - a.x);
+
+        for (const customer of walkingInLane) {
+          // Check if empanada reached this customer (empanada moving left, customer on left)
+          if (newEmpX <= customer.x + 50) {
+            // HIT!
+            hitCustomerIds.add(customer.id);
+            empanadasToRemove.add(emp.id);
+
+            // Update score
+            setScore(s => s + customer.points);
+            setCustomersServed(cs => {
+              const newCount = cs + 1;
+              if (newCount % 10 === 0) {
+                setLevel(l => l + 1);
+              }
+              return newCount;
+            });
+
+            break; // Only hit the first (rightmost) customer
           }
-          return prev;
-        });
+        }
       }
 
       // Update customers
@@ -215,6 +262,13 @@ export function GamePage() {
         let livesLost = 0;
 
         for (const customer of prev) {
+          // Check if this customer was hit
+          if (hitCustomerIds.has(customer.id)) {
+            // Turn satisfied and start walking back
+            updated.push({ ...customer, state: 'satisfied' });
+            continue;
+          }
+
           if (customer.state === 'walking') {
             const newX = customer.x + customer.speed;
 
@@ -241,57 +295,19 @@ export function GamePage() {
         return updated;
       });
 
-      // Update empanadas and check collisions
+      // Update empanadas
       setEmpanadas(prev => {
         const updated: Empanada[] = [];
-        const hitCustomerIds = new Set<number>();
 
         for (const emp of prev) {
-          const newX = emp.x - EMPANADA_SPEED;
-
-          // Find the FIRST (rightmost) walking customer in this lane
-          let firstCustomer: Customer | null = null;
-          setCustomers(customers => {
-            const walkingInLane = customers
-              .filter(c => c.lane === emp.lane && c.state === 'walking')
-              .sort((a, b) => b.x - a.x); // Sort by x descending (rightmost first)
-
-            if (walkingInLane.length > 0) {
-              const closest = walkingInLane[0];
-              // Check if empanada reached this customer
-              if (newX <= closest.x + 40 && !hitCustomerIds.has(closest.id)) {
-                firstCustomer = closest;
-                hitCustomerIds.add(closest.id);
-              }
-            }
-            return customers;
-          });
-
-          if (firstCustomer) {
-            // Hit! Update score and make customer satisfied
-            const points = (firstCustomer as Customer).points;
-            const customerId = (firstCustomer as Customer).id;
-
-            setScore(s => s + points);
-            setCustomersServed(cs => {
-              const newCount = cs + 1;
-              // Level up every 10 customers
-              if (newCount % 10 === 0) {
-                setLevel(l => l + 1);
-              }
-              return newCount;
-            });
-
-            // Make customer satisfied immediately
-            setCustomers(cust => cust.map(cu =>
-              cu.id === customerId ? { ...cu, state: 'satisfied' as const } : cu
-            ));
-
-            // Empanada disappears (don't add to updated)
+          // Remove if it hit a customer
+          if (empanadasToRemove.has(emp.id)) {
             continue;
           }
 
-          // No hit - keep moving if still on screen
+          const newX = emp.x - EMPANADA_SPEED;
+
+          // Keep if still on screen
           if (newX > -80) {
             updated.push({ ...emp, x: newX });
           }
