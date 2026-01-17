@@ -13,7 +13,7 @@ const DAMIAN_START_X = GAME_WIDTH - 100;
 const CUSTOMER_START_X = -60;
 const EMPANADA_SPEED = 6;
 const BASE_CUSTOMER_SPEED = 1.2;
-const DAMIAN_MOVE_SPEED = 25; // Left/right movement speed (fast!)
+const DAMIAN_MOVE_SPEED = 30; // Left/right movement speed (fast!)
 const TIP_VALUES = [5, 10, 15, 20, 25]; // Random tip amounts
 const TIP_EMOJIS = ['💰', '💵'];
 
@@ -42,6 +42,13 @@ interface Tip {
   x: number;
   value: number;
   emoji: string;
+}
+
+interface FloatingScore {
+  id: number;
+  x: number;
+  y: number;
+  value: number;
 }
 
 type GameState = 'start' | 'playing' | 'gameover';
@@ -101,6 +108,7 @@ export function GamePage() {
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [empanadas, setEmpanadas] = useState<Empanada[]>([]);
   const [tips, setTips] = useState<Tip[]>([]);
+  const [floatingScores, setFloatingScores] = useState<FloatingScore[]>([]);
 
   // Refs for game loop
   const gameLoopRef = useRef<number | null>(null);
@@ -120,6 +128,7 @@ export function GamePage() {
     setCustomers([]);
     setEmpanadas([]);
     setTips([]);
+    setFloatingScores([]);
     setPlayerName('');
     lastSpawnRef.current = Date.now();
     idCounterRef.current = 0;
@@ -326,6 +335,20 @@ export function GamePage() {
         if (tip.lane === currentDamianLane && Math.abs(tip.x - currentDamianX) < 60) {
           tipsToRemove.add(tip.id);
           setScore(s => s + tip.value);
+
+          // Add floating score animation
+          const floatingId = idCounterRef.current++;
+          setFloatingScores(prev => [...prev, {
+            id: floatingId,
+            x: tip.x,
+            y: tip.lane * LANE_HEIGHT + LANE_HEIGHT / 2,
+            value: tip.value,
+          }]);
+
+          // Remove floating score after animation
+          setTimeout(() => {
+            setFloatingScores(prev => prev.filter(f => f.id !== floatingId));
+          }, 1000);
         }
       }
 
@@ -635,6 +658,27 @@ export function GamePage() {
               exit={{ scale: 0, opacity: 0 }}
             >
               {tip.emoji}
+            </motion.div>
+          ))}
+        </AnimatePresence>
+
+        {/* Floating Score Animations */}
+        <AnimatePresence>
+          {floatingScores.map(fs => (
+            <motion.div
+              key={fs.id}
+              className="absolute text-2xl md:text-3xl font-bold text-[#C4A052] select-none pointer-events-none"
+              style={{
+                left: `${(fs.x / GAME_WIDTH) * 100}%`,
+                top: `${(fs.y / GAME_HEIGHT) * 100}%`,
+                textShadow: '2px 2px 4px rgba(0,0,0,0.5)',
+              }}
+              initial={{ opacity: 1, y: 0, scale: 1 }}
+              animate={{ opacity: 0, y: -50, scale: 1.5 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.8, ease: 'easeOut' }}
+            >
+              +{fs.value}
             </motion.div>
           ))}
         </AnimatePresence>
