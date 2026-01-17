@@ -13,9 +13,12 @@ const DAMIAN_START_X = GAME_WIDTH - 100;
 const CUSTOMER_START_X = -60;
 const EMPANADA_SPEED = 6;
 const BASE_CUSTOMER_SPEED = 1.2;
-const DAMIAN_MOVE_SPEED = 30; // Left/right movement speed (fast!)
+const DAMIAN_MOVE_SPEED = 60; // Left/right movement speed (2x faster!)
 const TIP_VALUES = [5, 10, 15, 20, 25]; // Random tip amounts
 const TIP_EMOJIS = ['💰', '💵'];
+
+// Lane Y positions as percentages (matching the wooden steps in the background)
+const LANE_Y_POSITIONS = [33, 48, 63, 78]; // % from top for each lane
 
 // Types
 interface Customer {
@@ -42,7 +45,10 @@ interface Tip {
   x: number;
   value: number;
   emoji: string;
+  createdAt: number; // timestamp for expiration
 }
+
+const TIP_LIFETIME = 5000; // Tips vanish after 5 seconds
 
 interface FloatingScore {
   id: number;
@@ -90,7 +96,6 @@ export function GamePage() {
   }, []);
 
   const GAME_HEIGHT = isMobile ? GAME_HEIGHT_MOBILE : GAME_HEIGHT_DESKTOP;
-  const LANE_HEIGHT = GAME_HEIGHT / LANE_COUNT;
 
   // Game state
   const [gameState, setGameState] = useState<GameState>('start');
@@ -174,6 +179,9 @@ export function GamePage() {
   // Throw empanada
   const throwEmpanada = useCallback(() => {
     if (gameState !== 'playing') return;
+
+    // Damian can only throw when he's at the serving position (right side)
+    if (damianX < DAMIAN_START_X - 50) return;
 
     const newEmpanada: Empanada = {
       id: idCounterRef.current++,
@@ -341,7 +349,7 @@ export function GamePage() {
           setFloatingScores(prev => [...prev, {
             id: floatingId,
             x: tip.x,
-            y: tip.lane * LANE_HEIGHT + LANE_HEIGHT / 2,
+            y: LANE_Y_POSITIONS[tip.lane], // Store as percentage
             value: tip.value,
           }]);
 
@@ -385,6 +393,7 @@ export function GamePage() {
                 x: customer.x,
                 value: tipData.value,
                 emoji: tipData.emoji,
+                createdAt: Date.now(),
               });
               customer.droppedTip = true;
             }
@@ -420,8 +429,11 @@ export function GamePage() {
         return updated;
       });
 
-      // Update tips (remove collected ones, fade out old ones)
-      setTips(prev => prev.filter(tip => !tipsToRemove.has(tip.id)));
+      // Update tips (remove collected ones and expired ones)
+      const currentTime = Date.now();
+      setTips(prev => prev.filter(tip =>
+        !tipsToRemove.has(tip.id) && (currentTime - tip.createdAt) < TIP_LIFETIME
+      ));
 
       gameLoopRef.current = requestAnimationFrame(gameLoop);
     };
@@ -605,7 +617,7 @@ export function GamePage() {
 
       {/* Game Area - Taller on mobile */}
       <div
-        className="relative bg-[#D4C5A9] rounded-xl overflow-hidden shadow-2xl border-4 border-[#4a3728]"
+        className="relative rounded-xl overflow-hidden shadow-2xl border-4 border-[#4a3728]"
         style={{
           width: '100%',
           maxWidth: GAME_WIDTH,
@@ -613,53 +625,43 @@ export function GamePage() {
           aspectRatio: `${GAME_WIDTH}/${GAME_HEIGHT}`,
         }}
       >
-        {/* Background truck */}
-        <div className="absolute right-0 bottom-0 w-48 h-48 opacity-10 pointer-events-none">
-          <Image src="/nitos-truck.png" alt="" fill className="object-contain" />
-        </div>
-
-        {/* Lane backgrounds */}
-        {Array.from({ length: LANE_COUNT }).map((_, i) => (
-          <div
-            key={`lane-bg-${i}`}
-            className="absolute w-full"
-            style={{
-              top: `${i * (100 / LANE_COUNT)}%`,
-              height: `${100 / LANE_COUNT}%`,
-              background: i % 2 === 0
-                ? 'linear-gradient(90deg, #c4a982 0%, #d4b992 50%, #c4a982 100%)'
-                : 'linear-gradient(90deg, #b89970 0%, #c8a980 50%, #b89970 100%)',
-            }}
-          />
-        ))}
-
-        {/* Lane dividers */}
-        {Array.from({ length: LANE_COUNT - 1 }).map((_, i) => (
-          <div
-            key={i}
-            className="absolute w-full h-[2px] bg-[#8B7355]/40"
-            style={{ top: `${(i + 1) * (100 / LANE_COUNT)}%` }}
-          />
-        ))}
+        {/* Custom game board background */}
+        <Image
+          src="/nitos-game-board.jpg"
+          alt="Game Board"
+          fill
+          className="object-cover"
+          priority
+        />
 
         {/* Tips */}
         <AnimatePresence>
-          {tips.map(tip => (
-            <motion.div
-              key={tip.id}
-              className="absolute text-3xl md:text-4xl select-none"
-              style={{
-                left: `${(tip.x / GAME_WIDTH) * 100}%`,
-                top: `${(tip.lane * LANE_HEIGHT + LANE_HEIGHT / 2) / GAME_HEIGHT * 100}%`,
-                transform: 'translate(-50%, -50%)',
-              }}
-              initial={{ scale: 0, y: -20 }}
-              animate={{ scale: 1, y: 0 }}
-              exit={{ scale: 0, opacity: 0 }}
-            >
-              {tip.emoji}
-            </motion.div>
-          ))}
+          {tips.map(tip => {
+            // Calculate opacity based on age (fade out in last 2 seconds)
+            const age = Date.now() - tip.createdAt;
+            const fadeStartTime = TIP_LIFETIME - 2000; // Start fading 2 seconds before expiry
+            const opacity = age > fadeStartTime
+              ? Math.max(0.3, 1 - (age - fadeStartTime) / 2000)
+              : 1;
+
+            return (
+              <motion.div
+                key={tip.id}
+                className="absolute text-3xl md:text-4xl select-none"
+                style={{
+                  left: `${(tip.x / GAME_WIDTH) * 100}%`,
+                  top: `${LANE_Y_POSITIONS[tip.lane]}%`,
+                  transform: 'translate(-50%, -50%)',
+                  opacity,
+                }}
+                initial={{ scale: 0, y: -20 }}
+                animate={{ scale: 1, y: 0 }}
+                exit={{ scale: 0, opacity: 0 }}
+              >
+                {tip.emoji}
+              </motion.div>
+            );
+          })}
         </AnimatePresence>
 
         {/* Floating Score Animations */}
@@ -670,7 +672,7 @@ export function GamePage() {
               className="absolute text-2xl md:text-3xl font-bold text-[#C4A052] select-none pointer-events-none"
               style={{
                 left: `${(fs.x / GAME_WIDTH) * 100}%`,
-                top: `${(fs.y / GAME_HEIGHT) * 100}%`,
+                top: `${fs.y}%`,
                 textShadow: '2px 2px 4px rgba(0,0,0,0.5)',
               }}
               initial={{ opacity: 1, y: 0, scale: 1 }}
@@ -691,7 +693,7 @@ export function GamePage() {
               className="absolute flex items-center justify-center text-4xl md:text-5xl select-none"
               style={{
                 left: `${(customer.x / GAME_WIDTH) * 100}%`,
-                top: `${(customer.lane * LANE_HEIGHT + LANE_HEIGHT / 2) / GAME_HEIGHT * 100}%`,
+                top: `${LANE_Y_POSITIONS[customer.lane]}%`,
                 transform: 'translate(-50%, -50%)',
               }}
               initial={{ opacity: 0, scale: 0 }}
@@ -714,7 +716,7 @@ export function GamePage() {
                 width: 70,
                 height: 70,
                 left: `${(emp.x / GAME_WIDTH) * 100}%`,
-                top: `${(emp.lane * LANE_HEIGHT + LANE_HEIGHT / 2) / GAME_HEIGHT * 100}%`,
+                top: `${LANE_Y_POSITIONS[emp.lane]}%`,
                 transform: 'translate(-50%, -50%)',
               }}
               initial={{ scale: 0, rotate: 0 }}
@@ -736,7 +738,7 @@ export function GamePage() {
           style={{ width: 80, height: 140 }}
           animate={{
             left: `${(damianX / GAME_WIDTH) * 100}%`,
-            top: `${(damianLane * LANE_HEIGHT + LANE_HEIGHT / 2) / GAME_HEIGHT * 100}%`,
+            top: `${LANE_Y_POSITIONS[damianLane]}%`,
             x: '-50%',
             y: '-50%',
           }}
@@ -749,23 +751,6 @@ export function GamePage() {
             className="object-contain object-bottom drop-shadow-xl"
           />
         </motion.div>
-
-        {/* Lane indicators */}
-        <div
-          className="absolute right-0 top-0 bottom-0 w-6 flex flex-col"
-          style={{ background: 'rgba(45, 90, 61, 0.2)' }}
-        >
-          {Array.from({ length: LANE_COUNT }).map((_, i) => (
-            <div
-              key={i}
-              className={`flex-1 flex items-center justify-center transition-colors ${
-                i === damianLane ? 'bg-[#C4A052]/40' : ''
-              }`}
-            >
-              {i === damianLane && <span className="text-white text-xs">◄</span>}
-            </div>
-          ))}
-        </div>
       </div>
 
       {/* Mobile Controls - Now includes left/right */}
@@ -782,15 +767,15 @@ export function GamePage() {
           <div className="flex gap-2">
             <motion.button
               onClick={() => moveDamianHorizontal('left')}
-              className="bg-[#2D5A3D] text-white w-14 h-14 rounded-xl text-2xl font-bold shadow-lg active:bg-[#1a3a24]"
+              className="bg-[#2D5A3D] text-white w-20 h-14 rounded-xl text-2xl font-bold shadow-lg active:bg-[#1a3a24]"
               whileTap={{ scale: 0.9 }}
             >
               ◀
             </motion.button>
-            <div className="w-14 h-14" /> {/* Spacer */}
+            <div className="w-20 h-14" /> {/* Spacer */}
             <motion.button
               onClick={() => moveDamianHorizontal('right')}
-              className="bg-[#2D5A3D] text-white w-14 h-14 rounded-xl text-2xl font-bold shadow-lg active:bg-[#1a3a24]"
+              className="bg-[#2D5A3D] text-white w-20 h-14 rounded-xl text-2xl font-bold shadow-lg active:bg-[#1a3a24]"
               whileTap={{ scale: 0.9 }}
             >
               ▶
