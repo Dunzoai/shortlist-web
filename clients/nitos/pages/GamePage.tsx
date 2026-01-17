@@ -13,9 +13,9 @@ const DAMIAN_START_X = GAME_WIDTH - 100;
 const CUSTOMER_START_X = -60;
 const EMPANADA_SPEED = 6;
 const BASE_CUSTOMER_SPEED = 1.2;
-const DAMIAN_MOVE_SPEED = 8; // Left/right movement speed
+const DAMIAN_MOVE_SPEED = 25; // Left/right movement speed (fast!)
 const TIP_VALUES = [5, 10, 15, 20, 25]; // Random tip amounts
-const TIP_EMOJIS = ['💵', '💰', '🪙', '💲'];
+const TIP_EMOJIS = ['💰', '💵'];
 
 // Types
 interface Customer {
