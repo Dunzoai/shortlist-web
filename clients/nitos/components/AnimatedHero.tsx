@@ -118,23 +118,24 @@ export function AnimatedHero() {
   const handleFindUsClick = () => {
     if (showTruck || isPanning) return;
 
+    // Scroll to the schedule section IMMEDIATELY (instant, not smooth)
+    // This way, when the overlay slides away, it reveals the schedule section directly
+    const scheduleSection = document.getElementById('schedule');
+    if (scheduleSection) {
+      scheduleSection.scrollIntoView({ behavior: 'instant' });
+    }
+
     setIsPanning(true);
     setTruckKey(prev => prev + 1);
     setShowTruck(true);
 
-    // After truck animation completes, scroll to schedule section
+    // After truck animation completes, just clean up the animation state
     // Desktop is slower (8.75s), mobile is 4s, plus 0.15s delay
     const animationDuration = isDesktop ? 9200 : 4500;
 
     setTimeout(() => {
       setShowTruck(false);
       setIsPanning(false);
-
-      // Scroll to the schedule section in the main page
-      const scheduleSection = document.getElementById('schedule');
-      if (scheduleSection) {
-        scheduleSection.scrollIntoView({ behavior: 'smooth' });
-      }
     }, animationDuration);
   };
 
