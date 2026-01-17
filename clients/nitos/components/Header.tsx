@@ -8,6 +8,7 @@ const navLinks = [
   { href: '#schedule', label: 'Location' },
   { href: '#menu', label: 'Menu' },
   { href: '#about', label: 'About' },
+  { href: '/game', label: '🎮 Play' },
   { href: 'https://nitos.shortlistpass.com', label: 'My Assistant', external: true },
 ];
 
