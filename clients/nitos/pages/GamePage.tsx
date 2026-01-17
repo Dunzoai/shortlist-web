@@ -18,7 +18,7 @@ const TIP_VALUES = [5, 10, 15, 20, 25]; // Random tip amounts
 const TIP_EMOJIS = ['💰', '💵'];
 
 // Lane Y positions as percentages (matching the wooden steps in the background)
-const LANE_Y_POSITIONS = [33, 48, 63, 78]; // % from top for each lane
+const LANE_Y_POSITIONS = [42, 55, 68, 81]; // % from top for each lane
 
 // Types
 interface Customer {
@@ -753,49 +753,57 @@ export function GamePage() {
         </motion.div>
       </div>
 
-      {/* Mobile Controls - Now includes left/right */}
+      {/* Mobile Controls - D-pad with SVG arrows */}
       <div className="w-full max-w-[800px] flex justify-between items-center mt-4 px-4 md:hidden">
-        {/* D-pad style controls - BIGGER buttons */}
+        {/* D-pad style controls */}
         <div className="flex flex-col items-center gap-2">
           <motion.button
             onClick={() => moveDamianVertical('up')}
-            className="bg-[#2D5A3D] text-white w-20 h-14 rounded-xl text-2xl font-bold shadow-lg active:bg-[#1a3a24]"
+            className="bg-[#2D5A3D] text-white w-16 h-16 rounded-2xl shadow-lg active:bg-[#1a3a24] flex items-center justify-center border-2 border-[#C4A052]/30"
             whileTap={{ scale: 0.9 }}
           >
-            ▲
+            <svg className="w-8 h-8" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M12 4l-8 8h5v8h6v-8h5z" />
+            </svg>
           </motion.button>
           <div className="flex gap-2">
             <motion.button
               onClick={() => moveDamianHorizontal('left')}
-              className="bg-[#2D5A3D] text-white w-20 h-14 rounded-xl text-2xl font-bold shadow-lg active:bg-[#1a3a24]"
+              className="bg-[#2D5A3D] text-white w-16 h-16 rounded-2xl shadow-lg active:bg-[#1a3a24] flex items-center justify-center border-2 border-[#C4A052]/30"
               whileTap={{ scale: 0.9 }}
             >
-              ◀
+              <svg className="w-8 h-8" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M4 12l8-8v5h8v6h-8v5z" />
+              </svg>
             </motion.button>
-            <div className="w-20 h-14" /> {/* Spacer */}
+            <div className="w-16 h-16" /> {/* Spacer */}
             <motion.button
               onClick={() => moveDamianHorizontal('right')}
-              className="bg-[#2D5A3D] text-white w-20 h-14 rounded-xl text-2xl font-bold shadow-lg active:bg-[#1a3a24]"
+              className="bg-[#2D5A3D] text-white w-16 h-16 rounded-2xl shadow-lg active:bg-[#1a3a24] flex items-center justify-center border-2 border-[#C4A052]/30"
               whileTap={{ scale: 0.9 }}
             >
-              ▶
+              <svg className="w-8 h-8" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M20 12l-8 8v-5H4v-6h8V4z" />
+              </svg>
             </motion.button>
           </div>
           <motion.button
             onClick={() => moveDamianVertical('down')}
-            className="bg-[#2D5A3D] text-white w-20 h-14 rounded-xl text-2xl font-bold shadow-lg active:bg-[#1a3a24]"
+            className="bg-[#2D5A3D] text-white w-16 h-16 rounded-2xl shadow-lg active:bg-[#1a3a24] flex items-center justify-center border-2 border-[#C4A052]/30"
             whileTap={{ scale: 0.9 }}
           >
-            ▼
+            <svg className="w-8 h-8" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M12 20l8-8h-5V4h-6v8H4z" />
+            </svg>
           </motion.button>
         </div>
 
         <motion.button
           onClick={throwEmpanada}
-          className="bg-[#C4A052] text-[#2D5A3D] w-28 h-28 rounded-full text-5xl font-bold shadow-lg active:bg-[#d4b062]"
+          className="bg-[#C4A052] w-24 h-24 rounded-full shadow-lg active:bg-[#d4b062] flex items-center justify-center border-4 border-[#2D5A3D]/20"
           whileTap={{ scale: 0.9 }}
         >
-          🥟
+          <span className="text-5xl">🥟</span>
         </motion.button>
       </div>
 
