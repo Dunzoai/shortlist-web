@@ -7,12 +7,15 @@ import Image from 'next/image';
 // Game constants
 const LANE_COUNT = 4;
 const GAME_WIDTH = 800;
-const GAME_HEIGHT = 480;
-const LANE_HEIGHT = GAME_HEIGHT / LANE_COUNT;
-const DAMIAN_X = GAME_WIDTH - 100;
+const GAME_HEIGHT_DESKTOP = 480;
+const GAME_HEIGHT_MOBILE = 600; // Taller on mobile
+const DAMIAN_START_X = GAME_WIDTH - 100;
 const CUSTOMER_START_X = -60;
-const EMPANADA_SPEED = 6; // Slower so you can see them fly
+const EMPANADA_SPEED = 6;
 const BASE_CUSTOMER_SPEED = 1.2;
+const DAMIAN_MOVE_SPEED = 8; // Left/right movement speed
+const TIP_VALUES = [5, 10, 15, 20, 25]; // Random tip amounts
+const TIP_EMOJIS = ['💵', '💰', '🪙', '💲'];
 
 // Types
 interface Customer {
@@ -23,6 +26,7 @@ interface Customer {
   emoji: string;
   state: 'walking' | 'satisfied';
   points: number;
+  droppedTip: boolean;
 }
 
 interface Empanada {
@@ -30,6 +34,14 @@ interface Empanada {
   lane: number;
   x: number;
   image: string;
+}
+
+interface Tip {
+  id: number;
+  lane: number;
+  x: number;
+  value: number;
+  emoji: string;
 }
 
 type GameState = 'start' | 'playing' | 'gameover';
@@ -52,7 +64,27 @@ function getRandomEmpanada() {
   return empanadaImages[Math.floor(Math.random() * empanadaImages.length)];
 }
 
+function getRandomTip() {
+  return {
+    value: TIP_VALUES[Math.floor(Math.random() * TIP_VALUES.length)],
+    emoji: TIP_EMOJIS[Math.floor(Math.random() * TIP_EMOJIS.length)],
+  };
+}
+
 export function GamePage() {
+  // Detect mobile
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 768);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
+  const GAME_HEIGHT = isMobile ? GAME_HEIGHT_MOBILE : GAME_HEIGHT_DESKTOP;
+  const LANE_HEIGHT = GAME_HEIGHT / LANE_COUNT;
+
   // Game state
   const [gameState, setGameState] = useState<GameState>('start');
   const [score, setScore] = useState(0);
@@ -65,8 +97,10 @@ export function GamePage() {
 
   // Entity states
   const [damianLane, setDamianLane] = useState(1);
+  const [damianX, setDamianX] = useState(DAMIAN_START_X); // Damian can now move left/right
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [empanadas, setEmpanadas] = useState<Empanada[]>([]);
+  const [tips, setTips] = useState<Tip[]>([]);
 
   // Refs for game loop
   const gameLoopRef = useRef<number | null>(null);
@@ -82,8 +116,10 @@ export function GamePage() {
     setLevel(1);
     setCustomersServed(0);
     setDamianLane(1);
+    setDamianX(DAMIAN_START_X);
     setCustomers([]);
     setEmpanadas([]);
+    setTips([]);
     setPlayerName('');
     lastSpawnRef.current = Date.now();
     idCounterRef.current = 0;
@@ -96,8 +132,7 @@ export function GamePage() {
 
   // Spawn customer with level-based lane limits
   const spawnCustomer = useCallback((currentCustomers: Customer[]) => {
-    // Find lanes that have room (based on level)
-    const maxPerLane = level; // Level 1 = 1 per lane, Level 2 = 2 per lane, etc.
+    const maxPerLane = level;
     const availableLanes = [];
 
     for (let i = 0; i < LANE_COUNT; i++) {
@@ -121,6 +156,7 @@ export function GamePage() {
       emoji: getRandomEmoji(),
       state: 'walking',
       points,
+      droppedTip: false,
     };
 
     return newCustomer;
@@ -133,15 +169,15 @@ export function GamePage() {
     const newEmpanada: Empanada = {
       id: idCounterRef.current++,
       lane: damianLane,
-      x: DAMIAN_X - 60,
+      x: damianX - 60,
       image: getRandomEmpanada(),
     };
 
     setEmpanadas(prev => [...prev, newEmpanada]);
-  }, [gameState, damianLane]);
+  }, [gameState, damianLane, damianX]);
 
-  // Move Damian
-  const moveDamian = useCallback((direction: 'up' | 'down') => {
+  // Move Damian up/down (lanes)
+  const moveDamianVertical = useCallback((direction: 'up' | 'down') => {
     if (gameState !== 'playing') return;
 
     setDamianLane(prev => {
@@ -151,10 +187,20 @@ export function GamePage() {
     });
   }, [gameState]);
 
+  // Move Damian left/right (to collect tips)
+  const moveDamianHorizontal = useCallback((direction: 'left' | 'right') => {
+    if (gameState !== 'playing') return;
+
+    setDamianX(prev => {
+      if (direction === 'left') return Math.max(100, prev - DAMIAN_MOVE_SPEED);
+      if (direction === 'right') return Math.min(GAME_WIDTH - 50, prev + DAMIAN_MOVE_SPEED);
+      return prev;
+    });
+  }, [gameState]);
+
   // Submit score (placeholder for Supabase)
   const submitScore = useCallback(() => {
     if (!playerName.trim()) return;
-    // TODO: Wire up Supabase leaderboard
     console.log('Submitting score:', { name: playerName, score, level, customersServed });
     alert(`Score submitted! ${playerName}: ${score} points`);
   }, [playerName, score, level, customersServed]);
@@ -167,9 +213,13 @@ export function GamePage() {
       keysPressed.current.add(e.key);
 
       if (e.key === 'ArrowUp' || e.key === 'w' || e.key === 'W') {
-        moveDamian('up');
+        moveDamianVertical('up');
       } else if (e.key === 'ArrowDown' || e.key === 's' || e.key === 'S') {
-        moveDamian('down');
+        moveDamianVertical('down');
+      } else if (e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'A') {
+        moveDamianHorizontal('left');
+      } else if (e.key === 'ArrowRight' || e.key === 'd' || e.key === 'D') {
+        moveDamianHorizontal('right');
       } else if (e.key === ' ' || e.key === 'Enter') {
         e.preventDefault();
         throwEmpanada();
@@ -187,20 +237,21 @@ export function GamePage() {
       window.removeEventListener('keydown', handleKeyDown);
       window.removeEventListener('keyup', handleKeyUp);
     };
-  }, [moveDamian, throwEmpanada, gameState]);
+  }, [moveDamianVertical, moveDamianHorizontal, throwEmpanada, gameState]);
 
   // Refs to track current state for game loop
   const customersRef = useRef<Customer[]>([]);
   const empanadasRef = useRef<Empanada[]>([]);
+  const tipsRef = useRef<Tip[]>([]);
+  const damianXRef = useRef(DAMIAN_START_X);
+  const damianLaneRef = useRef(1);
 
   // Keep refs in sync with state
-  useEffect(() => {
-    customersRef.current = customers;
-  }, [customers]);
-
-  useEffect(() => {
-    empanadasRef.current = empanadas;
-  }, [empanadas]);
+  useEffect(() => { customersRef.current = customers; }, [customers]);
+  useEffect(() => { empanadasRef.current = empanadas; }, [empanadas]);
+  useEffect(() => { tipsRef.current = tips; }, [tips]);
+  useEffect(() => { damianXRef.current = damianX; }, [damianX]);
+  useEffect(() => { damianLaneRef.current = damianLane; }, [damianLane]);
 
   // Main game loop
   useEffect(() => {
@@ -210,6 +261,9 @@ export function GamePage() {
       const now = Date.now();
       const currentCustomers = customersRef.current;
       const currentEmpanadas = empanadasRef.current;
+      const currentTips = tipsRef.current;
+      const currentDamianX = damianXRef.current;
+      const currentDamianLane = damianLaneRef.current;
 
       // Spawn customers
       const spawnInterval = Math.max(2000 - level * 150, 800);
@@ -221,27 +275,33 @@ export function GamePage() {
         }
       }
 
-      // Track which customers got hit this frame
+      // Track collisions
       const hitCustomerIds = new Set<number>();
       const empanadasToRemove = new Set<number>();
+      const tipsToRemove = new Set<number>();
+      let missedEmpanadas = 0;
 
-      // Check empanada collisions FIRST
+      // Check empanada collisions
       for (const emp of currentEmpanadas) {
         const newEmpX = emp.x - EMPANADA_SPEED;
 
-        // Find walking customers in this lane, sorted by x (rightmost first)
+        // Check if empanada flew off left edge (MISSED!)
+        if (newEmpX <= -80) {
+          empanadasToRemove.add(emp.id);
+          missedEmpanadas++;
+          continue;
+        }
+
+        // Find walking customers in this lane
         const walkingInLane = currentCustomers
           .filter(c => c.lane === emp.lane && c.state === 'walking' && !hitCustomerIds.has(c.id))
           .sort((a, b) => b.x - a.x);
 
         for (const customer of walkingInLane) {
-          // Check if empanada reached this customer (empanada moving left, customer on left)
           if (newEmpX <= customer.x + 50) {
-            // HIT!
             hitCustomerIds.add(customer.id);
             empanadasToRemove.add(emp.id);
 
-            // Update score
             setScore(s => s + customer.points);
             setCustomersServed(cs => {
               const newCount = cs + 1;
@@ -251,8 +311,21 @@ export function GamePage() {
               return newCount;
             });
 
-            break; // Only hit the first (rightmost) customer
+            break;
           }
+        }
+      }
+
+      // Penalize missed empanadas
+      if (missedEmpanadas > 0) {
+        setLives(l => Math.max(0, l - missedEmpanadas));
+      }
+
+      // Check tip collection (Damian picks up tips)
+      for (const tip of currentTips) {
+        if (tip.lane === currentDamianLane && Math.abs(tip.x - currentDamianX) < 60) {
+          tipsToRemove.add(tip.id);
+          setScore(s => s + tip.value);
         }
       }
 
@@ -260,11 +333,10 @@ export function GamePage() {
       setCustomers(prev => {
         const updated: Customer[] = [];
         let livesLost = 0;
+        const newTips: Tip[] = [];
 
         for (const customer of prev) {
-          // Check if this customer was hit
           if (hitCustomerIds.has(customer.id)) {
-            // Turn satisfied and start walking back
             updated.push({ ...customer, state: 'satisfied' });
             continue;
           }
@@ -272,18 +344,30 @@ export function GamePage() {
           if (customer.state === 'walking') {
             const newX = customer.x + customer.speed;
 
-            // Customer reached Damian - lose a life
-            if (newX >= DAMIAN_X - 80) {
+            if (newX >= DAMIAN_START_X - 80) {
               livesLost++;
               continue;
             }
 
             updated.push({ ...customer, x: newX });
           } else if (customer.state === 'satisfied') {
-            // Customer walks backward off screen
             const newX = customer.x - 4;
+
+            // Drop a tip randomly as they walk back (30% chance, only once)
+            if (!customer.droppedTip && Math.random() < 0.02) {
+              const tipData = getRandomTip();
+              newTips.push({
+                id: idCounterRef.current++,
+                lane: customer.lane,
+                x: customer.x,
+                value: tipData.value,
+                emoji: tipData.emoji,
+              });
+              customer.droppedTip = true;
+            }
+
             if (newX > -100) {
-              updated.push({ ...customer, x: newX });
+              updated.push({ ...customer, x: newX, droppedTip: customer.droppedTip });
             }
           }
         }
@@ -292,29 +376,29 @@ export function GamePage() {
           setLives(l => Math.max(0, l - livesLost));
         }
 
+        // Add new tips
+        if (newTips.length > 0) {
+          setTips(t => [...t, ...newTips]);
+        }
+
         return updated;
       });
 
       // Update empanadas
       setEmpanadas(prev => {
         const updated: Empanada[] = [];
-
         for (const emp of prev) {
-          // Remove if it hit a customer
-          if (empanadasToRemove.has(emp.id)) {
-            continue;
-          }
-
+          if (empanadasToRemove.has(emp.id)) continue;
           const newX = emp.x - EMPANADA_SPEED;
-
-          // Keep if still on screen
           if (newX > -80) {
             updated.push({ ...emp, x: newX });
           }
         }
-
         return updated;
       });
+
+      // Update tips (remove collected ones, fade out old ones)
+      setTips(prev => prev.filter(tip => !tipsToRemove.has(tip.id)));
 
       gameLoopRef.current = requestAnimationFrame(gameLoop);
     };
@@ -367,10 +451,12 @@ export function GamePage() {
           <div className="bg-[#1a3a24] rounded-xl p-4 mb-6 text-left text-sm">
             <h3 className="text-[#C4A052] font-bold mb-2 text-center">HOW TO PLAY</h3>
             <ul className="text-white/90 space-y-1">
-              <li>⬆️⬇️ Move between lanes (Arrow keys or W/S)</li>
+              <li>⬆️⬇️ Move between lanes (W/S or ↑↓)</li>
+              <li>⬅️➡️ Move left/right to collect tips (A/D or ←→)</li>
               <li>🥟 Throw empanadas (Spacebar or Tap)</li>
+              <li>💰 Collect tips from happy customers!</li>
               <li>😤 Don't let hangry customers reach you!</li>
-              <li>📈 More customers per lane as you level up!</li>
+              <li>🎯 Don't miss! Wasted empanadas cost lives!</li>
             </ul>
           </div>
 
@@ -424,7 +510,6 @@ export function GamePage() {
             </div>
           </motion.div>
 
-          {/* Leaderboard Entry */}
           <motion.div
             className="bg-[#1a3a24] rounded-xl p-6 mb-6"
             initial={{ opacity: 0, y: 20 }}
@@ -495,7 +580,7 @@ export function GamePage() {
         </div>
       </div>
 
-      {/* Game Area */}
+      {/* Game Area - Taller on mobile */}
       <div
         className="relative bg-[#D4C5A9] rounded-xl overflow-hidden shadow-2xl border-4 border-[#4a3728]"
         style={{
@@ -505,17 +590,12 @@ export function GamePage() {
           aspectRatio: `${GAME_WIDTH}/${GAME_HEIGHT}`,
         }}
       >
-        {/* Background truck (subtle) */}
+        {/* Background truck */}
         <div className="absolute right-0 bottom-0 w-48 h-48 opacity-10 pointer-events-none">
-          <Image
-            src="/nitos-truck.png"
-            alt=""
-            fill
-            className="object-contain"
-          />
+          <Image src="/nitos-truck.png" alt="" fill className="object-contain" />
         </div>
 
-        {/* Lane backgrounds (counter texture) */}
+        {/* Lane backgrounds */}
         {Array.from({ length: LANE_COUNT }).map((_, i) => (
           <div
             key={`lane-bg-${i}`}
@@ -535,17 +615,29 @@ export function GamePage() {
           <div
             key={i}
             className="absolute w-full h-[2px] bg-[#8B7355]/40"
-            style={{
-              top: `${(i + 1) * (100 / LANE_COUNT)}%`,
-            }}
+            style={{ top: `${(i + 1) * (100 / LANE_COUNT)}%` }}
           />
         ))}
 
-        {/* Counter edge line */}
-        <div
-          className="absolute top-0 bottom-0 w-2 bg-[#4a3728]"
-          style={{ right: '12%' }}
-        />
+        {/* Tips */}
+        <AnimatePresence>
+          {tips.map(tip => (
+            <motion.div
+              key={tip.id}
+              className="absolute text-3xl md:text-4xl select-none"
+              style={{
+                left: `${(tip.x / GAME_WIDTH) * 100}%`,
+                top: `${(tip.lane * LANE_HEIGHT + LANE_HEIGHT / 2) / GAME_HEIGHT * 100}%`,
+                transform: 'translate(-50%, -50%)',
+              }}
+              initial={{ scale: 0, y: -20 }}
+              animate={{ scale: 1, y: 0 }}
+              exit={{ scale: 0, opacity: 0 }}
+            >
+              {tip.emoji}
+            </motion.div>
+          ))}
+        </AnimatePresence>
 
         {/* Customers */}
         <AnimatePresence>
@@ -559,10 +651,7 @@ export function GamePage() {
                 transform: 'translate(-50%, -50%)',
               }}
               initial={{ opacity: 0, scale: 0 }}
-              animate={{
-                opacity: 1,
-                scale: 1,
-              }}
+              animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0 }}
             >
               {customer.state === 'walking' && customer.emoji}
@@ -571,7 +660,7 @@ export function GamePage() {
           ))}
         </AnimatePresence>
 
-        {/* Empanadas - LARGER SIZE */}
+        {/* Empanadas */}
         <AnimatePresence>
           {empanadas.map(emp => (
             <motion.div
@@ -592,26 +681,19 @@ export function GamePage() {
                 scale: { duration: 0.2 }
               }}
             >
-              <Image
-                src={emp.image}
-                alt="Empanada"
-                fill
-                className="object-contain drop-shadow-lg"
-              />
+              <Image src={emp.image} alt="Empanada" fill className="object-contain drop-shadow-lg" />
             </motion.div>
           ))}
         </AnimatePresence>
 
-        {/* Damian - properly sized */}
+        {/* Damian - now moves left/right too */}
         <motion.div
           className="absolute"
-          style={{
-            width: 80,
-            height: 140,
-            right: '1%',
-          }}
+          style={{ width: 80, height: 140 }}
           animate={{
+            left: `${(damianX / GAME_WIDTH) * 100}%`,
             top: `${(damianLane * LANE_HEIGHT + LANE_HEIGHT / 2) / GAME_HEIGHT * 100}%`,
+            x: '-50%',
             y: '-50%',
           }}
           transition={{ type: 'spring', stiffness: 500, damping: 30 }}
@@ -624,7 +706,7 @@ export function GamePage() {
           />
         </motion.div>
 
-        {/* Lane indicators (which lane Damian is on) */}
+        {/* Lane indicators */}
         <div
           className="absolute right-0 top-0 bottom-0 w-6 flex flex-col"
           style={{ background: 'rgba(45, 90, 61, 0.2)' }}
@@ -642,19 +724,37 @@ export function GamePage() {
         </div>
       </div>
 
-      {/* Mobile Controls */}
+      {/* Mobile Controls - Now includes left/right */}
       <div className="w-full max-w-[800px] flex justify-between items-center mt-4 px-4 md:hidden">
-        <div className="flex flex-col gap-2">
+        {/* D-pad style controls */}
+        <div className="flex flex-col items-center gap-1">
           <motion.button
-            onClick={() => moveDamian('up')}
-            className="bg-[#2D5A3D] text-white w-16 h-12 rounded-lg text-2xl font-bold shadow-lg active:bg-[#1a3a24]"
+            onClick={() => moveDamianVertical('up')}
+            className="bg-[#2D5A3D] text-white w-14 h-10 rounded-lg text-xl font-bold shadow-lg active:bg-[#1a3a24]"
             whileTap={{ scale: 0.9 }}
           >
             ▲
           </motion.button>
+          <div className="flex gap-1">
+            <motion.button
+              onClick={() => moveDamianHorizontal('left')}
+              className="bg-[#2D5A3D] text-white w-10 h-10 rounded-lg text-xl font-bold shadow-lg active:bg-[#1a3a24]"
+              whileTap={{ scale: 0.9 }}
+            >
+              ◀
+            </motion.button>
+            <div className="w-10 h-10" /> {/* Spacer */}
+            <motion.button
+              onClick={() => moveDamianHorizontal('right')}
+              className="bg-[#2D5A3D] text-white w-10 h-10 rounded-lg text-xl font-bold shadow-lg active:bg-[#1a3a24]"
+              whileTap={{ scale: 0.9 }}
+            >
+              ▶
+            </motion.button>
+          </div>
           <motion.button
-            onClick={() => moveDamian('down')}
-            className="bg-[#2D5A3D] text-white w-16 h-12 rounded-lg text-2xl font-bold shadow-lg active:bg-[#1a3a24]"
+            onClick={() => moveDamianVertical('down')}
+            className="bg-[#2D5A3D] text-white w-14 h-10 rounded-lg text-xl font-bold shadow-lg active:bg-[#1a3a24]"
             whileTap={{ scale: 0.9 }}
           >
             ▼
@@ -672,7 +772,7 @@ export function GamePage() {
 
       {/* Desktop instructions */}
       <div className="hidden md:block text-white/60 text-sm mt-4">
-        ⬆️⬇️ or W/S to move • SPACE to throw
+        ↑↓ or W/S = lanes • ←→ or A/D = move • SPACE = throw
       </div>
     </div>
   );
