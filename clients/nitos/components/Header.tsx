@@ -8,7 +8,7 @@ const navLinks = [
   { href: '#schedule', label: 'Location' },
   { href: '#menu', label: 'Menu' },
   { href: '#about', label: 'About' },
-  { href: '#assistant', label: 'My Assistant' },
+  { href: 'https://nitos.shortlistpass.com', label: 'My Assistant', external: true },
 ];
 
 export function Header() {
@@ -26,13 +26,25 @@ export function Header() {
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center gap-8">
             {navLinks.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                className="text-[#2D5A3D] hover:text-[#C4A052] transition-colors font-medium"
-              >
-                {link.label}
-              </Link>
+              link.external ? (
+                <a
+                  key={link.href}
+                  href={link.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-[#2D5A3D] hover:text-[#C4A052] transition-colors font-medium"
+                >
+                  {link.label}
+                </a>
+              ) : (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  className="text-[#2D5A3D] hover:text-[#C4A052] transition-colors font-medium"
+                >
+                  {link.label}
+                </Link>
+              )
             ))}
           </div>
 
@@ -72,14 +84,27 @@ export function Header() {
           <div className="md:hidden py-4 border-t border-[#2D5A3D]/10">
             <div className="flex flex-col gap-4">
               {navLinks.map((link) => (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  className="text-[#2D5A3D] hover:text-[#C4A052] transition-colors font-medium px-2 py-1"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  {link.label}
-                </Link>
+                link.external ? (
+                  <a
+                    key={link.href}
+                    href={link.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-[#2D5A3D] hover:text-[#C4A052] transition-colors font-medium px-2 py-1"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    {link.label}
+                  </a>
+                ) : (
+                  <Link
+                    key={link.href}
+                    href={link.href}
+                    className="text-[#2D5A3D] hover:text-[#C4A052] transition-colors font-medium px-2 py-1"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    {link.label}
+                  </Link>
+                )
               ))}
             </div>
           </div>

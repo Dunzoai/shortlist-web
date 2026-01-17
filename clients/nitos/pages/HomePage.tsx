@@ -35,7 +35,7 @@ export function HomePage() {
 
       {/* About Section - Full-width image with text overlay */}
       {/* Desktop version - text overlaid on right */}
-      <section className="relative w-full hidden md:block">
+      <section id="about" className="relative w-full hidden md:block">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src="/nitos-name-behind-truck.png"
@@ -133,7 +133,9 @@ export function HomePage() {
       </section>
 
       {/* Menu Section */}
-      <MenuSection />
+      <div id="menu">
+        <MenuSection />
+      </div>
 
       {/* Footer */}
       <footer className="bg-[#D4C5A9] py-16 border-t border-[#C4A052]/30">
@@ -150,18 +152,18 @@ export function HomePage() {
             </h3>
 
             <div className="space-y-4 mb-8">
-              <div className="flex items-center justify-center gap-3 text-[#4A5A3C]">
+              <a href="mailto:nitosempanadas@yahoo.com" className="flex items-center justify-center gap-3 text-[#4A5A3C] hover:text-[#2D5A3D] transition-colors">
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                 </svg>
-                <span>hello@nitosempanadas.com</span>
-              </div>
-              <div className="flex items-center justify-center gap-3 text-[#4A5A3C]">
+                <span>nitosempanadas@yahoo.com</span>
+              </a>
+              <a href="tel:+18433602235" className="flex items-center justify-center gap-3 text-[#4A5A3C] hover:text-[#2D5A3D] transition-colors">
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
                 </svg>
-                <span>(555) 123-4567</span>
-              </div>
+                <span>(843) 360-2235</span>
+              </a>
               <div className="flex items-center justify-center gap-3 text-[#4A5A3C]">
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
@@ -174,7 +176,9 @@ export function HomePage() {
             {/* Social Links */}
             <div className="flex justify-center gap-4 mb-8">
               <a
-                href="#"
+                href="https://www.instagram.com/nitos_empanadasmb/"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="w-12 h-12 rounded-full bg-[#2D5A3D] flex items-center justify-center text-white hover:bg-[#C4A052] transition-colors"
                 aria-label="Instagram"
               >
@@ -183,7 +187,9 @@ export function HomePage() {
                 </svg>
               </a>
               <a
-                href="#"
+                href="https://www.facebook.com/profile.php?id=61564356566845"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="w-12 h-12 rounded-full bg-[#2D5A3D] flex items-center justify-center text-white hover:bg-[#C4A052] transition-colors"
                 aria-label="Facebook"
               >
@@ -192,7 +198,9 @@ export function HomePage() {
                 </svg>
               </a>
               <a
-                href="#"
+                href="https://www.tiktok.com/@nitos.empanadas"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="w-12 h-12 rounded-full bg-[#2D5A3D] flex items-center justify-center text-white hover:bg-[#C4A052] transition-colors"
                 aria-label="TikTok"
               >
