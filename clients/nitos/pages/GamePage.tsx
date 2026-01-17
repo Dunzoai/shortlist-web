@@ -11,9 +11,8 @@ const GAME_HEIGHT = 480;
 const LANE_HEIGHT = GAME_HEIGHT / LANE_COUNT;
 const DAMIAN_X = GAME_WIDTH - 100;
 const CUSTOMER_START_X = -60;
-const EMPANADA_SPEED = 12;
-const PLATE_SPEED = 8;
-const BASE_CUSTOMER_SPEED = 1.5;
+const EMPANADA_SPEED = 6; // Slower so you can see them fly
+const BASE_CUSTOMER_SPEED = 1.2;
 
 // Types
 interface Customer {
@@ -22,7 +21,7 @@ interface Customer {
   x: number;
   speed: number;
   emoji: string;
-  state: 'walking' | 'eating' | 'satisfied';
+  state: 'walking' | 'satisfied';
   points: number;
 }
 
@@ -33,15 +32,16 @@ interface Empanada {
   image: string;
 }
 
-interface Plate {
-  id: number;
-  lane: number;
-  x: number;
-}
-
 type GameState = 'start' | 'playing' | 'gameover';
 
-const customerEmojis = ['👨', '👩', '👴', '👧', '🧑', '👨‍🦱', '👩‍🦰', '🧔'];
+// Expanded customer emoji list
+const customerEmojis = [
+  '👨', '👩', '👴', '👧', '👶', '🧑', '👱', '👨‍🦰', '👩‍🦰', '👨‍🦱', '👩‍🦱', '👨‍🦳', '👩‍🦳',
+  '👮', '👷', '💂', '🕵️', '👨‍🍳', '👨‍🎤', '👸', '🤴',
+  '🎅', '🤶', '🧛', '🧟', '🧙', '🦸', '🦹', '👻', '🤡', '🥷',
+  '👨🏻', '👨🏼', '👨🏽', '👨🏾', '👨🏿', '👩🏻', '👩🏼', '👩🏽', '👩🏾', '👩🏿'
+];
+
 const empanadaImages = ['/empanada.png', '/sweet-empanada.png', '/street-corn-empanada.png'];
 
 function getRandomEmoji() {
@@ -60,25 +60,19 @@ export function GamePage() {
   const [level, setLevel] = useState(1);
   const [customersServed, setCustomersServed] = useState(0);
 
+  // Leaderboard state
+  const [playerName, setPlayerName] = useState('');
+
   // Entity states
   const [damianLane, setDamianLane] = useState(1);
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [empanadas, setEmpanadas] = useState<Empanada[]>([]);
-  const [plates, setPlates] = useState<Plate[]>([]);
 
   // Refs for game loop
   const gameLoopRef = useRef<number | null>(null);
   const lastSpawnRef = useRef(0);
   const idCounterRef = useRef(0);
   const keysPressed = useRef<Set<string>>(new Set());
-
-  // Get reward based on score
-  const getReward = useCallback(() => {
-    if (score >= 500) return { text: "FREE MEAL!", color: "text-yellow-400", icon: "🎉" };
-    if (score >= 250) return { text: "FREE EMPANADA!", color: "text-green-400", icon: "🥟" };
-    if (score >= 100) return { text: "10% OFF YOUR ORDER!", color: "text-blue-400", icon: "🎫" };
-    return { text: "Keep practicing!", color: "text-gray-400", icon: "💪" };
-  }, [score]);
 
   // Start game
   const startGame = useCallback(() => {
@@ -90,15 +84,32 @@ export function GamePage() {
     setDamianLane(1);
     setCustomers([]);
     setEmpanadas([]);
-    setPlates([]);
+    setPlayerName('');
     lastSpawnRef.current = Date.now();
     idCounterRef.current = 0;
   }, []);
 
-  // Spawn customer
-  const spawnCustomer = useCallback(() => {
-    const lane = Math.floor(Math.random() * LANE_COUNT);
-    const speedMultiplier = 1 + (level - 1) * 0.15;
+  // Count customers in a lane
+  const getCustomersInLane = useCallback((lane: number, customerList: Customer[]) => {
+    return customerList.filter(c => c.lane === lane && c.state === 'walking').length;
+  }, []);
+
+  // Spawn customer with level-based lane limits
+  const spawnCustomer = useCallback((currentCustomers: Customer[]) => {
+    // Find lanes that have room (based on level)
+    const maxPerLane = level; // Level 1 = 1 per lane, Level 2 = 2 per lane, etc.
+    const availableLanes = [];
+
+    for (let i = 0; i < LANE_COUNT; i++) {
+      if (getCustomersInLane(i, currentCustomers) < maxPerLane) {
+        availableLanes.push(i);
+      }
+    }
+
+    if (availableLanes.length === 0) return null;
+
+    const lane = availableLanes[Math.floor(Math.random() * availableLanes.length)];
+    const speedMultiplier = 1 + (level - 1) * 0.12;
     const speed = BASE_CUSTOMER_SPEED * speedMultiplier * (0.8 + Math.random() * 0.4);
     const points = Math.round(10 + speed * 5);
 
@@ -112,8 +123,8 @@ export function GamePage() {
       points,
     };
 
-    setCustomers(prev => [...prev, newCustomer]);
-  }, [level]);
+    return newCustomer;
+  }, [level, getCustomersInLane]);
 
   // Throw empanada
   const throwEmpanada = useCallback(() => {
@@ -122,7 +133,7 @@ export function GamePage() {
     const newEmpanada: Empanada = {
       id: idCounterRef.current++,
       lane: damianLane,
-      x: DAMIAN_X - 50,
+      x: DAMIAN_X - 60,
       image: getRandomEmpanada(),
     };
 
@@ -140,9 +151,18 @@ export function GamePage() {
     });
   }, [gameState]);
 
+  // Submit score (placeholder for Supabase)
+  const submitScore = useCallback(() => {
+    if (!playerName.trim()) return;
+    // TODO: Wire up Supabase leaderboard
+    console.log('Submitting score:', { name: playerName, score, level, customersServed });
+    alert(`Score submitted! ${playerName}: ${score} points`);
+  }, [playerName, score, level, customersServed]);
+
   // Keyboard controls
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
+      if (gameState === 'gameover') return;
       if (keysPressed.current.has(e.key)) return;
       keysPressed.current.add(e.key);
 
@@ -167,7 +187,7 @@ export function GamePage() {
       window.removeEventListener('keydown', handleKeyDown);
       window.removeEventListener('keyup', handleKeyUp);
     };
-  }, [moveDamian, throwEmpanada]);
+  }, [moveDamian, throwEmpanada, gameState]);
 
   // Main game loop
   useEffect(() => {
@@ -177,10 +197,16 @@ export function GamePage() {
       const now = Date.now();
 
       // Spawn customers
-      const spawnInterval = Math.max(1500 - level * 100, 800);
+      const spawnInterval = Math.max(2000 - level * 150, 800);
       if (now - lastSpawnRef.current > spawnInterval) {
-        spawnCustomer();
-        lastSpawnRef.current = now;
+        setCustomers(prev => {
+          const newCustomer = spawnCustomer(prev);
+          if (newCustomer) {
+            lastSpawnRef.current = now;
+            return [...prev, newCustomer];
+          }
+          return prev;
+        });
       }
 
       // Update customers
@@ -199,12 +225,9 @@ export function GamePage() {
             }
 
             updated.push({ ...customer, x: newX });
-          } else if (customer.state === 'eating') {
-            // Customer is eating, will transition to satisfied
-            updated.push(customer);
           } else if (customer.state === 'satisfied') {
-            // Customer walks off left
-            const newX = customer.x - 3;
+            // Customer walks backward off screen
+            const newX = customer.x - 4;
             if (newX > -100) {
               updated.push({ ...customer, x: newX });
             }
@@ -221,92 +244,57 @@ export function GamePage() {
       // Update empanadas and check collisions
       setEmpanadas(prev => {
         const updated: Empanada[] = [];
+        const hitCustomerIds = new Set<number>();
 
         for (const emp of prev) {
           const newX = emp.x - EMPANADA_SPEED;
 
-          // Check collision with customers
-          let hit = false;
+          // Find the FIRST (rightmost) walking customer in this lane
+          let firstCustomer: Customer | null = null;
           setCustomers(customers => {
-            const newCustomers = customers.map(c => {
-              if (c.lane === emp.lane && c.state === 'walking' &&
-                  Math.abs(c.x - newX) < 50) {
-                hit = true;
-                // Spawn plate after delay
-                setTimeout(() => {
-                  setPlates(plates => [...plates, {
-                    id: idCounterRef.current++,
-                    lane: c.lane,
-                    x: c.x + 30,
-                  }]);
-                }, 800);
+            const walkingInLane = customers
+              .filter(c => c.lane === emp.lane && c.state === 'walking')
+              .sort((a, b) => b.x - a.x); // Sort by x descending (rightmost first)
 
-                // Update score
-                setScore(s => s + c.points);
-                setCustomersServed(cs => {
-                  const newCount = cs + 1;
-                  // Level up every 10 customers
-                  if (newCount % 10 === 0) {
-                    setLevel(l => l + 1);
-                  }
-                  return newCount;
-                });
-
-                // Make customer eat then satisfied
-                setTimeout(() => {
-                  setCustomers(cust => cust.map(cu =>
-                    cu.id === c.id ? { ...cu, state: 'satisfied' as const } : cu
-                  ));
-                }, 600);
-
-                return { ...c, state: 'eating' as const };
+            if (walkingInLane.length > 0) {
+              const closest = walkingInLane[0];
+              // Check if empanada reached this customer
+              if (newX <= closest.x + 40 && !hitCustomerIds.has(closest.id)) {
+                firstCustomer = closest;
+                hitCustomerIds.add(closest.id);
               }
-              return c;
-            });
-            return newCustomers;
+            }
+            return customers;
           });
 
-          if (!hit && newX > -50) {
+          if (firstCustomer) {
+            // Hit! Update score and make customer satisfied
+            const points = (firstCustomer as Customer).points;
+            const customerId = (firstCustomer as Customer).id;
+
+            setScore(s => s + points);
+            setCustomersServed(cs => {
+              const newCount = cs + 1;
+              // Level up every 10 customers
+              if (newCount % 10 === 0) {
+                setLevel(l => l + 1);
+              }
+              return newCount;
+            });
+
+            // Make customer satisfied immediately
+            setCustomers(cust => cust.map(cu =>
+              cu.id === customerId ? { ...cu, state: 'satisfied' as const } : cu
+            ));
+
+            // Empanada disappears (don't add to updated)
+            continue;
+          }
+
+          // No hit - keep moving if still on screen
+          if (newX > -80) {
             updated.push({ ...emp, x: newX });
           }
-        }
-
-        return updated;
-      });
-
-      // Update plates
-      setPlates(prev => {
-        const updated: Plate[] = [];
-        let livesLost = 0;
-
-        for (const plate of prev) {
-          const newX = plate.x + PLATE_SPEED;
-
-          // Check if Damian catches it
-          if (newX >= DAMIAN_X - 60 && newX <= DAMIAN_X + 20) {
-            setDamianLane(currentLane => {
-              if (plate.lane === currentLane) {
-                setScore(s => s + 5);
-              } else {
-                // Plate missed
-                livesLost++;
-              }
-              return currentLane;
-            });
-            continue;
-          }
-
-          // Plate fell off
-          if (newX > GAME_WIDTH + 50) {
-            livesLost++;
-            continue;
-          }
-
-          updated.push({ ...plate, x: newX });
-        }
-
-        if (livesLost > 0) {
-          setLives(l => Math.max(0, l - livesLost));
         }
 
         return updated;
@@ -365,18 +353,9 @@ export function GamePage() {
             <ul className="text-white/90 space-y-1">
               <li>⬆️⬇️ Move between lanes (Arrow keys or W/S)</li>
               <li>🥟 Throw empanadas (Spacebar or Tap)</li>
-              <li>🍽️ Catch returning plates in your lane</li>
               <li>😤 Don't let hangry customers reach you!</li>
+              <li>📈 More customers per lane as you level up!</li>
             </ul>
-          </div>
-
-          <div className="bg-[#1a3a24] rounded-xl p-4 mb-6 text-sm">
-            <h3 className="text-[#C4A052] font-bold mb-2">REWARDS</h3>
-            <div className="text-white/90 space-y-1">
-              <p>🎫 100+ pts = 10% off</p>
-              <p>🥟 250+ pts = FREE empanada</p>
-              <p>🎉 500+ pts = FREE meal!</p>
-            </div>
           </div>
 
           <motion.button
@@ -394,8 +373,6 @@ export function GamePage() {
 
   // Game Over Screen
   if (gameState === 'gameover') {
-    const reward = getReward();
-
     return (
       <div className="min-h-screen bg-[#D4C5A9] flex items-center justify-center p-4">
         <motion.div
@@ -410,9 +387,14 @@ export function GamePage() {
             GAME OVER
           </h1>
 
-          <div className="bg-[#1a3a24] rounded-xl p-6 mb-6">
+          <motion.div
+            className="bg-[#1a3a24] rounded-xl p-6 mb-6"
+            initial={{ scale: 0 }}
+            animate={{ scale: 1 }}
+            transition={{ delay: 0.2, type: 'spring' }}
+          >
             <p className="text-white/70 text-sm mb-1">FINAL SCORE</p>
-            <p className="text-5xl font-bold text-white mb-4">{score}</p>
+            <p className="text-6xl font-bold text-[#C4A052] mb-4">{score}</p>
 
             <div className="grid grid-cols-2 gap-4 text-white/80 text-sm">
               <div>
@@ -424,28 +406,42 @@ export function GamePage() {
                 <p className="text-2xl font-bold">{level}</p>
               </div>
             </div>
-          </div>
+          </motion.div>
 
+          {/* Leaderboard Entry */}
           <motion.div
             className="bg-[#1a3a24] rounded-xl p-6 mb-6"
-            initial={{ scale: 0 }}
-            animate={{ scale: 1 }}
-            transition={{ delay: 0.3, type: 'spring' }}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.4 }}
           >
-            <p className="text-6xl mb-2">{reward.icon}</p>
-            <p className={`text-2xl font-bold ${reward.color}`}>
-              {reward.text}
-            </p>
-            {score >= 100 && (
-              <p className="text-white/60 text-sm mt-2">
-                Show this screen to claim your reward!
-              </p>
-            )}
+            <p className="text-white text-sm mb-3">Enter your name for the leaderboard:</p>
+            <input
+              type="text"
+              value={playerName}
+              onChange={(e) => setPlayerName(e.target.value)}
+              placeholder="Your name"
+              maxLength={20}
+              className="w-full px-4 py-3 rounded-lg bg-[#2D5A3D] text-white placeholder-white/50 border-2 border-[#C4A052]/50 focus:border-[#C4A052] outline-none text-center text-lg mb-3"
+            />
+            <motion.button
+              onClick={submitScore}
+              disabled={!playerName.trim()}
+              className="w-full bg-[#C4A052] hover:bg-[#d4b062] disabled:bg-[#C4A052]/50 disabled:cursor-not-allowed text-[#2D5A3D] font-bold text-lg px-6 py-3 rounded-full shadow-lg"
+              whileHover={{ scale: playerName.trim() ? 1.02 : 1 }}
+              whileTap={{ scale: playerName.trim() ? 0.98 : 1 }}
+            >
+              SUBMIT SCORE
+            </motion.button>
           </motion.div>
+
+          <p className="text-white/70 text-sm mb-6 italic">
+            🏆 Top 5 scores each week win prizes at Nito's next event!
+          </p>
 
           <motion.button
             onClick={startGame}
-            className="bg-[#C4A052] hover:bg-[#d4b062] text-[#2D5A3D] font-bold text-xl px-10 py-3 rounded-full shadow-lg"
+            className="bg-white/20 hover:bg-white/30 text-white font-bold text-xl px-10 py-3 rounded-full shadow-lg border-2 border-white/30"
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
           >
@@ -461,20 +457,25 @@ export function GamePage() {
     <div className="min-h-screen bg-[#8B7355] flex flex-col items-center justify-center p-2 md:p-4">
       {/* HUD */}
       <div className="w-full max-w-[800px] flex justify-between items-center mb-2 px-2">
-        <div className="flex gap-4">
-          <div className="bg-[#2D5A3D] px-4 py-2 rounded-lg">
-            <span className="text-[#C4A052] font-bold">SCORE: </span>
-            <span className="text-white font-bold">{score}</span>
+        <div className="flex gap-2 md:gap-4">
+          <div className="bg-[#2D5A3D] px-3 md:px-4 py-2 rounded-lg">
+            <span className="text-[#C4A052] font-bold text-sm md:text-base">SCORE: </span>
+            <span className="text-white font-bold text-sm md:text-base">{score}</span>
           </div>
-          <div className="bg-[#2D5A3D] px-4 py-2 rounded-lg">
-            <span className="text-[#C4A052] font-bold">LVL: </span>
-            <span className="text-white font-bold">{level}</span>
+          <div className="bg-[#2D5A3D] px-3 md:px-4 py-2 rounded-lg">
+            <span className="text-[#C4A052] font-bold text-sm md:text-base">LVL: </span>
+            <span className="text-white font-bold text-sm md:text-base">{level}</span>
           </div>
         </div>
-        <div className="bg-[#2D5A3D] px-4 py-2 rounded-lg">
-          <span className="text-red-400 text-xl">
-            {'❤️'.repeat(lives)}{'🖤'.repeat(3 - lives)}
-          </span>
+        <div className="flex gap-2 md:gap-4 items-center">
+          <button className="bg-[#2D5A3D] px-3 py-2 rounded-lg text-[#C4A052] text-xs md:text-sm font-bold hover:bg-[#1a3a24] transition-colors">
+            🏆 HIGH SCORES
+          </button>
+          <div className="bg-[#2D5A3D] px-3 md:px-4 py-2 rounded-lg">
+            <span className="text-red-400 text-lg md:text-xl">
+              {'❤️'.repeat(lives)}{'🖤'.repeat(3 - lives)}
+            </span>
+          </div>
         </div>
       </div>
 
@@ -498,18 +499,6 @@ export function GamePage() {
           />
         </div>
 
-        {/* Lanes */}
-        {Array.from({ length: LANE_COUNT }).map((_, i) => (
-          <div
-            key={i}
-            className="absolute w-full border-b-2 border-[#8B7355]/30"
-            style={{
-              top: `${(i + 1) * (100 / LANE_COUNT)}%`,
-              height: 0,
-            }}
-          />
-        ))}
-
         {/* Lane backgrounds (counter texture) */}
         {Array.from({ length: LANE_COUNT }).map((_, i) => (
           <div
@@ -525,6 +514,17 @@ export function GamePage() {
           />
         ))}
 
+        {/* Lane dividers */}
+        {Array.from({ length: LANE_COUNT - 1 }).map((_, i) => (
+          <div
+            key={i}
+            className="absolute w-full h-[2px] bg-[#8B7355]/40"
+            style={{
+              top: `${(i + 1) * (100 / LANE_COUNT)}%`,
+            }}
+          />
+        ))}
+
         {/* Counter edge line */}
         <div
           className="absolute top-0 bottom-0 w-2 bg-[#4a3728]"
@@ -536,7 +536,7 @@ export function GamePage() {
           {customers.map(customer => (
             <motion.div
               key={customer.id}
-              className="absolute flex items-center justify-center text-4xl md:text-5xl"
+              className="absolute flex items-center justify-center text-4xl md:text-5xl select-none"
               style={{
                 left: `${(customer.x / GAME_WIDTH) * 100}%`,
                 top: `${(customer.lane * LANE_HEIGHT + LANE_HEIGHT / 2) / GAME_HEIGHT * 100}%`,
@@ -546,68 +546,53 @@ export function GamePage() {
               animate={{
                 opacity: 1,
                 scale: 1,
-                rotate: customer.state === 'eating' ? [0, -10, 10, -10, 0] : 0,
               }}
               exit={{ opacity: 0, scale: 0 }}
             >
               {customer.state === 'walking' && customer.emoji}
-              {customer.state === 'eating' && '😋'}
-              {customer.state === 'satisfied' && '😊'}
+              {customer.state === 'satisfied' && '😋'}
             </motion.div>
           ))}
         </AnimatePresence>
 
-        {/* Empanadas */}
+        {/* Empanadas - LARGER SIZE */}
         <AnimatePresence>
           {empanadas.map(emp => (
             <motion.div
               key={emp.id}
-              className="absolute w-10 h-10 md:w-12 md:h-12"
+              className="absolute"
               style={{
+                width: 70,
+                height: 70,
                 left: `${(emp.x / GAME_WIDTH) * 100}%`,
                 top: `${(emp.lane * LANE_HEIGHT + LANE_HEIGHT / 2) / GAME_HEIGHT * 100}%`,
                 transform: 'translate(-50%, -50%)',
               }}
               initial={{ scale: 0, rotate: 0 }}
-              animate={{ scale: 1, rotate: 360 }}
-              exit={{ scale: 0 }}
-              transition={{ rotate: { duration: 0.5, repeat: Infinity, ease: 'linear' } }}
+              animate={{ scale: 1, rotate: 720 }}
+              exit={{ scale: 0, opacity: 0 }}
+              transition={{
+                rotate: { duration: 1, repeat: Infinity, ease: 'linear' },
+                scale: { duration: 0.2 }
+              }}
             >
               <Image
                 src={emp.image}
                 alt="Empanada"
                 fill
-                className="object-contain"
+                className="object-contain drop-shadow-lg"
               />
             </motion.div>
           ))}
         </AnimatePresence>
 
-        {/* Plates */}
-        <AnimatePresence>
-          {plates.map(plate => (
-            <motion.div
-              key={plate.id}
-              className="absolute text-3xl md:text-4xl"
-              style={{
-                left: `${(plate.x / GAME_WIDTH) * 100}%`,
-                top: `${(plate.lane * LANE_HEIGHT + LANE_HEIGHT / 2) / GAME_HEIGHT * 100}%`,
-                transform: 'translate(-50%, -50%)',
-              }}
-              initial={{ scale: 0 }}
-              animate={{ scale: 1 }}
-              exit={{ scale: 0, opacity: 0 }}
-            >
-              🍽️
-            </motion.div>
-          ))}
-        </AnimatePresence>
-
-        {/* Damian */}
+        {/* Damian - properly sized */}
         <motion.div
-          className="absolute w-16 h-24 md:w-20 md:h-32"
+          className="absolute"
           style={{
-            right: '2%',
+            width: 80,
+            height: 140,
+            right: '1%',
           }}
           animate={{
             top: `${(damianLane * LANE_HEIGHT + LANE_HEIGHT / 2) / GAME_HEIGHT * 100}%`,
@@ -619,20 +604,20 @@ export function GamePage() {
             src="/damian-sneakers.png"
             alt="Damian"
             fill
-            className="object-contain object-bottom"
+            className="object-contain object-bottom drop-shadow-xl"
           />
         </motion.div>
 
         {/* Lane indicators (which lane Damian is on) */}
         <div
-          className="absolute right-0 top-0 bottom-0 w-8 flex flex-col"
-          style={{ background: 'rgba(45, 90, 61, 0.3)' }}
+          className="absolute right-0 top-0 bottom-0 w-6 flex flex-col"
+          style={{ background: 'rgba(45, 90, 61, 0.2)' }}
         >
           {Array.from({ length: LANE_COUNT }).map((_, i) => (
             <div
               key={i}
               className={`flex-1 flex items-center justify-center transition-colors ${
-                i === damianLane ? 'bg-[#C4A052]/50' : ''
+                i === damianLane ? 'bg-[#C4A052]/40' : ''
               }`}
             >
               {i === damianLane && <span className="text-white text-xs">◄</span>}
