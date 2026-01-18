@@ -13,13 +13,15 @@ interface Offering {
 }
 
 interface OfferingsResponse {
-  business: {
+  business?: {
     name: string;
     subdomain: string;
   };
   offerings: {
-    Savory?: Offering[];
-    Sweet?: Offering[];
+    byCategory: {
+      Savory?: Offering[];
+      Sweet?: Offering[];
+    };
   };
 }
 
@@ -49,7 +51,7 @@ export function MenuSection() {
     async function fetchMenu() {
       try {
         const response = await fetch(
-          "https://app.shortlistpass.com/api/smartpage/nitos/offerings"
+          "https://app.shortlistpass.com/api/smartpage/demo-nitos/offerings"
         );
         if (!response.ok) throw new Error("Failed to fetch");
         const data = await response.json();
@@ -63,7 +65,7 @@ export function MenuSection() {
     fetchMenu();
   }, []);
 
-  const currentItems = offerings?.offerings?.[activeTab] || [];
+  const currentItems = offerings?.offerings?.byCategory?.[activeTab] || [];
 
   // Colors matching his real chalkboard
   const colors = {
