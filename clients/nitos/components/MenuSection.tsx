@@ -51,7 +51,7 @@ export function MenuSection() {
     async function fetchMenu() {
       try {
         const response = await fetch(
-          "https://app.shortlistpass.com/api/smartpage/demo-nitos/offerings"
+          "https://app.shortlistpass.com/api/smartpage/nitos/offerings"
         );
         if (!response.ok) throw new Error("Failed to fetch");
         const data = await response.json();
