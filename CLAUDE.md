@@ -1,178 +1,223 @@
-# Dani Díaz Real Estate Website - Build Instructions
+# Shortlist Web - Multi-Tenant Architecture
 
-## Project Overview
+## Overview
 
-- Multi-tenant real estate site for Dani Díaz, bilingual realtor in Myrtle Beach
-- Pulls client data from Supabase (slug: 'danidiaz')
-- Inspired by mitchelladkins.com / Luxury Presence style
-- Modern, elegant, luxury real estate aesthetic
+This is a **multi-tenant Next.js application** that serves different client websites from a single codebase. Each client gets their own branded experience with unique pages, components, and data sources.
 
-## Brand Kit
+**Live Examples:**
+- `demo-nitos.shortlistpass.com` → Nito's Empanadas (food truck)
+- `danidiaz.com` → Dani Díaz Real Estate
 
-### Colors
-- **Primary:** #1B365D (navy)
-- **Secondary:** #C4A25A (gold)
-- **Accent:** #D6BFAE (blush)
-- **Text:** #3D3D3D (charcoal)
-- **Background:** #F7F7F7 (off-white)
+---
 
-### Typography
-- **Heading font:** Playfair Display
-- **Body font:** Lora
-
-### Brand Copy
-- **Tagline:** "From Global Roots to Local Roofs"
-- **Business:** Dani Díaz - Bilingual Realtor® at Faircloth Real Estate Group
-
-## Pages to Build
-
-### 1. Homepage
-- Hero section with video/image background
-- Dual CTA buttons (Buyers / Sellers)
-- About preview section
-- Featured listings grid
-- Testimonials section
-- Contact form
-
-### 2. About
-- Full bio
-- Professional photo placeholder
-- Credentials and certifications
-- Personal story / journey
-
-### 3. Buyers
-- Category-filtered blog posts (category: 'buyers')
-- Resources and guides for buyers
-
-### 4. Sellers
-- Category-filtered blog posts (category: 'sellers')
-- Resources and guides for sellers
-
-### 5. Blog
-- All posts grid/list
-- Filterable by tags/category
-- Pagination
-
-### 6. Blog/[slug]
-- Individual post page
-- Full content rendering
-- Related posts
-
-### 7. Listings
-- Property grid from Supabase listings table
-- Filter by price, beds, location
-- Search functionality
-
-### 8. Listings/[id]
-- Individual listing detail page
-- Photo gallery
-- Property details
-- Contact agent CTA
-
-### 9. Contact
-- Contact form
-- Sends email notification
-- Office location / map placeholder
-
-## Features
-
-### Language Toggle (EN/ES)
-- Toggle button in navigation
-- Uses LLM translation with caching
-- Stores translations in `page_translations_cache` table
-- Persists language preference in localStorage
-
-### Navigation
-- Responsive mobile nav (hamburger menu)
-- Fixed header with scroll effect
-- Links: Home, Buyers, Sellers, About, Blog
-- Language toggle
-
-### Animations
-- Smooth scroll animations using Framer Motion
-- Fade in on scroll
-- Subtle hover effects
-
-### Dynamic Data
-- All content pulled from Supabase
-- Client branding from `web_clients` table
-- Blog posts from `blog_posts` table
-- Listings from `listings` table
-
-## Database Tables (already exist in Supabase)
-
-### web_clients
-- Client profile data
-- Brand colors (primary_color, secondary_color, accent_color)
-- Business info, slug, contact details
-
-### blog_posts
-- title, slug, content, excerpt
-- category (buyers, sellers, general)
-- tags, featured_image
-- published_at, author
-
-### listings
-- Property data (address, price, beds, baths, sqft)
-- Photos array
-- Status (active, pending, sold)
-- Description, features
-
-### page_translations_cache
-- Cached Spanish translations
-- page_key, locale, translations (JSON)
-- created_at, updated_at
-
-## Image Placeholders
-
-Use Unsplash placeholder images for development:
-- Hero: Luxury home exterior or Myrtle Beach scenery
-- About photo: Professional headshot placeholder
-- Listing photos: Various home interiors/exteriors
-
-Add comments where real images needed:
-```tsx
-{/* TODO: Replace with actual image */}
-```
-
-## Tech Stack
-
-- **Framework:** Next.js 14 App Router
-- **Language:** TypeScript
-- **Styling:** Tailwind CSS
-- **Database:** Supabase
-- **Animations:** Framer Motion
-
-## Environment Variables
+## Project Structure
 
 ```
-NEXT_PUBLIC_SUPABASE_URL=your-project-url
-NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
-```
+/app                    # Next.js App Router pages (routing layer)
+  /page.tsx             # Routes to client-specific HomePage
+  /about/page.tsx       # Routes to client-specific AboutPage
+  /game/page.tsx        # Routes to client-specific GamePage
+  ...
 
-## Development Commands
+/clients                # Client-specific code
+  /nitos/               # Nito's Empanadas
+    /pages/             # Page components (HomePage.tsx, GamePage.tsx)
+    /components/        # Shared components (Header.tsx, MenuSection.tsx)
+    /CLAUDE.md          # Client-specific documentation
+  /danidiaz/            # Dani Díaz Real Estate
+    /pages/             # Page components (HomePage.tsx, AboutPage.tsx, etc.)
+    /components/        # Shared components (Nav.tsx, Footer.tsx)
+    /CLAUDE.md          # Client-specific documentation
 
-```bash
-npm run dev      # Start development server
-npm run build    # Build for production
-npm run start    # Start production server
-npm run lint     # Run ESLint
+/lib
+  /getClient.ts         # Hostname → client resolution
+  /supabase.ts          # Supabase client
+
+/public                 # Static assets (images, fonts)
 ```
 
 ---
 
-## STOP POINT
+## How Multi-Tenant Routing Works
 
-**Complete these first:**
-1. ✅ Homepage (hero, dual CTA, about preview, featured listings, testimonials, contact form)
-2. ✅ About page (full bio, photo, credentials, story)
-3. ✅ Nav component with language toggle (EN/ES)
+### 1. Domain Resolution (`/lib/getClient.ts`)
 
-**Do NOT build yet:**
-- Blog page
-- Blog/[slug] page
-- Listings page
-- Listings/[id] page
-- Contact page
+When a request comes in, we determine which client based on the hostname:
 
-**Commit and push when the above 3 items are complete.**
+```typescript
+// In any page.tsx
+const headersList = await headers();
+const hostname = headersList.get('host'); // e.g., "demo-nitos.shortlistpass.com"
+const client = await getClient(hostname);
+```
+
+The `getClient()` function:
+1. Queries Supabase `web_clients` table
+2. Looks for a row where `domains` array contains the hostname
+3. Returns client data (slug, colors, contact info, etc.)
+4. Falls back to `danidiaz` if no match found
+
+### 2. Client Routing (in `/app/*/page.tsx`)
+
+Each route imports client-specific components and renders based on slug:
+
+```typescript
+import { HomePage as NitosHomePage } from '@/clients/nitos/pages/HomePage';
+import { HomePage as DaniDiazHomePage } from '@/clients/danidiaz/pages/HomePage';
+
+export default async function Page() {
+  const client = await getClient(hostname);
+
+  if (client?.slug === 'nitos') {
+    return <NitosHomePage />;
+  }
+
+  return <DaniDiazHomePage />; // Default
+}
+```
+
+---
+
+## Database: Supabase
+
+### `web_clients` Table
+
+Stores client configuration:
+
+| Column | Type | Description |
+|--------|------|-------------|
+| `id` | uuid | Primary key |
+| `slug` | string | Unique identifier (e.g., "nitos", "danidiaz") |
+| `business_name` | string | Display name |
+| `primary_color` | string | Brand color hex |
+| `secondary_color` | string | Brand color hex |
+| `accent_color` | string | Brand color hex |
+| `domains` | string[] | Array of hostnames that map to this client |
+| `contact_email` | string | Business email |
+| `contact_phone` | string | Business phone |
+| `logo_url` | string | Logo image URL |
+| `tagline` | string | Business tagline |
+
+**Example row:**
+```json
+{
+  "slug": "nitos",
+  "business_name": "Nito's Empanadas",
+  "domains": ["demo-nitos.shortlistpass.com", "localhost:3000"],
+  "primary_color": "#2D5A3D",
+  "secondary_color": "#C4A052"
+}
+```
+
+---
+
+## Adding a New Client
+
+### Step 1: Create Database Entry
+
+Add a row to `web_clients` in Supabase:
+- Set unique `slug`
+- Add all domains that should route to this client
+- Set brand colors
+
+### Step 2: Create Client Folder
+
+```bash
+mkdir -p clients/{slug}/pages
+mkdir -p clients/{slug}/components
+touch clients/{slug}/CLAUDE.md
+```
+
+### Step 3: Create HomePage
+
+Create `clients/{slug}/pages/HomePage.tsx`:
+
+```typescript
+'use client';
+
+export function HomePage() {
+  return (
+    <main>
+      <h1>Welcome to {Business Name}</h1>
+    </main>
+  );
+}
+```
+
+### Step 4: Add Route
+
+Update `/app/page.tsx`:
+
+```typescript
+import { HomePage as NewClientHomePage } from '@/clients/{slug}/pages/HomePage';
+
+// In the Page component:
+if (client?.slug === '{slug}') {
+  return <NewClientHomePage />;
+}
+```
+
+### Step 5: Repeat for Other Routes
+
+For each route the client needs (about, contact, etc.):
+1. Create the page component in `clients/{slug}/pages/`
+2. Update the corresponding `/app/*/page.tsx` to import and route to it
+
+### Step 6: Document
+
+Create `clients/{slug}/CLAUDE.md` with:
+- Business overview
+- Brand colors
+- Data sources (API endpoints, database tables)
+- Page descriptions
+- Component inventory
+
+---
+
+## External APIs
+
+Different clients may use different data sources:
+
+| Client | Data Source | Used For |
+|--------|-------------|----------|
+| Nito's | SmartPage API (`app.shortlistpass.com`) | Menu items, locations |
+| Dani Díaz | Supabase | Listings, blog posts |
+
+See client-specific CLAUDE.md files for API details.
+
+---
+
+## Environment Variables
+
+```env
+NEXT_PUBLIC_SUPABASE_URL=your-project-url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
+```
+
+---
+
+## Development
+
+```bash
+npm run dev      # Start dev server (localhost:3000)
+npm run build    # Build for production
+npm run lint     # Run ESLint
+```
+
+To test different clients locally, add the hostname to the client's `domains` array in Supabase:
+```json
+["demo-nitos.shortlistpass.com", "localhost:3000"]
+```
+
+---
+
+## Key Files Reference
+
+| File | Purpose |
+|------|---------|
+| `/lib/getClient.ts` | Hostname → client resolution |
+| `/app/page.tsx` | Homepage routing |
+| `/app/layout.tsx` | Root layout, fonts, metadata |
+| `/clients/{slug}/pages/*.tsx` | Client page components |
+| `/clients/{slug}/components/*.tsx` | Client shared components |
+| `/clients/{slug}/CLAUDE.md` | Client-specific documentation |
