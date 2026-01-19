@@ -9,6 +9,7 @@ import Nav from '@/clients/danidiaz/components/Nav';
 import Footer from '@/clients/danidiaz/components/Footer';
 import { useLanguage } from '@/clients/danidiaz/components/LanguageContext';
 import { useStyle } from '@/clients/danidiaz/components/StyleContext';
+import { supabase } from '@/lib/supabase';
 
 const fadeInUp = {
   initial: { opacity: 0, y: 30 },
@@ -111,23 +112,38 @@ export function InternationalPage() {
     timeline: '',
     message: '',
   });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSubmitted, setIsSubmitted] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setIsSubmitting(true);
 
-    // Build mailto link with form data
-    const subject = encodeURIComponent(`International Inquiry: ${formData.destination} - ${formData.firstName} ${formData.lastName}`);
-    const body = encodeURIComponent(
-      `Name: ${formData.firstName} ${formData.lastName}\n` +
-      `Email: ${formData.email}\n` +
-      `Phone: ${formData.phone}\n` +
-      `Destination: ${formData.destination}\n` +
-      `Budget: ${formData.budget}\n` +
-      `Timeline: ${formData.timeline}\n\n` +
-      `Message:\n${formData.message}`
-    );
+    const { error } = await supabase
+      .from('real_estate_leads')
+      .insert({
+        client_id: '3c125122-f3d9-4f75-91d9-69cf84d6d20e',
+        name: `${formData.firstName} ${formData.lastName}`,
+        email: formData.email,
+        phone: formData.phone || null,
+        lead_type: 'international',
+        message: `Destination: ${formData.destination}\nBudget: ${formData.budget}\nTimeline: ${formData.timeline}\n\n${formData.message}`,
+        source: 'international_page',
+        status: 'new'
+      });
 
-    window.open(`mailto:danidiazrealestate@gmail.com?subject=${subject}&body=${body}`);
+    setIsSubmitting(false);
+
+    if (error) {
+      console.error('Error submitting lead:', error);
+      alert('There was an error submitting your message. Please try again.');
+    } else {
+      setIsSubmitted(true);
+      setFormData({
+        firstName: '', lastName: '', email: '', phone: '',
+        destination: '', budget: '', timeline: '', message: ''
+      });
+    }
   };
 
   return (
@@ -503,133 +519,156 @@ export function InternationalPage() {
 
             {/* Contact Form */}
             <motion.div variants={fadeInUp}>
-              <form onSubmit={handleSubmit} className="bg-white shadow-xl p-8 border border-[#D6BFAE]/30">
-                <h3
-                  className="font-[family-name:var(--font-playfair)] text-2xl mb-6 transition-colors duration-500"
-                  style={{ color: isDark ? '#1B365D' : '#3D3D3D' }}
-                >
-                  {t('Schedule a Consultation', 'Agenda una Consulta')}
-                </h3>
-
-                <div className="space-y-4">
-                  <div className="grid sm:grid-cols-2 gap-4">
-                    <div>
-                      <label htmlFor="firstName" className="block text-sm text-[#3D3D3D] mb-2">
-                        {t('First Name', 'Nombre')} *
-                      </label>
-                      <input
-                        type="text"
-                        id="firstName"
-                        required
-                        value={formData.firstName}
-                        onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
-                        className="w-full px-4 py-3 border border-[#D6BFAE] focus:border-[#1B365D] focus:outline-none transition-colors"
-                      />
-                    </div>
-                    <div>
-                      <label htmlFor="lastName" className="block text-sm text-[#3D3D3D] mb-2">
-                        {t('Last Name', 'Apellido')} *
-                      </label>
-                      <input
-                        type="text"
-                        id="lastName"
-                        required
-                        value={formData.lastName}
-                        onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
-                        className="w-full px-4 py-3 border border-[#D6BFAE] focus:border-[#1B365D] focus:outline-none transition-colors"
-                      />
-                    </div>
+              {isSubmitted ? (
+                <div className="bg-white shadow-xl p-8 border border-[#D6BFAE]/30 text-center">
+                  <div className="w-16 h-16 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    </svg>
                   </div>
-
-                  <div>
-                    <label htmlFor="email" className="block text-sm text-[#3D3D3D] mb-2">
-                      Email *
-                    </label>
-                    <input
-                      type="email"
-                      id="email"
-                      required
-                      value={formData.email}
-                      onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                      className="w-full px-4 py-3 border border-[#D6BFAE] focus:border-[#1B365D] focus:outline-none transition-colors"
-                    />
-                  </div>
-
-                  <div>
-                    <label htmlFor="phone" className="block text-sm text-[#3D3D3D] mb-2">
-                      {t('Phone', 'Teléfono')}
-                    </label>
-                    <input
-                      type="tel"
-                      id="phone"
-                      value={formData.phone}
-                      onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                      className="w-full px-4 py-3 border border-[#D6BFAE] focus:border-[#1B365D] focus:outline-none transition-colors"
-                    />
-                  </div>
-
-                  <div>
-                    <label htmlFor="destination" className="block text-sm text-[#3D3D3D] mb-2">
-                      {t('Destination of Interest', 'Destino de Interés')} *
-                    </label>
-                    <select
-                      id="destination"
-                      required
-                      value={formData.destination}
-                      onChange={(e) => setFormData({ ...formData, destination: e.target.value })}
-                      className="w-full px-4 py-3 border border-[#D6BFAE] focus:border-[#1B365D] focus:outline-none transition-colors bg-white"
-                    >
-                      <option value="">{t('Select a destination', 'Selecciona un destino')}</option>
-                      <option value="dubai">Dubai, UAE</option>
-                      <option value="cancun">{t('Cancun, Mexico', 'Cancún, México')}</option>
-                      <option value="other">{t('Other (specify in message)', 'Otro (especificar en mensaje)')}</option>
-                    </select>
-                  </div>
-
-                  <div>
-                    <label htmlFor="budget" className="block text-sm text-[#3D3D3D] mb-2">
-                      {t('Budget Range', 'Rango de Presupuesto')}
-                    </label>
-                    <select
-                      id="budget"
-                      value={formData.budget}
-                      onChange={(e) => setFormData({ ...formData, budget: e.target.value })}
-                      className="w-full px-4 py-3 border border-[#D6BFAE] focus:border-[#1B365D] focus:outline-none transition-colors bg-white"
-                    >
-                      <option value="">{t('Select budget range', 'Selecciona rango de presupuesto')}</option>
-                      <option value="under-250k">{t('Under $250,000', 'Menos de $250,000')}</option>
-                      <option value="250k-500k">$250,000 - $500,000</option>
-                      <option value="500k-1m">$500,000 - $1,000,000</option>
-                      <option value="1m-plus">{t('$1,000,000+', '$1,000,000+')}</option>
-                    </select>
-                  </div>
-
-                  <div>
-                    <label htmlFor="message" className="block text-sm text-[#3D3D3D] mb-2">
-                      {t('Tell me about your goals', 'Cuéntame sobre tus metas')}
-                    </label>
-                    <textarea
-                      id="message"
-                      rows={4}
-                      value={formData.message}
-                      onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                      className="w-full px-4 py-3 border border-[#D6BFAE] focus:border-[#1B365D] focus:outline-none transition-colors resize-none"
-                      placeholder={t(
-                        'What type of property are you looking for? Investment, vacation home, relocation?',
-                        '¿Qué tipo de propiedad buscas? ¿Inversión, casa de vacaciones, reubicación?'
-                      )}
-                    />
-                  </div>
-
+                  <h3 className="font-[family-name:var(--font-playfair)] text-2xl text-[#1B365D] mb-2">
+                    {t('Message Sent!', '¡Mensaje Enviado!')}
+                  </h3>
+                  <p className="text-[#3D3D3D] mb-4">
+                    {t("Thank you for your interest! I'll be in touch soon to discuss your international real estate goals.", '¡Gracias por tu interés! Me pondré en contacto pronto para discutir tus metas inmobiliarias internacionales.')}
+                  </p>
                   <button
-                    type="submit"
-                    className="w-full bg-[#C4A25A] text-white px-8 py-4 text-lg hover:bg-[#b3923f] transition-colors flex items-center justify-center gap-2"
+                    onClick={() => setIsSubmitted(false)}
+                    className="text-[#C4A25A] hover:underline"
                   >
-                    <Plane className="w-5 h-5" />
-                    {t('Start Your Global Journey', 'Comienza Tu Viaje Global')}
+                    {t('Send another message', 'Enviar otro mensaje')}
                   </button>
                 </div>
-              </form>
+              ) : (
+                <form onSubmit={handleSubmit} className="bg-white shadow-xl p-8 border border-[#D6BFAE]/30">
+                  <h3
+                    className="font-[family-name:var(--font-playfair)] text-2xl mb-6 transition-colors duration-500"
+                    style={{ color: isDark ? '#1B365D' : '#3D3D3D' }}
+                  >
+                    {t('Schedule a Consultation', 'Agenda una Consulta')}
+                  </h3>
+
+                  <div className="space-y-4">
+                    <div className="grid sm:grid-cols-2 gap-4">
+                      <div>
+                        <label htmlFor="firstName" className="block text-sm text-[#3D3D3D] mb-2">
+                          {t('First Name', 'Nombre')} *
+                        </label>
+                        <input
+                          type="text"
+                          id="firstName"
+                          required
+                          value={formData.firstName}
+                          onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
+                          className="w-full px-4 py-3 border border-[#D6BFAE] focus:border-[#1B365D] focus:outline-none transition-colors"
+                        />
+                      </div>
+                      <div>
+                        <label htmlFor="lastName" className="block text-sm text-[#3D3D3D] mb-2">
+                          {t('Last Name', 'Apellido')} *
+                        </label>
+                        <input
+                          type="text"
+                          id="lastName"
+                          required
+                          value={formData.lastName}
+                          onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
+                          className="w-full px-4 py-3 border border-[#D6BFAE] focus:border-[#1B365D] focus:outline-none transition-colors"
+                        />
+                      </div>
+                    </div>
+
+                    <div>
+                      <label htmlFor="email" className="block text-sm text-[#3D3D3D] mb-2">
+                        Email *
+                      </label>
+                      <input
+                        type="email"
+                        id="email"
+                        required
+                        value={formData.email}
+                        onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                        className="w-full px-4 py-3 border border-[#D6BFAE] focus:border-[#1B365D] focus:outline-none transition-colors"
+                      />
+                    </div>
+
+                    <div>
+                      <label htmlFor="phone" className="block text-sm text-[#3D3D3D] mb-2">
+                        {t('Phone', 'Teléfono')}
+                      </label>
+                      <input
+                        type="tel"
+                        id="phone"
+                        value={formData.phone}
+                        onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                        className="w-full px-4 py-3 border border-[#D6BFAE] focus:border-[#1B365D] focus:outline-none transition-colors"
+                      />
+                    </div>
+
+                    <div>
+                      <label htmlFor="destination" className="block text-sm text-[#3D3D3D] mb-2">
+                        {t('Destination of Interest', 'Destino de Interés')} *
+                      </label>
+                      <select
+                        id="destination"
+                        required
+                        value={formData.destination}
+                        onChange={(e) => setFormData({ ...formData, destination: e.target.value })}
+                        className="w-full px-4 py-3 border border-[#D6BFAE] focus:border-[#1B365D] focus:outline-none transition-colors bg-white"
+                      >
+                        <option value="">{t('Select a destination', 'Selecciona un destino')}</option>
+                        <option value="dubai">Dubai, UAE</option>
+                        <option value="cancun">{t('Cancun, Mexico', 'Cancún, México')}</option>
+                        <option value="other">{t('Other (specify in message)', 'Otro (especificar en mensaje)')}</option>
+                      </select>
+                    </div>
+
+                    <div>
+                      <label htmlFor="budget" className="block text-sm text-[#3D3D3D] mb-2">
+                        {t('Budget Range', 'Rango de Presupuesto')}
+                      </label>
+                      <select
+                        id="budget"
+                        value={formData.budget}
+                        onChange={(e) => setFormData({ ...formData, budget: e.target.value })}
+                        className="w-full px-4 py-3 border border-[#D6BFAE] focus:border-[#1B365D] focus:outline-none transition-colors bg-white"
+                      >
+                        <option value="">{t('Select budget range', 'Selecciona rango de presupuesto')}</option>
+                        <option value="under-250k">{t('Under $250,000', 'Menos de $250,000')}</option>
+                        <option value="250k-500k">$250,000 - $500,000</option>
+                        <option value="500k-1m">$500,000 - $1,000,000</option>
+                        <option value="1m-plus">{t('$1,000,000+', '$1,000,000+')}</option>
+                      </select>
+                    </div>
+
+                    <div>
+                      <label htmlFor="message" className="block text-sm text-[#3D3D3D] mb-2">
+                        {t('Tell me about your goals', 'Cuéntame sobre tus metas')}
+                      </label>
+                      <textarea
+                        id="message"
+                        rows={4}
+                        value={formData.message}
+                        onChange={(e) => setFormData({ ...formData, message: e.target.value })}
+                        className="w-full px-4 py-3 border border-[#D6BFAE] focus:border-[#1B365D] focus:outline-none transition-colors resize-none"
+                        placeholder={t(
+                          'What type of property are you looking for? Investment, vacation home, relocation?',
+                          '¿Qué tipo de propiedad buscas? ¿Inversión, casa de vacaciones, reubicación?'
+                        )}
+                      />
+                    </div>
+
+                    <button
+                      type="submit"
+                      disabled={isSubmitting}
+                      className="w-full bg-[#C4A25A] text-white px-8 py-4 text-lg hover:bg-[#b3923f] transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      <Plane className="w-5 h-5" />
+                      {isSubmitting ? t('Sending...', 'Enviando...') : t('Start Your Global Journey', 'Comienza Tu Viaje Global')}
+                    </button>
+                  </div>
+                </form>
+              )}
             </motion.div>
           </motion.div>
         </div>

@@ -5,6 +5,7 @@ import { useState } from 'react';
 import Nav from '@/clients/danidiaz/components/Nav';
 import Footer from '@/clients/danidiaz/components/Footer';
 import { useLanguage } from '@/clients/danidiaz/components/LanguageContext';
+import { supabase } from '@/lib/supabase';
 
 export function ContactPage() {
   const { language, t } = useLanguage();
@@ -24,21 +25,27 @@ export function ContactPage() {
     e.preventDefault();
     setIsSubmitting(true);
 
-    // Build mailto link with form data
-    const subject = encodeURIComponent(`New Inquiry from ${formData.firstName} ${formData.lastName}`);
-    const body = encodeURIComponent(
-      `Name: ${formData.firstName} ${formData.lastName}\n` +
-      `Email: ${formData.email}\n` +
-      `Phone: ${formData.phone}\n` +
-      `Interest: ${formData.interest}\n` +
-      `Preferred Language: ${formData.preferredLanguage}\n\n` +
-      `Message:\n${formData.message}`
-    );
+    const { error } = await supabase
+      .from('real_estate_leads')
+      .insert({
+        client_id: '3c125122-f3d9-4f75-91d9-69cf84d6d20e',
+        name: `${formData.firstName} ${formData.lastName}`,
+        email: formData.email,
+        phone: formData.phone || null,
+        lead_type: formData.interest || 'general',
+        message: `Preferred Language: ${formData.preferredLanguage}\n\n${formData.message}`,
+        source: 'contact_page',
+        status: 'new'
+      });
 
-    window.open(`mailto:danidiazrealestate@gmail.com?subject=${subject}&body=${body}`);
-
-    setIsSubmitted(true);
     setIsSubmitting(false);
+
+    if (error) {
+      console.error('Error submitting lead:', error);
+      alert('There was an error submitting your message. Please try again.');
+    } else {
+      setIsSubmitted(true);
+    }
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {

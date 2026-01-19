@@ -50,21 +50,37 @@ export function ListingDetailPage() {
     phone: '',
     message: ''
   });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSubmitted, setIsSubmitted] = useState(false);
 
-  const handleListingContactSubmit = (e: React.FormEvent) => {
+  const handleListingContactSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!listing) return;
-    const subject = encodeURIComponent(`Property Inquiry: ${listing.address}`);
-    const body = encodeURIComponent(
-      `Name: ${listingContactForm.name}\n` +
-      `Email: ${listingContactForm.email}\n` +
-      `Phone: ${listingContactForm.phone}\n\n` +
-      `Property: ${listing.address}\n` +
-      `${listing.city}, ${listing.state} ${listing.zip}\n` +
-      `Price: ${formatPrice(listing.price)}\n\n` +
-      `Message:\n${listingContactForm.message}`
-    );
-    window.open(`mailto:danidiazrealestate@gmail.com?subject=${subject}&body=${body}`);
+    setIsSubmitting(true);
+
+    const { error } = await supabase
+      .from('real_estate_leads')
+      .insert({
+        client_id: '3c125122-f3d9-4f75-91d9-69cf84d6d20e',
+        name: listingContactForm.name,
+        email: listingContactForm.email,
+        phone: listingContactForm.phone || null,
+        address: `${listing.address}, ${listing.city}, ${listing.state} ${listing.zip}`,
+        lead_type: 'property_inquiry',
+        message: `Property: ${listing.address}\nPrice: ${formatPrice(listing.price)}\n\n${listingContactForm.message}`,
+        source: 'listing_detail',
+        status: 'new'
+      });
+
+    setIsSubmitting(false);
+
+    if (error) {
+      console.error('Error submitting lead:', error);
+      alert('There was an error submitting your message. Please try again.');
+    } else {
+      setIsSubmitted(true);
+      setListingContactForm({ name: '', email: '', phone: '', message: '' });
+    }
   };
 
   const getShareUrl = () => {
@@ -512,42 +528,63 @@ export function ListingDetailPage() {
                 </div>
 
                 {showContactForm && (
-                  <form className="space-y-4" onSubmit={handleListingContactSubmit}>
-                    <input
-                      type="text"
-                      value={listingContactForm.name}
-                      onChange={(e) => setListingContactForm({ ...listingContactForm, name: e.target.value })}
-                      placeholder={t('Your Name', 'Tu Nombre')}
-                      className="w-full px-4 py-3 border border-[#D6BFAE] focus:border-[#1B365D] focus:outline-none"
-                    />
-                    <input
-                      type="email"
-                      value={listingContactForm.email}
-                      onChange={(e) => setListingContactForm({ ...listingContactForm, email: e.target.value })}
-                      placeholder="Email"
-                      className="w-full px-4 py-3 border border-[#D6BFAE] focus:border-[#1B365D] focus:outline-none"
-                    />
-                    <input
-                      type="tel"
-                      value={listingContactForm.phone}
-                      onChange={(e) => setListingContactForm({ ...listingContactForm, phone: e.target.value })}
-                      placeholder={t('Phone', 'Teléfono')}
-                      className="w-full px-4 py-3 border border-[#D6BFAE] focus:border-[#1B365D] focus:outline-none"
-                    />
-                    <textarea
-                      rows={3}
-                      value={listingContactForm.message}
-                      onChange={(e) => setListingContactForm({ ...listingContactForm, message: e.target.value })}
-                      placeholder={t(`I'm interested in ${listing.address}...`, `Me interesa ${listing.address}...`)}
-                      className="w-full px-4 py-3 border border-[#D6BFAE] focus:border-[#1B365D] focus:outline-none resize-none"
-                    />
-                    <button
-                      type="submit"
-                      className="w-full bg-[#1B365D] text-white px-6 py-3 hover:bg-[#152a4a] transition-colors"
-                    >
-                      {t('Send Message', 'Enviar Mensaje')}
-                    </button>
-                  </form>
+                  isSubmitted ? (
+                    <div className="text-center py-6">
+                      <div className="w-12 h-12 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-3">
+                        <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                        </svg>
+                      </div>
+                      <p className="text-[#1B365D] font-semibold mb-2">{t('Message Sent!', '¡Mensaje Enviado!')}</p>
+                      <p className="text-sm text-[#3D3D3D]">{t("I'll be in touch soon.", 'Me pondré en contacto pronto.')}</p>
+                      <button
+                        onClick={() => setIsSubmitted(false)}
+                        className="mt-4 text-[#C4A25A] hover:underline text-sm"
+                      >
+                        {t('Send another message', 'Enviar otro mensaje')}
+                      </button>
+                    </div>
+                  ) : (
+                    <form className="space-y-4" onSubmit={handleListingContactSubmit}>
+                      <input
+                        type="text"
+                        required
+                        value={listingContactForm.name}
+                        onChange={(e) => setListingContactForm({ ...listingContactForm, name: e.target.value })}
+                        placeholder={t('Your Name', 'Tu Nombre')}
+                        className="w-full px-4 py-3 border border-[#D6BFAE] focus:border-[#1B365D] focus:outline-none"
+                      />
+                      <input
+                        type="email"
+                        required
+                        value={listingContactForm.email}
+                        onChange={(e) => setListingContactForm({ ...listingContactForm, email: e.target.value })}
+                        placeholder="Email"
+                        className="w-full px-4 py-3 border border-[#D6BFAE] focus:border-[#1B365D] focus:outline-none"
+                      />
+                      <input
+                        type="tel"
+                        value={listingContactForm.phone}
+                        onChange={(e) => setListingContactForm({ ...listingContactForm, phone: e.target.value })}
+                        placeholder={t('Phone', 'Teléfono')}
+                        className="w-full px-4 py-3 border border-[#D6BFAE] focus:border-[#1B365D] focus:outline-none"
+                      />
+                      <textarea
+                        rows={3}
+                        value={listingContactForm.message}
+                        onChange={(e) => setListingContactForm({ ...listingContactForm, message: e.target.value })}
+                        placeholder={t(`I'm interested in ${listing.address}...`, `Me interesa ${listing.address}...`)}
+                        className="w-full px-4 py-3 border border-[#D6BFAE] focus:border-[#1B365D] focus:outline-none resize-none"
+                      />
+                      <button
+                        type="submit"
+                        disabled={isSubmitting}
+                        className="w-full bg-[#1B365D] text-white px-6 py-3 hover:bg-[#152a4a] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
+                        {isSubmitting ? t('Sending...', 'Enviando...') : t('Send Message', 'Enviar Mensaje')}
+                      </button>
+                    </form>
+                  )
                 )}
 
                 <p className="text-xs text-[#3D3D3D]/60 mt-6 text-center">

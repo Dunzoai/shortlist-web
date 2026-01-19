@@ -90,17 +90,34 @@ export function HomePage() {
     interest: '',
     message: ''
   });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSubmitted, setIsSubmitted] = useState(false);
 
-  const handleContactSubmit = (e: React.FormEvent) => {
+  const handleContactSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const subject = encodeURIComponent(`New Inquiry from ${contactForm.firstName} ${contactForm.lastName}`);
-    const body = encodeURIComponent(
-      `Name: ${contactForm.firstName} ${contactForm.lastName}\n` +
-      `Email: ${contactForm.email}\n` +
-      `Interest: ${contactForm.interest}\n\n` +
-      `Message:\n${contactForm.message}`
-    );
-    window.open(`mailto:danidiazrealestate@gmail.com?subject=${subject}&body=${body}`);
+    setIsSubmitting(true);
+
+    const { error } = await supabase
+      .from('real_estate_leads')
+      .insert({
+        client_id: '3c125122-f3d9-4f75-91d9-69cf84d6d20e',
+        name: `${contactForm.firstName} ${contactForm.lastName}`,
+        email: contactForm.email,
+        lead_type: contactForm.interest || 'general',
+        message: contactForm.message,
+        source: 'homepage_contact',
+        status: 'new'
+      });
+
+    setIsSubmitting(false);
+
+    if (error) {
+      console.error('Error submitting lead:', error);
+      alert('There was an error submitting your message. Please try again.');
+    } else {
+      setIsSubmitted(true);
+      setContactForm({ firstName: '', lastName: '', email: '', interest: '', message: '' });
+    }
   };
 
   // Failsafe: Force video to show after 500ms even if events don't fire
@@ -630,88 +647,114 @@ export function HomePage() {
             </motion.div>
 
             <motion.div variants={fadeInUp} className="relative z-20">
-              <form className="space-y-6" onSubmit={handleContactSubmit}>
-                <div className="grid sm:grid-cols-2 gap-6">
-                  <div>
-                    <label htmlFor="firstName" className="block text-sm text-[#3D3D3D] mb-2">
-                      {t('First Name', 'Nombre')}
-                    </label>
-                    <input
-                      type="text"
-                      id="firstName"
-                      value={contactForm.firstName}
-                      onChange={(e) => setContactForm({ ...contactForm, firstName: e.target.value })}
-                      className="w-full px-4 py-3 border border-[#D6BFAE] focus:border-[#1B365D] focus:outline-none transition-colors"
-                      placeholder={t('John', 'Juan')}
-                    />
+              {isSubmitted ? (
+                <div className="bg-white p-8 text-center">
+                  <div className="w-16 h-16 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    </svg>
                   </div>
-                  <div>
-                    <label htmlFor="lastName" className="block text-sm text-[#3D3D3D] mb-2">
-                      {t('Last Name', 'Apellido')}
-                    </label>
-                    <input
-                      type="text"
-                      id="lastName"
-                      value={contactForm.lastName}
-                      onChange={(e) => setContactForm({ ...contactForm, lastName: e.target.value })}
-                      className="w-full px-4 py-3 border border-[#D6BFAE] focus:border-[#1B365D] focus:outline-none transition-colors"
-                      placeholder={t('Doe', 'García')}
-                    />
-                  </div>
-                </div>
-                <div>
-                  <label htmlFor="email" className="block text-sm text-[#3D3D3D] mb-2">
-                    Email
-                  </label>
-                  <input
-                    type="email"
-                    id="email"
-                    name="email"
-                    autoComplete="email"
-                    value={contactForm.email}
-                    onChange={(e) => setContactForm({ ...contactForm, email: e.target.value })}
-                    className="w-full px-4 py-3 border border-[#D6BFAE] focus:border-[#1B365D] focus:outline-none transition-colors bg-white"
-                    placeholder="john@example.com"
-                  />
-                </div>
-                <div>
-                  <label htmlFor="interest" className="block text-sm text-[#3D3D3D] mb-2">
-                    {t("I'm interested in...", 'Estoy interesado en...')}
-                  </label>
-                  <select
-                    id="interest"
-                    value={contactForm.interest}
-                    onChange={(e) => setContactForm({ ...contactForm, interest: e.target.value })}
-                    className="w-full px-4 py-3 border border-[#D6BFAE] focus:border-[#1B365D] focus:outline-none transition-colors bg-white"
+                  <h3 className="font-[family-name:var(--font-playfair)] text-2xl text-[#1B365D] mb-2">
+                    {t('Message Sent!', '¡Mensaje Enviado!')}
+                  </h3>
+                  <p className="text-[#3D3D3D] mb-4">
+                    {t("Thank you for reaching out. I'll get back to you soon!", '¡Gracias por contactarme. Te responderé pronto!')}
+                  </p>
+                  <button
+                    onClick={() => setIsSubmitted(false)}
+                    className="text-[#C4A25A] hover:underline"
                   >
-                    <option value="">{t('Select an option', 'Selecciona una opción')}</option>
-                    <option value="buying">{t('Buying a home', 'Comprar una casa')}</option>
-                    <option value="selling">{t('Selling my home', 'Vender mi casa')}</option>
-                    <option value="both">{t('Both buying and selling', 'Comprar y vender')}</option>
-                    <option value="info">{t('Just getting information', 'Solo obtener información')}</option>
-                  </select>
+                    {t('Send another message', 'Enviar otro mensaje')}
+                  </button>
                 </div>
-                <div>
-                  <label htmlFor="message" className="block text-sm text-[#3D3D3D] mb-2">
-                    {t('Message', 'Mensaje')}
-                  </label>
-                  <textarea
-                    id="message"
-                    name="message"
-                    rows={4}
-                    value={contactForm.message}
-                    onChange={(e) => setContactForm({ ...contactForm, message: e.target.value })}
-                    className="w-full px-4 py-3 border border-[#D6BFAE] focus:border-[#1B365D] focus:outline-none transition-colors resize-none bg-white relative z-10"
-                    placeholder={t('Tell me about your real estate goals...', 'Cuéntame sobre tus metas inmobiliarias...')}
-                  />
-                </div>
-                <button
-                  type="submit"
-                  className="w-full bg-[#C4A25A] text-white px-8 py-4 text-lg hover:bg-[#b3923f] transition-colors"
-                >
-                  {t('Send Message', 'Enviar Mensaje')}
-                </button>
-              </form>
+              ) : (
+                <form className="space-y-6" onSubmit={handleContactSubmit}>
+                  <div className="grid sm:grid-cols-2 gap-6">
+                    <div>
+                      <label htmlFor="firstName" className="block text-sm text-[#3D3D3D] mb-2">
+                        {t('First Name', 'Nombre')}
+                      </label>
+                      <input
+                        type="text"
+                        id="firstName"
+                        required
+                        value={contactForm.firstName}
+                        onChange={(e) => setContactForm({ ...contactForm, firstName: e.target.value })}
+                        className="w-full px-4 py-3 border border-[#D6BFAE] focus:border-[#1B365D] focus:outline-none transition-colors"
+                        placeholder={t('John', 'Juan')}
+                      />
+                    </div>
+                    <div>
+                      <label htmlFor="lastName" className="block text-sm text-[#3D3D3D] mb-2">
+                        {t('Last Name', 'Apellido')}
+                      </label>
+                      <input
+                        type="text"
+                        id="lastName"
+                        required
+                        value={contactForm.lastName}
+                        onChange={(e) => setContactForm({ ...contactForm, lastName: e.target.value })}
+                        className="w-full px-4 py-3 border border-[#D6BFAE] focus:border-[#1B365D] focus:outline-none transition-colors"
+                        placeholder={t('Doe', 'García')}
+                      />
+                    </div>
+                  </div>
+                  <div>
+                    <label htmlFor="email" className="block text-sm text-[#3D3D3D] mb-2">
+                      Email
+                    </label>
+                    <input
+                      type="email"
+                      id="email"
+                      name="email"
+                      required
+                      autoComplete="email"
+                      value={contactForm.email}
+                      onChange={(e) => setContactForm({ ...contactForm, email: e.target.value })}
+                      className="w-full px-4 py-3 border border-[#D6BFAE] focus:border-[#1B365D] focus:outline-none transition-colors bg-white"
+                      placeholder="john@example.com"
+                    />
+                  </div>
+                  <div>
+                    <label htmlFor="interest" className="block text-sm text-[#3D3D3D] mb-2">
+                      {t("I'm interested in...", 'Estoy interesado en...')}
+                    </label>
+                    <select
+                      id="interest"
+                      value={contactForm.interest}
+                      onChange={(e) => setContactForm({ ...contactForm, interest: e.target.value })}
+                      className="w-full px-4 py-3 border border-[#D6BFAE] focus:border-[#1B365D] focus:outline-none transition-colors bg-white"
+                    >
+                      <option value="">{t('Select an option', 'Selecciona una opción')}</option>
+                      <option value="buying">{t('Buying a home', 'Comprar una casa')}</option>
+                      <option value="selling">{t('Selling my home', 'Vender mi casa')}</option>
+                      <option value="both">{t('Both buying and selling', 'Comprar y vender')}</option>
+                      <option value="info">{t('Just getting information', 'Solo obtener información')}</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label htmlFor="message" className="block text-sm text-[#3D3D3D] mb-2">
+                      {t('Message', 'Mensaje')}
+                    </label>
+                    <textarea
+                      id="message"
+                      name="message"
+                      rows={4}
+                      value={contactForm.message}
+                      onChange={(e) => setContactForm({ ...contactForm, message: e.target.value })}
+                      className="w-full px-4 py-3 border border-[#D6BFAE] focus:border-[#1B365D] focus:outline-none transition-colors resize-none bg-white relative z-10"
+                      placeholder={t('Tell me about your real estate goals...', 'Cuéntame sobre tus metas inmobiliarias...')}
+                    />
+                  </div>
+                  <button
+                    type="submit"
+                    disabled={isSubmitting}
+                    className="w-full bg-[#C4A25A] text-white px-8 py-4 text-lg hover:bg-[#b3923f] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {isSubmitting ? t('Sending...', 'Enviando...') : t('Send Message', 'Enviar Mensaje')}
+                  </button>
+                </form>
+              )}
             </motion.div>
           </motion.div>
         </div>
