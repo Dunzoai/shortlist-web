@@ -154,11 +154,17 @@ export function MenuSection() {
           />
         </div>
 
-        {/* Menu Items */}
+        {/* Menu Items - fixed height with scroll on mobile */}
         {isLoading ? (
           <div className="text-white/60 text-center py-8">Loading menu...</div>
         ) : (
-          <div className="relative space-y-3 md:space-y-5">
+          <div
+            className="relative space-y-3 md:space-y-5 max-h-[250px] min-h-[200px] md:max-h-none md:min-h-0 overflow-y-auto pr-2"
+            style={{
+              scrollbarWidth: 'thin',
+              scrollbarColor: 'rgba(255,255,255,0.3) transparent'
+            }}
+          >
             {currentItems.map((item, index) => (
               <motion.div
                 key={item.id}
@@ -198,6 +204,11 @@ export function MenuSection() {
               </motion.div>
             ))}
           </div>
+        )}
+
+        {/* Scroll fade indicator - mobile only */}
+        {!isLoading && currentItems.length > 3 && (
+          <div className="md:hidden absolute bottom-16 left-0 right-0 h-8 bg-gradient-to-t from-[#1a1a1a] to-transparent pointer-events-none" />
         )}
 
         {/* Footer note */}
