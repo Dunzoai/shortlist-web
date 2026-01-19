@@ -509,7 +509,7 @@ export function HomePage() {
 
       {/* Contact Section */}
       <section
-        className="py-24 transition-colors duration-500"
+        className="py-24 transition-colors duration-500 overflow-hidden"
         style={{ backgroundColor: isDark ? '#FFFFFF' : '#FFFBF5' }}
       >
         <div className="max-w-7xl mx-auto px-6">
@@ -616,7 +616,7 @@ export function HomePage() {
               </div>
 
               {/* Faircloth Real Estate Logo */}
-              <div className="mt-6 relative w-[600px] h-[150px] md:w-[1200px] md:h-[300px]">
+              <div className="mt-6 relative w-full h-[100px] md:w-[1200px] md:h-[300px]">
                 <Image
                   src="/faircloth-real-estate-logo.png"
                   alt="Faircloth Real Estate Group"
