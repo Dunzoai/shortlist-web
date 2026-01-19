@@ -1,8 +1,29 @@
 'use client';
 
 import Link from 'next/link';
+import { useEffect, useState } from 'react';
+import { supabase } from '@/lib/supabase';
+import { Users } from 'lucide-react';
 
 export default function AdminDashboard() {
+  const [newLeadsCount, setNewLeadsCount] = useState(0);
+
+  useEffect(() => {
+    async function fetchNewLeadsCount() {
+      const { count, error } = await supabase
+        .from('real_estate_leads')
+        .select('*', { count: 'exact', head: true })
+        .eq('client_id', '3c125122-f3d9-4f75-91d9-69cf84d6d20e')
+        .eq('status', 'new');
+
+      if (!error && count !== null) {
+        setNewLeadsCount(count);
+      }
+    }
+
+    fetchNewLeadsCount();
+  }, []);
+
   return (
     <div>
       <h1 className="font-[family-name:var(--font-playfair)] text-4xl text-[#1B365D] mb-8">
@@ -31,6 +52,26 @@ export default function AdminDashboard() {
           </h2>
           <p className="text-[#3D3D3D]">
             Create and manage featured properties
+          </p>
+        </Link>
+
+        <Link
+          href="/admin/leads"
+          className="relative bg-white p-6 rounded-lg shadow-md border-2 border-[#D6BFAE] hover:border-[#C4A25A] hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
+        >
+          {newLeadsCount > 0 && (
+            <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full w-6 h-6 flex items-center justify-center">
+              {newLeadsCount}
+            </span>
+          )}
+          <div className="flex items-center gap-3 mb-2">
+            <Users className="text-[#C4A25A]" size={24} />
+            <h2 className="font-[family-name:var(--font-playfair)] text-2xl text-[#1B365D]">
+              Leads
+            </h2>
+          </div>
+          <p className="text-[#3D3D3D]">
+            View and manage incoming leads
           </p>
         </Link>
       </div>
