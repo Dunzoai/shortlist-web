@@ -697,10 +697,11 @@ export function HomePage() {
                   </label>
                   <textarea
                     id="message"
+                    name="message"
                     rows={4}
                     value={contactForm.message}
                     onChange={(e) => setContactForm({ ...contactForm, message: e.target.value })}
-                    className="w-full px-4 py-3 border border-[#D6BFAE] focus:border-[#1B365D] focus:outline-none transition-colors resize-none"
+                    className="w-full px-4 py-3 border border-[#D6BFAE] focus:border-[#1B365D] focus:outline-none transition-colors resize-none bg-white relative z-10"
                     placeholder={t('Tell me about your real estate goals...', 'Cuéntame sobre tus metas inmobiliarias...')}
                   />
                 </div>
