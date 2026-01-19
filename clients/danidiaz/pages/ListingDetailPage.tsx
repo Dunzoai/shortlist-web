@@ -111,7 +111,7 @@ export function ListingDetailPage() {
     if (typeof window !== 'undefined') {
       return window.location.href;
     }
-    return `https://demo-danidiaz.shortlistpass.com/listings/${params.id}`;
+    return `https://daniglobalhomes.com/listings/${params.id}`;
   };
 
   const handleShare = async () => {

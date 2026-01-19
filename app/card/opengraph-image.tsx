@@ -45,7 +45,7 @@ export default async function Image() {
             }}
           >
             <img
-              src="https://demo-danidiaz.shortlistpass.com/dani-diaz-home-about.JPG"
+              src="https://daniglobalhomes.com/dani-diaz-home-about.JPG"
               width="268"
               height="268"
               style={{

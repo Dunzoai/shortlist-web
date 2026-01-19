@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 
-const baseUrl = 'https://demo-danidiaz.shortlistpass.com';
+const baseUrl = 'https://daniglobalhomes.com';
 
 export const metadata: Metadata = {
   metadataBase: new URL(baseUrl),

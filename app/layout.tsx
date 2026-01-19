@@ -31,7 +31,7 @@ export const metadata: Metadata = {
   authors: [{ name: "Dani Díaz" }],
   creator: "Dani Díaz",
   publisher: "Faircloth Real Estate Group",
-  metadataBase: new URL('https://demo-danidiaz.shortlistpass.com'),
+  metadataBase: new URL('https://daniglobalhomes.com'),
   alternates: {
     canonical: '/',
   },

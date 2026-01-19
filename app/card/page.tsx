@@ -25,7 +25,7 @@ export default function DigitalCardPage() {
         'Connect with Dani Díaz, your bilingual real estate expert on the Grand Strand.',
         'Conecta con Dani Díaz, tu experta bilingüe en bienes raíces en el Grand Strand.'
       ),
-      url: 'https://demo-danidiaz.shortlistpass.com/card',
+      url: 'https://daniglobalhomes.com/card',
     };
 
     if (navigator.share) {
@@ -41,7 +41,7 @@ export default function DigitalCardPage() {
   };
 
   const copyToClipboard = () => {
-    navigator.clipboard.writeText('https://demo-danidiaz.shortlistpass.com/card');
+    navigator.clipboard.writeText('https://daniglobalhomes.com/card');
     showNotification(t('Link copied!', '¡Enlace copiado!'));
   };
 
@@ -198,7 +198,7 @@ export default function DigitalCardPage() {
           </a>
 
           <a
-            href="https://demo-danidiaz.shortlistpass.com"
+            href="https://daniglobalhomes.com"
             target="_blank"
             rel="noopener noreferrer"
             className="flex items-center justify-center gap-3 w-full py-4 px-6 rounded-full border-2 border-[#C4A25A] text-white hover:bg-[#C4A25A]/10 transition-all duration-300 font-[family-name:var(--font-lora)]"
@@ -273,7 +273,7 @@ export default function DigitalCardPage() {
         <motion.div variants={itemVariants} className="flex flex-col items-center">
           <div className="bg-white p-3 rounded-xl shadow-lg mb-3">
             <QRCodeSVG
-              value="https://demo-danidiaz.shortlistpass.com/card"
+              value="https://daniglobalhomes.com/card"
               size={100}
               bgColor="#ffffff"
               fgColor="#1B365D"

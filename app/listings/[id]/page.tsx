@@ -4,7 +4,7 @@ import { getClient } from '@/lib/getClient';
 import { ListingDetailPage as DaniDiazListingDetailPage } from '@/clients/danidiaz/pages/ListingDetailPage';
 import { supabase } from '@/lib/supabase';
 
-const baseUrl = 'https://demo-danidiaz.shortlistpass.com';
+const baseUrl = 'https://daniglobalhomes.com';
 
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
   const { id } = await params;
