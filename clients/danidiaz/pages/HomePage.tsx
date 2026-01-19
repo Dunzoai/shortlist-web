@@ -629,7 +629,7 @@ export function HomePage() {
               </div>
             </motion.div>
 
-            <motion.div variants={fadeInUp}>
+            <motion.div variants={fadeInUp} className="relative z-20">
               <form className="space-y-6" onSubmit={handleContactSubmit}>
                 <div className="grid sm:grid-cols-2 gap-6">
                   <div>
@@ -666,9 +666,11 @@ export function HomePage() {
                   <input
                     type="email"
                     id="email"
+                    name="email"
+                    autoComplete="email"
                     value={contactForm.email}
                     onChange={(e) => setContactForm({ ...contactForm, email: e.target.value })}
-                    className="w-full px-4 py-3 border border-[#D6BFAE] focus:border-[#1B365D] focus:outline-none transition-colors"
+                    className="w-full px-4 py-3 border border-[#D6BFAE] focus:border-[#1B365D] focus:outline-none transition-colors bg-white"
                     placeholder="john@example.com"
                   />
                 </div>
