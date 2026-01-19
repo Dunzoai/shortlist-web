@@ -29,24 +29,27 @@ interface OfferingsResponse {
 function MenuCard({
   item,
   index,
-  accentColor
+  accentColor,
+  onTap,
 }: {
   item: Offering;
   index: number;
   accentColor: string;
+  onTap: () => void;
 }) {
   return (
     <motion.div
       initial={{ opacity: 0, scale: 0.9 }}
       animate={{ opacity: 1, scale: 1 }}
-      transition={{ delay: index * 0.08, type: "spring", stiffness: 200 }}
-      className="relative"
+      transition={{ delay: index * 0.06, type: "spring", stiffness: 200 }}
+      onClick={onTap}
+      className="relative cursor-pointer active:scale-95 transition-transform"
       style={{
         background: "linear-gradient(145deg, #1a1a1a 0%, #2d2d2d 50%, #1a1a1a 100%)",
         boxShadow: "inset 0 1px 2px rgba(255,255,255,0.1), 0 4px 15px rgba(0,0,0,0.4)",
         border: "4px solid #4a3728",
         borderRadius: "6px",
-        padding: "12px",
+        padding: "14px 12px",
       }}
     >
       {/* Chalk texture overlay */}
@@ -69,20 +72,146 @@ function MenuCard({
         >
           {item.title.replace(" Empanada", "")}
         </h4>
+
+        {/* Description always visible */}
         {item.description && (
           <p
-            className="text-[10px] md:text-xs mt-1 leading-tight"
-            style={{ color: "rgba(255,255,255,0.6)" }}
+            className="text-[11px] md:text-xs mt-2 leading-relaxed"
+            style={{ color: "rgba(255,255,255,0.7)" }}
           >
             {item.description}
           </p>
         )}
+
         {/* Accent line */}
-        <div
-          className="w-8 h-0.5 mx-auto mt-2"
-          style={{ background: accentColor }}
-        />
+        <div className="flex items-center justify-center gap-2 mt-2">
+          <div
+            className="w-8 h-0.5"
+            style={{ background: accentColor }}
+          />
+          <div
+            className="w-8 h-0.5"
+            style={{ background: accentColor }}
+          />
+        </div>
       </div>
+    </motion.div>
+  );
+}
+
+// Modal component for expanded empanada details
+function EmpanadaModal({
+  item,
+  accentColor,
+  isSavory,
+  onClose,
+}: {
+  item: Offering;
+  accentColor: string;
+  isSavory: boolean;
+  onClose: () => void;
+}) {
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="fixed inset-0 z-50 flex items-center justify-center p-4"
+      onClick={onClose}
+    >
+      {/* Backdrop */}
+      <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" />
+
+      {/* Modal content */}
+      <motion.div
+        initial={{ scale: 0.9, y: 20 }}
+        animate={{ scale: 1, y: 0 }}
+        exit={{ scale: 0.9, y: 20 }}
+        transition={{ type: "spring", stiffness: 300, damping: 25 }}
+        onClick={(e) => e.stopPropagation()}
+        className="relative w-full max-w-sm"
+        style={{
+          background: "linear-gradient(145deg, #1a1a1a 0%, #2d2d2d 50%, #1a1a1a 100%)",
+          boxShadow: "inset 0 1px 2px rgba(255,255,255,0.1), 0 20px 50px rgba(0,0,0,0.6)",
+          border: "6px solid #4a3728",
+          borderRadius: "12px",
+          padding: "24px 20px",
+        }}
+      >
+        {/* Close button */}
+        <button
+          onClick={onClose}
+          className="absolute top-3 right-3 w-8 h-8 flex items-center justify-center rounded-full bg-white/10 hover:bg-white/20 transition-colors"
+        >
+          <span className="text-white text-lg">&times;</span>
+        </button>
+
+        {/* Chalk texture overlay */}
+        <div
+          className="absolute inset-0 opacity-10 pointer-events-none rounded-lg"
+          style={{
+            backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%' height='100%' filter='url(%23noise)'/%3E%3C/svg%3E")`,
+          }}
+        />
+
+        {/* Modal content */}
+        <div className="relative text-center">
+          {/* Title */}
+          <h3
+            className="text-2xl md:text-3xl font-bold uppercase tracking-wide"
+            style={{
+              color: accentColor,
+              textShadow: "2px 2px 4px rgba(0,0,0,0.5)",
+              fontFamily: "var(--font-permanent-marker), cursive, sans-serif",
+            }}
+          >
+            {item.title.replace(" Empanada", "")}
+          </h3>
+
+          {/* Decorative line */}
+          <div className="flex items-center justify-center gap-3 my-4">
+            <div className="w-12 h-0.5" style={{ background: accentColor }} />
+            <div className="w-2 h-2 rounded-full" style={{ background: accentColor }} />
+            <div className="w-12 h-0.5" style={{ background: accentColor }} />
+          </div>
+
+          {/* Description */}
+          {item.description && (
+            <p
+              className="text-sm md:text-base leading-relaxed mb-4"
+              style={{ color: "rgba(255,255,255,0.85)" }}
+            >
+              {item.description}
+            </p>
+          )}
+
+          {/* Price */}
+          <div
+            className="inline-block px-4 py-2 rounded-full mb-4"
+            style={{
+              background: "rgba(0,0,0,0.5)",
+            }}
+          >
+            <span
+              className="text-lg font-bold"
+              style={{
+                color: "#FFD93D",
+                fontFamily: "var(--font-permanent-marker), cursive, sans-serif",
+              }}
+            >
+              {isSavory ? "$6 each • $5 when you buy 3+" : "$4 each"}
+            </span>
+          </div>
+
+          {/* Future features placeholder */}
+          <div className="mt-4 pt-4 border-t border-white/10">
+            <p className="text-xs text-white/40 italic">
+              {/* Space for: allergy chips, photos, order button */}
+              Tap outside to close
+            </p>
+          </div>
+        </div>
+      </motion.div>
     </motion.div>
   );
 }
@@ -91,6 +220,7 @@ export function MenuSection() {
   const [activeTab, setActiveTab] = useState<"Savory" | "Sweet">("Savory");
   const [offerings, setOfferings] = useState<OfferingsResponse | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [selectedItem, setSelectedItem] = useState<Offering | null>(null);
 
   const sectionRef = useRef(null);
   const isInView = useInView(sectionRef, { once: true, margin: "-100px" });
@@ -181,21 +311,31 @@ export function MenuSection() {
           className="text-3xl md:text-4xl font-bold uppercase tracking-wide"
           style={{
             color: accentColor,
-            textShadow: "2px 2px 4px rgba(0,0,0,0.3)",
+            textShadow: "2px 2px 4px rgba(0,0,0,0.5)",
             fontFamily: "var(--font-permanent-marker), cursive, sans-serif",
           }}
         >
           {activeTab}
         </h3>
-        <p
-          className="text-base md:text-lg mt-2 font-bold"
+        {/* Price with better visibility - dark background pill */}
+        <div
+          className="inline-block mt-3 px-4 py-2 rounded-full"
           style={{
-            color: colors.price,
-            fontFamily: "var(--font-permanent-marker), cursive, sans-serif",
+            background: "rgba(0,0,0,0.7)",
+            boxShadow: "0 2px 10px rgba(0,0,0,0.3)",
           }}
         >
-          {isSavory ? "$6 each • $5 when you buy 3+" : "$4 each"}
-        </p>
+          <p
+            className="text-base md:text-lg font-bold"
+            style={{
+              color: colors.price,
+              fontFamily: "var(--font-permanent-marker), cursive, sans-serif",
+              textShadow: "1px 1px 2px rgba(0,0,0,0.8)",
+            }}
+          >
+            {isSavory ? "$6 each • $5 when you buy 3+" : "$4 each"}
+          </p>
+        </div>
       </motion.div>
 
       {/* Cards Grid */}
@@ -211,6 +351,7 @@ export function MenuSection() {
                 item={item}
                 index={index}
                 accentColor={accentColor}
+                onTap={() => setSelectedItem(item)}
               />
             ))}
           </div>
@@ -223,6 +364,7 @@ export function MenuSection() {
                   item={lastItem}
                   index={pairedItems.length}
                   accentColor={accentColor}
+                  onTap={() => setSelectedItem(lastItem)}
                 />
               </div>
             </div>
@@ -232,10 +374,13 @@ export function MenuSection() {
 
       {/* Footer note */}
       <p
-        className="text-center mt-4 text-sm"
+        className="text-center mt-5 text-sm px-3 py-1 inline-block rounded-full mx-auto"
         style={{
           color: colors.price,
           fontFamily: "var(--font-permanent-marker), cursive, sans-serif",
+          background: "rgba(0,0,0,0.5)",
+          display: "table",
+          margin: "20px auto 0",
         }}
       >
         * Prices do not include tax
@@ -284,111 +429,123 @@ export function MenuSection() {
           {Toggle}
         </motion.div>
 
-        {/* Menu Content */}
-        <AnimatePresence mode="wait">
+        {/* Menu Content - Desktop with floating empanadas */}
+        <div className="relative">
+          {/* Desktop: Left floating empanada */}
           <motion.div
-            key={activeTab}
-            initial={{ opacity: 0, x: isSavory ? -20 : 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: isSavory ? 20 : -20 }}
-            transition={{ type: "spring", stiffness: 300, damping: 30 }}
-            className="flex flex-col lg:flex-row items-center gap-8"
-            drag="x"
-            dragConstraints={{ left: 0, right: 0 }}
-            dragElastic={0.2}
-            onDragEnd={handleDragEnd}
+            initial={{ opacity: 0, x: -100 }}
+            animate={isInView ? { opacity: 1, x: 0 } : {}}
+            transition={{ type: "spring", stiffness: 100, damping: 20, delay: 0.3 }}
+            className="hidden lg:block absolute left-0 top-1/2 -translate-y-1/2 -translate-x-8 z-10"
           >
-            {/* Desktop: Empanada image LEFT for Savory, RIGHT for Sweet */}
-            {isSavory && (
-              <motion.div
-                initial={{ opacity: 0, x: -100 }}
-                animate={isInView ? { opacity: 1, x: 0 } : {}}
-                transition={{ type: "spring", stiffness: 100, damping: 20, delay: 0.3 }}
-                className="hidden lg:flex w-1/3 justify-center items-center"
-              >
-                <Image
-                  src="/empanada-tower.png"
-                  alt="Savory Empanadas"
-                  width={400}
-                  height={400}
-                  className="drop-shadow-2xl"
-                />
-              </motion.div>
-            )}
-
-            {/* Menu Cards */}
-            <div className="w-full lg:w-1/3">
-              {MenuCards}
-            </div>
-
-            {/* Desktop: Empanada image */}
             <motion.div
-              initial={{ opacity: 0, x: 100 }}
-              animate={isInView ? { opacity: 1, x: 0 } : {}}
-              transition={{ type: "spring", stiffness: 100, damping: 20, delay: 0.3 }}
-              className="hidden lg:flex w-1/3 justify-center items-center"
+              animate={{ y: [0, -15, 0], rotate: [0, 3, 0] }}
+              transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
             >
               <Image
-                src={isSavory ? "/empanada.png" : "/sweet-empanada.png"}
-                alt={isSavory ? "Empanada" : "Sweet Empanada"}
-                width={350}
-                height={350}
+                src={isSavory ? "/empanada-tower.png" : "/sweet-empanada.png"}
+                alt="Empanada"
+                width={280}
+                height={280}
+                className="drop-shadow-2xl"
+              />
+            </motion.div>
+          </motion.div>
+
+          {/* Desktop: Right floating empanada */}
+          <motion.div
+            initial={{ opacity: 0, x: 100 }}
+            animate={isInView ? { opacity: 1, x: 0 } : {}}
+            transition={{ type: "spring", stiffness: 100, damping: 20, delay: 0.4 }}
+            className="hidden lg:block absolute right-0 top-1/2 -translate-y-1/2 translate-x-8 z-10"
+          >
+            <motion.div
+              animate={{ y: [0, -12, 0], rotate: [0, -2, 0] }}
+              transition={{ duration: 3.5, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
+            >
+              <Image
+                src={isSavory ? "/empanada.png" : "/sweet-empanada-2.png"}
+                alt="Empanada"
+                width={240}
+                height={240}
                 className={`drop-shadow-2xl ${isSavory ? "rotate-12" : ""}`}
               />
             </motion.div>
+          </motion.div>
 
-            {!isSavory && (
-              <motion.div
-                initial={{ opacity: 0, x: 100 }}
-                animate={isInView ? { opacity: 1, x: 0 } : {}}
-                transition={{ type: "spring", stiffness: 100, damping: 20, delay: 0.4 }}
-                className="hidden lg:flex w-1/3 justify-center items-center"
-              >
-                <Image
-                  src="/sweet-empanada-2.png"
-                  alt="Sweet Empanada"
-                  width={300}
-                  height={300}
-                  className="drop-shadow-2xl"
-                />
-              </motion.div>
-            )}
-          </motion.div>
-        </AnimatePresence>
+          {/* Menu Cards - centered */}
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={activeTab}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              transition={{ type: "spring", stiffness: 300, damping: 30 }}
+              drag="x"
+              dragConstraints={{ left: 0, right: 0 }}
+              dragElastic={0.2}
+              onDragEnd={handleDragEnd}
+              className="relative z-20"
+            >
+              {MenuCards}
+            </motion.div>
+          </AnimatePresence>
+        </div>
 
-        {/* Mobile: Empanada images below */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={isInView ? { opacity: 1, y: 0 } : {}}
-          transition={{ delay: 0.5 }}
-          className="lg:hidden flex justify-center items-end gap-4 mt-8"
-        >
+        {/* Mobile: Empanada images - positioned at corners */}
+        <div className="lg:hidden relative h-32 mt-6">
           <motion.div
-            animate={{ y: [0, -8, 0] }}
-            transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+            initial={{ opacity: 0 }}
+            animate={isInView ? { opacity: 1 } : {}}
+            transition={{ delay: 0.5 }}
+            className="absolute left-4 bottom-0"
           >
-            <Image
-              src={isSavory ? "/empanada-tower.png" : "/sweet-empanada.png"}
-              alt="Empanada"
-              width={150}
-              height={150}
-              className="drop-shadow-2xl"
-            />
+            <motion.div
+              animate={{ y: [0, -8, 0], rotate: [-5, 0, -5] }}
+              transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+            >
+              <Image
+                src={isSavory ? "/empanada-tower.png" : "/sweet-empanada.png"}
+                alt="Empanada"
+                width={120}
+                height={120}
+                className="drop-shadow-2xl"
+              />
+            </motion.div>
           </motion.div>
           <motion.div
-            animate={{ y: [0, -6, 0] }}
-            transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
+            initial={{ opacity: 0 }}
+            animate={isInView ? { opacity: 1 } : {}}
+            transition={{ delay: 0.6 }}
+            className="absolute right-4 bottom-0"
           >
-            <Image
-              src={isSavory ? "/empanada.png" : "/sweet-empanada-2.png"}
-              alt="Empanada"
-              width={130}
-              height={130}
-              className={`drop-shadow-2xl ${isSavory ? "rotate-90" : ""}`}
-            />
+            <motion.div
+              animate={{ y: [0, -6, 0], rotate: [5, 0, 5] }}
+              transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
+            >
+              <Image
+                src={isSavory ? "/empanada.png" : "/sweet-empanada-2.png"}
+                alt="Empanada"
+                width={100}
+                height={100}
+                className={`drop-shadow-2xl ${isSavory ? "rotate-45" : ""}`}
+              />
+            </motion.div>
           </motion.div>
-        </motion.div>
+        </div>
       </div>
+
+      {/* Modal */}
+      <AnimatePresence>
+        {selectedItem && (
+          <EmpanadaModal
+            item={selectedItem}
+            accentColor={accentColor}
+            isSavory={isSavory}
+            onClose={() => setSelectedItem(null)}
+          />
+        )}
+      </AnimatePresence>
     </section>
   );
 }
