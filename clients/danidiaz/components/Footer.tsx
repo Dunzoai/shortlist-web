@@ -153,12 +153,21 @@ export default function Footer() {
             <p className="text-white/40 text-xs mt-2">
               Realtor is a registered trademark of the NAR.
             </p>
-            <p className="mt-2">
+            <p className="mt-2 flex items-center gap-3">
               <a
                 href="/admin"
                 className="text-white/30 hover:text-white/50 transition-colors text-xs"
               >
                 Admin
+              </a>
+              <span className="text-white/20">|</span>
+              <a
+                href="https://www.shortlistpass.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-white/30 hover:text-white/50 transition-colors text-xs"
+              >
+                Built by The Shortlist Co.
               </a>
             </p>
           </div>

@@ -29,46 +29,6 @@ interface Listing {
   mls_number: string;
 }
 
-// Placeholder listing for when Supabase data is not available
-const placeholderListing: Listing = {
-  id: '1',
-  address: '123 Ocean Boulevard',
-  city: 'Myrtle Beach',
-  state: 'SC',
-  zip: '29577',
-  price: 425000,
-  beds: 4,
-  baths: 3,
-  sqft: 2450,
-  images: [
-    'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=1200&q=80',
-    'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=1200&q=80',
-    'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=1200&q=80',
-    'https://images.unsplash.com/photo-1600566753086-00f18fb6b3ea?w=1200&q=80',
-  ],
-  status: 'active',
-  description: `This stunning oceanfront home offers breathtaking views of the Atlantic Ocean from nearly every room. The open floor plan features a gourmet kitchen with granite countertops, stainless steel appliances, and a large island perfect for entertaining.
-
-The primary suite boasts a private balcony overlooking the ocean, a spa-like bathroom with dual vanities, a soaking tub, and a walk-in shower. Three additional bedrooms provide ample space for family and guests.
-
-Step outside to enjoy the private pool and hot tub, surrounded by lush landscaping that provides privacy while maintaining those gorgeous ocean views. The outdoor kitchen and covered patio make this the perfect home for beach lovers who love to entertain.`,
-  property_type: 'Single Family',
-  features: [
-    'Ocean Views',
-    'Private Pool',
-    'Hot Tub',
-    'Outdoor Kitchen',
-    'Granite Countertops',
-    'Stainless Steel Appliances',
-    'Primary Suite Balcony',
-    'Walk-in Closets',
-    'Two-Car Garage',
-    'Covered Patio'
-  ],
-  year_built: 2018,
-  lot_size: '0.35 acres',
-  mls_number: 'MLS123456'
-};
 
 export function ListingDetailPage() {
   const { language, t } = useLanguage();
@@ -177,9 +137,6 @@ export function ListingDetailPage() {
 
       if (data) {
         setListing(data);
-      } else {
-        // Use placeholder if not found
-        setListing(placeholderListing);
       }
       setLoading(false);
     }

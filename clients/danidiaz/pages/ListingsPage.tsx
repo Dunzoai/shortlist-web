@@ -24,99 +24,6 @@ interface Listing {
   property_type: string;
 }
 
-// Placeholder listings for when Supabase data is not available
-const placeholderListings: Listing[] = [
-  {
-    id: '1',
-    address: '123 Ocean Boulevard',
-    city: 'Myrtle Beach',
-    state: 'SC',
-    zip: '29577',
-    price: 425000,
-    beds: 4,
-    baths: 3,
-    sqft: 2450,
-    photos: ['https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=800&q=80'],
-    status: 'active',
-    description: 'Beautiful oceanfront home with stunning views',
-    property_type: 'Single Family'
-  },
-  {
-    id: '2',
-    address: '456 Marsh View Drive',
-    city: 'Pawleys Island',
-    state: 'SC',
-    zip: '29585',
-    price: 575000,
-    beds: 5,
-    baths: 4,
-    sqft: 3200,
-    photos: ['https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800&q=80'],
-    status: 'active',
-    description: 'Luxurious marsh-front estate with private dock',
-    property_type: 'Single Family'
-  },
-  {
-    id: '3',
-    address: '789 Coastal Lane',
-    city: 'Surfside Beach',
-    state: 'SC',
-    zip: '29575',
-    price: 325000,
-    beds: 3,
-    baths: 2,
-    sqft: 1850,
-    photos: ['https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=800&q=80'],
-    status: 'active',
-    description: 'Charming beach cottage steps from the sand',
-    property_type: 'Single Family'
-  },
-  {
-    id: '4',
-    address: '321 Golf Course Way',
-    city: 'Myrtle Beach',
-    state: 'SC',
-    zip: '29579',
-    price: 289000,
-    beds: 3,
-    baths: 2,
-    sqft: 1650,
-    photos: ['https://images.unsplash.com/photo-1600585154526-990dced4db0d?w=800&q=80'],
-    status: 'active',
-    description: 'Golf course community with resort amenities',
-    property_type: 'Condo'
-  },
-  {
-    id: '5',
-    address: '555 Beachside Terrace',
-    city: 'North Myrtle Beach',
-    state: 'SC',
-    zip: '29582',
-    price: 459000,
-    beds: 4,
-    baths: 3,
-    sqft: 2100,
-    photos: ['https://images.unsplash.com/photo-1600047509807-ba8f99d2cdde?w=800&q=80'],
-    status: 'pending',
-    description: 'Modern home with ocean views and pool',
-    property_type: 'Single Family'
-  },
-  {
-    id: '6',
-    address: '888 Harbor View Court',
-    city: 'Little River',
-    state: 'SC',
-    zip: '29566',
-    price: 375000,
-    beds: 3,
-    baths: 2.5,
-    sqft: 2000,
-    photos: ['https://images.unsplash.com/photo-1600566753086-00f18fb6b3ea?w=800&q=80'],
-    status: 'active',
-    description: 'Waterfront townhome with boat slip',
-    property_type: 'Townhouse'
-  },
-];
 
 const priceRanges = [
   { value: 'all', label: 'Any Price' },
@@ -136,8 +43,8 @@ const bedOptions = [
 
 export function ListingsPage() {
   const { language, t } = useLanguage();
-  const [listings, setListings] = useState<Listing[]>(placeholderListings);
-  const [filteredListings, setFilteredListings] = useState<Listing[]>(placeholderListings);
+  const [listings, setListings] = useState<Listing[]>([]);
+  const [filteredListings, setFilteredListings] = useState<Listing[]>([]);
   const [priceRange, setPriceRange] = useState('all');
   const [beds, setBeds] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
@@ -196,10 +103,8 @@ export function ListingsPage() {
         }
       }
 
-      if (allListings.length > 0) {
-        setListings(allListings);
-        setFilteredListings(allListings);
-      }
+      setListings(allListings);
+      setFilteredListings(allListings);
       setLoading(false);
     }
 
