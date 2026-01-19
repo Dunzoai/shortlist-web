@@ -1,17 +1,10 @@
 'use client';
 
-import Image from 'next/image';
-import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { useState } from 'react';
 import Nav from '@/clients/danidiaz/components/Nav';
+import Footer from '@/clients/danidiaz/components/Footer';
 import { useLanguage } from '@/clients/danidiaz/components/LanguageContext';
-
-const fadeInUp = {
-  initial: { opacity: 0, y: 30 },
-  animate: { opacity: 1, y: 0 },
-  transition: { duration: 0.6 }
-};
 
 export function ContactPage() {
   const { language, t } = useLanguage();
@@ -370,42 +363,7 @@ export function ContactPage() {
         </div>
       </section>
 
-      {/* Map Placeholder */}
-      <section className="h-[400px] bg-[#D6BFAE]/30 relative">
-        {/* TODO: Replace with actual map integration */}
-        <div className="absolute inset-0 flex items-center justify-center">
-          <div className="text-center">
-            <svg className="w-16 h-16 text-[#1B365D]/30 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-            </svg>
-            <p className="text-[#3D3D3D]/60">
-              {t('Map placeholder - Myrtle Beach, SC', 'Mapa - Myrtle Beach, SC')}
-            </p>
-          </div>
-        </div>
-      </section>
-
-      {/* Footer */}
-      <footer className="bg-[#1B365D] py-12">
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="flex flex-col md:flex-row justify-between items-center gap-6">
-            <div className="text-center md:text-left">
-              <p className="font-[family-name:var(--font-playfair)] text-white text-xl mb-2">
-                Dani Díaz
-              </p>
-              <p className="text-white/60 text-sm">
-                {t('Bilingual Realtor at Faircloth Real Estate Group', 'Agente Inmobiliaria Bilingüe en Faircloth Real Estate Group')}
-              </p>
-            </div>
-            <div className="text-center md:text-right">
-              <p className="text-white/60 text-sm">
-                © {new Date().getFullYear()} Dani Díaz. {t('All rights reserved.', 'Todos los derechos reservados.')}
-              </p>
-            </div>
-          </div>
-        </div>
-      </footer>
+      <Footer />
     </main>
   );
 }
