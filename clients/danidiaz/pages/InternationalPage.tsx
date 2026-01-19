@@ -30,7 +30,7 @@ const destinations = [
     city: 'Dubai',
     country: 'UAE',
     countryEs: 'EAU',
-    image: '/international/dubai-skyline.jpg',
+    image: '/dubai.jpg',
     highlights: [
       { en: 'Tax-free investment', es: 'Inversión libre de impuestos' },
       { en: 'Luxury lifestyle', es: 'Estilo de vida de lujo' },
@@ -51,7 +51,7 @@ const destinations = [
     city: 'Cancun',
     country: 'Mexico',
     countryEs: 'México',
-    image: '/international/cancun-beach.jpg',
+    image: '/cancun.jpg',
     highlights: [
       { en: 'Caribbean paradise', es: 'Paraíso caribeño' },
       { en: 'Tourism-driven rentals', es: 'Alquileres impulsados por turismo' },
@@ -286,24 +286,12 @@ export function InternationalPage() {
                   {/* Image */}
                   <div className={`relative ${index % 2 === 1 ? 'lg:order-2' : ''}`}>
                     <div className="relative h-[400px] lg:h-[500px] overflow-hidden shadow-2xl">
-                      {/* Placeholder gradient - replace with actual image */}
-                      <div
-                        className={`absolute inset-0 ${
-                          destination.id === 'dubai'
-                            ? 'bg-gradient-to-br from-[#1B365D] via-[#C4A25A]/30 to-[#1B365D]'
-                            : 'bg-gradient-to-br from-[#00CED1]/30 via-[#C4A25A]/20 to-[#1B365D]'
-                        }`}
+                      <Image
+                        src={destination.image}
+                        alt={destination.city}
+                        fill
+                        className="object-cover"
                       />
-                      {/* TODO: Replace with actual images */}
-                      {/* <Image src={destination.image} alt={destination.city} fill className="object-cover" /> */}
-                      <div className="absolute inset-0 flex items-center justify-center">
-                        <div className="text-center text-white">
-                          <Building2 className="w-16 h-16 mx-auto mb-4 opacity-50" />
-                          <p className="text-sm opacity-50">
-                            {t('Image placeholder', 'Imagen de marcador de posición')}
-                          </p>
-                        </div>
-                      </div>
                     </div>
                     {/* City Badge */}
                     <div className="absolute -bottom-4 left-6 bg-[#C4A25A] text-white px-6 py-3">
