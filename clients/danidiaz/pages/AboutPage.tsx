@@ -24,10 +24,10 @@ const staggerContainer = {
 };
 
 const credentials = [
-  { titleEn: 'Licensed Realtor', titleEs: 'Agente Inmobiliaria con Licencia', year: '2015' },
-  { titleEn: 'Bilingual Certification', titleEs: 'Certificación Bilingüe', year: '2016' },
-  { titleEn: 'Luxury Home Specialist', titleEs: 'Especialista en Casas de Lujo', year: '2018' },
-  { titleEn: 'Relocation Expert', titleEs: 'Experta en Reubicación', year: '2019' },
+  { titleEn: 'Licensed Realtor', titleEs: 'Agente Inmobiliaria con Licencia' },
+  { titleEn: 'Bilingual Certification', titleEs: 'Certificación Bilingüe' },
+  { titleEn: 'Luxury Home Specialist', titleEs: 'Especialista en Casas de Lujo' },
+  { titleEn: 'Relocation Expert', titleEs: 'Experta en Reubicación' },
 ];
 
 export function AboutPage() {
@@ -209,12 +209,11 @@ export function AboutPage() {
                     </svg>
                   </div>
                   <h3
-                    className="font-[family-name:var(--font-playfair)] text-xl mb-2"
+                    className="font-[family-name:var(--font-playfair)] text-xl"
                     style={{ color: isDark ? '#1B365D' : '#3D3D3D' }}
                   >
                     {language === 'en' ? credential.titleEn : credential.titleEs}
                   </h3>
-                  <p className="text-[#C4A25A] font-semibold">{credential.year}</p>
                 </div>
               ))}
               </div>

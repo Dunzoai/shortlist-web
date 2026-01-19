@@ -114,9 +114,20 @@ export function InternationalPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // TODO: Implement form submission
-    console.log('Form submitted:', formData);
-    alert(t('Thank you for your inquiry! I will be in touch soon.', '¡Gracias por tu consulta! Me pondré en contacto pronto.'));
+
+    // Build mailto link with form data
+    const subject = encodeURIComponent(`International Inquiry: ${formData.destination} - ${formData.firstName} ${formData.lastName}`);
+    const body = encodeURIComponent(
+      `Name: ${formData.firstName} ${formData.lastName}\n` +
+      `Email: ${formData.email}\n` +
+      `Phone: ${formData.phone}\n` +
+      `Destination: ${formData.destination}\n` +
+      `Budget: ${formData.budget}\n` +
+      `Timeline: ${formData.timeline}\n\n` +
+      `Message:\n${formData.message}`
+    );
+
+    window.open(`mailto:danidiazrealestate@gmail.com?subject=${subject}&body=${body}`);
   };
 
   return (

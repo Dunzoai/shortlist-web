@@ -83,6 +83,25 @@ export function HomePage() {
   const isDark = styleMode === 'dark';
   const [videoLoaded, setVideoLoaded] = useState(false);
   const [featuredListings, setFeaturedListings] = useState<any[]>([]);
+  const [contactForm, setContactForm] = useState({
+    firstName: '',
+    lastName: '',
+    email: '',
+    interest: '',
+    message: ''
+  });
+
+  const handleContactSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const subject = encodeURIComponent(`New Inquiry from ${contactForm.firstName} ${contactForm.lastName}`);
+    const body = encodeURIComponent(
+      `Name: ${contactForm.firstName} ${contactForm.lastName}\n` +
+      `Email: ${contactForm.email}\n` +
+      `Interest: ${contactForm.interest}\n\n` +
+      `Message:\n${contactForm.message}`
+    );
+    window.open(`mailto:danidiazrealestate@gmail.com?subject=${subject}&body=${body}`);
+  };
 
   // Failsafe: Force video to show after 500ms even if events don't fire
   useEffect(() => {
@@ -221,8 +240,8 @@ export function HomePage() {
                 className="object-cover shadow-lg"
               />
               <div className="absolute -bottom-6 -right-6 bg-[#C4A25A] text-white px-6 py-4 font-[family-name:var(--font-playfair)]">
-                <p className="text-2xl font-bold">10+</p>
-                <p className="text-sm">{t('Years Experience', 'Años de Experiencia')}</p>
+                <p className="text-2xl font-bold">100%</p>
+                <p className="text-sm">{t('Personalized Service', 'Servicio Personalizado')}</p>
               </div>
             </motion.div>
 
@@ -611,7 +630,7 @@ export function HomePage() {
             </motion.div>
 
             <motion.div variants={fadeInUp}>
-              <form className="space-y-6">
+              <form className="space-y-6" onSubmit={handleContactSubmit}>
                 <div className="grid sm:grid-cols-2 gap-6">
                   <div>
                     <label htmlFor="firstName" className="block text-sm text-[#3D3D3D] mb-2">
@@ -620,6 +639,8 @@ export function HomePage() {
                     <input
                       type="text"
                       id="firstName"
+                      value={contactForm.firstName}
+                      onChange={(e) => setContactForm({ ...contactForm, firstName: e.target.value })}
                       className="w-full px-4 py-3 border border-[#D6BFAE] focus:border-[#1B365D] focus:outline-none transition-colors"
                       placeholder={t('John', 'Juan')}
                     />
@@ -631,6 +652,8 @@ export function HomePage() {
                     <input
                       type="text"
                       id="lastName"
+                      value={contactForm.lastName}
+                      onChange={(e) => setContactForm({ ...contactForm, lastName: e.target.value })}
                       className="w-full px-4 py-3 border border-[#D6BFAE] focus:border-[#1B365D] focus:outline-none transition-colors"
                       placeholder={t('Doe', 'García')}
                     />
@@ -643,6 +666,8 @@ export function HomePage() {
                   <input
                     type="email"
                     id="email"
+                    value={contactForm.email}
+                    onChange={(e) => setContactForm({ ...contactForm, email: e.target.value })}
                     className="w-full px-4 py-3 border border-[#D6BFAE] focus:border-[#1B365D] focus:outline-none transition-colors"
                     placeholder="john@example.com"
                   />
@@ -653,6 +678,8 @@ export function HomePage() {
                   </label>
                   <select
                     id="interest"
+                    value={contactForm.interest}
+                    onChange={(e) => setContactForm({ ...contactForm, interest: e.target.value })}
                     className="w-full px-4 py-3 border border-[#D6BFAE] focus:border-[#1B365D] focus:outline-none transition-colors bg-white"
                   >
                     <option value="">{t('Select an option', 'Selecciona una opción')}</option>
@@ -669,6 +696,8 @@ export function HomePage() {
                   <textarea
                     id="message"
                     rows={4}
+                    value={contactForm.message}
+                    onChange={(e) => setContactForm({ ...contactForm, message: e.target.value })}
                     className="w-full px-4 py-3 border border-[#D6BFAE] focus:border-[#1B365D] focus:outline-none transition-colors resize-none"
                     placeholder={t('Tell me about your real estate goals...', 'Cuéntame sobre tus metas inmobiliarias...')}
                   />

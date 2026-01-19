@@ -84,6 +84,28 @@ export function ListingDetailPage() {
   } | null>(null);
   const [translating, setTranslating] = useState(false);
   const [showCopiedToast, setShowCopiedToast] = useState(false);
+  const [listingContactForm, setListingContactForm] = useState({
+    name: '',
+    email: '',
+    phone: '',
+    message: ''
+  });
+
+  const handleListingContactSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!listing) return;
+    const subject = encodeURIComponent(`Property Inquiry: ${listing.address}`);
+    const body = encodeURIComponent(
+      `Name: ${listingContactForm.name}\n` +
+      `Email: ${listingContactForm.email}\n` +
+      `Phone: ${listingContactForm.phone}\n\n` +
+      `Property: ${listing.address}\n` +
+      `${listing.city}, ${listing.state} ${listing.zip}\n` +
+      `Price: ${formatPrice(listing.price)}\n\n` +
+      `Message:\n${listingContactForm.message}`
+    );
+    window.open(`mailto:danidiazrealestate@gmail.com?subject=${subject}&body=${body}`);
+  };
 
   const getShareUrl = () => {
     if (typeof window !== 'undefined') {
@@ -516,13 +538,13 @@ export function ListingDetailPage() {
 
                 <div className="space-y-4 mb-6">
                   <a
-                    href="tel:+18435550123"
+                    href="tel:+18435035038"
                     className="flex items-center justify-center gap-2 w-full bg-[#1B365D] text-white px-6 py-3 hover:bg-[#152a4a] transition-colors"
                   >
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
                     </svg>
-                    (843) 555-0123
+                    (843) 503-5038
                   </a>
                   <button
                     onClick={() => setShowContactForm(!showContactForm)}
@@ -533,24 +555,32 @@ export function ListingDetailPage() {
                 </div>
 
                 {showContactForm && (
-                  <form className="space-y-4">
+                  <form className="space-y-4" onSubmit={handleListingContactSubmit}>
                     <input
                       type="text"
+                      value={listingContactForm.name}
+                      onChange={(e) => setListingContactForm({ ...listingContactForm, name: e.target.value })}
                       placeholder={t('Your Name', 'Tu Nombre')}
                       className="w-full px-4 py-3 border border-[#D6BFAE] focus:border-[#1B365D] focus:outline-none"
                     />
                     <input
                       type="email"
+                      value={listingContactForm.email}
+                      onChange={(e) => setListingContactForm({ ...listingContactForm, email: e.target.value })}
                       placeholder="Email"
                       className="w-full px-4 py-3 border border-[#D6BFAE] focus:border-[#1B365D] focus:outline-none"
                     />
                     <input
                       type="tel"
+                      value={listingContactForm.phone}
+                      onChange={(e) => setListingContactForm({ ...listingContactForm, phone: e.target.value })}
                       placeholder={t('Phone', 'Teléfono')}
                       className="w-full px-4 py-3 border border-[#D6BFAE] focus:border-[#1B365D] focus:outline-none"
                     />
                     <textarea
                       rows={3}
+                      value={listingContactForm.message}
+                      onChange={(e) => setListingContactForm({ ...listingContactForm, message: e.target.value })}
                       placeholder={t(`I'm interested in ${listing.address}...`, `Me interesa ${listing.address}...`)}
                       className="w-full px-4 py-3 border border-[#D6BFAE] focus:border-[#1B365D] focus:outline-none resize-none"
                     />

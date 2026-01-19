@@ -31,9 +31,18 @@ export function ContactPage() {
     e.preventDefault();
     setIsSubmitting(true);
 
-    // TODO: Implement actual form submission (email notification)
-    // For now, simulate a submission
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    // Build mailto link with form data
+    const subject = encodeURIComponent(`New Inquiry from ${formData.firstName} ${formData.lastName}`);
+    const body = encodeURIComponent(
+      `Name: ${formData.firstName} ${formData.lastName}\n` +
+      `Email: ${formData.email}\n` +
+      `Phone: ${formData.phone}\n` +
+      `Interest: ${formData.interest}\n` +
+      `Preferred Language: ${formData.preferredLanguage}\n\n` +
+      `Message:\n${formData.message}`
+    );
+
+    window.open(`mailto:danidiazrealestate@gmail.com?subject=${subject}&body=${body}`);
 
     setIsSubmitted(true);
     setIsSubmitting(false);
@@ -104,8 +113,8 @@ export function ContactPage() {
                     <h3 className="font-[family-name:var(--font-playfair)] text-lg text-[#1B365D] mb-1">
                       {t('Phone', 'Teléfono')}
                     </h3>
-                    <a href="tel:+18435550123" className="text-[#3D3D3D] hover:text-[#C4A25A] transition-colors">
-                      (843) 555-0123
+                    <a href="tel:+18435035038" className="text-[#3D3D3D] hover:text-[#C4A25A] transition-colors">
+                      (843) 503-5038
                     </a>
                     <p className="text-sm text-[#3D3D3D]/60 mt-1">
                       {t('Call or text anytime', 'Llama o envía mensaje en cualquier momento')}
@@ -123,8 +132,8 @@ export function ContactPage() {
                     <h3 className="font-[family-name:var(--font-playfair)] text-lg text-[#1B365D] mb-1">
                       Email
                     </h3>
-                    <a href="mailto:dani@fairclothrealestate.com" className="text-[#3D3D3D] hover:text-[#C4A25A] transition-colors">
-                      dani@fairclothrealestate.com
+                    <a href="mailto:danidiazrealestate@gmail.com" className="text-[#3D3D3D] hover:text-[#C4A25A] transition-colors">
+                      danidiazrealestate@gmail.com
                     </a>
                     <p className="text-sm text-[#3D3D3D]/60 mt-1">
                       {t('I respond within 24 hours', 'Respondo en menos de 24 horas')}
