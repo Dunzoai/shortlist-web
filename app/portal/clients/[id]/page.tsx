@@ -1,0 +1,335 @@
+'use client'
+
+import { useEffect, useState } from 'react'
+import { useRouter, useParams } from 'next/navigation'
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { z } from 'zod'
+import { createClient } from '@/lib/supabase/client'
+import Link from 'next/link'
+import type { Client, Affiliate, Service, ClientService } from '@/lib/portal-types'
+
+const clientSchema = z.object({
+  name: z.string().min(1, 'Name is required'),
+  email: z.string().email('Invalid email').optional().or(z.literal('')),
+  phone: z.string().optional(),
+  notes: z.string().optional(),
+  affiliate_id: z.string().optional(),
+})
+
+type ClientFormData = z.infer<typeof clientSchema>
+
+interface ClientServiceWithService extends ClientService {
+  services: Service
+}
+
+export default function EditClientPage() {
+  const router = useRouter()
+  const params = useParams()
+  const clientId = params.id as string
+
+  const [client, setClient] = useState<Client | null>(null)
+  const [affiliates, setAffiliates] = useState<Affiliate[]>([])
+  const [services, setServices] = useState<Service[]>([])
+  const [clientServices, setClientServices] = useState<ClientServiceWithService[]>([])
+  const [loading, setLoading] = useState(true)
+  const [saving, setSaving] = useState(false)
+  const [deleting, setDeleting] = useState(false)
+
+  const { register, handleSubmit, reset, formState: { errors } } = useForm<ClientFormData>({
+    resolver: zodResolver(clientSchema),
+  })
+
+  useEffect(() => {
+    async function fetchData() {
+      const supabase = createClient()
+
+      const { data: clientData } = await supabase.from('clients').select('*').eq('id', clientId).single()
+
+      if (clientData) {
+        setClient(clientData as Client)
+        reset({
+          name: clientData.name,
+          email: clientData.email || '',
+          phone: clientData.phone || '',
+          notes: clientData.notes || '',
+          affiliate_id: clientData.affiliate_id || '',
+        })
+      }
+
+      const { data: affiliatesData } = await supabase.from('affiliates').select('*').order('name')
+      setAffiliates((affiliatesData as Affiliate[]) ?? [])
+
+      const { data: servicesData } = await supabase.from('services').select('*').order('name')
+      setServices((servicesData as Service[]) ?? [])
+
+      const { data: clientServicesData } = await supabase
+        .from('client_services')
+        .select('*, services(*)')
+        .eq('client_id', clientId)
+        .order('created_at')
+
+      setClientServices((clientServicesData as ClientServiceWithService[]) ?? [])
+      setLoading(false)
+    }
+
+    fetchData()
+  }, [clientId, reset])
+
+  const onSubmit = async (data: ClientFormData) => {
+    setSaving(true)
+    const supabase = createClient()
+
+    const { error } = await supabase
+      .from('clients')
+      .update({
+        name: data.name,
+        email: data.email || null,
+        phone: data.phone || null,
+        notes: data.notes || null,
+        affiliate_id: data.affiliate_id || null,
+      })
+      .eq('id', clientId)
+
+    if (error) {
+      alert('Error updating client: ' + error.message)
+      setSaving(false)
+      return
+    }
+
+    router.push('/portal/clients')
+  }
+
+  const handleDelete = async () => {
+    if (!confirm('Are you sure you want to delete this client? This will also delete all their services.')) return
+
+    setDeleting(true)
+    const supabase = createClient()
+    const { error } = await supabase.from('clients').delete().eq('id', clientId)
+
+    if (error) {
+      alert('Error deleting client: ' + error.message)
+      setDeleting(false)
+      return
+    }
+
+    router.push('/portal/clients')
+  }
+
+  const handleAddService = async (serviceId: string) => {
+    const supabase = createClient()
+
+    const { data, error } = await supabase
+      .from('client_services')
+      .insert({ client_id: clientId, service_id: serviceId, monthly_cost: 0, one_time_cost: 0, status: 'active' })
+      .select('*, services(*)')
+      .single()
+
+    if (error) {
+      alert('Error adding service: ' + error.message)
+      return
+    }
+
+    setClientServices([...clientServices, data as ClientServiceWithService])
+  }
+
+  const handleUpdateService = async (csId: string, field: 'monthly_cost' | 'one_time_cost' | 'status', value: string | number) => {
+    const supabase = createClient()
+
+    const updateData: Record<string, string | number> = {}
+    if (field === 'monthly_cost' || field === 'one_time_cost') {
+      updateData[field] = Number(value) || 0
+    } else {
+      updateData[field] = value
+    }
+
+    const { error } = await supabase.from('client_services').update(updateData).eq('id', csId)
+
+    if (error) {
+      alert('Error updating service: ' + error.message)
+      return
+    }
+
+    setClientServices(clientServices.map((cs) => cs.id === csId ? { ...cs, ...updateData } : cs))
+  }
+
+  const handleRemoveService = async (csId: string) => {
+    const supabase = createClient()
+    const { error } = await supabase.from('client_services').delete().eq('id', csId)
+
+    if (error) {
+      alert('Error removing service: ' + error.message)
+      return
+    }
+
+    setClientServices(clientServices.filter((cs) => cs.id !== csId))
+  }
+
+  if (loading) {
+    return (
+      <div className="p-8">
+        <div className="animate-pulse space-y-4">
+          <div className="h-8 bg-[#444444] rounded w-48"></div>
+          <div className="h-64 bg-[#444444] rounded-lg"></div>
+        </div>
+      </div>
+    )
+  }
+
+  if (!client) {
+    return (
+      <div className="p-8">
+        <p className="text-gray-400">Client not found.</p>
+        <Link href="/portal/clients" className="text-[#2E8B57] hover:underline">Back to Clients</Link>
+      </div>
+    )
+  }
+
+  const assignedServiceIds = clientServices.map((cs) => cs.service_id)
+  const availableServices = services.filter((s) => !assignedServiceIds.includes(s.id))
+
+  return (
+    <div className="p-8">
+      <div className="max-w-4xl">
+        <div className="mb-8">
+          <Link href="/portal/clients" className="text-gray-400 hover:text-white text-sm">&larr; Back to Clients</Link>
+          <h1 className="text-2xl font-bold text-white mt-2">Edit Client</h1>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          <div>
+            <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+              <div className="bg-[#333333] rounded-lg p-6 space-y-6">
+                <h2 className="text-lg font-semibold text-white">Client Details</h2>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-2">Name <span className="text-red-400">*</span></label>
+                  <input type="text" {...register('name')} className="w-full px-4 py-2 bg-[#444444] border border-[#555555] rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-[#2E8B57]" />
+                  {errors.name && <p className="mt-1 text-sm text-red-400">{errors.name.message}</p>}
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-2">Email</label>
+                  <input type="email" {...register('email')} className="w-full px-4 py-2 bg-[#444444] border border-[#555555] rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-[#2E8B57]" />
+                  {errors.email && <p className="mt-1 text-sm text-red-400">{errors.email.message}</p>}
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-2">Phone</label>
+                  <input type="tel" {...register('phone')} className="w-full px-4 py-2 bg-[#444444] border border-[#555555] rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-[#2E8B57]" />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-2">Referred by Affiliate</label>
+                  <select {...register('affiliate_id')} className="w-full px-4 py-2 bg-[#444444] border border-[#555555] rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-[#2E8B57]">
+                    <option value="">No affiliate</option>
+                    {affiliates.map((affiliate) => (
+                      <option key={affiliate.id} value={affiliate.id}>{affiliate.name}</option>
+                    ))}
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-2">Notes</label>
+                  <textarea {...register('notes')} rows={4} className="w-full px-4 py-2 bg-[#444444] border border-[#555555] rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-[#2E8B57] resize-none" />
+                </div>
+              </div>
+
+              <div className="flex items-center justify-between">
+                <button type="submit" disabled={saving} className="px-6 py-2 bg-[#2E8B57] hover:bg-[#25724a] disabled:opacity-50 text-white font-medium rounded-lg transition-colors">
+                  {saving ? 'Saving...' : 'Save Changes'}
+                </button>
+                <button type="button" onClick={handleDelete} disabled={deleting} className="px-4 py-2 text-red-400 hover:text-red-300 disabled:opacity-50 text-sm transition-colors">
+                  {deleting ? 'Deleting...' : 'Delete Client'}
+                </button>
+              </div>
+            </form>
+          </div>
+
+          <div>
+            <div className="bg-[#333333] rounded-lg p-6">
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-lg font-semibold text-white">Services</h2>
+                {availableServices.length > 0 && (
+                  <select
+                    onChange={(e) => { if (e.target.value) { handleAddService(e.target.value); e.target.value = '' } }}
+                    className="px-3 py-1.5 bg-[#444444] border border-[#555555] rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#2E8B57]"
+                  >
+                    <option value="">+ Add Service</option>
+                    {availableServices.map((service) => (
+                      <option key={service.id} value={service.id}>{service.name}</option>
+                    ))}
+                  </select>
+                )}
+              </div>
+
+              {clientServices.length === 0 ? (
+                <p className="text-gray-400 text-center py-8">No services assigned yet. Use the dropdown above to add services.</p>
+              ) : (
+                <div className="space-y-4">
+                  {clientServices.map((cs) => (
+                    <div key={cs.id} className="bg-[#3a3a3a] rounded-lg p-4 space-y-3">
+                      <div className="flex items-center justify-between">
+                        <span className="font-medium text-white">{cs.services.name}</span>
+                        <button onClick={() => handleRemoveService(cs.id)} className="text-gray-400 hover:text-red-400 text-sm">Remove</button>
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-3">
+                        <div>
+                          <label className="block text-xs text-gray-400 mb-1">Monthly Cost</label>
+                          <div className="relative">
+                            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">$</span>
+                            <input
+                              type="number"
+                              value={cs.monthly_cost}
+                              onChange={(e) => handleUpdateService(cs.id, 'monthly_cost', e.target.value)}
+                              className="w-full pl-7 pr-3 py-1.5 bg-[#444444] border border-[#555555] rounded text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#2E8B57]"
+                            />
+                          </div>
+                        </div>
+                        <div>
+                          <label className="block text-xs text-gray-400 mb-1">One-time Cost</label>
+                          <div className="relative">
+                            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">$</span>
+                            <input
+                              type="number"
+                              value={cs.one_time_cost}
+                              onChange={(e) => handleUpdateService(cs.id, 'one_time_cost', e.target.value)}
+                              className="w-full pl-7 pr-3 py-1.5 bg-[#444444] border border-[#555555] rounded text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#2E8B57]"
+                            />
+                          </div>
+                        </div>
+                      </div>
+
+                      <div>
+                        <label className="block text-xs text-gray-400 mb-1">Status</label>
+                        <select
+                          value={cs.status}
+                          onChange={(e) => handleUpdateService(cs.id, 'status', e.target.value)}
+                          className="w-full px-3 py-1.5 bg-[#444444] border border-[#555555] rounded text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#2E8B57]"
+                        >
+                          <option value="active">Active</option>
+                          <option value="paused">Paused</option>
+                          <option value="cancelled">Cancelled</option>
+                        </select>
+                      </div>
+                    </div>
+                  ))}
+
+                  <div className="pt-4 border-t border-[#444444]">
+                    <div className="flex justify-between text-sm">
+                      <span className="text-gray-400">Total Monthly</span>
+                      <span className="font-medium text-white">
+                        ${clientServices.filter((cs) => cs.status === 'active').reduce((sum, cs) => sum + Number(cs.monthly_cost), 0).toLocaleString()}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
