@@ -86,17 +86,15 @@ export async function POST(
 
     // Add line items to Stripe invoice
     for (const item of items) {
+      // Calculate total amount for this line item (quantity * unit_price in cents)
+      const amount = toStripeAmount(item.unit_price * item.quantity)
+
       await stripe.invoiceItems.create({
         customer: stripeCustomerId,
         invoice: stripeInvoice.id,
-        quantity: item.quantity,
-        price_data: {
-          currency: 'usd',
-          product_data: {
-            name: item.description,
-          },
-          unit_amount: toStripeAmount(item.unit_price),
-        },
+        amount: amount,
+        currency: 'usd',
+        description: item.description,
       })
     }
 
