@@ -30,7 +30,7 @@ export default function EditExpensePage() {
   const [saving, setSaving] = useState(false)
   const [deleting, setDeleting] = useState(false)
 
-  const { register, handleSubmit, reset, watch, formState: { errors } } = useForm<ExpenseFormData>({
+  const { register, handleSubmit, reset, watch, setValue, formState: { errors } } = useForm<ExpenseFormData>({
     resolver: zodResolver(expenseSchema),
   })
 
@@ -193,29 +193,29 @@ export default function EditExpensePage() {
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium text-gray-300 mb-2">Type</label>
-                <div className="flex gap-4">
-                  <label className="flex items-center gap-2 cursor-pointer">
-                    <input
-                      type="radio"
-                      {...register('is_recurring')}
-                      value="true"
-                      checked={isRecurring === true}
-                      onChange={() => {}}
-                      className="text-[#2E8B57]"
-                    />
-                    <span className="text-gray-300">Monthly</span>
-                  </label>
-                  <label className="flex items-center gap-2 cursor-pointer">
-                    <input
-                      type="radio"
-                      {...register('is_recurring')}
-                      value="false"
-                      checked={isRecurring === false}
-                      onChange={() => {}}
-                      className="text-[#2E8B57]"
-                    />
-                    <span className="text-gray-300">One-time</span>
-                  </label>
+                <div className="flex gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setValue('is_recurring', true)}
+                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                      isRecurring === true
+                        ? 'bg-[#2E8B57] text-white'
+                        : 'bg-[#444444] text-gray-300 hover:bg-[#555555]'
+                    }`}
+                  >
+                    Monthly
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setValue('is_recurring', false)}
+                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                      isRecurring === false
+                        ? 'bg-[#2E8B57] text-white'
+                        : 'bg-[#444444] text-gray-300 hover:bg-[#555555]'
+                    }`}
+                  >
+                    One-time
+                  </button>
                 </div>
               </div>
 
