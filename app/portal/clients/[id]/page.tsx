@@ -128,7 +128,8 @@ export default function EditClientPage() {
   const handleAddService = async (serviceId: string) => {
     const supabase = createClient()
 
-    // Default performed_by_id to the client's account manager
+    // Default performed_by_id to the client's account manager, start_date to today
+    const today = new Date().toISOString().split('T')[0]
     const { data, error } = await supabase
       .from('client_services')
       .insert({
@@ -138,6 +139,7 @@ export default function EditClientPage() {
         one_time_cost: 0,
         status: 'active',
         performed_by_id: currentRepId || null,
+        start_date: today,
       })
       .select('*, services(*)')
       .single()
@@ -150,13 +152,13 @@ export default function EditClientPage() {
     setClientServices([...clientServices, data as ClientServiceWithService])
   }
 
-  const handleUpdateService = async (csId: string, field: 'monthly_cost' | 'one_time_cost' | 'status' | 'performed_by_id' | 'commission_rate', value: string | number | null) => {
+  const handleUpdateService = async (csId: string, field: 'monthly_cost' | 'one_time_cost' | 'status' | 'performed_by_id' | 'commission_rate' | 'start_date', value: string | number | null) => {
     const supabase = createClient()
 
     const updateData: Record<string, string | number | null> = {}
     if (field === 'monthly_cost' || field === 'one_time_cost' || field === 'commission_rate') {
       updateData[field] = Number(value) || 0
-    } else if (field === 'performed_by_id') {
+    } else if (field === 'performed_by_id' || field === 'start_date') {
       updateData[field] = value || null
     } else {
       updateData[field] = value
@@ -330,7 +332,7 @@ export default function EditClientPage() {
                         </div>
                       </div>
 
-                      <div className="grid grid-cols-2 gap-3">
+                      <div className="grid grid-cols-3 gap-3">
                         <div>
                           <label className="block text-xs text-gray-400 mb-1">Status</label>
                           <select
@@ -355,6 +357,15 @@ export default function EditClientPage() {
                               <option key={rep.id} value={rep.id}>{rep.name}</option>
                             ))}
                           </select>
+                        </div>
+                        <div>
+                          <label className="block text-xs text-gray-400 mb-1">Start Date</label>
+                          <input
+                            type="date"
+                            value={cs.start_date || ''}
+                            onChange={(e) => handleUpdateService(cs.id, 'start_date', e.target.value)}
+                            className="w-full px-3 py-1.5 bg-[#444444] border border-[#555555] rounded text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#2E8B57]"
+                          />
                         </div>
                       </div>
                     </div>

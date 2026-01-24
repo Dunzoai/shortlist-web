@@ -61,3 +61,15 @@ export interface Representative {
   role: string | null
   created_at: string
 }
+
+export interface Expense {
+  id: string
+  name: string
+  description: string | null
+  amount: number
+  category: 'subscription' | 'software' | 'contractor' | 'marketing' | 'other'
+  is_recurring: boolean
+  start_date: string | null
+  created_at: string
+  updated_at: string
+}

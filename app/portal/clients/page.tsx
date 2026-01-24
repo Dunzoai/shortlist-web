@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import Link from 'next/link'
 import type { Client, Affiliate } from '@/lib/portal-types'
@@ -10,6 +11,7 @@ interface ClientWithAffiliate extends Client {
 }
 
 export default function ClientsPage() {
+  const router = useRouter()
   const [clients, setClients] = useState<ClientWithAffiliate[]>([])
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState('')
@@ -70,20 +72,20 @@ export default function ClientsPage() {
                 <th className="px-6 py-4 text-left text-sm font-medium text-gray-300">Phone</th>
                 <th className="px-6 py-4 text-left text-sm font-medium text-gray-300">Affiliate</th>
                 <th className="px-6 py-4 text-left text-sm font-medium text-gray-300">Added</th>
-                <th className="px-6 py-4"></th>
               </tr>
             </thead>
             <tbody className="divide-y divide-[#444444]">
               {filteredClients.map((client) => (
-                <tr key={client.id} className="hover:bg-[#3a3a3a] transition-colors">
+                <tr
+                  key={client.id}
+                  onClick={() => router.push(`/portal/clients/${client.id}`)}
+                  className="hover:bg-[#3a3a3a] transition-colors cursor-pointer"
+                >
                   <td className="px-6 py-4"><span className="font-medium text-white">{client.name}</span></td>
                   <td className="px-6 py-4 text-gray-300">{client.email || '-'}</td>
                   <td className="px-6 py-4 text-gray-300">{client.phone || '-'}</td>
                   <td className="px-6 py-4 text-gray-300">{client.affiliates?.name || '-'}</td>
                   <td className="px-6 py-4 text-gray-400 text-sm">{new Date(client.created_at).toLocaleDateString()}</td>
-                  <td className="px-6 py-4 text-right">
-                    <Link href={`/portal/clients/${client.id}`} className="text-[#2E8B57] hover:text-[#3ba868] font-medium text-sm">Edit</Link>
-                  </td>
                 </tr>
               ))}
             </tbody>
