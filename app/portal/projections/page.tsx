@@ -13,11 +13,21 @@ interface ActiveService {
   performedById: string | null
 }
 
+interface OneTimeService {
+  id: string
+  clientName: string
+  serviceName: string
+  serviceId: string
+  oneTimeAmount: number
+  performedById: string | null
+}
+
 interface ServiceBreakdown {
   name: string
   count: number
   monthlyTotal: number
   yearlyTotal: number
+  oneTimeTotal: number
 }
 
 interface RepBreakdown {
@@ -26,10 +36,12 @@ interface RepBreakdown {
   count: number
   monthlyTotal: number
   yearlyTotal: number
+  oneTimeTotal: number
 }
 
 export default function ProjectionsPage() {
   const [activeServices, setActiveServices] = useState<ActiveService[]>([])
+  const [oneTimeServices, setOneTimeServices] = useState<OneTimeService[]>([])
   const [services, setServices] = useState<Service[]>([])
   const [representatives, setRepresentatives] = useState<Representative[]>([])
   const [loading, setLoading] = useState(true)
@@ -59,6 +71,25 @@ export default function ProjectionsPage() {
 
       setActiveServices(items)
 
+      // Fetch one-time services for current year
+      const { data: oneTimeData } = await supabase
+        .from('client_services')
+        .select('*, clients(name), services(id, name)')
+        .gte('start_date', `${currentYear}-01-01`)
+        .lte('start_date', `${currentYear}-12-31`)
+        .gt('one_time_cost', 0)
+
+      const oneTimeItems: OneTimeService[] = oneTimeData?.map((cs: Record<string, unknown>) => ({
+        id: cs.id as string,
+        clientName: (cs.clients as { name: string } | null)?.name || 'Unknown',
+        serviceName: (cs.services as { name: string } | null)?.name || 'Unknown',
+        serviceId: (cs.services as { id: string } | null)?.id || '',
+        oneTimeAmount: Number(cs.one_time_cost) || 0,
+        performedById: cs.performed_by_id as string | null,
+      })) ?? []
+
+      setOneTimeServices(oneTimeItems)
+
       // Fetch services for reference
       const { data: servicesData } = await supabase
         .from('services')
@@ -85,51 +116,61 @@ export default function ProjectionsPage() {
   const yearlyProjection = monthlyRecurring * 12
   const remainingMonths = 12 - currentMonth
   const remainingYearProjection = monthlyRecurring * remainingMonths
+  const totalOneTime = oneTimeServices.reduce((sum, s) => sum + s.oneTimeAmount, 0)
 
   // Breakdown by service
   const serviceBreakdown: ServiceBreakdown[] = services
     .map((service) => {
-      const matching = activeServices.filter((s) => s.serviceId === service.id)
-      const monthlyTotal = matching.reduce((sum, s) => sum + s.monthlyAmount, 0)
+      const matchingRecurring = activeServices.filter((s) => s.serviceId === service.id)
+      const matchingOneTime = oneTimeServices.filter((s) => s.serviceId === service.id)
+      const monthlyTotal = matchingRecurring.reduce((sum, s) => sum + s.monthlyAmount, 0)
+      const oneTimeTotal = matchingOneTime.reduce((sum, s) => sum + s.oneTimeAmount, 0)
       return {
         name: service.name,
-        count: matching.length,
+        count: matchingRecurring.length,
         monthlyTotal,
         yearlyTotal: monthlyTotal * 12,
+        oneTimeTotal,
       }
     })
-    .filter((s) => s.count > 0)
-    .sort((a, b) => b.monthlyTotal - a.monthlyTotal)
+    .filter((s) => s.count > 0 || s.oneTimeTotal > 0)
+    .sort((a, b) => (b.monthlyTotal + b.oneTimeTotal) - (a.monthlyTotal + a.oneTimeTotal))
 
   // Breakdown by rep
   const repBreakdown: RepBreakdown[] = [
     // Company (null performed_by_id)
     (() => {
-      const matching = activeServices.filter((s) => s.performedById === null)
-      const monthlyTotal = matching.reduce((sum, s) => sum + s.monthlyAmount, 0)
+      const matchingRecurring = activeServices.filter((s) => s.performedById === null)
+      const matchingOneTime = oneTimeServices.filter((s) => s.performedById === null)
+      const monthlyTotal = matchingRecurring.reduce((sum, s) => sum + s.monthlyAmount, 0)
+      const oneTimeTotal = matchingOneTime.reduce((sum, s) => sum + s.oneTimeAmount, 0)
       return {
         id: null,
         name: 'Company',
-        count: matching.length,
+        count: matchingRecurring.length,
         monthlyTotal,
         yearlyTotal: monthlyTotal * 12,
+        oneTimeTotal,
       }
     })(),
     // Individual reps
     ...representatives.map((rep) => {
-      const matching = activeServices.filter((s) => s.performedById === rep.id)
-      const monthlyTotal = matching.reduce((sum, s) => sum + s.monthlyAmount, 0)
+      const matchingRecurring = activeServices.filter((s) => s.performedById === rep.id)
+      const matchingOneTime = oneTimeServices.filter((s) => s.performedById === rep.id)
+      const monthlyTotal = matchingRecurring.reduce((sum, s) => sum + s.monthlyAmount, 0)
+      const oneTimeTotal = matchingOneTime.reduce((sum, s) => sum + s.oneTimeAmount, 0)
       return {
         id: rep.id,
         name: rep.name,
-        count: matching.length,
+        count: matchingRecurring.length,
         monthlyTotal,
         yearlyTotal: monthlyTotal * 12,
+        oneTimeTotal,
       }
     }),
   ]
-    .filter((r) => r.count > 0)
-    .sort((a, b) => b.monthlyTotal - a.monthlyTotal)
+    .filter((r) => r.count > 0 || r.oneTimeTotal > 0)
+    .sort((a, b) => (b.monthlyTotal + b.oneTimeTotal) - (a.monthlyTotal + a.oneTimeTotal))
 
   // Monthly projection for next 12 months
   const months = []
@@ -168,7 +209,7 @@ export default function ProjectionsPage() {
       </div>
 
       {/* Summary Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
         <div className="bg-[#333333] rounded-lg p-6">
           <p className="text-sm text-gray-400 mb-1">Monthly Recurring</p>
           <p className="text-3xl font-bold text-white">${monthlyRecurring.toLocaleString()}</p>
@@ -177,12 +218,17 @@ export default function ProjectionsPage() {
         <div className="bg-[#333333] rounded-lg p-6">
           <p className="text-sm text-gray-400 mb-1">Projected Annual</p>
           <p className="text-3xl font-bold text-white">${yearlyProjection.toLocaleString()}</p>
-          <p className="text-sm text-gray-500 mt-1">If nothing changes</p>
+          <p className="text-sm text-gray-500 mt-1">Recurring only</p>
         </div>
         <div className="bg-[#333333] rounded-lg p-6">
-          <p className="text-sm text-gray-400 mb-1">Rest of {currentYear}</p>
-          <p className="text-3xl font-bold text-white">${remainingYearProjection.toLocaleString()}</p>
-          <p className="text-sm text-gray-500 mt-1">{remainingMonths} month{remainingMonths !== 1 ? 's' : ''} remaining</p>
+          <p className="text-sm text-gray-400 mb-1">One-Time ({currentYear})</p>
+          <p className="text-3xl font-bold text-white">${totalOneTime.toLocaleString()}</p>
+          <p className="text-sm text-gray-500 mt-1">{oneTimeServices.length} project{oneTimeServices.length !== 1 ? 's' : ''}</p>
+        </div>
+        <div className="bg-[#333333] rounded-lg p-6">
+          <p className="text-sm text-gray-400 mb-1">Total {currentYear}</p>
+          <p className="text-3xl font-bold text-[#2E8B57]">${(remainingYearProjection + totalOneTime).toLocaleString()}</p>
+          <p className="text-sm text-gray-500 mt-1">Recurring + One-time</p>
         </div>
       </div>
 
@@ -191,18 +237,26 @@ export default function ProjectionsPage() {
         <div className="bg-[#333333] rounded-lg p-6">
           <h2 className="text-lg font-semibold text-white mb-4">By Service</h2>
           {serviceBreakdown.length === 0 ? (
-            <p className="text-gray-400 text-center py-8">No active recurring services</p>
+            <p className="text-gray-400 text-center py-8">No services</p>
           ) : (
             <div className="space-y-3">
               {serviceBreakdown.map((service) => (
                 <div key={service.name} className="flex items-center justify-between p-3 bg-[#3a3a3a] rounded-lg">
                   <div>
                     <p className="text-white font-medium">{service.name}</p>
-                    <p className="text-sm text-gray-400">{service.count} client{service.count !== 1 ? 's' : ''}</p>
+                    <p className="text-sm text-gray-400">
+                      {service.count > 0 && `${service.count} recurring`}
+                      {service.count > 0 && service.oneTimeTotal > 0 && ' + '}
+                      {service.oneTimeTotal > 0 && `$${service.oneTimeTotal.toLocaleString()} one-time`}
+                    </p>
                   </div>
                   <div className="text-right">
-                    <p className="text-[#2E8B57] font-bold">${service.monthlyTotal.toLocaleString()}/mo</p>
-                    <p className="text-sm text-gray-400">${service.yearlyTotal.toLocaleString()}/yr</p>
+                    {service.monthlyTotal > 0 && (
+                      <p className="text-[#2E8B57] font-bold">${service.monthlyTotal.toLocaleString()}/mo</p>
+                    )}
+                    <p className="text-sm text-gray-400">
+                      ${(service.yearlyTotal + service.oneTimeTotal).toLocaleString()}/yr
+                    </p>
                   </div>
                 </div>
               ))}
@@ -214,18 +268,26 @@ export default function ProjectionsPage() {
         <div className="bg-[#333333] rounded-lg p-6">
           <h2 className="text-lg font-semibold text-white mb-4">By Performer</h2>
           {repBreakdown.length === 0 ? (
-            <p className="text-gray-400 text-center py-8">No active recurring services</p>
+            <p className="text-gray-400 text-center py-8">No services</p>
           ) : (
             <div className="space-y-3">
               {repBreakdown.map((rep) => (
                 <div key={rep.id ?? 'company'} className="flex items-center justify-between p-3 bg-[#3a3a3a] rounded-lg">
                   <div>
                     <p className="text-white font-medium">{rep.name}</p>
-                    <p className="text-sm text-gray-400">{rep.count} service{rep.count !== 1 ? 's' : ''}</p>
+                    <p className="text-sm text-gray-400">
+                      {rep.count > 0 && `${rep.count} recurring`}
+                      {rep.count > 0 && rep.oneTimeTotal > 0 && ' + '}
+                      {rep.oneTimeTotal > 0 && `$${rep.oneTimeTotal.toLocaleString()} one-time`}
+                    </p>
                   </div>
                   <div className="text-right">
-                    <p className="text-[#2E8B57] font-bold">${rep.monthlyTotal.toLocaleString()}/mo</p>
-                    <p className="text-sm text-gray-400">${rep.yearlyTotal.toLocaleString()}/yr</p>
+                    {rep.monthlyTotal > 0 && (
+                      <p className="text-[#2E8B57] font-bold">${rep.monthlyTotal.toLocaleString()}/mo</p>
+                    )}
+                    <p className="text-sm text-gray-400">
+                      ${(rep.yearlyTotal + rep.oneTimeTotal).toLocaleString()}/yr
+                    </p>
                   </div>
                 </div>
               ))}
