@@ -89,9 +89,14 @@ export async function POST(
       await stripe.invoiceItems.create({
         customer: stripeCustomerId,
         invoice: stripeInvoice.id,
-        description: item.description,
         quantity: item.quantity,
-        unit_amount: toStripeAmount(item.unit_price),
+        price_data: {
+          currency: 'usd',
+          product_data: {
+            name: item.description,
+          },
+          unit_amount: toStripeAmount(item.unit_price),
+        },
       })
     }
 
