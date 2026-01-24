@@ -185,8 +185,8 @@ export default function EditClientPage() {
     )
   }
 
-  const assignedServiceIds = clientServices.map((cs) => cs.service_id)
-  const availableServices = services.filter((s) => !assignedServiceIds.includes(s.id))
+  // Allow adding same service multiple times (e.g., 3 websites)
+  const availableServices = services
 
   return (
     <div className="p-8">
@@ -316,11 +316,17 @@ export default function EditClientPage() {
                     </div>
                   ))}
 
-                  <div className="pt-4 border-t border-[#444444]">
+                  <div className="pt-4 border-t border-[#444444] space-y-2">
                     <div className="flex justify-between text-sm">
                       <span className="text-gray-400">Total Monthly</span>
                       <span className="font-medium text-white">
                         ${clientServices.filter((cs) => cs.status === 'active').reduce((sum, cs) => sum + Number(cs.monthly_cost), 0).toLocaleString()}
+                      </span>
+                    </div>
+                    <div className="flex justify-between text-sm">
+                      <span className="text-gray-400">Total One-time</span>
+                      <span className="font-medium text-white">
+                        ${clientServices.reduce((sum, cs) => sum + Number(cs.one_time_cost), 0).toLocaleString()}
                       </span>
                     </div>
                   </div>
