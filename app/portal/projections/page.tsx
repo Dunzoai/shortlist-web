@@ -11,6 +11,7 @@ interface ActiveService {
   serviceId: string
   monthlyAmount: number
   performedById: string | null
+  startDate: string | null
 }
 
 interface OneTimeService {
@@ -20,6 +21,7 @@ interface OneTimeService {
   serviceId: string
   oneTimeAmount: number
   performedById: string | null
+  startDate: string | null
 }
 
 interface ServiceBreakdown {
@@ -67,6 +69,7 @@ export default function ProjectionsPage() {
         serviceId: (cs.services as { id: string } | null)?.id || '',
         monthlyAmount: Number(cs.monthly_cost) || 0,
         performedById: cs.performed_by_id as string | null,
+        startDate: cs.start_date as string | null,
       })) ?? []
 
       setActiveServices(items)
@@ -86,6 +89,7 @@ export default function ProjectionsPage() {
         serviceId: (cs.services as { id: string } | null)?.id || '',
         oneTimeAmount: Number(cs.one_time_cost) || 0,
         performedById: cs.performed_by_id as string | null,
+        startDate: cs.start_date as string | null,
       })) ?? []
 
       setOneTimeServices(oneTimeItems)
@@ -173,13 +177,49 @@ export default function ProjectionsPage() {
     .sort((a, b) => (b.monthlyTotal + b.oneTimeTotal) - (a.monthlyTotal + a.oneTimeTotal))
 
   // Monthly projection for next 12 months
-  const months = []
+  // Calculate based on start dates of services
+  const months: { label: string; recurring: number; oneTime: number; total: number; cumulative: number }[] = []
+  let cumulativeTotal = 0
+
   for (let i = 0; i < 12; i++) {
-    const date = new Date(currentYear, currentMonth + i, 1)
+    const forecastDate = new Date(currentYear, currentMonth + i, 1)
+    const forecastYear = forecastDate.getFullYear()
+    const forecastMonth = forecastDate.getMonth()
+
+    // Calculate recurring for this month based on services that started on or before this month
+    const monthlyRecurringForMonth = activeServices.reduce((sum, service) => {
+      if (!service.startDate) {
+        // No start date = assume already active
+        return sum + service.monthlyAmount
+      }
+      const startDate = new Date(service.startDate)
+      // Service contributes if it started on or before this forecast month
+      if (startDate.getFullYear() < forecastYear ||
+          (startDate.getFullYear() === forecastYear && startDate.getMonth() <= forecastMonth)) {
+        return sum + service.monthlyAmount
+      }
+      return sum
+    }, 0)
+
+    // Calculate one-time costs for this specific month
+    const oneTimeForMonth = oneTimeServices.reduce((sum, service) => {
+      if (!service.startDate) return sum
+      const startDate = new Date(service.startDate)
+      if (startDate.getFullYear() === forecastYear && startDate.getMonth() === forecastMonth) {
+        return sum + service.oneTimeAmount
+      }
+      return sum
+    }, 0)
+
+    const monthTotal = monthlyRecurringForMonth + oneTimeForMonth
+    cumulativeTotal += monthTotal
+
     months.push({
-      label: date.toLocaleDateString('en-US', { month: 'short', year: 'numeric' }),
-      amount: monthlyRecurring,
-      cumulative: monthlyRecurring * (i + 1),
+      label: forecastDate.toLocaleDateString('en-US', { month: 'short', year: 'numeric' }),
+      recurring: monthlyRecurringForMonth,
+      oneTime: oneTimeForMonth,
+      total: monthTotal,
+      cumulative: cumulativeTotal,
     })
   }
 
@@ -304,7 +344,9 @@ export default function ProjectionsPage() {
             <thead>
               <tr className="border-b border-[#444444]">
                 <th className="text-left text-sm font-medium text-gray-400 pb-3">Month</th>
-                <th className="text-right text-sm font-medium text-gray-400 pb-3">Monthly</th>
+                <th className="text-right text-sm font-medium text-gray-400 pb-3">Recurring</th>
+                <th className="text-right text-sm font-medium text-gray-400 pb-3">One-Time</th>
+                <th className="text-right text-sm font-medium text-gray-400 pb-3">Total</th>
                 <th className="text-right text-sm font-medium text-gray-400 pb-3">Cumulative</th>
               </tr>
             </thead>
@@ -312,7 +354,11 @@ export default function ProjectionsPage() {
               {months.map((month, idx) => (
                 <tr key={month.label} className={idx % 2 === 0 ? 'bg-[#3a3a3a]' : ''}>
                   <td className="py-3 px-2 text-white">{month.label}</td>
-                  <td className="py-3 px-2 text-right text-gray-300">${month.amount.toLocaleString()}</td>
+                  <td className="py-3 px-2 text-right text-gray-300">${month.recurring.toLocaleString()}</td>
+                  <td className="py-3 px-2 text-right text-gray-400">
+                    {month.oneTime > 0 ? `$${month.oneTime.toLocaleString()}` : '-'}
+                  </td>
+                  <td className="py-3 px-2 text-right text-white font-medium">${month.total.toLocaleString()}</td>
                   <td className="py-3 px-2 text-right text-[#2E8B57] font-medium">${month.cumulative.toLocaleString()}</td>
                 </tr>
               ))}
