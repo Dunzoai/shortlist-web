@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
-import type { Service, Representative } from '@/lib/portal-types'
+import type { Service, Representative, Expense } from '@/lib/portal-types'
 
 interface ActiveService {
   id: string
@@ -44,6 +44,7 @@ interface RepBreakdown {
 export default function ProjectionsPage() {
   const [activeServices, setActiveServices] = useState<ActiveService[]>([])
   const [oneTimeServices, setOneTimeServices] = useState<OneTimeService[]>([])
+  const [expenses, setExpenses] = useState<Expense[]>([])
   const [services, setServices] = useState<Service[]>([])
   const [representatives, setRepresentatives] = useState<Representative[]>([])
   const [loading, setLoading] = useState(true)
@@ -109,18 +110,39 @@ export default function ProjectionsPage() {
         .order('name')
 
       setRepresentatives((repsData as Representative[] | null) ?? [])
+
+      // Fetch expenses
+      const { data: expensesData } = await supabase
+        .from('expenses')
+        .select('*')
+
+      setExpenses((expensesData as Expense[] | null) ?? [])
       setLoading(false)
     }
 
     fetchData()
   }, [])
 
-  // Calculate totals
+  // Calculate revenue totals
   const monthlyRecurring = activeServices.reduce((sum, s) => sum + s.monthlyAmount, 0)
   const yearlyProjection = monthlyRecurring * 12
   const remainingMonths = 12 - currentMonth
   const remainingYearProjection = monthlyRecurring * remainingMonths
   const totalOneTime = oneTimeServices.reduce((sum, s) => sum + s.oneTimeAmount, 0)
+
+  // Calculate expense totals
+  const recurringExpenses = expenses.filter((e) => e.is_recurring)
+  const oneTimeExpenses = expenses.filter((e) => !e.is_recurring)
+  const monthlyExpenses = recurringExpenses.reduce((sum, e) => sum + e.amount, 0)
+  const yearlyExpenses = monthlyExpenses * 12
+  const oneTimeExpensesThisYear = oneTimeExpenses.filter((e) => {
+    if (!e.start_date) return false
+    return new Date(e.start_date).getFullYear() === currentYear
+  }).reduce((sum, e) => sum + e.amount, 0)
+
+  // Calculate profit
+  const monthlyProfit = monthlyRecurring - monthlyExpenses
+  const yearlyProfit = yearlyProjection + totalOneTime - yearlyExpenses - oneTimeExpensesThisYear
 
   // Breakdown by service
   const serviceBreakdown: ServiceBreakdown[] = services
@@ -177,23 +199,21 @@ export default function ProjectionsPage() {
     .sort((a, b) => (b.monthlyTotal + b.oneTimeTotal) - (a.monthlyTotal + a.oneTimeTotal))
 
   // Monthly projection for next 12 months
-  // Calculate based on start dates of services
-  const months: { label: string; recurring: number; oneTime: number; total: number; cumulative: number }[] = []
-  let cumulativeTotal = 0
+  // Calculate based on start dates of services and expenses
+  const months: { label: string; revenue: number; expenses: number; profit: number; cumulative: number }[] = []
+  let cumulativeProfit = 0
 
   for (let i = 0; i < 12; i++) {
     const forecastDate = new Date(currentYear, currentMonth + i, 1)
     const forecastYear = forecastDate.getFullYear()
     const forecastMonth = forecastDate.getMonth()
 
-    // Calculate recurring for this month based on services that started on or before this month
+    // Calculate recurring revenue for this month based on services that started on or before this month
     const monthlyRecurringForMonth = activeServices.reduce((sum, service) => {
       if (!service.startDate) {
-        // No start date = assume already active
         return sum + service.monthlyAmount
       }
       const startDate = new Date(service.startDate)
-      // Service contributes if it started on or before this forecast month
       if (startDate.getFullYear() < forecastYear ||
           (startDate.getFullYear() === forecastYear && startDate.getMonth() <= forecastMonth)) {
         return sum + service.monthlyAmount
@@ -201,8 +221,8 @@ export default function ProjectionsPage() {
       return sum
     }, 0)
 
-    // Calculate one-time costs for this specific month
-    const oneTimeForMonth = oneTimeServices.reduce((sum, service) => {
+    // Calculate one-time revenue for this specific month
+    const oneTimeRevenueForMonth = oneTimeServices.reduce((sum, service) => {
       if (!service.startDate) return sum
       const startDate = new Date(service.startDate)
       if (startDate.getFullYear() === forecastYear && startDate.getMonth() === forecastMonth) {
@@ -211,15 +231,40 @@ export default function ProjectionsPage() {
       return sum
     }, 0)
 
-    const monthTotal = monthlyRecurringForMonth + oneTimeForMonth
-    cumulativeTotal += monthTotal
+    // Calculate recurring expenses for this month based on start dates
+    const monthlyExpensesForMonth = recurringExpenses.reduce((sum, expense) => {
+      if (!expense.start_date) {
+        return sum + expense.amount
+      }
+      const startDate = new Date(expense.start_date)
+      if (startDate.getFullYear() < forecastYear ||
+          (startDate.getFullYear() === forecastYear && startDate.getMonth() <= forecastMonth)) {
+        return sum + expense.amount
+      }
+      return sum
+    }, 0)
+
+    // Calculate one-time expenses for this specific month
+    const oneTimeExpenseForMonth = oneTimeExpenses.reduce((sum, expense) => {
+      if (!expense.start_date) return sum
+      const startDate = new Date(expense.start_date)
+      if (startDate.getFullYear() === forecastYear && startDate.getMonth() === forecastMonth) {
+        return sum + expense.amount
+      }
+      return sum
+    }, 0)
+
+    const totalRevenue = monthlyRecurringForMonth + oneTimeRevenueForMonth
+    const totalExpenses = monthlyExpensesForMonth + oneTimeExpenseForMonth
+    const monthProfit = totalRevenue - totalExpenses
+    cumulativeProfit += monthProfit
 
     months.push({
       label: forecastDate.toLocaleDateString('en-US', { month: 'short', year: 'numeric' }),
-      recurring: monthlyRecurringForMonth,
-      oneTime: oneTimeForMonth,
-      total: monthTotal,
-      cumulative: cumulativeTotal,
+      revenue: totalRevenue,
+      expenses: totalExpenses,
+      profit: monthProfit,
+      cumulative: cumulativeProfit,
     })
   }
 
@@ -248,27 +293,49 @@ export default function ProjectionsPage() {
         </p>
       </div>
 
-      {/* Summary Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+      {/* Summary Cards - Revenue */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-4">
         <div className="bg-[#333333] rounded-lg p-6">
-          <p className="text-sm text-gray-400 mb-1">Monthly Recurring</p>
-          <p className="text-3xl font-bold text-white">${monthlyRecurring.toLocaleString()}</p>
-          <p className="text-sm text-gray-500 mt-1">Current MRR</p>
+          <p className="text-sm text-gray-400 mb-1">Monthly Revenue</p>
+          <p className="text-3xl font-bold text-[#2E8B57]">${monthlyRecurring.toLocaleString()}</p>
+          <p className="text-sm text-gray-500 mt-1">MRR from {activeServices.length} service{activeServices.length !== 1 ? 's' : ''}</p>
         </div>
         <div className="bg-[#333333] rounded-lg p-6">
-          <p className="text-sm text-gray-400 mb-1">Projected Annual</p>
-          <p className="text-3xl font-bold text-white">${yearlyProjection.toLocaleString()}</p>
-          <p className="text-sm text-gray-500 mt-1">Recurring only</p>
+          <p className="text-sm text-gray-400 mb-1">Monthly Expenses</p>
+          <p className="text-3xl font-bold text-red-400">${monthlyExpenses.toLocaleString()}</p>
+          <p className="text-sm text-gray-500 mt-1">{recurringExpenses.length} recurring cost{recurringExpenses.length !== 1 ? 's' : ''}</p>
         </div>
         <div className="bg-[#333333] rounded-lg p-6">
-          <p className="text-sm text-gray-400 mb-1">One-Time ({currentYear})</p>
-          <p className="text-3xl font-bold text-white">${totalOneTime.toLocaleString()}</p>
-          <p className="text-sm text-gray-500 mt-1">{oneTimeServices.length} project{oneTimeServices.length !== 1 ? 's' : ''}</p>
+          <p className="text-sm text-gray-400 mb-1">Monthly Profit</p>
+          <p className={`text-3xl font-bold ${monthlyProfit >= 0 ? 'text-[#2E8B57]' : 'text-red-400'}`}>
+            ${monthlyProfit.toLocaleString()}
+          </p>
+          <p className="text-sm text-gray-500 mt-1">Revenue - Expenses</p>
         </div>
         <div className="bg-[#333333] rounded-lg p-6">
-          <p className="text-sm text-gray-400 mb-1">Total {currentYear}</p>
-          <p className="text-3xl font-bold text-[#2E8B57]">${(remainingYearProjection + totalOneTime).toLocaleString()}</p>
-          <p className="text-sm text-gray-500 mt-1">Recurring + One-time</p>
+          <p className="text-sm text-gray-400 mb-1">Projected Annual Profit</p>
+          <p className={`text-3xl font-bold ${yearlyProfit >= 0 ? 'text-[#2E8B57]' : 'text-red-400'}`}>
+            ${yearlyProfit.toLocaleString()}
+          </p>
+          <p className="text-sm text-gray-500 mt-1">Including one-time</p>
+        </div>
+      </div>
+
+      {/* One-time breakdown */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+        <div className="bg-[#333333] rounded-lg p-4 flex items-center justify-between">
+          <div>
+            <p className="text-sm text-gray-400">One-Time Revenue ({currentYear})</p>
+            <p className="text-xl font-bold text-[#2E8B57]">${totalOneTime.toLocaleString()}</p>
+          </div>
+          <span className="text-sm text-gray-500">{oneTimeServices.length} project{oneTimeServices.length !== 1 ? 's' : ''}</span>
+        </div>
+        <div className="bg-[#333333] rounded-lg p-4 flex items-center justify-between">
+          <div>
+            <p className="text-sm text-gray-400">One-Time Expenses ({currentYear})</p>
+            <p className="text-xl font-bold text-red-400">${oneTimeExpensesThisYear.toLocaleString()}</p>
+          </div>
+          <span className="text-sm text-gray-500">{oneTimeExpenses.filter(e => e.start_date && new Date(e.start_date).getFullYear() === currentYear).length} expense{oneTimeExpenses.filter(e => e.start_date && new Date(e.start_date).getFullYear() === currentYear).length !== 1 ? 's' : ''}</span>
         </div>
       </div>
 
@@ -338,15 +405,15 @@ export default function ProjectionsPage() {
 
       {/* 12-Month Projection Table */}
       <div className="bg-[#333333] rounded-lg p-6">
-        <h2 className="text-lg font-semibold text-white mb-4">12-Month Forecast</h2>
+        <h2 className="text-lg font-semibold text-white mb-4">12-Month Profit Forecast</h2>
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
               <tr className="border-b border-[#444444]">
                 <th className="text-left text-sm font-medium text-gray-400 pb-3">Month</th>
-                <th className="text-right text-sm font-medium text-gray-400 pb-3">Recurring</th>
-                <th className="text-right text-sm font-medium text-gray-400 pb-3">One-Time</th>
-                <th className="text-right text-sm font-medium text-gray-400 pb-3">Total</th>
+                <th className="text-right text-sm font-medium text-gray-400 pb-3">Revenue</th>
+                <th className="text-right text-sm font-medium text-gray-400 pb-3">Expenses</th>
+                <th className="text-right text-sm font-medium text-gray-400 pb-3">Profit</th>
                 <th className="text-right text-sm font-medium text-gray-400 pb-3">Cumulative</th>
               </tr>
             </thead>
@@ -354,12 +421,16 @@ export default function ProjectionsPage() {
               {months.map((month, idx) => (
                 <tr key={month.label} className={idx % 2 === 0 ? 'bg-[#3a3a3a]' : ''}>
                   <td className="py-3 px-2 text-white">{month.label}</td>
-                  <td className="py-3 px-2 text-right text-gray-300">${month.recurring.toLocaleString()}</td>
-                  <td className="py-3 px-2 text-right text-gray-400">
-                    {month.oneTime > 0 ? `$${month.oneTime.toLocaleString()}` : '-'}
+                  <td className="py-3 px-2 text-right text-[#2E8B57]">${month.revenue.toLocaleString()}</td>
+                  <td className="py-3 px-2 text-right text-red-400">
+                    {month.expenses > 0 ? `$${month.expenses.toLocaleString()}` : '-'}
                   </td>
-                  <td className="py-3 px-2 text-right text-white font-medium">${month.total.toLocaleString()}</td>
-                  <td className="py-3 px-2 text-right text-[#2E8B57] font-medium">${month.cumulative.toLocaleString()}</td>
+                  <td className={`py-3 px-2 text-right font-medium ${month.profit >= 0 ? 'text-[#2E8B57]' : 'text-red-400'}`}>
+                    ${month.profit.toLocaleString()}
+                  </td>
+                  <td className={`py-3 px-2 text-right font-medium ${month.cumulative >= 0 ? 'text-[#2E8B57]' : 'text-red-400'}`}>
+                    ${month.cumulative.toLocaleString()}
+                  </td>
                 </tr>
               ))}
             </tbody>
