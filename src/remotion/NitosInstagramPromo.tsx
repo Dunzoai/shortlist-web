@@ -205,7 +205,7 @@ const GoodScene: React.FC = () => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
 
-  if (frame < TIMING.GOOD_START || frame >= TIMING.WORDS_START) return null;
+  if (frame < TIMING.GOOD_START || frame >= TIMING.TRUCK_START) return null;
 
   const localFrame = frame - TIMING.GOOD_START;
 
