@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
-import { stripe, toStripeAmount } from '@/lib/stripe'
+import { getStripe, toStripeAmount } from '@/lib/stripe'
 
 export async function POST(
   request: NextRequest,
@@ -46,7 +46,7 @@ export async function POST(
       stripeCustomerId = billing.stripe_customer_id
     } else {
       // Create new Stripe customer
-      const customer = await stripe.customers.create({
+      const customer = await getStripe().customers.create({
         name: client.name,
         email: client.email,
         metadata: {
@@ -74,7 +74,7 @@ export async function POST(
     }
 
     // Create Stripe invoice
-    const stripeInvoice = await stripe.invoices.create({
+    const stripeInvoice = await getStripe().invoices.create({
       customer: stripeCustomerId,
       collection_method: 'send_invoice',
       days_until_due: Math.max(1, Math.ceil((new Date(invoice.due_date).getTime() - Date.now()) / (1000 * 60 * 60 * 24))),
@@ -89,7 +89,7 @@ export async function POST(
       // Calculate total amount for this line item (quantity * unit_price in cents)
       const amount = toStripeAmount(item.unit_price * item.quantity)
 
-      await stripe.invoiceItems.create({
+      await getStripe().invoiceItems.create({
         customer: stripeCustomerId,
         invoice: stripeInvoice.id,
         amount: amount,
@@ -99,8 +99,8 @@ export async function POST(
     }
 
     // Finalize and send the invoice
-    const finalizedInvoice = await stripe.invoices.finalizeInvoice(stripeInvoice.id)
-    await stripe.invoices.sendInvoice(stripeInvoice.id)
+    const finalizedInvoice = await getStripe().invoices.finalizeInvoice(stripeInvoice.id)
+    await getStripe().invoices.sendInvoice(stripeInvoice.id)
 
     // Update our invoice with Stripe details
     await supabase

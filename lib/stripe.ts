@@ -1,6 +1,7 @@
 import Stripe from 'stripe'
 
-// Lazy initialization to avoid build-time errors
+// Singleton pattern with lazy initialization
+// Standard approach for serverless - avoids build-time env var access
 let _stripe: Stripe | null = null
 
 export function getStripe(): Stripe {
@@ -11,14 +12,6 @@ export function getStripe(): Stripe {
     _stripe = new Stripe(process.env.STRIPE_SECRET_KEY)
   }
   return _stripe
-}
-
-// Keep for backwards compatibility but use lazy getter
-export const stripe = {
-  get customers() { return getStripe().customers },
-  get invoices() { return getStripe().invoices },
-  get invoiceItems() { return getStripe().invoiceItems },
-  get webhooks() { return getStripe().webhooks },
 }
 
 // Helper to format amount for Stripe (converts dollars to cents)
