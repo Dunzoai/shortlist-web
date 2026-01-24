@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
-import { useMemo } from 'react'
+import { useMemo, useState, useEffect } from 'react'
 
 function DashboardIcon({ className }: { className?: string }) {
   return (
@@ -72,6 +72,12 @@ function ExpensesIcon({ className }: { className?: string }) {
 export default function PortalNav({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
   const router = useRouter()
+  const [sidebarOpen, setSidebarOpen] = useState(false)
+
+  // Close sidebar on route change
+  useEffect(() => {
+    setSidebarOpen(false)
+  }, [pathname])
 
   // Check if we're on the portal subdomain for cleaner URLs
   const isPortalSubdomain = typeof window !== 'undefined' && window.location.hostname.startsWith('portal.')
@@ -97,17 +103,60 @@ export default function PortalNav({ children }: { children: React.ReactNode }) {
     router.push(isPortalSubdomain ? '/login' : '/portal/login')
   }
 
+  // Get current page name for mobile header
+  const currentPage = navigation.find(item => {
+    const normalizedPath = pathname.replace('/portal', '') || '/'
+    const normalizedHref = item.href.replace('/portal', '') || '/'
+    return normalizedPath === normalizedHref || (normalizedHref !== '/' && normalizedPath.startsWith(normalizedHref))
+  })?.name || 'Portal'
+
   return (
     <div className="min-h-screen bg-[#2a2a2a]">
-      <aside className="fixed inset-y-0 left-0 w-64 bg-[#333333] border-r border-[#444444]">
+      {/* Mobile header */}
+      <header className="lg:hidden fixed top-0 left-0 right-0 h-16 bg-[#333333] border-b border-[#444444] flex items-center justify-between px-4 z-40">
+        <button
+          onClick={() => setSidebarOpen(true)}
+          className="p-2 text-gray-300 hover:text-white"
+        >
+          <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+          </svg>
+        </button>
+        <span className="text-white font-semibold">{currentPage}</span>
+        <div className="w-10" /> {/* Spacer for centering */}
+      </header>
+
+      {/* Mobile sidebar overlay */}
+      {sidebarOpen && (
+        <div
+          className="lg:hidden fixed inset-0 bg-black/50 z-40"
+          onClick={() => setSidebarOpen(false)}
+        />
+      )}
+
+      {/* Sidebar */}
+      <aside className={`
+        fixed inset-y-0 left-0 w-64 bg-[#333333] border-r border-[#444444] z-50
+        transform transition-transform duration-300 ease-in-out
+        lg:transform-none lg:translate-x-0
+        ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}
+      `}>
         <div className="flex flex-col h-full">
-          <div className="p-6 border-b border-[#444444]">
+          <div className="p-6 border-b border-[#444444] flex items-center justify-between">
             <Link href={isPortalSubdomain ? '/' : '/portal'} className="text-xl font-bold text-white">
               Shortlist Portal
             </Link>
+            <button
+              onClick={() => setSidebarOpen(false)}
+              className="lg:hidden p-1 text-gray-400 hover:text-white"
+            >
+              <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />
+              </svg>
+            </button>
           </div>
 
-          <nav className="flex-1 p-4 space-y-1">
+          <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
             {navigation.map((item) => {
               // Normalize pathname to work with both /portal/* and /* (subdomain) URLs
               const normalizedPath = pathname.replace('/portal', '') || '/'
@@ -145,7 +194,8 @@ export default function PortalNav({ children }: { children: React.ReactNode }) {
         </div>
       </aside>
 
-      <main className="ml-64 min-h-screen">
+      {/* Main content */}
+      <main className="lg:ml-64 min-h-screen pt-16 lg:pt-0">
         {children}
       </main>
     </div>

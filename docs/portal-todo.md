@@ -17,6 +17,8 @@
 - [x] Company-level service tracking
 - [x] Portal-specific favicon (bright yellow-green)
 - [x] Portal SEO metadata (noindex for privacy)
+- [x] Clickable drill-down on Projections (see clients by service/performer)
+- [x] Mobile responsive layout (collapsible sidebar, hamburger menu)
 
 ### Remaining Admin Portal Work
 
@@ -38,7 +40,58 @@
 - [ ] **Settings Page** - Configure company info, logo, defaults
 - [ ] **Email Notifications** - Alerts for upcoming renewals, late payments
 - [ ] **Dark/Light Mode** - Already dark, but toggle option
-- [ ] **Mobile Responsive Sidebar** - Collapsible nav for tablet/mobile
+
+---
+
+## AI Integration
+
+### Option A: AI Assistant Chat (Recommended First)
+Natural language queries against your data:
+- "Who are my highest revenue clients?"
+- "Which services are most profitable?"
+- "Show clients who started in the last 30 days"
+- "What's my projected revenue if I add 3 more social media clients?"
+- "Which rep has the highest one-time revenue?"
+
+**Implementation:**
+- Chat interface in sidebar or floating button
+- Uses Claude API with function calling
+- Functions to query Supabase (getClients, getRevenue, getExpenses, etc.)
+- Context-aware responses based on portal data
+
+### Option B: AI Insights Panel
+Proactive insights displayed on Dashboard:
+- "MRR grew 15% this month"
+- "Destiny handles 42% of your recurring revenue"
+- "3 clients are due for renewal next month"
+- "Website Build is your most profitable one-time service"
+- "Consider: 2 social media clients have no account manager assigned"
+
+**Implementation:**
+- Scheduled analysis (daily/weekly)
+- Store insights in database
+- Display cards on Dashboard
+- Click to drill down into the data
+
+### Option C: AI Content Generation
+Generate business content:
+- Draft client emails (welcome, renewal reminder, payment request)
+- Create invoice summaries and statements
+- Generate proposals based on service templates
+- Write social media captions for clients (meta - AI for your AI clients)
+
+### Option D: Smart Forecasting
+Predictive analytics:
+- Churn risk scoring per client
+- Revenue forecasting with confidence intervals
+- Suggest upsell opportunities based on patterns
+- Seasonal trend analysis
+
+### AI Implementation Priority
+1. **AI Assistant Chat** - Most immediate value, query anything
+2. **AI Insights Panel** - Passive value, surfaces things you'd miss
+3. **AI Content** - Time saver for repetitive tasks
+4. **Smart Forecasting** - Advanced, needs more historical data
 
 ---
 
