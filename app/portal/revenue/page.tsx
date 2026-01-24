@@ -7,6 +7,7 @@ import type { ClientService, Service, Representative } from '@/lib/portal-types'
 interface ClientServiceWithDetails extends ClientService {
   clients: { name: string; representative_id: string | null }
   services: { name: string }
+  performed_by_id: string | null
 }
 
 interface RevenueItem {
@@ -17,7 +18,8 @@ interface RevenueItem {
   oneTimeAmount: number
   status: string
   startDate: string
-  representativeId: string | null
+  accountManagerId: string | null  // Client's account manager
+  performedById: string | null     // Who did this specific service
 }
 
 export default function RevenuePage() {
@@ -64,7 +66,8 @@ export default function RevenuePage() {
         oneTimeAmount: Number(cs.one_time_cost) || 0,
         status: cs.status,
         startDate: cs.start_date,
-        representativeId: cs.clients?.representative_id || null,
+        accountManagerId: cs.clients?.representative_id || null,
+        performedById: cs.performed_by_id || null,
       })) ?? []
 
       setRevenueItems(items)
@@ -89,10 +92,10 @@ export default function RevenuePage() {
     setSelectedRep('')
   }
 
-  // Filter items based on selected services and rep
+  // Filter items based on selected services and performer
   const filteredItems = revenueItems.filter((item) => {
     const matchesService = selectedServices.size === 0 || selectedServices.has(item.serviceName)
-    const matchesRep = !selectedRep || item.representativeId === selectedRep
+    const matchesRep = !selectedRep || item.performedById === selectedRep
     return matchesService && matchesRep
   })
 
@@ -169,9 +172,9 @@ export default function RevenuePage() {
           ))}
         </div>
 
-        {/* Rep Filter Chips */}
+        {/* Performed By Filter Chips */}
         <div className="flex items-center gap-2 flex-wrap">
-          <span className="text-sm text-gray-400 mr-2">Account Manager:</span>
+          <span className="text-sm text-gray-400 mr-2">Performed By:</span>
           <button
             onClick={() => setSelectedRep('')}
             className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${

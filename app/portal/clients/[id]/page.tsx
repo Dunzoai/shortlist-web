@@ -140,12 +140,14 @@ export default function EditClientPage() {
     setClientServices([...clientServices, data as ClientServiceWithService])
   }
 
-  const handleUpdateService = async (csId: string, field: 'monthly_cost' | 'one_time_cost' | 'status', value: string | number) => {
+  const handleUpdateService = async (csId: string, field: 'monthly_cost' | 'one_time_cost' | 'status' | 'performed_by_id' | 'commission_rate', value: string | number | null) => {
     const supabase = createClient()
 
-    const updateData: Record<string, string | number> = {}
-    if (field === 'monthly_cost' || field === 'one_time_cost') {
+    const updateData: Record<string, string | number | null> = {}
+    if (field === 'monthly_cost' || field === 'one_time_cost' || field === 'commission_rate') {
       updateData[field] = Number(value) || 0
+    } else if (field === 'performed_by_id') {
+      updateData[field] = value || null
     } else {
       updateData[field] = value
     }
@@ -318,17 +320,32 @@ export default function EditClientPage() {
                         </div>
                       </div>
 
-                      <div>
-                        <label className="block text-xs text-gray-400 mb-1">Status</label>
-                        <select
-                          value={cs.status}
-                          onChange={(e) => handleUpdateService(cs.id, 'status', e.target.value)}
-                          className="w-full px-3 py-1.5 bg-[#444444] border border-[#555555] rounded text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#2E8B57]"
-                        >
-                          <option value="active">Active</option>
-                          <option value="paused">Paused</option>
-                          <option value="cancelled">Cancelled</option>
-                        </select>
+                      <div className="grid grid-cols-2 gap-3">
+                        <div>
+                          <label className="block text-xs text-gray-400 mb-1">Status</label>
+                          <select
+                            value={cs.status}
+                            onChange={(e) => handleUpdateService(cs.id, 'status', e.target.value)}
+                            className="w-full px-3 py-1.5 bg-[#444444] border border-[#555555] rounded text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#2E8B57]"
+                          >
+                            <option value="active">Active</option>
+                            <option value="paused">Paused</option>
+                            <option value="cancelled">Cancelled</option>
+                          </select>
+                        </div>
+                        <div>
+                          <label className="block text-xs text-gray-400 mb-1">Performed By</label>
+                          <select
+                            value={cs.performed_by_id || ''}
+                            onChange={(e) => handleUpdateService(cs.id, 'performed_by_id', e.target.value)}
+                            className="w-full px-3 py-1.5 bg-[#444444] border border-[#555555] rounded text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#2E8B57]"
+                          >
+                            <option value="">Not assigned</option>
+                            {representatives.map((rep) => (
+                              <option key={rep.id} value={rep.id}>{rep.name}</option>
+                            ))}
+                          </select>
+                        </div>
                       </div>
                     </div>
                   ))}

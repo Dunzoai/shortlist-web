@@ -39,6 +39,8 @@ export interface ClientService {
   status: 'active' | 'paused' | 'cancelled'
   start_date: string
   notes: string | null
+  performed_by_id: string | null
+  commission_rate: number
   created_at: string
   updated_at: string
 }
