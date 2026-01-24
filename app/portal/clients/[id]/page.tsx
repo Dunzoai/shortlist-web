@@ -7,7 +7,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { createClient } from '@/lib/supabase/client'
 import Link from 'next/link'
-import type { Client, Affiliate, Service, ClientService } from '@/lib/portal-types'
+import type { Client, Affiliate, Service, ClientService, Representative } from '@/lib/portal-types'
 
 const clientSchema = z.object({
   name: z.string().min(1, 'Name is required'),
@@ -15,6 +15,7 @@ const clientSchema = z.object({
   phone: z.string().optional(),
   notes: z.string().optional(),
   affiliate_id: z.string().optional(),
+  representative_id: z.string().optional(),
 })
 
 type ClientFormData = z.infer<typeof clientSchema>
@@ -30,6 +31,7 @@ export default function EditClientPage() {
 
   const [client, setClient] = useState<Client | null>(null)
   const [affiliates, setAffiliates] = useState<Affiliate[]>([])
+  const [representatives, setRepresentatives] = useState<Representative[]>([])
   const [services, setServices] = useState<Service[]>([])
   const [clientServices, setClientServices] = useState<ClientServiceWithService[]>([])
   const [loading, setLoading] = useState(true)
@@ -54,11 +56,15 @@ export default function EditClientPage() {
           phone: clientData.phone || '',
           notes: clientData.notes || '',
           affiliate_id: clientData.affiliate_id || '',
+          representative_id: clientData.representative_id || '',
         })
       }
 
       const { data: affiliatesData } = await supabase.from('affiliates').select('*').order('name')
       setAffiliates((affiliatesData as Affiliate[]) ?? [])
+
+      const { data: repsData } = await supabase.from('representatives').select('*').order('name')
+      setRepresentatives((repsData as Representative[]) ?? [])
 
       const { data: servicesData } = await supabase.from('services').select('*').order('name')
       setServices((servicesData as Service[]) ?? [])
@@ -88,6 +94,7 @@ export default function EditClientPage() {
         phone: data.phone || null,
         notes: data.notes || null,
         affiliate_id: data.affiliate_id || null,
+        representative_id: data.representative_id || null,
       })
       .eq('id', clientId)
 
@@ -225,6 +232,16 @@ export default function EditClientPage() {
                     <option value="">No affiliate</option>
                     {affiliates.map((affiliate) => (
                       <option key={affiliate.id} value={affiliate.id}>{affiliate.name}</option>
+                    ))}
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-2">Account Manager</label>
+                  <select {...register('representative_id')} className="w-full px-4 py-2 bg-[#444444] border border-[#555555] rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-[#2E8B57]">
+                    <option value="">No rep assigned</option>
+                    {representatives.map((rep) => (
+                      <option key={rep.id} value={rep.id}>{rep.name}</option>
                     ))}
                   </select>
                 </div>

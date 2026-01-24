@@ -25,6 +25,7 @@ export interface Client {
   phone: string | null
   notes: string | null
   affiliate_id: string | null
+  representative_id: string | null
   created_at: string
   updated_at: string
 }
@@ -49,4 +50,12 @@ export interface ClientWithRelations extends Client {
 
 export interface AffiliateWithClients extends Affiliate {
   clients?: Client[]
+}
+
+export interface Representative {
+  id: string
+  name: string
+  email: string | null
+  role: string | null
+  created_at: string
 }

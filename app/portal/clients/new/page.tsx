@@ -7,7 +7,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { createClient } from '@/lib/supabase/client'
 import Link from 'next/link'
-import type { Affiliate } from '@/lib/portal-types'
+import type { Affiliate, Representative } from '@/lib/portal-types'
 
 const clientSchema = z.object({
   name: z.string().min(1, 'Name is required'),
@@ -15,6 +15,7 @@ const clientSchema = z.object({
   phone: z.string().optional(),
   notes: z.string().optional(),
   affiliate_id: z.string().optional(),
+  representative_id: z.string().optional(),
 })
 
 type ClientFormData = z.infer<typeof clientSchema>
@@ -22,6 +23,7 @@ type ClientFormData = z.infer<typeof clientSchema>
 export default function NewClientPage() {
   const router = useRouter()
   const [affiliates, setAffiliates] = useState<Affiliate[]>([])
+  const [representatives, setRepresentatives] = useState<Representative[]>([])
   const [saving, setSaving] = useState(false)
 
   const { register, handleSubmit, formState: { errors } } = useForm<ClientFormData>({
@@ -29,12 +31,14 @@ export default function NewClientPage() {
   })
 
   useEffect(() => {
-    async function fetchAffiliates() {
+    async function fetchData() {
       const supabase = createClient()
-      const { data } = await supabase.from('affiliates').select('*').order('name')
-      setAffiliates((data as Affiliate[]) ?? [])
+      const { data: affiliatesData } = await supabase.from('affiliates').select('*').order('name')
+      setAffiliates((affiliatesData as Affiliate[]) ?? [])
+      const { data: repsData } = await supabase.from('representatives').select('*').order('name')
+      setRepresentatives((repsData as Representative[]) ?? [])
     }
-    fetchAffiliates()
+    fetchData()
   }, [])
 
   const onSubmit = async (data: ClientFormData) => {
@@ -47,6 +51,7 @@ export default function NewClientPage() {
       phone: data.phone || null,
       notes: data.notes || null,
       affiliate_id: data.affiliate_id || null,
+      representative_id: data.representative_id || null,
     })
 
     if (error) {
@@ -91,6 +96,16 @@ export default function NewClientPage() {
                 <option value="">No affiliate</option>
                 {affiliates.map((affiliate) => (
                   <option key={affiliate.id} value={affiliate.id}>{affiliate.name}</option>
+                ))}
+              </select>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-300 mb-2">Account Manager</label>
+              <select {...register('representative_id')} className="w-full px-4 py-2 bg-[#444444] border border-[#555555] rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-[#2E8B57]">
+                <option value="">No rep assigned</option>
+                {representatives.map((rep) => (
+                  <option key={rep.id} value={rep.id}>{rep.name}</option>
                 ))}
               </select>
             </div>

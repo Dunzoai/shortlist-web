@@ -2,10 +2,10 @@
 
 import { useEffect, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
-import type { ClientService, Service } from '@/lib/portal-types'
+import type { ClientService, Service, Representative } from '@/lib/portal-types'
 
 interface ClientServiceWithDetails extends ClientService {
-  clients: { name: string }
+  clients: { name: string; representative_id: string | null }
   services: { name: string }
 }
 
@@ -17,13 +17,16 @@ interface RevenueItem {
   oneTimeAmount: number
   status: string
   startDate: string
+  representativeId: string | null
 }
 
 export default function RevenuePage() {
   const currentYear = new Date().getFullYear()
   const [selectedYear, setSelectedYear] = useState(currentYear)
   const [services, setServices] = useState<Service[]>([])
+  const [representatives, setRepresentatives] = useState<Representative[]>([])
   const [selectedServices, setSelectedServices] = useState<Set<string>>(new Set())
+  const [selectedRep, setSelectedRep] = useState<string>('')
   const [revenueItems, setRevenueItems] = useState<RevenueItem[]>([])
   const [loading, setLoading] = useState(true)
 
@@ -39,10 +42,18 @@ export default function RevenuePage() {
 
       setServices((servicesData as Service[]) ?? [])
 
-      // Fetch all client services with details
+      // Fetch representatives for filter
+      const { data: repsData } = await supabase
+        .from('representatives')
+        .select('*')
+        .order('name')
+
+      setRepresentatives((repsData as Representative[]) ?? [])
+
+      // Fetch all client services with details including representative
       const { data: clientServicesData } = await supabase
         .from('client_services')
-        .select('*, clients(name), services(name)')
+        .select('*, clients(name, representative_id), services(name)')
         .order('start_date', { ascending: false })
 
       const items: RevenueItem[] = (clientServicesData as ClientServiceWithDetails[] | null)?.map((cs) => ({
@@ -53,6 +64,7 @@ export default function RevenuePage() {
         oneTimeAmount: Number(cs.one_time_cost) || 0,
         status: cs.status,
         startDate: cs.start_date,
+        representativeId: cs.clients?.representative_id || null,
       })) ?? []
 
       setRevenueItems(items)
@@ -72,12 +84,17 @@ export default function RevenuePage() {
     setSelectedServices(newSelected)
   }
 
-  const clearFilters = () => setSelectedServices(new Set())
+  const clearFilters = () => {
+    setSelectedServices(new Set())
+    setSelectedRep('')
+  }
 
-  // Filter items based on selected services
-  const filteredItems = selectedServices.size === 0
-    ? revenueItems
-    : revenueItems.filter((item) => selectedServices.has(item.serviceName))
+  // Filter items based on selected services and rep
+  const filteredItems = revenueItems.filter((item) => {
+    const matchesService = selectedServices.size === 0 || selectedServices.has(item.serviceName)
+    const matchesRep = !selectedRep || item.representativeId === selectedRep
+    return matchesService && matchesRep
+  })
 
   // Monthly recurring (active only)
   const monthlyItems = filteredItems.filter((item) => item.status === 'active' && item.monthlyAmount > 0)
@@ -132,10 +149,11 @@ export default function RevenuePage() {
         </div>
       </div>
 
-      {/* Service Filter Chips */}
-      <div className="mb-8">
+      {/* Filters */}
+      <div className="mb-8 space-y-4">
+        {/* Service Filter Chips */}
         <div className="flex items-center gap-2 flex-wrap">
-          <span className="text-sm text-gray-400 mr-2">Filter by service:</span>
+          <span className="text-sm text-gray-400 mr-2">Service:</span>
           {services.map((service) => (
             <button
               key={service.id}
@@ -149,10 +167,38 @@ export default function RevenuePage() {
               {service.name}
             </button>
           ))}
-          {selectedServices.size > 0 && (
+        </div>
+
+        {/* Rep Filter Chips */}
+        <div className="flex items-center gap-2 flex-wrap">
+          <span className="text-sm text-gray-400 mr-2">Account Manager:</span>
+          <button
+            onClick={() => setSelectedRep('')}
+            className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
+              !selectedRep
+                ? 'bg-[#2E8B57] text-white'
+                : 'bg-[#444444] text-gray-300 hover:bg-[#555555]'
+            }`}
+          >
+            All
+          </button>
+          {representatives.map((rep) => (
+            <button
+              key={rep.id}
+              onClick={() => setSelectedRep(rep.id)}
+              className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
+                selectedRep === rep.id
+                  ? 'bg-[#2E8B57] text-white'
+                  : 'bg-[#444444] text-gray-300 hover:bg-[#555555]'
+              }`}
+            >
+              {rep.name}
+            </button>
+          ))}
+          {(selectedServices.size > 0 || selectedRep) && (
             <button
               onClick={clearFilters}
-              className="px-3 py-1.5 text-sm text-gray-400 hover:text-white transition-colors"
+              className="px-3 py-1.5 text-sm text-gray-400 hover:text-white transition-colors ml-2"
             >
               Clear all
             </button>
