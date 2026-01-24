@@ -33,8 +33,8 @@ export async function POST(request: NextRequest) {
   try {
     switch (event.type) {
       case 'invoice.paid': {
-        // Use 'any' to avoid strict Stripe type issues
-        const stripeInvoice = event.data.object as Record<string, unknown>
+        // Cast through unknown to avoid strict Stripe type issues
+        const stripeInvoice = event.data.object as unknown as Record<string, unknown>
         const invoiceId = (stripeInvoice.metadata as Record<string, string> | undefined)?.invoice_id
 
         if (invoiceId) {
@@ -59,7 +59,7 @@ export async function POST(request: NextRequest) {
               .from('invoices')
               .update({
                 status: 'paid',
-                amount_paid: fromStripeAmount(stripeInvoice.amount_paid || 0),
+                amount_paid: fromStripeAmount((stripeInvoice.amount_paid as number) || 0),
                 paid_at: new Date().toISOString(),
                 updated_at: new Date().toISOString(),
               })
@@ -89,8 +89,8 @@ export async function POST(request: NextRequest) {
       }
 
       case 'invoice.payment_failed': {
-        // Use 'any' to avoid strict Stripe type issues
-        const stripeInvoice = event.data.object as Record<string, unknown>
+        // Cast through unknown to avoid strict Stripe type issues
+        const stripeInvoice = event.data.object as unknown as Record<string, unknown>
         const invoiceId = (stripeInvoice.metadata as Record<string, string> | undefined)?.invoice_id
 
         if (invoiceId) {
