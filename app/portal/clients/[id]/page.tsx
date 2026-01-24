@@ -38,9 +38,11 @@ export default function EditClientPage() {
   const [saving, setSaving] = useState(false)
   const [deleting, setDeleting] = useState(false)
 
-  const { register, handleSubmit, reset, formState: { errors } } = useForm<ClientFormData>({
+  const { register, handleSubmit, reset, watch, formState: { errors } } = useForm<ClientFormData>({
     resolver: zodResolver(clientSchema),
   })
+
+  const currentRepId = watch('representative_id')
 
   useEffect(() => {
     async function fetchData() {
@@ -126,9 +128,17 @@ export default function EditClientPage() {
   const handleAddService = async (serviceId: string) => {
     const supabase = createClient()
 
+    // Default performed_by_id to the client's account manager
     const { data, error } = await supabase
       .from('client_services')
-      .insert({ client_id: clientId, service_id: serviceId, monthly_cost: 0, one_time_cost: 0, status: 'active' })
+      .insert({
+        client_id: clientId,
+        service_id: serviceId,
+        monthly_cost: 0,
+        one_time_cost: 0,
+        status: 'active',
+        performed_by_id: currentRepId || null,
+      })
       .select('*, services(*)')
       .single()
 

@@ -95,7 +95,12 @@ export default function RevenuePage() {
   // Filter items based on selected services and performer
   const filteredItems = revenueItems.filter((item) => {
     const matchesService = selectedServices.size === 0 || selectedServices.has(item.serviceName)
-    const matchesRep = !selectedRep || item.performedById === selectedRep
+    let matchesRep = true
+    if (selectedRep === 'company') {
+      matchesRep = item.performedById === null
+    } else if (selectedRep) {
+      matchesRep = item.performedById === selectedRep
+    }
     return matchesService && matchesRep
   })
 
@@ -184,6 +189,16 @@ export default function RevenuePage() {
             }`}
           >
             All
+          </button>
+          <button
+            onClick={() => setSelectedRep('company')}
+            className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
+              selectedRep === 'company'
+                ? 'bg-[#2E8B57] text-white'
+                : 'bg-[#444444] text-gray-300 hover:bg-[#555555]'
+            }`}
+          >
+            Company
           </button>
           {representatives.map((rep) => (
             <button
