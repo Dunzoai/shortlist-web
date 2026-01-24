@@ -161,6 +161,47 @@ export default function InvoiceDetailPage() {
     router.push('/portal/invoices')
   }
 
+  const handleSendInvoice = async () => {
+    if (!invoice || !client?.email) {
+      alert('Client must have an email address to send invoice')
+      return
+    }
+
+    if (!confirm(`Send invoice to ${client.email}?`)) return
+
+    setUpdating(true)
+
+    try {
+      const response = await fetch(`/api/invoices/${invoiceId}/send`, {
+        method: 'POST',
+      })
+
+      const data = await response.json()
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to send invoice')
+      }
+
+      // Refresh invoice data
+      const supabase = createClient()
+      const { data: updatedInvoice } = await supabase
+        .from('invoices')
+        .select('*')
+        .eq('id', invoiceId)
+        .single()
+
+      if (updatedInvoice) {
+        setInvoice(updatedInvoice as Invoice)
+      }
+
+      alert('Invoice sent successfully!')
+    } catch (error) {
+      alert('Error sending invoice: ' + (error instanceof Error ? error.message : 'Unknown error'))
+    }
+
+    setUpdating(false)
+  }
+
   if (loading) {
     return (
       <div className="p-4 lg:p-8">
@@ -204,11 +245,18 @@ export default function InvoiceDetailPage() {
             {invoice.status === 'draft' && (
               <>
                 <button
+                  onClick={handleSendInvoice}
+                  disabled={updating || !client?.email}
+                  className="px-4 py-2 bg-[#2E8B57] hover:bg-[#25724a] disabled:opacity-50 text-white text-sm font-medium rounded-lg transition-colors"
+                >
+                  {updating ? 'Sending...' : 'Send Invoice'}
+                </button>
+                <button
                   onClick={handleMarkAsSent}
                   disabled={updating}
                   className="px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white text-sm font-medium rounded-lg transition-colors"
                 >
-                  Mark as Sent
+                  Mark as Sent (Manual)
                 </button>
                 <button
                   onClick={handleDelete}
@@ -218,6 +266,16 @@ export default function InvoiceDetailPage() {
                   Delete
                 </button>
               </>
+            )}
+            {invoice.stripe_hosted_invoice_url && (
+              <a
+                href={invoice.stripe_hosted_invoice_url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="px-4 py-2 bg-[#635BFF] hover:bg-[#5851db] text-white text-sm font-medium rounded-lg transition-colors"
+              >
+                View Stripe Invoice
+              </a>
             )}
             {(invoice.status === 'sent' || invoice.status === 'overdue' || invoice.status === 'partially_paid') && (
               <>
