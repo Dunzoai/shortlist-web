@@ -46,14 +46,17 @@ export async function POST(request: NextRequest) {
 
           if (invoice) {
             // Record the payment
+            const paymentIntentId = typeof stripeInvoice.payment_intent === 'string'
+              ? stripeInvoice.payment_intent
+              : stripeInvoice.payment_intent?.id || null
+
             await supabase.from('payments').insert({
               client_id: invoice.client_id,
               invoice_id: invoiceId,
-              amount: fromStripeAmount(stripeInvoice.amount_paid),
+              amount: fromStripeAmount(stripeInvoice.amount_paid || 0),
               payment_method: 'card',
               status: 'completed',
-              stripe_payment_intent_id: stripeInvoice.payment_intent as string,
-              card_brand: stripeInvoice.charge ? 'card' : null,
+              stripe_payment_intent_id: paymentIntentId,
             })
 
             // Update invoice status
@@ -61,7 +64,7 @@ export async function POST(request: NextRequest) {
               .from('invoices')
               .update({
                 status: 'paid',
-                amount_paid: fromStripeAmount(stripeInvoice.amount_paid),
+                amount_paid: fromStripeAmount(stripeInvoice.amount_paid || 0),
                 paid_at: new Date().toISOString(),
                 updated_at: new Date().toISOString(),
               })
@@ -103,13 +106,17 @@ export async function POST(request: NextRequest) {
             .single()
 
           if (invoice) {
+            const paymentIntentId = typeof stripeInvoice.payment_intent === 'string'
+              ? stripeInvoice.payment_intent
+              : stripeInvoice.payment_intent?.id || null
+
             await supabase.from('payments').insert({
               client_id: invoice.client_id,
               invoice_id: invoiceId,
-              amount: fromStripeAmount(stripeInvoice.amount_due),
+              amount: fromStripeAmount(stripeInvoice.amount_due || 0),
               payment_method: 'card',
               status: 'failed',
-              stripe_payment_intent_id: stripeInvoice.payment_intent as string,
+              stripe_payment_intent_id: paymentIntentId,
               failure_reason: 'Payment failed',
             })
           }
