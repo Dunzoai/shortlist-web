@@ -5,23 +5,28 @@ export async function middleware(request: NextRequest) {
   const hostname = request.headers.get('host') || ''
   const isPortalSubdomain = hostname.startsWith('portal.')
 
-  // Handle portal subdomain - rewrite to /portal routes
-  if (isPortalSubdomain) {
-    const pathname = request.nextUrl.pathname
+  // Determine the effective pathname (after potential rewrite)
+  let effectivePathname = request.nextUrl.pathname
+  let needsRewrite = false
 
-    // Don't rewrite if already going to /portal or /auth
-    if (!pathname.startsWith('/portal') && !pathname.startsWith('/auth')) {
-      const url = request.nextUrl.clone()
-      url.pathname = `/portal${pathname === '/' ? '' : pathname}`
-      return NextResponse.rewrite(url)
+  // Handle portal subdomain - map paths to /portal routes
+  if (isPortalSubdomain) {
+    if (!effectivePathname.startsWith('/portal') && !effectivePathname.startsWith('/auth')) {
+      effectivePathname = `/portal${effectivePathname === '/' ? '' : effectivePathname}`
+      needsRewrite = true
     }
   }
 
-  const isPortalRoute = request.nextUrl.pathname.startsWith('/portal')
-  const isLoginPage = request.nextUrl.pathname === '/portal/login'
+  const isPortalRoute = effectivePathname.startsWith('/portal')
+  const isLoginPage = effectivePathname === '/portal/login'
 
-  // Only protect portal routes
+  // Only protect portal routes (but not login page)
   if (!isPortalRoute || isLoginPage) {
+    if (needsRewrite) {
+      const url = request.nextUrl.clone()
+      url.pathname = effectivePathname
+      return NextResponse.rewrite(url)
+    }
     return NextResponse.next()
   }
 
@@ -56,7 +61,8 @@ export async function middleware(request: NextRequest) {
 
   if (!user) {
     const url = request.nextUrl.clone()
-    url.pathname = '/portal/login'
+    // On portal subdomain, redirect to /login (cleaner URL)
+    url.pathname = isPortalSubdomain ? '/login' : '/portal/login'
     return NextResponse.redirect(url)
   }
 
@@ -65,9 +71,21 @@ export async function middleware(request: NextRequest) {
 
   if (!adminEmails.includes(user.email?.toLowerCase() ?? '')) {
     const url = request.nextUrl.clone()
-    url.pathname = '/portal/login'
+    url.pathname = isPortalSubdomain ? '/login' : '/portal/login'
     url.searchParams.set('error', 'not_authorized')
     return NextResponse.redirect(url)
+  }
+
+  // If we need to rewrite (portal subdomain with non-portal path), do it now
+  if (needsRewrite) {
+    const url = request.nextUrl.clone()
+    url.pathname = effectivePathname
+    // Copy cookies to rewrite response
+    const rewriteResponse = NextResponse.rewrite(url)
+    supabaseResponse.cookies.getAll().forEach(cookie => {
+      rewriteResponse.cookies.set(cookie.name, cookie.value)
+    })
+    return rewriteResponse
   }
 
   return supabaseResponse

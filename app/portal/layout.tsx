@@ -3,12 +3,7 @@
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
-
-const navigation = [
-  { name: 'Dashboard', href: '/portal', icon: DashboardIcon },
-  { name: 'Clients', href: '/portal/clients', icon: ClientsIcon },
-  { name: 'Affiliates', href: '/portal/affiliates', icon: AffiliatesIcon },
-]
+import { useMemo } from 'react'
 
 function DashboardIcon({ className }: { className?: string }) {
   return (
@@ -38,6 +33,15 @@ export default function PortalLayout({ children }: { children: React.ReactNode }
   const pathname = usePathname()
   const router = useRouter()
 
+  // Check if we're on the portal subdomain for cleaner URLs
+  const isPortalSubdomain = typeof window !== 'undefined' && window.location.hostname.startsWith('portal.')
+
+  const navigation = useMemo(() => [
+    { name: 'Dashboard', href: isPortalSubdomain ? '/' : '/portal', icon: DashboardIcon },
+    { name: 'Clients', href: isPortalSubdomain ? '/clients' : '/portal/clients', icon: ClientsIcon },
+    { name: 'Affiliates', href: isPortalSubdomain ? '/affiliates' : '/portal/affiliates', icon: AffiliatesIcon },
+  ], [isPortalSubdomain])
+
   if (pathname === '/portal/login') {
     return <>{children}</>
   }
@@ -45,7 +49,7 @@ export default function PortalLayout({ children }: { children: React.ReactNode }
   const handleLogout = async () => {
     const supabase = createClient()
     await supabase.auth.signOut()
-    router.push('/portal/login')
+    router.push(isPortalSubdomain ? '/login' : '/portal/login')
   }
 
   return (
@@ -53,15 +57,18 @@ export default function PortalLayout({ children }: { children: React.ReactNode }
       <aside className="fixed inset-y-0 left-0 w-64 bg-[#333333] border-r border-[#444444]">
         <div className="flex flex-col h-full">
           <div className="p-6 border-b border-[#444444]">
-            <Link href="/portal" className="text-xl font-bold text-white">
+            <Link href={isPortalSubdomain ? '/' : '/portal'} className="text-xl font-bold text-white">
               Shortlist Portal
             </Link>
           </div>
 
           <nav className="flex-1 p-4 space-y-1">
             {navigation.map((item) => {
-              const isActive = pathname === item.href ||
-                (item.href !== '/portal' && pathname.startsWith(item.href))
+              // Normalize pathname to work with both /portal/* and /* (subdomain) URLs
+              const normalizedPath = pathname.replace('/portal', '') || '/'
+              const normalizedHref = item.href.replace('/portal', '') || '/'
+              const isActive = normalizedPath === normalizedHref ||
+                (normalizedHref !== '/' && normalizedPath.startsWith(normalizedHref))
               return (
                 <Link
                   key={item.name}
