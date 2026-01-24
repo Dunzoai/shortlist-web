@@ -2,10 +2,10 @@
   <!-- Bright yellow-green background -->
   <rect width="32" height="32" fill="#BFFF00" rx="4"/>
 
-  <!-- Ticket shape with notches -->
+  <!-- Ticket shape with notches - dark color for visibility -->
   <path
     d="M6 8 Q6 5, 9 5 L23 5 Q26 5, 26 8 L26 11 Q24 11, 24 13 Q24 15, 26 15 L26 24 Q26 27, 23 27 L9 27 Q6 27, 6 24 L6 15 Q8 15, 8 13 Q8 11, 6 11 Z"
-    fill="#F5F5DC"
+    fill="#1a1a1a"
   />
 
   <!-- Arch/doorway shape -->
@@ -20,7 +20,7 @@
   <path
     d="M13 17 L15.5 19.5 L19 14"
     fill="none"
-    stroke="#F5F5DC"
+    stroke="#BFFF00"
     stroke-width="2"
     stroke-linecap="round"
     stroke-linejoin="round"

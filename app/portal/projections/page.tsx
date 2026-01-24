@@ -41,6 +41,14 @@ interface RepBreakdown {
   oneTimeTotal: number
 }
 
+type ModalType = 'service' | 'performer' | null
+
+interface ModalData {
+  type: ModalType
+  id: string | null
+  name: string
+}
+
 export default function ProjectionsPage() {
   const [activeServices, setActiveServices] = useState<ActiveService[]>([])
   const [oneTimeServices, setOneTimeServices] = useState<OneTimeService[]>([])
@@ -48,6 +56,7 @@ export default function ProjectionsPage() {
   const [services, setServices] = useState<Service[]>([])
   const [representatives, setRepresentatives] = useState<Representative[]>([])
   const [loading, setLoading] = useState(true)
+  const [modal, setModal] = useState<ModalData | null>(null)
 
   const currentYear = new Date().getFullYear()
   const currentMonth = new Date().getMonth() // 0-indexed
@@ -268,6 +277,55 @@ export default function ProjectionsPage() {
     })
   }
 
+  // Get clients for a specific service
+  const getClientsForService = (serviceName: string) => {
+    const service = services.find(s => s.name === serviceName)
+    if (!service) return []
+
+    const recurring = activeServices.filter(s => s.serviceId === service.id)
+    const oneTime = oneTimeServices.filter(s => s.serviceId === service.id)
+
+    const clientMap = new Map<string, { name: string; monthly: number; oneTime: number }>()
+
+    recurring.forEach(s => {
+      const existing = clientMap.get(s.clientName) || { name: s.clientName, monthly: 0, oneTime: 0 }
+      existing.monthly += s.monthlyAmount
+      clientMap.set(s.clientName, existing)
+    })
+
+    oneTime.forEach(s => {
+      const existing = clientMap.get(s.clientName) || { name: s.clientName, monthly: 0, oneTime: 0 }
+      existing.oneTime += s.oneTimeAmount
+      clientMap.set(s.clientName, existing)
+    })
+
+    return Array.from(clientMap.values()).sort((a, b) => (b.monthly + b.oneTime) - (a.monthly + a.oneTime))
+  }
+
+  // Get clients for a specific performer
+  const getClientsForPerformer = (performerId: string | null) => {
+    const recurring = activeServices.filter(s => s.performedById === performerId)
+    const oneTime = oneTimeServices.filter(s => s.performedById === performerId)
+
+    const clientMap = new Map<string, { name: string; services: string[]; monthly: number; oneTime: number }>()
+
+    recurring.forEach(s => {
+      const existing = clientMap.get(s.clientName) || { name: s.clientName, services: [], monthly: 0, oneTime: 0 }
+      existing.monthly += s.monthlyAmount
+      if (!existing.services.includes(s.serviceName)) existing.services.push(s.serviceName)
+      clientMap.set(s.clientName, existing)
+    })
+
+    oneTime.forEach(s => {
+      const existing = clientMap.get(s.clientName) || { name: s.clientName, services: [], monthly: 0, oneTime: 0 }
+      existing.oneTime += s.oneTimeAmount
+      if (!existing.services.includes(s.serviceName)) existing.services.push(s.serviceName)
+      clientMap.set(s.clientName, existing)
+    })
+
+    return Array.from(clientMap.values()).sort((a, b) => (b.monthly + b.oneTime) - (a.monthly + a.oneTime))
+  }
+
   if (loading) {
     return (
       <div className="p-8">
@@ -348,7 +406,11 @@ export default function ProjectionsPage() {
           ) : (
             <div className="space-y-3">
               {serviceBreakdown.map((service) => (
-                <div key={service.name} className="flex items-center justify-between p-3 bg-[#3a3a3a] rounded-lg">
+                <button
+                  key={service.name}
+                  onClick={() => setModal({ type: 'service', id: service.name, name: service.name })}
+                  className="w-full flex items-center justify-between p-3 bg-[#3a3a3a] rounded-lg hover:bg-[#444444] transition-colors cursor-pointer text-left"
+                >
                   <div>
                     <p className="text-white font-medium">{service.name}</p>
                     <p className="text-sm text-gray-400">
@@ -357,15 +419,20 @@ export default function ProjectionsPage() {
                       {service.oneTimeTotal > 0 && `$${service.oneTimeTotal.toLocaleString()} one-time`}
                     </p>
                   </div>
-                  <div className="text-right">
-                    {service.monthlyTotal > 0 && (
-                      <p className="text-[#2E8B57] font-bold">${service.monthlyTotal.toLocaleString()}/mo</p>
-                    )}
-                    <p className="text-sm text-gray-400">
-                      ${(service.yearlyTotal + service.oneTimeTotal).toLocaleString()}/yr
-                    </p>
+                  <div className="text-right flex items-center gap-3">
+                    <div>
+                      {service.monthlyTotal > 0 && (
+                        <p className="text-[#2E8B57] font-bold">${service.monthlyTotal.toLocaleString()}/mo</p>
+                      )}
+                      <p className="text-sm text-gray-400">
+                        ${(service.yearlyTotal + service.oneTimeTotal).toLocaleString()}/yr
+                      </p>
+                    </div>
+                    <svg className="w-5 h-5 text-gray-500" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
+                    </svg>
                   </div>
-                </div>
+                </button>
               ))}
             </div>
           )}
@@ -379,7 +446,11 @@ export default function ProjectionsPage() {
           ) : (
             <div className="space-y-3">
               {repBreakdown.map((rep) => (
-                <div key={rep.id ?? 'company'} className="flex items-center justify-between p-3 bg-[#3a3a3a] rounded-lg">
+                <button
+                  key={rep.id ?? 'company'}
+                  onClick={() => setModal({ type: 'performer', id: rep.id, name: rep.name })}
+                  className="w-full flex items-center justify-between p-3 bg-[#3a3a3a] rounded-lg hover:bg-[#444444] transition-colors cursor-pointer text-left"
+                >
                   <div>
                     <p className="text-white font-medium">{rep.name}</p>
                     <p className="text-sm text-gray-400">
@@ -388,15 +459,20 @@ export default function ProjectionsPage() {
                       {rep.oneTimeTotal > 0 && `$${rep.oneTimeTotal.toLocaleString()} one-time`}
                     </p>
                   </div>
-                  <div className="text-right">
-                    {rep.monthlyTotal > 0 && (
-                      <p className="text-[#2E8B57] font-bold">${rep.monthlyTotal.toLocaleString()}/mo</p>
-                    )}
-                    <p className="text-sm text-gray-400">
-                      ${(rep.yearlyTotal + rep.oneTimeTotal).toLocaleString()}/yr
-                    </p>
+                  <div className="text-right flex items-center gap-3">
+                    <div>
+                      {rep.monthlyTotal > 0 && (
+                        <p className="text-[#2E8B57] font-bold">${rep.monthlyTotal.toLocaleString()}/mo</p>
+                      )}
+                      <p className="text-sm text-gray-400">
+                        ${(rep.yearlyTotal + rep.oneTimeTotal).toLocaleString()}/yr
+                      </p>
+                    </div>
+                    <svg className="w-5 h-5 text-gray-500" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
+                    </svg>
                   </div>
-                </div>
+                </button>
               ))}
             </div>
           )}
@@ -437,6 +513,68 @@ export default function ProjectionsPage() {
           </table>
         </div>
       </div>
+
+      {/* Drill-down Modal */}
+      {modal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" onClick={() => setModal(null)}>
+          <div className="bg-[#333333] rounded-lg max-w-lg w-full max-h-[80vh] overflow-hidden" onClick={e => e.stopPropagation()}>
+            <div className="flex items-center justify-between p-6 border-b border-[#444444]">
+              <h3 className="text-lg font-semibold text-white">
+                {modal.type === 'service' ? `${modal.name} Clients` : `${modal.name}'s Clients`}
+              </h3>
+              <button onClick={() => setModal(null)} className="text-gray-400 hover:text-white">
+                <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+            <div className="p-6 overflow-y-auto max-h-[60vh]">
+              {modal.type === 'service' ? (
+                <div className="space-y-3">
+                  {getClientsForService(modal.name).map(client => (
+                    <div key={client.name} className="flex items-center justify-between p-3 bg-[#3a3a3a] rounded-lg">
+                      <p className="text-white font-medium">{client.name}</p>
+                      <div className="text-right">
+                        {client.monthly > 0 && (
+                          <p className="text-[#2E8B57] font-medium">${client.monthly.toLocaleString()}/mo</p>
+                        )}
+                        {client.oneTime > 0 && (
+                          <p className="text-sm text-gray-400">${client.oneTime.toLocaleString()} one-time</p>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                  {getClientsForService(modal.name).length === 0 && (
+                    <p className="text-gray-400 text-center py-4">No clients found</p>
+                  )}
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  {getClientsForPerformer(modal.id).map(client => (
+                    <div key={client.name} className="flex items-center justify-between p-3 bg-[#3a3a3a] rounded-lg">
+                      <div>
+                        <p className="text-white font-medium">{client.name}</p>
+                        <p className="text-sm text-gray-400">{client.services.join(', ')}</p>
+                      </div>
+                      <div className="text-right">
+                        {client.monthly > 0 && (
+                          <p className="text-[#2E8B57] font-medium">${client.monthly.toLocaleString()}/mo</p>
+                        )}
+                        {client.oneTime > 0 && (
+                          <p className="text-sm text-gray-400">${client.oneTime.toLocaleString()} one-time</p>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                  {getClientsForPerformer(modal.id).length === 0 && (
+                    <p className="text-gray-400 text-center py-4">No clients found</p>
+                  )}
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
