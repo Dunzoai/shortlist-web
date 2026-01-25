@@ -19,12 +19,12 @@ export default function ShortlistChatWidget({
 }: ShortlistChatWidgetProps) {
   useEffect(() => {
     // Check if script already exists
-    if (document.querySelector('script[src="https://shortlistpass.com/embed.js"]')) {
+    if (document.querySelector('script[src="https://app.shortlistpass.com/embed.js"]')) {
       return
     }
 
     const script = document.createElement('script')
-    script.src = 'https://shortlistpass.com/embed.js'
+    script.src = 'https://app.shortlistpass.com/embed.js'
     script.setAttribute('data-business', business)
 
     if (messages) script.setAttribute('data-messages', messages)
@@ -36,7 +36,7 @@ export default function ShortlistChatWidget({
 
     return () => {
       // Cleanup on unmount
-      const existingScript = document.querySelector('script[src="https://shortlistpass.com/embed.js"]')
+      const existingScript = document.querySelector('script[src="https://app.shortlistpass.com/embed.js"]')
       if (existingScript) {
         existingScript.remove()
       }

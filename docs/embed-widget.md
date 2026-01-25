@@ -9,7 +9,7 @@ Embed the Shortlist AI chat widget on any website to give visitors instant acces
 ### Minimum Code
 ```html
 <script
-  src="https://shortlistpass.com/embed.js"
+  src="https://app.shortlistpass.com/embed.js"
   data-business="SUBDOMAIN"
 ></script>
 ```
@@ -17,7 +17,7 @@ Embed the Shortlist AI chat widget on any website to give visitors instant acces
 ### With Custom Messages
 ```html
 <script
-  src="https://shortlistpass.com/embed.js"
+  src="https://app.shortlistpass.com/embed.js"
   data-business="nitos"
   data-messages="Order Empanadas|Book Our Truck|Find our Location"
 ></script>
@@ -41,7 +41,7 @@ Embed the Shortlist AI chat widget on any website to give visitors instant acces
 Add before `</body>`:
 ```html
 <script
-  src="https://shortlistpass.com/embed.js"
+  src="https://app.shortlistpass.com/embed.js"
   data-business="your-subdomain"
   data-messages="Message 1|Message 2|Message 3"
 ></script>
@@ -70,12 +70,12 @@ export default function ShortlistChatWidget({
 }: ShortlistChatWidgetProps) {
   useEffect(() => {
     // Check if script already exists
-    if (document.querySelector('script[src="https://shortlistpass.com/embed.js"]')) {
+    if (document.querySelector('script[src="https://app.shortlistpass.com/embed.js"]')) {
       return
     }
 
     const script = document.createElement('script')
-    script.src = 'https://shortlistpass.com/embed.js'
+    script.src = 'https://app.shortlistpass.com/embed.js'
     script.setAttribute('data-business', business)
 
     if (messages) script.setAttribute('data-messages', messages)
@@ -84,7 +84,7 @@ export default function ShortlistChatWidget({
     document.body.appendChild(script)
 
     return () => {
-      const existingScript = document.querySelector('script[src="https://shortlistpass.com/embed.js"]')
+      const existingScript = document.querySelector('script[src="https://app.shortlistpass.com/embed.js"]')
       if (existingScript) existingScript.remove()
     }
   }, [business, messages, position])
@@ -108,7 +108,7 @@ import ShortlistChatWidget from '@/components/ShortlistChatWidget'
 Add to theme's `footer.php` before `</body>`, or use a plugin like "Insert Headers and Footers":
 ```html
 <script
-  src="https://shortlistpass.com/embed.js"
+  src="https://app.shortlistpass.com/embed.js"
   data-business="your-subdomain"
 ></script>
 ```
@@ -146,7 +146,7 @@ Add to theme's `footer.php` before `</body>`, or use a plugin like "Insert Heade
 
 ```html
 <script
-  src="https://shortlistpass.com/embed.js"
+  src="https://app.shortlistpass.com/embed.js"
   data-business="nitos"
   data-messages="Order Empanadas|Book Our Truck|Find our Location"
 ></script>
