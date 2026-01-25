@@ -1,13 +1,13 @@
 import type { Metadata } from "next";
 import { Playfair_Display, Lora, Permanent_Marker } from "next/font/google";
 import { headers } from "next/headers";
-import Script from "next/script";
 import "./globals.css";
 import { LanguageProvider } from "@/clients/danidiaz/components/LanguageContext";
 import { StyleProvider } from "@/clients/danidiaz/components/StyleContext";
 import { ClientProvider } from "@/lib/ClientContext";
 import { getClient } from "@/lib/getClient";
 import ChatLanguageControls from "@/clients/danidiaz/components/ChatLanguageControls";
+import ShortlistChatWidget from "@/components/ShortlistChatWidget";
 
 const playfair = Playfair_Display({
   variable: "--font-playfair",
@@ -112,11 +112,9 @@ export default async function RootLayout({
 
         {/* Shortlist Chat Widget for Nitos */}
         {client?.slug === 'nitos' && (
-          <Script
-            src="https://shortlistpass.com/embed.js"
-            data-business="nitos"
-            data-messages="Order Empanadas|Book Our Truck|Find our Location"
-            strategy="afterInteractive"
+          <ShortlistChatWidget
+            business="nitos"
+            messages="Order Empanadas|Book Our Truck|Find our Location"
           />
         )}
       </body>
