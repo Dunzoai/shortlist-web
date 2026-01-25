@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Playfair_Display, Lora, Permanent_Marker } from "next/font/google";
 import { headers } from "next/headers";
+import Script from "next/script";
 import "./globals.css";
 import { LanguageProvider } from "@/clients/danidiaz/components/LanguageContext";
 import { StyleProvider } from "@/clients/danidiaz/components/StyleContext";
@@ -108,6 +109,17 @@ export default async function RootLayout({
           />
         )}
         */}
+
+        {/* Shortlist Chat Widget for Nitos */}
+        {client?.slug === 'nitos' && (
+          <Script
+            src="https://app.shortlistpass.com/embed.js"
+            data-business="nitos"
+            data-color="#2D5A3D"
+            data-greeting="Got questions about empanadas? 🥟"
+            strategy="afterInteractive"
+          />
+        )}
       </body>
     </html>
   );
