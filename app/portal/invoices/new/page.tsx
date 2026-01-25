@@ -10,9 +10,18 @@ interface ClientWithServices extends Client {
   client_services?: (ClientService & { service: Service })[]
 }
 
+interface LineItem {
+  description: string
+  quantity: number
+  unit_price: number
+  service_id?: string
+  isCustom: boolean
+}
+
 export default function NewInvoicePage() {
   const router = useRouter()
   const [clients, setClients] = useState<ClientWithServices[]>([])
+  const [services, setServices] = useState<Service[]>([])
   const [loading, setLoading] = useState(true)
   const [creating, setCreating] = useState(false)
 
@@ -33,22 +42,30 @@ export default function NewInvoicePage() {
     return date.toISOString().split('T')[0]
   })
   const [notes, setNotes] = useState('')
-  const [lineItems, setLineItems] = useState<{ description: string; quantity: number; unit_price: number; service_id?: string }[]>([])
+  const [lineItems, setLineItems] = useState<LineItem[]>([])
   const [useAutoGenerate, setUseAutoGenerate] = useState(true)
 
   useEffect(() => {
-    async function fetchClients() {
+    async function fetchData() {
       const supabase = createClient()
-      const { data } = await supabase
-        .from('clients')
-        .select('*, client_services(*, service:services(*))')
-        .order('name')
 
-      setClients((data as ClientWithServices[] | null) ?? [])
+      const [clientsRes, servicesRes] = await Promise.all([
+        supabase
+          .from('clients')
+          .select('*, client_services(*, service:services(*))')
+          .order('name'),
+        supabase
+          .from('services')
+          .select('*')
+          .order('name')
+      ])
+
+      setClients((clientsRes.data as ClientWithServices[] | null) ?? [])
+      setServices((servicesRes.data as Service[] | null) ?? [])
       setLoading(false)
     }
 
-    fetchClients()
+    fetchData()
   }, [])
 
   const selectedClient = clients.find(c => c.id === selectedClientId)
@@ -62,21 +79,48 @@ export default function NewInvoicePage() {
         quantity: 1,
         unit_price: cs.monthly_cost,
         service_id: cs.service_id,
+        isCustom: false,
       })))
     }
   }, [selectedClientId, useAutoGenerate])
 
   const addLineItem = () => {
-    setLineItems([...lineItems, { description: '', quantity: 1, unit_price: 0 }])
+    setLineItems([...lineItems, { description: '', quantity: 1, unit_price: 0, isCustom: true }])
   }
 
   const removeLineItem = (index: number) => {
     setLineItems(lineItems.filter((_, i) => i !== index))
   }
 
-  const updateLineItem = (index: number, field: string, value: string | number) => {
+  const updateLineItem = (index: number, field: string, value: string | number | boolean) => {
     const updated = [...lineItems]
     updated[index] = { ...updated[index], [field]: value }
+    setLineItems(updated)
+  }
+
+  const handleServiceSelect = (index: number, serviceId: string) => {
+    const updated = [...lineItems]
+    if (serviceId === 'custom') {
+      updated[index] = {
+        ...updated[index],
+        isCustom: true,
+        service_id: undefined,
+        description: '',
+        unit_price: 0,
+      }
+    } else {
+      const service = services.find(s => s.id === serviceId)
+      if (service) {
+        updated[index] = {
+          ...updated[index],
+          isCustom: false,
+          service_id: serviceId,
+          description: service.name,
+          // Keep existing price or 0 - user can edit
+          unit_price: updated[index].unit_price || 0,
+        }
+      }
+    }
     setLineItems(updated)
   }
 
@@ -244,51 +288,76 @@ export default function NewInvoicePage() {
             ) : (
               <div className="space-y-3">
                 {lineItems.map((item, index) => (
-                  <div key={index} className="flex flex-col sm:flex-row gap-3 p-3 bg-[#3a3a3a] rounded-lg">
-                    <div className="flex-1">
-                      <input
-                        type="text"
-                        placeholder="Description"
-                        value={item.description}
-                        onChange={(e) => updateLineItem(index, 'description', e.target.value)}
-                        className="w-full px-3 py-2 bg-[#444444] border border-[#555555] rounded text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#2E8B57]"
-                      />
-                    </div>
-                    <div className="w-full sm:w-20">
-                      <input
-                        type="number"
-                        placeholder="Qty"
-                        value={item.quantity}
-                        onChange={(e) => updateLineItem(index, 'quantity', Number(e.target.value))}
-                        className="w-full px-3 py-2 bg-[#444444] border border-[#555555] rounded text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#2E8B57]"
-                      />
-                    </div>
-                    <div className="w-full sm:w-28">
-                      <div className="relative">
-                        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm">$</span>
-                        <input
-                          type="number"
-                          step="0.01"
-                          placeholder="Price"
-                          value={item.unit_price}
-                          onChange={(e) => updateLineItem(index, 'unit_price', Number(e.target.value))}
-                          className="w-full pl-7 pr-3 py-2 bg-[#444444] border border-[#555555] rounded text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#2E8B57]"
-                        />
+                  <div key={index} className="p-3 bg-[#3a3a3a] rounded-lg space-y-3">
+                    {/* Service Dropdown */}
+                    <div className="flex flex-col sm:flex-row gap-3">
+                      <div className="flex-1">
+                        <select
+                          value={item.isCustom ? 'custom' : (item.service_id || 'custom')}
+                          onChange={(e) => handleServiceSelect(index, e.target.value)}
+                          className="w-full px-3 py-2 bg-[#444444] border border-[#555555] rounded text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#2E8B57]"
+                        >
+                          <option value="custom">Custom Item</option>
+                          <optgroup label="Services">
+                            {services.map((service) => (
+                              <option key={service.id} value={service.id}>
+                                {service.name}
+                              </option>
+                            ))}
+                          </optgroup>
+                        </select>
+                      </div>
+                      <div className="w-full sm:w-24 flex items-center justify-end">
+                        <button
+                          type="button"
+                          onClick={() => removeLineItem(index)}
+                          className="text-red-400 hover:text-red-300 p-1"
+                        >
+                          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />
+                          </svg>
+                        </button>
                       </div>
                     </div>
-                    <div className="w-full sm:w-24 flex items-center justify-between sm:justify-end">
-                      <span className="text-white font-medium sm:mr-3">
-                        ${(item.quantity * item.unit_price).toLocaleString()}
-                      </span>
-                      <button
-                        type="button"
-                        onClick={() => removeLineItem(index)}
-                        className="text-red-400 hover:text-red-300 p-1"
-                      >
-                        <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />
-                        </svg>
-                      </button>
+
+                    {/* Description, Qty, Price */}
+                    <div className="flex flex-col sm:flex-row gap-3">
+                      <div className="flex-1">
+                        <input
+                          type="text"
+                          placeholder="Description"
+                          value={item.description}
+                          onChange={(e) => updateLineItem(index, 'description', e.target.value)}
+                          className="w-full px-3 py-2 bg-[#444444] border border-[#555555] rounded text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#2E8B57]"
+                        />
+                      </div>
+                      <div className="w-full sm:w-20">
+                        <input
+                          type="number"
+                          placeholder="Qty"
+                          value={item.quantity}
+                          onChange={(e) => updateLineItem(index, 'quantity', Number(e.target.value))}
+                          className="w-full px-3 py-2 bg-[#444444] border border-[#555555] rounded text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#2E8B57]"
+                        />
+                      </div>
+                      <div className="w-full sm:w-28">
+                        <div className="relative">
+                          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm">$</span>
+                          <input
+                            type="number"
+                            step="0.01"
+                            placeholder="Price"
+                            value={item.unit_price}
+                            onChange={(e) => updateLineItem(index, 'unit_price', Number(e.target.value))}
+                            className="w-full pl-7 pr-3 py-2 bg-[#444444] border border-[#555555] rounded text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#2E8B57]"
+                          />
+                        </div>
+                      </div>
+                      <div className="w-full sm:w-24 flex items-center justify-end">
+                        <span className="text-white font-medium">
+                          ${(item.quantity * item.unit_price).toLocaleString()}
+                        </span>
+                      </div>
                     </div>
                   </div>
                 ))}
