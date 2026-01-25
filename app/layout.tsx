@@ -113,10 +113,9 @@ export default async function RootLayout({
         {/* Shortlist Chat Widget for Nitos */}
         {client?.slug === 'nitos' && (
           <Script
-            src="https://app.shortlistpass.com/embed.js"
+            src="https://shortlistpass.com/embed.js"
             data-business="nitos"
-            data-color="#2D5A3D"
-            data-greeting="Got questions about empanadas? 🥟"
+            data-messages="Order Empanadas|Book Our Truck|Find our Location"
             strategy="afterInteractive"
           />
         )}
