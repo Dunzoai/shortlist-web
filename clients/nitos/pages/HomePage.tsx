@@ -1,6 +1,7 @@
 'use client';
 
-import { motion } from 'framer-motion';
+import { useRef } from 'react';
+import { motion, useScroll, useTransform, useMotionTemplate } from 'framer-motion';
 import { FoodTruckTimeline } from '@/clients/nitos/components/FoodTruckTimeline';
 import { ParallaxSection } from '@/clients/nitos/components/ParallaxSection';
 import { AnimatedHero } from '@/clients/nitos/components/AnimatedHero';
@@ -22,6 +23,17 @@ const staggerContainer = {
 };
 
 export function HomePage() {
+  const aboutRef = useRef<HTMLDivElement>(null);
+  const { scrollYProgress: aboutProgress } = useScroll({
+    target: aboutRef,
+    offset: ["start 0.85", "start 0.2"],
+  });
+
+  const aboutInsetV = useTransform(aboutProgress, [0, 1], [40, 0]);
+  const aboutInsetH = useTransform(aboutProgress, [0, 1], [45, 0]);
+  const aboutRadius = useTransform(aboutProgress, [0, 1], [20, 0]);
+  const aboutClipPath = useMotionTemplate`inset(${aboutInsetV}% ${aboutInsetH}% ${aboutInsetV}% ${aboutInsetH}% round ${aboutRadius}px)`;
+
   return (
     <main className="font-sans">
       {/* Header */}
@@ -33,78 +45,70 @@ export function HomePage() {
       {/* Parallax - Empanada */}
       <ParallaxSection imageSrc="/empanada-paralax.png" />
 
-      {/* About Section - Full-width image with text overlay */}
-      {/* Desktop version - text overlaid on right */}
-      <section id="about" className="relative w-full hidden md:block">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src="/nitos-name-behind-truck.png"
-          alt="The Name Behind the Truck - Damian at Nito's Empanadas"
-          className="w-full h-auto"
-        />
+      {/* About Section - Window reveal on scroll */}
+      <div ref={aboutRef} id="about" className="relative bg-[#2D5A3D] overflow-hidden">
+        <motion.div style={{ clipPath: aboutClipPath }}>
+          {/* Desktop version - text overlaid on right */}
+          <section className="relative w-full hidden md:block">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/nitos-name-behind-truck.png"
+              alt="The Name Behind the Truck - Damian at Nito's Empanadas"
+              className="w-full h-auto"
+            />
 
-        {/* Text Content - Positioned on the right white area */}
-        <div className="absolute inset-0 flex items-center justify-end">
-          <motion.div
-            initial="initial"
-            whileInView="animate"
-            viewport={{ once: true }}
-            variants={staggerContainer}
-            className="w-[45%] lg:w-[40%] px-8 lg:px-12 py-8"
-          >
-            <motion.h2 variants={fadeInUp} className="text-4xl lg:text-5xl font-bold text-[#2D5A3D] mb-6">
-              The Name Behind the Truck
-            </motion.h2>
+            {/* Text Content - Positioned on the right white area */}
+            <div className="absolute inset-0 flex items-center justify-end">
+              <div className="w-[45%] lg:w-[40%] px-8 lg:px-12 py-8">
+                <h2 className="text-4xl lg:text-5xl font-bold text-[#2D5A3D] mb-6">
+                  The Name Behind the Truck
+                </h2>
 
-            <motion.p variants={fadeInUp} className="text-[#3D3D3D] text-base lg:text-lg leading-relaxed mb-4">
-              I'm Damian — but this truck isn't named after me. It's named after my abuelo, Nito, who started making empanadas for his neighbors back in Uruguay in 1975. My dad carried on the tradition, and now it's my turn.
-            </motion.p>
-            <motion.p variants={fadeInUp} className="text-[#3D3D3D] text-base lg:text-lg leading-relaxed mb-4">
-              I studied culinary, spent 15 years in construction, and one day realized: if I don't chase this now, I never will. So here we are. Same fold. Same fillings. Same love. Rolling through Myrtle Beach with the name that means the most to me.
-            </motion.p>
+                <p className="text-[#3D3D3D] text-base lg:text-lg leading-relaxed mb-4">
+                  I&apos;m Damian — but this truck isn&apos;t named after me. It&apos;s named after my abuelo, Nito, who started making empanadas for his neighbors back in Uruguay in 1975. My dad carried on the tradition, and now it&apos;s my turn.
+                </p>
+                <p className="text-[#3D3D3D] text-base lg:text-lg leading-relaxed mb-4">
+                  I studied culinary, spent 15 years in construction, and one day realized: if I don&apos;t chase this now, I never will. So here we are. Same fold. Same fillings. Same love. Rolling through Myrtle Beach with the name that means the most to me.
+                </p>
 
-            <motion.p variants={fadeInUp} className="text-[#2D5A3D] font-semibold text-base lg:text-lg">
-              — Damian, Nito's Empanadas
-            </motion.p>
-          </motion.div>
-        </div>
-      </section>
+                <p className="text-[#2D5A3D] font-semibold text-base lg:text-lg">
+                  — Damian, Nito&apos;s Empanadas
+                </p>
+              </div>
+            </div>
+          </section>
 
-      {/* Mobile version - text overlaid on bottom white area */}
-      <section className="relative w-full md:hidden">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src="/name-behind-truck-mobile.png"
-          alt="The Name Behind the Truck - Damian at Nito's Empanadas"
-          className="w-full h-auto"
-        />
+          {/* Mobile version - text overlaid on bottom white area */}
+          <section className="relative w-full md:hidden">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/name-behind-truck-mobile.png"
+              alt="The Name Behind the Truck - Damian at Nito's Empanadas"
+              className="w-full h-auto"
+            />
 
-        {/* Text Content - Positioned on the bottom white area only */}
-        <div className="absolute bottom-0 left-0 right-0 h-[47%]">
-          <motion.div
-            initial="initial"
-            whileInView="animate"
-            viewport={{ once: true }}
-            variants={staggerContainer}
-            className="h-full flex flex-col justify-center px-5 py-3"
-          >
-            <motion.h2 variants={fadeInUp} className="text-2xl font-extrabold text-[#2D5A3D] mb-3 leading-tight">
-              The Name Behind the Truck
-            </motion.h2>
+            {/* Text Content - Positioned on the bottom white area only */}
+            <div className="absolute bottom-0 left-0 right-0 h-[47%]">
+              <div className="h-full flex flex-col justify-center px-5 py-3">
+                <h2 className="text-2xl font-extrabold text-[#2D5A3D] mb-3 leading-tight">
+                  The Name Behind the Truck
+                </h2>
 
-            <motion.p variants={fadeInUp} className="text-[#3D3D3D] text-xs leading-relaxed mb-2">
-              I'm Damian — but this truck isn't named after me. It's named after my abuelo, Nito, who started making empanadas for his neighbors back in Uruguay in 1975. My dad carried on the tradition, and now it's my turn.
-            </motion.p>
-            <motion.p variants={fadeInUp} className="text-[#3D3D3D] text-xs leading-relaxed mb-2">
-              I studied culinary, spent 15 years in construction, and one day realized: if I don't chase this now, I never will. So here we are. Same fold. Same fillings. Same love.
-            </motion.p>
+                <p className="text-[#3D3D3D] text-xs leading-relaxed mb-2">
+                  I&apos;m Damian — but this truck isn&apos;t named after me. It&apos;s named after my abuelo, Nito, who started making empanadas for his neighbors back in Uruguay in 1975. My dad carried on the tradition, and now it&apos;s my turn.
+                </p>
+                <p className="text-[#3D3D3D] text-xs leading-relaxed mb-2">
+                  I studied culinary, spent 15 years in construction, and one day realized: if I don&apos;t chase this now, I never will. So here we are. Same fold. Same fillings. Same love.
+                </p>
 
-            <motion.p variants={fadeInUp} className="text-[#2D5A3D] font-semibold text-xs">
-              — Damian, Nito's Empanadas
-            </motion.p>
-          </motion.div>
-        </div>
-      </section>
+                <p className="text-[#2D5A3D] font-semibold text-xs">
+                  — Damian, Nito&apos;s Empanadas
+                </p>
+              </div>
+            </div>
+          </section>
+        </motion.div>
+      </div>
 
       {/* Parallax - Truck Line */}
       <ParallaxSection imageSrc="/truck-line-paralax.png" />

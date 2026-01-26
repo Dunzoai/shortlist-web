@@ -137,8 +137,6 @@ export function FoodTruckTimeline({ onDayChange }: FoodTruckTimelineProps) {
   const [activeIndex, setActiveIndex] = useState(0);
   const [truckX, setTruckX] = useState(0);
   const cardRefs = useRef<(HTMLDivElement | null)[]>([]);
-  const touchStartX = useRef<number | null>(null);
-  const touchStartY = useRef<number | null>(null);
 
   const [scheduleData, setScheduleData] = useState<DayData[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -250,30 +248,6 @@ export function FoodTruckTimeline({ onDayChange }: FoodTruckTimelineProps) {
     }
   };
 
-  // Swipe handlers for mobile - only horizontal swipes, don't block vertical scroll
-  const handleTouchStart = (e: React.TouchEvent) => {
-    touchStartX.current = e.touches[0].clientX;
-    touchStartY.current = e.touches[0].clientY;
-  };
-
-  const handleTouchEnd = (e: React.TouchEvent) => {
-    if (touchStartX.current === null || touchStartY.current === null) return;
-    const deltaX = e.changedTouches[0].clientX - touchStartX.current;
-    const deltaY = e.changedTouches[0].clientY - touchStartY.current;
-    const minSwipe = 50;
-
-    // Only trigger if horizontal movement is at least 2x vertical (intentional horizontal swipe)
-    if (Math.abs(deltaX) > minSwipe && Math.abs(deltaX) > Math.abs(deltaY) * 2) {
-      if (deltaX < 0 && activeIndex < scheduleData.length - 1) {
-        scrollToCard(activeIndex + 1);
-      } else if (deltaX > 0 && activeIndex > 0) {
-        scrollToCard(activeIndex - 1);
-      }
-    }
-    touchStartX.current = null;
-    touchStartY.current = null;
-  };
-
   // Loading state
   if (isLoading) {
     return (
@@ -302,8 +276,6 @@ export function FoodTruckTimeline({ onDayChange }: FoodTruckTimelineProps) {
     <div className="relative">
       <div
         className="relative rounded-[28px] p-6 md:p-8 overflow-hidden"
-        onTouchStart={handleTouchStart}
-        onTouchEnd={handleTouchEnd}
         style={{
           background:
             "linear-gradient(180deg, rgba(45, 90, 61, 0.95) 0%, rgba(30, 60, 40, 0.98) 100%)",
@@ -345,11 +317,10 @@ export function FoodTruckTimeline({ onDayChange }: FoodTruckTimelineProps) {
 
         <div
           ref={scrollContainerRef}
-          className="flex gap-4 overflow-x-auto pb-4 snap-x snap-mandatory"
+          className="flex gap-4 overflow-x-hidden md:overflow-x-auto pb-4 md:snap-x md:snap-mandatory"
           style={{
             scrollbarWidth: "none",
             msOverflowStyle: "none",
-            WebkitOverflowScrolling: "touch",
           }}
         >
           <div className="shrink-0 w-[calc(50%-140px)]" />
