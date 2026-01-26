@@ -133,6 +133,7 @@ export function FoodTruckTimeline() {
   const [activeIndex, setActiveIndex] = useState(0);
   const [truckX, setTruckX] = useState(0);
   const cardRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const touchStartX = useRef<number | null>(null);
 
   const [scheduleData, setScheduleData] = useState<DayData[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -239,6 +240,28 @@ export function FoodTruckTimeline() {
     }
   };
 
+  // Swipe handlers for mobile
+  const handleTouchStart = (e: React.TouchEvent) => {
+    touchStartX.current = e.touches[0].clientX;
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    if (touchStartX.current === null) return;
+    const deltaX = e.changedTouches[0].clientX - touchStartX.current;
+    const minSwipe = 50; // minimum px to count as swipe
+
+    if (Math.abs(deltaX) > minSwipe) {
+      if (deltaX < 0 && activeIndex < scheduleData.length - 1) {
+        // Swipe left = next day
+        scrollToCard(activeIndex + 1);
+      } else if (deltaX > 0 && activeIndex > 0) {
+        // Swipe right = previous day
+        scrollToCard(activeIndex - 1);
+      }
+    }
+    touchStartX.current = null;
+  };
+
   // Loading state
   if (isLoading) {
     return (
@@ -267,6 +290,8 @@ export function FoodTruckTimeline() {
     <div className="relative">
       <div
         className="relative rounded-[28px] p-6 md:p-8 overflow-hidden"
+        onTouchStart={handleTouchStart}
+        onTouchEnd={handleTouchEnd}
         style={{
           background:
             "linear-gradient(180deg, rgba(45, 90, 61, 0.95) 0%, rgba(30, 60, 40, 0.98) 100%)",
