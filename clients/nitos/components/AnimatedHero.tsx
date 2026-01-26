@@ -79,10 +79,23 @@ function generateEmpanadas(): FlyingEmpanada[] {
   });
 }
 
+// Images to preload before starting animations
+const PRELOAD_IMAGES = [
+  '/damian-sneakers.png',
+  '/nitos-truck.png',
+  '/nitos-logo.avif',
+  '/empanada.png',
+  '/street-corn-empanada.png',
+  '/sweet-empanada.png',
+];
+
 export function AnimatedHero() {
   const [flyingEmpanadas] = useState<FlyingEmpanada[]>(generateEmpanadas);
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const damianAudioRef = useRef<HTMLAudioElement | null>(null);
+
+  // Wait for images before animating
+  const [imagesReady, setImagesReady] = useState(false);
 
   // Animation sequence states
   const [showDamian, setShowDamian] = useState(false);
@@ -97,6 +110,33 @@ export function AnimatedHero() {
   const [truckKey, setTruckKey] = useState(0);
   const [isDesktop, setIsDesktop] = useState(false);
 
+  // Preload all critical images before starting animations
+  useEffect(() => {
+    let cancelled = false;
+    const promises = PRELOAD_IMAGES.map((src) => {
+      return new Promise<void>((resolve) => {
+        const img = new window.Image();
+        img.onload = () => resolve();
+        img.onerror = () => resolve(); // Don't block on error
+        img.src = src;
+      });
+    });
+
+    Promise.all(promises).then(() => {
+      if (!cancelled) setImagesReady(true);
+    });
+
+    // Fallback: start anyway after 3s if images are slow
+    const fallback = setTimeout(() => {
+      if (!cancelled) setImagesReady(true);
+    }, 3000);
+
+    return () => {
+      cancelled = true;
+      clearTimeout(fallback);
+    };
+  }, []);
+
   useEffect(() => {
     const checkDesktop = () => setIsDesktop(window.innerWidth >= 1024);
     checkDesktop();
@@ -104,7 +144,10 @@ export function AnimatedHero() {
     return () => window.removeEventListener('resize', checkDesktop);
   }, []);
 
+  // Only start animation sequence once images are loaded
   useEffect(() => {
+    if (!imagesReady) return;
+
     const timers = [
       setTimeout(() => setShowDamian(true), 500),
       setTimeout(() => setShowHeadline(true), 1800),
@@ -113,7 +156,7 @@ export function AnimatedHero() {
     ];
 
     return () => timers.forEach(clearTimeout);
-  }, []);
+  }, [imagesReady]);
 
   const handleFindUsClick = () => {
     if (showTruck || isPanning) return;
@@ -161,6 +204,11 @@ export function AnimatedHero() {
 
   return (
     <section className="relative h-[100dvh] bg-[#D4C5A9] overflow-hidden">
+
+      {/* Hidden preload for truck image (conditionally rendered, so Next.js won't preload it) */}
+      <div className="absolute w-0 h-0 overflow-hidden" aria-hidden="true">
+        <Image src="/nitos-truck.png" alt="" width={1} height={1} priority />
+      </div>
 
       {/* Optional: Audio element for truck horn */}
       {/* <audio ref={audioRef} src="/truck-horn.mp3" preload="auto" /> */}
@@ -360,6 +408,7 @@ export function AnimatedHero() {
             alt="Damian from Nito's Empanadas"
             fill
             className="object-contain object-bottom"
+            priority
           />
         </motion.div>
       )}
