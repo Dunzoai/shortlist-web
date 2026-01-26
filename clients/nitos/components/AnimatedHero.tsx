@@ -226,7 +226,7 @@ export function AnimatedHero() {
           }}
           initial={{ clipPath: 'inset(0 0 0 0)' }}
           animate={{ clipPath: 'inset(0 0 0 100%)' }}
-          transition={{ duration: isDesktop ? 8.75 : 4, delay: 0.15, ease: [0.25, 0.1, 0.25, 1] }}
+          transition={{ duration: isDesktop ? 6.125 : 2.8, delay: 0.15, ease: [0.25, 0.1, 0.25, 1] }}
         >
             {/* Film grain */}
             <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
