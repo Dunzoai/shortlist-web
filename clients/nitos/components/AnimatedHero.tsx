@@ -319,7 +319,7 @@ export function AnimatedHero() {
       <div
         className="absolute inset-0 z-0 pointer-events-none"
         style={{
-          background: 'radial-gradient(ellipse at center, transparent 30%, rgba(30, 25, 15, 0.08) 70%, rgba(20, 15, 8, 0.18) 100%)',
+          background: 'radial-gradient(ellipse at center, transparent 20%, rgba(30, 25, 15, 0.18) 70%, rgba(20, 15, 8, 0.35) 100%)',
         }}
       />
 
