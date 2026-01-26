@@ -1,11 +1,24 @@
 'use client';
 
-import { motion } from 'framer-motion';
+import { useState, useCallback } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import Image from 'next/image';
 import { FoodTruckTimeline } from '@/clients/nitos/components/FoodTruckTimeline';
 import { ParallaxSection } from '@/clients/nitos/components/ParallaxSection';
 import { AnimatedHero } from '@/clients/nitos/components/AnimatedHero';
 import { Header } from '@/clients/nitos/components/Header';
 import { MenuSection } from '@/clients/nitos/components/MenuSection';
+
+// Scene images that rotate with the truck schedule (one per day)
+const SCENE_IMAGES = [
+  '/myrtle-beach.jpg',
+  '/surfside-beach.jpg',
+  '/myrtle-beach-ferris-wheel.jpg',
+  '/north-myrtle-beach.jpg',
+  '/pawleys-island.jpg',
+  '/wax-museum.jpg',
+  '/upside-down-building.jpg',
+];
 
 const fadeInUp = {
   initial: { opacity: 0, y: 30 },
@@ -22,6 +35,11 @@ const staggerContainer = {
 };
 
 export function HomePage() {
+  const [activeScene, setActiveScene] = useState(0);
+  const handleDayChange = useCallback((index: number) => {
+    setActiveScene(index);
+  }, []);
+
   return (
     <main className="font-sans">
       {/* Header */}
@@ -110,8 +128,31 @@ export function HomePage() {
       <ParallaxSection imageSrc="/truck-line-paralax.png" />
 
       {/* Schedule Section */}
-      <section id="schedule" className="py-24 bg-[#D4C5A9]">
-        <div className="max-w-7xl mx-auto px-6">
+      <section id="schedule" className="relative py-24 bg-[#D4C5A9] overflow-hidden">
+        {/* Background scene images - crossfade with active day */}
+        <div className="absolute inset-0">
+          <AnimatePresence mode="sync">
+            <motion.div
+              key={activeScene}
+              className="absolute inset-0"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 0.3 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.8, ease: 'easeInOut' }}
+            >
+              <Image
+                src={SCENE_IMAGES[activeScene % SCENE_IMAGES.length]}
+                alt=""
+                fill
+                className="object-cover"
+                sizes="100vw"
+              />
+            </motion.div>
+          </AnimatePresence>
+        </div>
+
+        {/* Content sits on top */}
+        <div className="relative z-10 max-w-7xl mx-auto px-6">
           <motion.div
             initial="initial"
             whileInView="animate"
@@ -126,7 +167,7 @@ export function HomePage() {
             </motion.h2>
 
             <motion.div variants={fadeInUp}>
-              <FoodTruckTimeline />
+              <FoodTruckTimeline onDayChange={handleDayChange} />
             </motion.div>
           </motion.div>
         </div>

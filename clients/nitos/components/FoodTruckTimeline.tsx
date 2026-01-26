@@ -128,7 +128,11 @@ function buildWeekSchedule(events: EventData[]): DayData[] {
   });
 }
 
-export function FoodTruckTimeline() {
+interface FoodTruckTimelineProps {
+  onDayChange?: (index: number) => void;
+}
+
+export function FoodTruckTimeline({ onDayChange }: FoodTruckTimelineProps) {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const [activeIndex, setActiveIndex] = useState(0);
   const [truckX, setTruckX] = useState(0);
@@ -215,6 +219,11 @@ export function FoodTruckTimeline() {
 
     return () => container.removeEventListener("scroll", handleScroll);
   }, [scheduleData]);
+
+  // Notify parent when active day changes
+  useEffect(() => {
+    onDayChange?.(activeIndex);
+  }, [activeIndex, onDayChange]);
 
   // Auto-scroll to today on load
   useEffect(() => {
