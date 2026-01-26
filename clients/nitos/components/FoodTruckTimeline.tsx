@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useState, useEffect } from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 
 interface EventData {
@@ -228,15 +228,18 @@ export function FoodTruckTimeline({ onDayChange }: FoodTruckTimelineProps) {
   useEffect(() => {
     if (scheduleData.length > 0 && !isLoading) {
       setTimeout(() => {
-        scrollToCard(activeIndex);
+        navigateToDay(activeIndex);
       }, 200);
     }
   }, [isLoading, scheduleData.length]);
 
-  const scrollToCard = (index: number) => {
-    const card = cardRefs.current[index];
+  const navigateToDay = (index: number) => {
+    setActiveIndex(index);
+
+    // On desktop, also programmatically scroll the container
     const container = scrollContainerRef.current;
-    if (card && container) {
+    const card = cardRefs.current[index];
+    if (card && container && container.offsetWidth > 0) {
       const cardRect = card.getBoundingClientRect();
       const containerRect = container.getBoundingClientRect();
       const scrollLeft =
@@ -293,7 +296,19 @@ export function FoodTruckTimeline({ onDayChange }: FoodTruckTimelineProps) {
           </p>
         </div>
 
-        <div className="relative h-32 flex justify-center mb-2">
+        {/* Truck - Mobile: centered */}
+        <div className="relative h-24 flex justify-center mb-2 md:hidden">
+          <Image
+            src="/nitos-truck.png"
+            alt="Nito's Food Truck"
+            width={140}
+            height={84}
+            className="object-contain drop-shadow-2xl"
+          />
+        </div>
+
+        {/* Truck - Desktop: scroll-linked */}
+        <div className="relative h-32 hidden md:flex justify-center mb-2">
           <motion.div
             className="absolute -top-3"
             style={{ left: 0 }}
@@ -315,9 +330,62 @@ export function FoodTruckTimeline({ onDayChange }: FoodTruckTimelineProps) {
           </motion.div>
         </div>
 
+        {/* Mobile: Single card view - NO scroll container */}
+        <div className="md:hidden pb-4">
+          <AnimatePresence mode="wait">
+            {scheduleData[activeIndex] && (
+              <motion.div
+                key={scheduleData[activeIndex].date}
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.95 }}
+                transition={{ duration: 0.2 }}
+                className="mx-auto w-[280px]"
+              >
+                <div
+                  className="rounded-2xl p-6 h-[160px] flex flex-col justify-between"
+                  style={{
+                    background: scheduleData[activeIndex].isPlaceholder
+                      ? "rgba(255, 255, 255, 0.7)"
+                      : "rgba(255, 255, 255, 0.95)",
+                    border: scheduleData[activeIndex].isPlaceholder
+                      ? "1px dashed rgba(43, 58, 68, 0.3)"
+                      : "1px solid rgba(43, 58, 68, 0.2)",
+                  }}
+                >
+                  <div>
+                    <p className="text-[10px] uppercase tracking-[0.2em] mb-2 font-medium text-[#2D5A3D]">
+                      {scheduleData[activeIndex].fullDay}
+                    </p>
+                    <h4
+                      className={`text-xl font-bold text-[#222222] ${
+                        scheduleData[activeIndex].isPlaceholder
+                          ? "opacity-70"
+                          : "italic"
+                      }`}
+                    >
+                      {scheduleData[activeIndex].location}
+                    </h4>
+                  </div>
+                  <p
+                    className={`text-sm ${
+                      scheduleData[activeIndex].isPlaceholder
+                        ? "text-[#5A6570]/60 italic"
+                        : "text-[#5A6570]"
+                    }`}
+                  >
+                    {scheduleData[activeIndex].details}
+                  </p>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+
+        {/* Desktop: Horizontal scroll with snap */}
         <div
           ref={scrollContainerRef}
-          className="flex gap-4 overflow-x-hidden md:overflow-x-auto pb-4 md:snap-x md:snap-mandatory"
+          className="hidden md:flex gap-4 overflow-x-auto pb-4 snap-x snap-mandatory"
           style={{
             scrollbarWidth: "none",
             msOverflowStyle: "none",
@@ -331,7 +399,7 @@ export function FoodTruckTimeline({ onDayChange }: FoodTruckTimelineProps) {
               ref={(el) => {
                 cardRefs.current[index] = el;
               }}
-              onClick={() => scrollToCard(index)}
+              onClick={() => navigateToDay(index)}
               className="shrink-0 w-[280px] snap-center cursor-pointer"
             >
               <motion.div
@@ -403,7 +471,7 @@ export function FoodTruckTimeline({ onDayChange }: FoodTruckTimelineProps) {
           {scheduleData.map((day, index) => (
             <button
               key={day.date}
-              onClick={() => scrollToCard(index)}
+              onClick={() => navigateToDay(index)}
               className={`px-3 py-1 rounded-full text-xs font-medium transition-all ${
                 index === activeIndex
                   ? day.isPlaceholder
