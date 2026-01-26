@@ -138,6 +138,7 @@ export function FoodTruckTimeline({ onDayChange }: FoodTruckTimelineProps) {
   const [truckX, setTruckX] = useState(0);
   const cardRefs = useRef<(HTMLDivElement | null)[]>([]);
   const touchStartX = useRef<number | null>(null);
+  const touchStartY = useRef<number | null>(null);
 
   const [scheduleData, setScheduleData] = useState<DayData[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -249,26 +250,28 @@ export function FoodTruckTimeline({ onDayChange }: FoodTruckTimelineProps) {
     }
   };
 
-  // Swipe handlers for mobile
+  // Swipe handlers for mobile - only horizontal swipes, don't block vertical scroll
   const handleTouchStart = (e: React.TouchEvent) => {
     touchStartX.current = e.touches[0].clientX;
+    touchStartY.current = e.touches[0].clientY;
   };
 
   const handleTouchEnd = (e: React.TouchEvent) => {
-    if (touchStartX.current === null) return;
+    if (touchStartX.current === null || touchStartY.current === null) return;
     const deltaX = e.changedTouches[0].clientX - touchStartX.current;
-    const minSwipe = 50; // minimum px to count as swipe
+    const deltaY = e.changedTouches[0].clientY - touchStartY.current;
+    const minSwipe = 50;
 
-    if (Math.abs(deltaX) > minSwipe) {
+    // Only trigger if horizontal movement is at least 2x vertical (intentional horizontal swipe)
+    if (Math.abs(deltaX) > minSwipe && Math.abs(deltaX) > Math.abs(deltaY) * 2) {
       if (deltaX < 0 && activeIndex < scheduleData.length - 1) {
-        // Swipe left = next day
         scrollToCard(activeIndex + 1);
       } else if (deltaX > 0 && activeIndex > 0) {
-        // Swipe right = previous day
         scrollToCard(activeIndex - 1);
       }
     }
     touchStartX.current = null;
+    touchStartY.current = null;
   };
 
   // Loading state
