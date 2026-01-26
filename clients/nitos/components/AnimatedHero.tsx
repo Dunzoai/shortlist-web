@@ -280,15 +280,15 @@ export function AnimatedHero() {
             <div
               className="absolute inset-0 z-0 pointer-events-none"
               style={{
-                background: 'radial-gradient(ellipse at center, transparent 20%, rgba(30, 25, 15, 0.18) 70%, rgba(20, 15, 8, 0.35) 100%)',
+                background: 'radial-gradient(ellipse at center, transparent 30%, rgba(30, 25, 15, 0.08) 70%, rgba(20, 15, 8, 0.18) 100%)',
               }}
             />
             {/* Film grain */}
             <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
               <div
-                className="absolute inset-[-100%] opacity-[0.55] animate-grain"
+                className="absolute inset-[-100%] opacity-[0.25] md:opacity-[0.4] animate-grain"
                 style={{
-                  backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='5' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E")`,
+                  backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.7' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E")`,
                   backgroundRepeat: 'repeat',
                   backgroundSize: '256px 256px',
                   mixBlendMode: 'multiply',
@@ -326,9 +326,9 @@ export function AnimatedHero() {
       {/* Animated film grain overlay - darkened */}
       <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
         <div
-          className="absolute inset-[-100%] opacity-[0.55] animate-grain"
+          className="absolute inset-[-100%] opacity-[0.25] md:opacity-[0.4] animate-grain"
           style={{
-            backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='5' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E")`,
+            backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.7' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E")`,
             backgroundRepeat: 'repeat',
             backgroundSize: '256px 256px',
             mixBlendMode: 'multiply',
