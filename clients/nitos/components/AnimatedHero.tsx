@@ -213,18 +213,19 @@ export function AnimatedHero() {
         </>
       )}
 
-      {/* HERO OVERLAY - Gets pulled away to the right, revealing schedule underneath */}
+      {/* HERO OVERLAY - Wipes away from left as truck crosses, revealing schedule underneath */}
       {showTruck && (
         <motion.div
           key={`hero-overlay-${truckKey}`}
           className="fixed z-[9998] bg-[#D4C5A9] overflow-hidden"
           style={{
             top: 0,
+            left: 0,
             width: '100vw',
             height: '100vh',
           }}
-          initial={{ left: 0 }}
-          animate={{ left: 'calc(100vw + 2000px)' }}
+          initial={{ clipPath: 'inset(0 0 0 0)' }}
+          animate={{ clipPath: 'inset(0 0 0 100%)' }}
           transition={{ duration: isDesktop ? 8.75 : 4, delay: 0.15, ease: [0.25, 0.1, 0.25, 1] }}
         >
             {/* Film grain */}
