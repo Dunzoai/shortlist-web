@@ -110,13 +110,13 @@ export default async function RootLayout({
         )}
         */}
 
-        {/* Shortlist Chat Widget for Nitos */}
-        {client?.slug === 'nitos' && (
+        {/* Shortlist Chat Widget for Nitos — TEMPORARILY DISABLED to debug mobile scroll issues */}
+        {/* {client?.slug === 'nitos' && (
           <ShortlistChatWidget
             business="nitos"
             messages="Order Empanadas|Book Our Truck|Find our Location"
           />
-        )}
+        )} */}
       </body>
     </html>
   );
