@@ -317,7 +317,7 @@ export function FoodTruckTimeline({ onDayChange }: FoodTruckTimelineProps) {
 
         <div
           ref={scrollContainerRef}
-          className="flex gap-4 overflow-x-hidden md:overflow-x-auto pb-4 md:snap-x md:snap-mandatory"
+          className="flex gap-4 overflow-x-auto pb-4 snap-x snap-mandatory"
           style={{
             scrollbarWidth: "none",
             msOverflowStyle: "none",
