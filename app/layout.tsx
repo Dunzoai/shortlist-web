@@ -117,6 +117,16 @@ export default async function RootLayout({
             messages="Order Empanadas|Book Our Truck|Find our Location"
           />
         )} */}
+
+        {/* Shortlist Chat Widget for Dani Diaz */}
+        {(!client || client.slug === 'danidiaz') && (
+          <ShortlistChatWidget
+            business="danidiaz"
+            position="right"
+            theme="dark"
+            messages="Schedule an appointment|What areas do you service?|Ask me anything"
+          />
+        )}
       </body>
     </html>
   );

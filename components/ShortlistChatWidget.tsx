@@ -7,6 +7,7 @@ interface ShortlistChatWidgetProps {
   messages?: string
   color?: string
   position?: 'left' | 'right'
+  theme?: 'light' | 'dark'
   greeting?: string
 }
 
@@ -15,6 +16,7 @@ export default function ShortlistChatWidget({
   messages,
   color,
   position,
+  theme,
   greeting,
 }: ShortlistChatWidgetProps) {
   useEffect(() => {
@@ -30,6 +32,7 @@ export default function ShortlistChatWidget({
     if (messages) script.setAttribute('data-messages', messages)
     if (color) script.setAttribute('data-color', color)
     if (position) script.setAttribute('data-position', position)
+    if (theme) script.setAttribute('data-theme', theme)
     if (greeting) script.setAttribute('data-greeting', greeting)
 
     document.body.appendChild(script)
