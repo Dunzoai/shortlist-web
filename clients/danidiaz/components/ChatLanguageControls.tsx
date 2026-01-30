@@ -35,7 +35,7 @@ export default function ChatLanguageControls() {
   return (
     <button
       onClick={() => setLanguage(language === 'en' ? 'es' : 'en')}
-      className={`fixed bottom-6 right-6 z-[9999] flex items-center gap-2 bg-white text-[#1B365D] text-sm border border-[#1B365D]/30 rounded-full px-4 py-2 hover:bg-[#F7F7F7] shadow-lg cursor-pointer transition-all duration-300 ${
+      className={`fixed bottom-24 right-6 z-[9999] flex items-center gap-2 bg-white text-[#1B365D] text-sm border border-[#1B365D]/30 rounded-full px-4 py-2 hover:bg-[#F7F7F7] shadow-lg cursor-pointer transition-all duration-300 ${
         isScrolling ? 'opacity-0 translate-y-4 pointer-events-none' : 'opacity-100 translate-y-0'
       }`}
     >
