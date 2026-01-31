@@ -4,6 +4,7 @@ import { NextResponse, type NextRequest } from 'next/server'
 export async function middleware(request: NextRequest) {
   const hostname = request.headers.get('host') || ''
   const isPortalSubdomain = hostname.startsWith('portal.')
+  const isClientPortalSubdomain = hostname.startsWith('my.') || hostname.startsWith('clients.')
 
   // Determine the effective pathname (after potential rewrite)
   let effectivePathname = request.nextUrl.pathname
@@ -13,6 +14,14 @@ export async function middleware(request: NextRequest) {
   if (isPortalSubdomain) {
     if (!effectivePathname.startsWith('/portal') && !effectivePathname.startsWith('/auth')) {
       effectivePathname = `/portal${effectivePathname === '/' ? '' : effectivePathname}`
+      needsRewrite = true
+    }
+  }
+
+  // Handle client portal subdomain - map paths to /client-portal routes
+  if (isClientPortalSubdomain) {
+    if (!effectivePathname.startsWith('/client-portal')) {
+      effectivePathname = `/client-portal${effectivePathname === '/' ? '/login' : effectivePathname}`
       needsRewrite = true
     }
   }
