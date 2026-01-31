@@ -28,7 +28,7 @@ export default function PortalLoginPage() {
       return
     }
 
-    router.push('/portal/dashboard')
+    router.push('/client/dashboard')
   }
 
   return (

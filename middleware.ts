@@ -32,13 +32,21 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next()
   }
 
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+  const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+
+  if (!supabaseUrl || !supabaseKey) {
+    console.error('[Middleware] Missing Supabase environment variables')
+    return NextResponse.redirect(new URL('/error', request.url))
+  }
+
   let supabaseResponse = NextResponse.next({
     request,
   })
 
   const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    supabaseUrl,
+    supabaseKey,
     {
       cookies: {
         getAll() {
@@ -64,7 +72,7 @@ export async function middleware(request: NextRequest) {
   if (!user) {
     const url = request.nextUrl.clone()
     // On portal subdomain, redirect to /login (cleaner URL)
-    url.pathname = isPortalSubdomain ? '/login' : '/portal/login'
+    url.pathname = isPortalSubdomain ? '/login' : isClientRoute ? '/client/login' : '/portal/login'
     return NextResponse.redirect(url)
   }
 
