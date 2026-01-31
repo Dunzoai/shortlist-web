@@ -99,7 +99,7 @@ export default function PortalDashboard() {
               {invoices.map((inv) => (
                 <li key={inv.id} className="flex justify-between text-gray-300">
                   <span>{inv.invoice_number}</span>
-                  <span className="text-[#2E8B57]">${(inv.amount / 100).toFixed(2)}</span>
+                  <span className="text-[#2E8B57]">${(inv.total / 100).toFixed(2)}</span>
                 </li>
               ))}
             </ul>

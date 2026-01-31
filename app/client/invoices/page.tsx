@@ -95,7 +95,7 @@ export default function InvoicesPage() {
               {invoices.map((inv) => (
                 <tr key={inv.id}>
                   <td className="px-6 py-4 text-sm text-gray-300">{inv.invoice_number}</td>
-                  <td className="px-6 py-4 text-sm text-white font-semibold">${(inv.amount / 100).toFixed(2)}</td>
+                  <td className="px-6 py-4 text-sm text-white font-semibold">${(inv.total / 100).toFixed(2)}</td>
                   <td className="px-6 py-4">
                     <span className={`px-2 py-1 rounded text-xs ${
                       inv.status === 'paid' ? 'bg-green-500/20 text-green-400' :
