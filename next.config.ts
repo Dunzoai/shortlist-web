@@ -9,7 +9,7 @@ const nextConfig: NextConfig = {
       },
       {
         protocol: 'https',
-        hostname: 'bnfbtcdqqferdezuwost.supabase.co',
+        hostname: process.env.NEXT_PUBLIC_SUPABASE_URL?.replace('https://', '')?.split('/')[0] || 'supabase.co',
         pathname: '/storage/v1/object/public/**',
       },
     ],
