@@ -109,7 +109,7 @@ export default function InvoicesPage() {
                     {inv.due_date ? new Date(inv.due_date).toLocaleDateString() : '-'}
                   </td>
                   <td className="px-6 py-4">
-                    {inv.status === 'PENDING' || inv.status === 'OVERDUE' ? (
+                    {inv.status === 'sent' || inv.status === 'overdue' || inv.status === 'partially_paid' ? (
                       <button
                         onClick={() => handlePay(inv.id)}
                         disabled={paying === inv.id}
