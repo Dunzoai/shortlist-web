@@ -8,22 +8,22 @@ export default function PortalLayout({ children }: { children: React.ReactNode }
   const pathname = usePathname()
   const router = useRouter()
 
-  if (pathname === '/portal/login') {
+  if (pathname === '/client-portal/login') {
     return <>{children}</>
   }
 
   const handleLogout = async () => {
     const supabase = createClient()
     await supabase.auth.signOut()
-    router.push('/portal/login')
+    router.push('/client-portal/login')
   }
 
   const nav = [
-    { name: 'Dashboard', href: '/portal/dashboard' },
-    { name: 'Services', href: '/portal/services' },
-    { name: 'Invoices', href: '/portal/invoices' },
-    { name: 'Billing', href: '/portal/billing' },
-    { name: 'Settings', href: '/portal/settings' },
+    { name: 'Dashboard', href: '/client-portal/dashboard' },
+    { name: 'Services', href: '/client-portal/services' },
+    { name: 'Invoices', href: '/client-portal/invoices' },
+    { name: 'Billing', href: '/client-portal/billing' },
+    { name: 'Settings', href: '/client-portal/settings' },
   ]
 
   return (
@@ -31,7 +31,7 @@ export default function PortalLayout({ children }: { children: React.ReactNode }
       <aside className="fixed inset-y-0 left-0 w-64 bg-[#333333] border-r border-[#444444]">
         <div className="flex flex-col h-full">
           <div className="p-6 border-b border-[#444444]">
-            <Link href="/portal/dashboard" className="text-xl font-bold text-white">
+            <Link href="/client-portal/dashboard" className="text-xl font-bold text-white">
               Client Portal
             </Link>
           </div>

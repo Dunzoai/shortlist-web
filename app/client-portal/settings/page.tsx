@@ -15,7 +15,7 @@ export default function SettingsPage() {
       
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) {
-        router.push('/portal/login')
+        router.push('/client-portal/login')
         return
       }
 

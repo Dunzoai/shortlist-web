@@ -17,7 +17,7 @@ export default function InvoicesPage() {
       
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) {
-        router.push('/portal/login')
+        router.push('/client-portal/login')
         return
       }
 
@@ -28,7 +28,7 @@ export default function InvoicesPage() {
         .single()
 
       if (!portalUser) {
-        router.push('/portal/login')
+        router.push('/client-portal/login')
         return
       }
 
