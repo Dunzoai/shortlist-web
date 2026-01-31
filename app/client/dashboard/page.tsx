@@ -51,7 +51,7 @@ export default function PortalDashboard() {
         .from('invoices')
         .select('*')
         .eq('client_id', portalUser.client_id)
-        .in('status', ['pending', 'overdue'])
+        .in('status', ['sent', 'overdue', 'partially_paid'])
         .order('due_date', { ascending: true })
         .limit(5)
 
