@@ -1,0 +1,111 @@
+'use client'
+
+import { useEffect, useState } from 'react'
+import { useRouter } from 'next/navigation'
+import { createClient } from '@/lib/supabase/client'
+import type { ClientService, Service, Invoice } from '@/lib/portal-types'
+
+interface ClientServiceWithService extends ClientService {
+  services: Service
+}
+
+export default function PortalDashboard() {
+  const router = useRouter()
+  const [loading, setLoading] = useState(true)
+  const [clientName, setClientName] = useState('')
+  const [services, setServices] = useState<ClientServiceWithService[]>([])
+  const [invoices, setInvoices] = useState<Invoice[]>([])
+
+  useEffect(() => {
+    async function loadData() {
+      const supabase = createClient()
+      
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) {
+        router.push('/portal/login')
+        return
+      }
+
+      const { data: portalUser } = await supabase
+        .from('client_portal_users')
+        .select('client_id, clients(name)')
+        .eq('user_id', user.id)
+        .single()
+
+      if (!portalUser) {
+        router.push('/portal/login')
+        return
+      }
+
+      setClientName((portalUser.clients as any)?.name || '')
+
+      const { data: servicesData } = await supabase
+        .from('client_services')
+        .select('*, services(*)')
+        .eq('client_id', portalUser.client_id)
+        .eq('is_active', true)
+
+      setServices((servicesData as ClientServiceWithService[]) || [])
+
+      const { data: invoicesData } = await supabase
+        .from('invoices')
+        .select('*')
+        .eq('client_id', portalUser.client_id)
+        .in('status', ['pending', 'overdue'])
+        .order('due_date', { ascending: true })
+        .limit(5)
+
+      setInvoices((invoicesData as Invoice[]) || [])
+      setLoading(false)
+    }
+
+    loadData()
+  }, [router])
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-[60vh]">
+        <div className="text-gray-400">Loading...</div>
+      </div>
+    )
+  }
+
+  return (
+    <div>
+      <h1 className="text-3xl font-bold text-white mb-8">Welcome back{clientName && `, ${clientName}`}!</h1>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+        <div className="bg-[#333333] border border-[#444444] rounded-lg p-6">
+          <h2 className="text-xl font-semibold text-white mb-4">Active Services</h2>
+          {services.length === 0 ? (
+            <p className="text-gray-400">No active services</p>
+          ) : (
+            <ul className="space-y-2">
+              {services.map((svc) => (
+                <li key={svc.id} className="text-gray-300">
+                  • {svc.services.name}
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+
+        <div className="bg-[#333333] border border-[#444444] rounded-lg p-6">
+          <h2 className="text-xl font-semibold text-white mb-4">Pending Invoices</h2>
+          {invoices.length === 0 ? (
+            <p className="text-gray-400">No pending invoices</p>
+          ) : (
+            <ul className="space-y-2">
+              {invoices.map((inv) => (
+                <li key={inv.id} className="flex justify-between text-gray-300">
+                  <span>{inv.invoice_number}</span>
+                  <span className="text-[#2E8B57]">${(inv.amount / 100).toFixed(2)}</span>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+      </div>
+    </div>
+  )
+}

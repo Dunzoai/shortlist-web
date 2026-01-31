@@ -205,3 +205,41 @@ export interface InvoiceWithItems extends Invoice {
 export interface InvoiceWithClient extends Invoice {
   client?: Client
 }
+
+// Client Portal Types
+export interface Invoice {
+  id: string
+  client_id: string
+  invoice_number: string
+  amount: number
+  status: 'pending' | 'paid' | 'overdue' | 'cancelled'
+  due_date: string | null
+  paid_at: string | null
+  stripe_payment_intent_id: string | null
+  stripe_invoice_id: string | null
+  notes: string | null
+  created_at: string
+  updated_at: string
+}
+
+export interface Payment {
+  id: string
+  invoice_id: string
+  client_id: string
+  amount: number
+  stripe_payment_intent_id: string | null
+  payment_method_last4: string | null
+  status: 'pending' | 'succeeded' | 'failed'
+  paid_at: string | null
+  created_at: string
+}
+
+export interface RecurringBilling {
+  id: string
+  client_id: string
+  stripe_subscription_id: string | null
+  stripe_customer_id: string | null
+  status: 'active' | 'cancelled' | 'paused'
+  next_billing_date: string | null
+  created_at: string
+}
