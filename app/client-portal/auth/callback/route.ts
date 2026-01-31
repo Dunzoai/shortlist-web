@@ -30,5 +30,5 @@ export async function GET(request: Request) {
     await supabase.auth.exchangeCodeForSession(code)
   }
 
-  return NextResponse.redirect(new URL('/portal/dashboard', request.url))
+  return NextResponse.redirect(new URL('/client-portal/dashboard', request.url))
 }

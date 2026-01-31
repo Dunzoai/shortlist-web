@@ -18,9 +18,9 @@ export async function middleware(request: NextRequest) {
   }
 
   const isPortalRoute = effectivePathname.startsWith('/portal')
-  const isClientRoute = effectivePathname.startsWith('/client')
+  const isClientRoute = effectivePathname.startsWith('/client-portal')
   const isLoginPage = effectivePathname === '/portal/login'
-  const isClientLoginPage = effectivePathname === '/client/login'
+  const isClientLoginPage = effectivePathname === '/client-portal/login'
 
   // Only protect portal/client routes (but not login pages)
   if ((!isPortalRoute && !isClientRoute) || isLoginPage || isClientLoginPage) {
@@ -71,8 +71,7 @@ export async function middleware(request: NextRequest) {
 
   if (!user) {
     const url = request.nextUrl.clone()
-    // On portal subdomain, redirect to /login (cleaner URL)
-    url.pathname = isPortalSubdomain ? '/login' : isClientRoute ? '/client/login' : '/portal/login'
+    url.pathname = isPortalSubdomain ? '/login' : isClientRoute ? '/client-portal/login' : '/portal/login'
     return NextResponse.redirect(url)
   }
 
@@ -86,7 +85,7 @@ export async function middleware(request: NextRequest) {
 
     if (!portalUser) {
       const url = request.nextUrl.clone()
-      url.pathname = '/client/login'
+      url.pathname = '/client-portal/login'
       url.searchParams.set('error', 'not_authorized')
       return NextResponse.redirect(url)
     }
@@ -127,13 +126,6 @@ export async function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
-    /*
-     * Match all request paths except:
-     * - _next/static (static files)
-     * - _next/image (image optimization files)
-     * - favicon.ico (favicon file)
-     * - public files (images, etc)
-     */
     '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico)$).*)',
   ],
 }
