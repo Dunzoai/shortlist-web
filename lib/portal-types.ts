@@ -212,7 +212,7 @@ export interface Invoice {
   client_id: string
   invoice_number: string
   amount: number
-  status: 'pending' | 'paid' | 'overdue' | 'cancelled'
+  status: InvoiceStatus
   due_date: string | null
   paid_at: string | null
   stripe_payment_intent_id: string | null
