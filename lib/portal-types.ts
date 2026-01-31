@@ -205,3 +205,16 @@ export interface InvoiceWithItems extends Invoice {
 export interface InvoiceWithClient extends Invoice {
   client?: Client
 }
+
+// Client Portal Types
+
+
+export interface RecurringBilling {
+  id: string
+  client_id: string
+  stripe_subscription_id: string | null
+  stripe_customer_id: string | null
+  status: 'active' | 'cancelled' | 'paused'
+  next_billing_date: string | null
+  created_at: string
+}

@@ -18,10 +18,12 @@ export async function middleware(request: NextRequest) {
   }
 
   const isPortalRoute = effectivePathname.startsWith('/portal')
+  const isClientRoute = effectivePathname.startsWith('/client')
   const isLoginPage = effectivePathname === '/portal/login'
+  const isClientLoginPage = effectivePathname === '/client/login'
 
-  // Only protect portal routes (but not login page)
-  if (!isPortalRoute || isLoginPage) {
+  // Only protect portal/client routes (but not login pages)
+  if ((!isPortalRoute && !isClientRoute) || isLoginPage || isClientLoginPage) {
     if (needsRewrite) {
       const url = request.nextUrl.clone()
       url.pathname = effectivePathname
@@ -66,7 +68,31 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(url)
   }
 
-  // Check if user email is in admin list
+  // For client routes, check if user is linked to a client
+  if (isClientRoute) {
+    const { data: portalUser } = await supabase
+      .from('client_portal_users')
+      .select('client_id')
+      .eq('user_id', user.id)
+      .single()
+
+    if (!portalUser) {
+      const url = request.nextUrl.clone()
+      url.pathname = '/client/login'
+      url.searchParams.set('error', 'not_authorized')
+      return NextResponse.redirect(url)
+    }
+
+    // Client is authorized, continue
+    if (needsRewrite) {
+      const url = request.nextUrl.clone()
+      url.pathname = effectivePathname
+      return NextResponse.rewrite(url)
+    }
+    return supabaseResponse
+  }
+
+  // Check if user email is in admin list (for portal routes)
   const adminEmails = process.env.ADMIN_EMAILS?.split(',').map((e) => e.trim().toLowerCase()) ?? []
 
   if (!adminEmails.includes(user.email?.toLowerCase() ?? '')) {
