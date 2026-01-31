@@ -207,20 +207,6 @@ export interface InvoiceWithClient extends Invoice {
 }
 
 // Client Portal Types
-export interface Invoice {
-  id: string
-  client_id: string
-  invoice_number: string
-  amount: number
-  status: InvoiceStatus
-  due_date: string | null
-  paid_at: string | null
-  stripe_payment_intent_id: string | null
-  stripe_invoice_id: string | null
-  notes: string | null
-  created_at: string
-  updated_at: string
-}
 
 export interface Payment {
   id: string
