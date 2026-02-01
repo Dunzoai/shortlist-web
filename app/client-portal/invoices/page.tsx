@@ -1,41 +1,26 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
+import { usePortalClient } from '@/lib/usePortalClient'
 import type { Invoice } from '@/lib/portal-types'
 
 export default function InvoicesPage() {
-  const router = useRouter()
+  const { clientId: resolvedClientId, loading: authLoading } = usePortalClient()
   const [loading, setLoading] = useState(true)
   const [invoices, setInvoices] = useState<Invoice[]>([])
   const [paying, setPaying] = useState<string | null>(null)
 
   useEffect(() => {
+    if (authLoading || !resolvedClientId) return
+
     async function loadInvoices() {
       const supabase = createClient()
-      
-      const { data: { user } } = await supabase.auth.getUser()
-      if (!user) {
-        router.push('/client-portal/login')
-        return
-      }
-
-      const { data: portalUser } = await supabase
-        .from('client_portal_users')
-        .select('client_id')
-        .eq('user_id', user.id)
-        .single()
-
-      if (!portalUser) {
-        router.push('/client-portal/login')
-        return
-      }
 
       const { data } = await supabase
         .from('invoices')
         .select('*')
-        .eq('client_id', portalUser.client_id)
+        .eq('client_id', resolvedClientId!)
         .order('created_at', { ascending: false })
 
       setInvoices((data as Invoice[]) || [])
@@ -43,7 +28,7 @@ export default function InvoicesPage() {
     }
 
     loadInvoices()
-  }, [router])
+  }, [authLoading, resolvedClientId])
 
   const handlePay = async (invoiceId: string) => {
     setPaying(invoiceId)
@@ -95,7 +80,7 @@ export default function InvoicesPage() {
               {invoices.map((inv) => (
                 <tr key={inv.id}>
                   <td className="px-6 py-4 text-sm text-gray-300">{inv.invoice_number}</td>
-                  <td className="px-6 py-4 text-sm text-white font-semibold">${(inv.total / 100).toFixed(2)}</td>
+                  <td className="px-6 py-4 text-sm text-white font-semibold">${Number(inv.total).toFixed(2)}</td>
                   <td className="px-6 py-4">
                     <span className={`px-2 py-1 rounded text-xs ${
                       inv.status === 'paid' ? 'bg-green-500/20 text-green-400' :

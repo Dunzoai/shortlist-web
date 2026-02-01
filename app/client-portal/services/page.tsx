@@ -1,8 +1,8 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
+import { usePortalClient } from '@/lib/usePortalClient'
 import type { ClientService, Service } from '@/lib/portal-types'
 
 interface ClientServiceWithService extends ClientService {
@@ -10,38 +10,22 @@ interface ClientServiceWithService extends ClientService {
 }
 
 export default function ServicesPage() {
-  const router = useRouter()
+  const { clientId: resolvedClientId, loading: authLoading } = usePortalClient()
   const [loading, setLoading] = useState(true)
   const [services, setServices] = useState<ClientServiceWithService[]>([])
   const [clientId, setClientId] = useState('')
 
   useEffect(() => {
+    if (authLoading || !resolvedClientId) return
+
     async function loadServices() {
       const supabase = createClient()
-      
-      const { data: { user } } = await supabase.auth.getUser()
-      if (!user) {
-        router.push('/client-portal/login')
-        return
-      }
-
-      const { data: portalUser } = await supabase
-        .from('client_portal_users')
-        .select('client_id')
-        .eq('user_id', user.id)
-        .single()
-
-      if (!portalUser) {
-        router.push('/client-portal/login')
-        return
-      }
-
-      setClientId(portalUser.client_id)
+      setClientId(resolvedClientId!)
 
       const { data } = await supabase
         .from('client_services')
         .select('*, services(*)')
-        .eq('client_id', portalUser.client_id)
+        .eq('client_id', resolvedClientId!)
         .order('created_at', { ascending: false })
 
       setServices((data as ClientServiceWithService[]) || [])
@@ -49,7 +33,7 @@ export default function ServicesPage() {
     }
 
     loadServices()
-  }, [router])
+  }, [authLoading, resolvedClientId])
 
   const handleCancel = async (serviceId: string, serviceName: string) => {
     if (!confirm(`Are you sure you want to cancel ${serviceName}? This action cannot be undone.`)) {
@@ -116,10 +100,10 @@ export default function ServicesPage() {
                   
                   <div className="space-y-1 text-sm">
                     {svc.monthly_cost > 0 && (
-                      <p className="text-gray-300">Monthly: ${(svc.monthly_cost / 100).toFixed(2)}</p>
+                      <p className="text-gray-300">Monthly: ${Number(svc.monthly_cost).toFixed(2)}</p>
                     )}
                     {svc.one_time_cost > 0 && (
-                      <p className="text-gray-300">One-time: ${(svc.one_time_cost / 100).toFixed(2)}</p>
+                      <p className="text-gray-300">One-time: ${Number(svc.one_time_cost).toFixed(2)}</p>
                     )}
                     <p className="text-gray-400">Started: {new Date(svc.start_date).toLocaleDateString()}</p>
                     <p className={`inline-block px-2 py-1 rounded text-xs ${

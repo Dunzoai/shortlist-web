@@ -1,39 +1,24 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
+import { usePortalClient } from '@/lib/usePortalClient'
 
 export default function BillingPage() {
-  const router = useRouter()
+  const { clientId: resolvedClientId, loading: authLoading } = usePortalClient()
   const [loading, setLoading] = useState(true)
   const [recurring, setRecurring] = useState<any>(null)
 
   useEffect(() => {
+    if (authLoading || !resolvedClientId) return
+
     async function loadBilling() {
       const supabase = createClient()
-      
-      const { data: { user } } = await supabase.auth.getUser()
-      if (!user) {
-        router.push('/client-portal/login')
-        return
-      }
-
-      const { data: portalUser } = await supabase
-        .from('client_portal_users')
-        .select('client_id')
-        .eq('user_id', user.id)
-        .single()
-
-      if (!portalUser) {
-        router.push('/client-portal/login')
-        return
-      }
 
       const { data } = await supabase
         .from('recurring_billing')
         .select('*')
-        .eq('client_id', portalUser.client_id)
+        .eq('client_id', resolvedClientId!)
         .single()
 
       setRecurring(data)
@@ -41,7 +26,7 @@ export default function BillingPage() {
     }
 
     loadBilling()
-  }, [router])
+  }, [authLoading, resolvedClientId])
 
   if (loading) {
     return <div className="text-gray-400">Loading...</div>

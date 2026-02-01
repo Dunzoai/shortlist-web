@@ -37,6 +37,8 @@ export default function EditClientPage() {
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [deleting, setDeleting] = useState(false)
+  const [inviting, setInviting] = useState(false)
+  const [inviteStatus, setInviteStatus] = useState('')
 
   const { register, handleSubmit, reset, watch, formState: { errors } } = useForm<ClientFormData>({
     resolver: zodResolver(clientSchema),
@@ -123,6 +125,37 @@ export default function EditClientPage() {
     }
 
     router.push('/portal/clients')
+  }
+
+  const handleInviteToPortal = async () => {
+    const email = watch('email')
+    const name = watch('name')
+    if (!email) {
+      alert('Client must have an email address to send an invite.')
+      return
+    }
+    if (!confirm(`Send portal invite to ${email}?`)) return
+
+    setInviting(true)
+    setInviteStatus('')
+    try {
+      const res = await fetch('/api/portal/invite-client', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ clientId, email, name }),
+      })
+      const data = await res.json()
+      if (!res.ok) {
+        setInviteStatus(`Error: ${data.error}`)
+      } else if (data.alreadyExisted) {
+        setInviteStatus('User already has an account. Linked to this client.')
+      } else {
+        setInviteStatus('Invite sent! Client will receive an email to set their password.')
+      }
+    } catch {
+      setInviteStatus('Failed to send invite.')
+    }
+    setInviting(false)
   }
 
   const handleAddService = async (serviceId: string) => {
@@ -264,6 +297,24 @@ export default function EditClientPage() {
                   <label className="block text-sm font-medium text-gray-300 mb-2">Notes</label>
                   <textarea {...register('notes')} rows={4} className="w-full px-4 py-2 bg-[#444444] border border-[#555555] rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-[#2E8B57] resize-none" />
                 </div>
+              </div>
+
+              <div className="bg-[#333333] rounded-lg p-6 space-y-4">
+                <h2 className="text-lg font-semibold text-white">Client Portal Access</h2>
+                <p className="text-sm text-gray-400">Send an invite email so this client can log into their dashboard at my.shortlistpass.com</p>
+                <button
+                  type="button"
+                  onClick={handleInviteToPortal}
+                  disabled={inviting}
+                  className="px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white text-sm font-medium rounded-lg transition-colors"
+                >
+                  {inviting ? 'Sending...' : 'Invite to Portal'}
+                </button>
+                {inviteStatus && (
+                  <p className={`text-sm ${inviteStatus.startsWith('Error') ? 'text-red-400' : 'text-green-400'}`}>
+                    {inviteStatus}
+                  </p>
+                )}
               </div>
 
               <div className="flex items-center justify-between">

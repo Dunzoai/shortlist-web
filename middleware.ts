@@ -84,8 +84,26 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(url)
   }
 
-  // For client routes, check if user is linked to a client
+  // For client routes, check if user is linked to a client OR is a super admin (Owner)
   if (isClientRoute) {
+    // Check if user is an Owner in representatives table
+    const { data: rep } = await supabase
+      .from('representatives')
+      .select('id, role')
+      .eq('email', user.email)
+      .eq('role', 'Owner')
+      .single()
+
+    if (rep) {
+      // Super admin - allow access to all client routes
+      if (needsRewrite) {
+        const url = request.nextUrl.clone()
+        url.pathname = effectivePathname
+        return NextResponse.rewrite(url)
+      }
+      return supabaseResponse
+    }
+
     const { data: portalUser } = await supabase
       .from('client_portal_users')
       .select('client_id')

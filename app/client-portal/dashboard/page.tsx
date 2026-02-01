@@ -1,8 +1,8 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
+import { usePortalClient } from '@/lib/usePortalClient'
 import type { ClientService, Service, Invoice } from '@/lib/portal-types'
 
 interface ClientServiceWithService extends ClientService {
@@ -10,40 +10,30 @@ interface ClientServiceWithService extends ClientService {
 }
 
 export default function PortalDashboard() {
-  const router = useRouter()
+  const { clientId: resolvedClientId, loading: authLoading } = usePortalClient()
   const [loading, setLoading] = useState(true)
   const [clientName, setClientName] = useState('')
   const [services, setServices] = useState<ClientServiceWithService[]>([])
   const [invoices, setInvoices] = useState<Invoice[]>([])
 
   useEffect(() => {
+    if (authLoading || !resolvedClientId) return
+
     async function loadData() {
       const supabase = createClient()
-      const isSubdomain = window.location.hostname.startsWith('my.') || window.location.hostname.startsWith('clients.')
 
-      const { data: { user } } = await supabase.auth.getUser()
-      if (!user) {
-        router.push(isSubdomain ? '/login' : '/client-portal/login')
-        return
-      }
-
-      const { data: portalUser } = await supabase
-        .from('client_portal_users')
-        .select('client_id, clients(name)')
-        .eq('user_id', user.id)
+      const { data: clientData } = await supabase
+        .from('clients')
+        .select('name')
+        .eq('id', resolvedClientId!)
         .single()
 
-      if (!portalUser) {
-        router.push(isSubdomain ? '/login' : '/client-portal/login')
-        return
-      }
-
-      setClientName((portalUser.clients as any)?.name || '')
+      setClientName(clientData?.name || '')
 
       const { data: servicesData } = await supabase
         .from('client_services')
         .select('*, services(*)')
-        .eq('client_id', portalUser.client_id)
+        .eq('client_id', resolvedClientId!)
         .eq('is_active', true)
 
       setServices((servicesData as ClientServiceWithService[]) || [])
@@ -51,7 +41,7 @@ export default function PortalDashboard() {
       const { data: invoicesData } = await supabase
         .from('invoices')
         .select('*')
-        .eq('client_id', portalUser.client_id)
+        .eq('client_id', resolvedClientId!)
         .in('status', ['sent', 'overdue', 'partially_paid'])
         .order('due_date', { ascending: true })
         .limit(5)
@@ -61,7 +51,7 @@ export default function PortalDashboard() {
     }
 
     loadData()
-  }, [router])
+  }, [authLoading, resolvedClientId])
 
   if (loading) {
     return (
@@ -100,7 +90,7 @@ export default function PortalDashboard() {
               {invoices.map((inv) => (
                 <li key={inv.id} className="flex justify-between text-gray-300">
                   <span>{inv.invoice_number}</span>
-                  <span className="text-[#2E8B57]">${(inv.total / 100).toFixed(2)}</span>
+                  <span className="text-[#2E8B57]">${Number(inv.total).toFixed(2)}</span>
                 </li>
               ))}
             </ul>
