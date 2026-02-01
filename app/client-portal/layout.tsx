@@ -3,27 +3,34 @@
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
+import { useEffect, useState } from 'react'
 
 export default function PortalLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
   const router = useRouter()
+  const [isSubdomain, setIsSubdomain] = useState(false)
 
-  if (pathname === '/client-portal/login') {
+  useEffect(() => {
+    setIsSubdomain(window.location.hostname.startsWith('my.') || window.location.hostname.startsWith('clients.'))
+  }, [])
+
+  // Check for login page (works for both subdomain and full path)
+  if (pathname === '/client-portal/login' || pathname === '/login') {
     return <>{children}</>
   }
 
   const handleLogout = async () => {
     const supabase = createClient()
     await supabase.auth.signOut()
-    router.push('/client-portal/login')
+    router.push(isSubdomain ? '/login' : '/client-portal/login')
   }
 
   const nav = [
-    { name: 'Dashboard', href: '/client-portal/dashboard' },
-    { name: 'Services', href: '/client-portal/services' },
-    { name: 'Invoices', href: '/client-portal/invoices' },
-    { name: 'Billing', href: '/client-portal/billing' },
-    { name: 'Settings', href: '/client-portal/settings' },
+    { name: 'Dashboard', href: isSubdomain ? '/dashboard' : '/client-portal/dashboard', path: 'dashboard' },
+    { name: 'Services', href: isSubdomain ? '/services' : '/client-portal/services', path: 'services' },
+    { name: 'Invoices', href: isSubdomain ? '/invoices' : '/client-portal/invoices', path: 'invoices' },
+    { name: 'Billing', href: isSubdomain ? '/billing' : '/client-portal/billing', path: 'billing' },
+    { name: 'Settings', href: isSubdomain ? '/settings' : '/client-portal/settings', path: 'settings' },
   ]
 
   return (
@@ -31,7 +38,7 @@ export default function PortalLayout({ children }: { children: React.ReactNode }
       <aside className="fixed inset-y-0 left-0 w-64 bg-[#333333] border-r border-[#444444]">
         <div className="flex flex-col h-full">
           <div className="p-6 border-b border-[#444444]">
-            <Link href="/client-portal/dashboard" className="text-xl font-bold text-white">
+            <Link href={isSubdomain ? '/dashboard' : '/client-portal/dashboard'} className="text-xl font-bold text-white">
               Client Portal
             </Link>
           </div>
@@ -42,7 +49,7 @@ export default function PortalLayout({ children }: { children: React.ReactNode }
                 key={item.name}
                 href={item.href}
                 className={`block px-4 py-3 rounded-lg text-sm font-medium transition-colors ${
-                  pathname === item.href
+                  pathname.endsWith(item.path)
                     ? 'bg-[#2E8B57] text-white'
                     : 'text-gray-300 hover:bg-[#444444] hover:text-white'
                 }`}

@@ -19,10 +19,11 @@ export default function PortalDashboard() {
   useEffect(() => {
     async function loadData() {
       const supabase = createClient()
-      
+      const isSubdomain = window.location.hostname.startsWith('my.') || window.location.hostname.startsWith('clients.')
+
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) {
-        router.push('/client-portal/login')
+        router.push(isSubdomain ? '/login' : '/client-portal/login')
         return
       }
 
@@ -33,7 +34,7 @@ export default function PortalDashboard() {
         .single()
 
       if (!portalUser) {
-        router.push('/client-portal/login')
+        router.push(isSubdomain ? '/login' : '/client-portal/login')
         return
       }
 

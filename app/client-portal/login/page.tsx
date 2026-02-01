@@ -28,7 +28,9 @@ export default function PortalLoginPage() {
       return
     }
 
-    router.push('/client-portal/dashboard')
+    // Check if we're on a subdomain (my.shortlistpass.com)
+    const isSubdomain = window.location.hostname.startsWith('my.') || window.location.hostname.startsWith('clients.')
+    router.push(isSubdomain ? '/dashboard' : '/client-portal/dashboard')
   }
 
   return (
