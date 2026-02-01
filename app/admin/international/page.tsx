@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { supabase } from '@/lib/supabase';
-import { Trash2, Edit, ArrowUp, ArrowDown, Eye, EyeOff, Plus, Globe } from 'lucide-react';
+import { Trash2, Edit, ArrowUp, ArrowDown, Eye, EyeOff, Plus, Globe, HelpCircle, X as XIcon } from 'lucide-react';
 
 interface Destination {
   id: string;
@@ -23,6 +23,7 @@ const CLIENT_ID = '3c125122-f3d9-4f75-91d9-69cf84d6d20e';
 export default function AdminInternationalList() {
   const [destinations, setDestinations] = useState<Destination[]>([]);
   const [loading, setLoading] = useState(true);
+  const [showGuide, setShowGuide] = useState(false);
 
   useEffect(() => {
     fetchDestinations();
@@ -84,14 +85,51 @@ export default function AdminInternationalList() {
           </h1>
           <p className="text-[#3D3D3D] mt-1">{destinations.length} destination{destinations.length !== 1 ? 's' : ''}</p>
         </div>
-        <Link
-          href="/admin/international/new"
-          className="flex items-center gap-2 bg-[#C4A25A] text-white px-4 py-2 rounded hover:bg-[#1B365D] transition-colors"
-        >
-          <Plus className="w-4 h-4" />
-          Add Destination
-        </Link>
+        <div className="flex items-center gap-3">
+          <button
+            onClick={() => setShowGuide(!showGuide)}
+            className="flex items-center gap-2 text-[#1B365D] hover:text-[#C4A25A] transition-colors text-sm"
+          >
+            <HelpCircle className="w-5 h-5" />
+            How it works
+          </button>
+          <Link
+            href="/admin/international/new"
+            className="flex items-center gap-2 bg-[#C4A25A] text-white px-4 py-2 rounded hover:bg-[#1B365D] transition-colors"
+          >
+            <Plus className="w-4 h-4" />
+            Add Destination
+          </Link>
+        </div>
       </div>
+
+      {showGuide && (
+        <div className="bg-[#1B365D]/5 border-2 border-[#1B365D]/20 rounded-lg p-6 mb-8 relative">
+          <button onClick={() => setShowGuide(false)} className="absolute top-3 right-3 text-[#3D3D3D] hover:text-[#1B365D]">
+            <XIcon className="w-4 h-4" />
+          </button>
+          <h3 className="font-semibold text-[#1B365D] text-lg mb-4">How This Page Works</h3>
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 text-sm text-[#3D3D3D]">
+            <div className="bg-white rounded-lg p-4 border border-[#D6BFAE]">
+              <p className="font-semibold text-[#1B365D] mb-1">1. Add a destination</p>
+              <p>Click &quot;Add Destination&quot; to create a new country/city with descriptions, images, and investment highlights.</p>
+            </div>
+            <div className="bg-white rounded-lg p-4 border border-[#D6BFAE]">
+              <p className="font-semibold text-[#1B365D] mb-1">2. Reorder</p>
+              <p>Use the up/down arrows to change the order destinations appear on your International page.</p>
+            </div>
+            <div className="bg-white rounded-lg p-4 border border-[#D6BFAE]">
+              <p className="font-semibold text-[#1B365D] mb-1">3. Show / Hide</p>
+              <p>Click the eye icon to hide a destination from your site without deleting it. Click again to show it.</p>
+            </div>
+            <div className="bg-white rounded-lg p-4 border border-[#D6BFAE]">
+              <p className="font-semibold text-[#1B365D] mb-1">4. Edit or Delete</p>
+              <p>Click the pencil to edit details, or the trash icon to permanently remove a destination.</p>
+            </div>
+          </div>
+          <p className="text-xs text-[#3D3D3D]/60 mt-4">Changes appear on your live site immediately. Click &quot;View Site&quot; in the top nav, then go to the International page to see your updates.</p>
+        </div>
+      )}
 
       {destinations.length === 0 ? (
         <div className="text-center py-16 bg-white rounded-lg border-2 border-dashed border-[#D6BFAE]">
