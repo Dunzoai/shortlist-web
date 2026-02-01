@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { usePortalClient } from '@/lib/usePortalClient'
-import type { ClientService, Service } from '@/lib/portal-types'
+import type { ClientService, Service, RecurringBilling } from '@/lib/portal-types'
 
 interface ClientServiceWithService extends ClientService {
   services: Service
@@ -39,6 +39,7 @@ export default function ServicesPage() {
   const [loading, setLoading] = useState(true)
   const [services, setServices] = useState<ClientServiceWithService[]>([])
   const [clientId, setClientId] = useState('')
+  const [recurring, setRecurring] = useState<RecurringBilling | null>(null)
 
   useEffect(() => {
     if (authLoading || !resolvedClientId) return
@@ -47,13 +48,21 @@ export default function ServicesPage() {
       const supabase = createClient()
       setClientId(resolvedClientId!)
 
-      const { data } = await supabase
-        .from('client_services')
-        .select('*, services(*)')
-        .eq('client_id', resolvedClientId!)
-        .order('created_at', { ascending: false })
+      const [{ data: svcData }, { data: recurringData }] = await Promise.all([
+        supabase
+          .from('client_services')
+          .select('*, services(*)')
+          .eq('client_id', resolvedClientId!)
+          .order('created_at', { ascending: false }),
+        supabase
+          .from('recurring_billing')
+          .select('*')
+          .eq('client_id', resolvedClientId!)
+          .single()
+      ])
 
-      setServices((data as ClientServiceWithService[]) || [])
+      setServices((svcData as ClientServiceWithService[]) || [])
+      setRecurring(recurringData as RecurringBilling | null)
       setLoading(false)
     }
 
@@ -108,6 +117,9 @@ export default function ServicesPage() {
     return <div className="text-gray-400">Loading...</div>
   }
 
+  const isSubscribed = recurring?.status === 'active'
+  const subscriptionPaused = recurring?.status === 'paused'
+
   return (
     <div>
       <h1 className="text-3xl font-bold text-white mb-8">Your Services</h1>
@@ -135,6 +147,17 @@ export default function ServicesPage() {
                       }`}>
                         {svc.status.toUpperCase()}
                       </span>
+                      {/* Subscription chip for monthly services */}
+                      {isMonthly && svc.status === 'active' && isSubscribed && (
+                        <span className="px-2 py-1 rounded text-xs font-medium bg-blue-500/20 text-blue-400">
+                          SUBSCRIBED
+                        </span>
+                      )}
+                      {isMonthly && svc.status === 'active' && subscriptionPaused && (
+                        <span className="px-2 py-1 rounded text-xs font-medium bg-red-500/20 text-red-400">
+                          PAYMENT FAILED
+                        </span>
+                      )}
                     </div>
 
                     {/* Description */}
@@ -157,7 +180,12 @@ export default function ServicesPage() {
                         <div className="flex items-center gap-4">
                           <p className="text-gray-300">${Number(svc.monthly_cost).toFixed(2)}/mo</p>
                           {svc.status === 'active' && svc.start_date && (
-                            <p className="text-gray-500">Renews: {getNextRenewalDate(svc.start_date)}</p>
+                            <p className="text-gray-500">
+                              {isSubscribed
+                                ? `Auto-renews: ${recurring?.next_billing_date ? new Date(recurring.next_billing_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : getNextRenewalDate(svc.start_date)}`
+                                : `Renews: ${getNextRenewalDate(svc.start_date)}`
+                              }
+                            </p>
                           )}
                         </div>
                       )}

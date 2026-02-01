@@ -7,7 +7,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { createClient } from '@/lib/supabase/client'
 import Link from 'next/link'
-import type { Client, Affiliate, Service, ClientService, Representative } from '@/lib/portal-types'
+import type { Client, Affiliate, Service, ClientService, Representative, Payment } from '@/lib/portal-types'
 
 const clientSchema = z.object({
   name: z.string().min(1, 'Name is required'),
@@ -39,6 +39,7 @@ export default function EditClientPage() {
   const [deleting, setDeleting] = useState(false)
   const [inviting, setInviting] = useState(false)
   const [inviteStatus, setInviteStatus] = useState('')
+  const [payments, setPayments] = useState<Payment[]>([])
 
   const { register, handleSubmit, reset, watch, formState: { errors } } = useForm<ClientFormData>({
     resolver: zodResolver(clientSchema),
@@ -80,6 +81,15 @@ export default function EditClientPage() {
         .order('created_at')
 
       setClientServices((clientServicesData as ClientServiceWithService[]) ?? [])
+
+      const { data: paymentsData } = await supabase
+        .from('payments')
+        .select('*')
+        .eq('client_id', clientId)
+        .order('created_at', { ascending: false })
+        .limit(20)
+
+      setPayments((paymentsData as Payment[]) ?? [])
       setLoading(false)
     }
 
@@ -330,7 +340,7 @@ export default function EditClientPage() {
             </form>
           </div>
 
-          <div>
+          <div className="space-y-8">
             <div className="bg-[#333333] rounded-lg p-6">
               <div className="flex items-center justify-between mb-6">
                 <h2 className="text-lg font-semibold text-white">Services</h2>
@@ -476,6 +486,37 @@ export default function EditClientPage() {
                       </span>
                     </div>
                   </div>
+                </div>
+              )}
+            </div>
+
+            {/* Payment History */}
+            <div className="bg-[#333333] rounded-lg p-6">
+              <h2 className="text-lg font-semibold text-white mb-4">Payment History</h2>
+              {payments.length === 0 ? (
+                <p className="text-gray-400 text-center py-4 text-sm">No payments recorded yet.</p>
+              ) : (
+                <div className="space-y-2">
+                  {payments.map((p) => (
+                    <div key={p.id} className="flex items-center justify-between bg-[#3a3a3a] rounded-lg px-4 py-3">
+                      <div>
+                        <p className="text-sm text-white font-medium">${Number(p.amount).toFixed(2)}</p>
+                        <p className="text-xs text-gray-400">{new Date(p.created_at).toLocaleDateString()}</p>
+                      </div>
+                      <div className="flex items-center gap-3">
+                        <span className="text-xs text-gray-400">
+                          {p.card_brand && p.card_last4 ? `${p.card_brand} ****${p.card_last4}` : p.payment_method || 'Card'}
+                        </span>
+                        <span className={`px-2 py-0.5 rounded text-xs font-medium ${
+                          p.status === 'completed' ? 'bg-green-500/20 text-green-400' :
+                          p.status === 'failed' ? 'bg-red-500/20 text-red-400' :
+                          'bg-yellow-500/20 text-yellow-400'
+                        }`}>
+                          {p.status.toUpperCase()}
+                        </span>
+                      </div>
+                    </div>
+                  ))}
                 </div>
               )}
             </div>

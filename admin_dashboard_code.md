@@ -1723,7 +1723,7 @@ CREATE TABLE services (
 -- Seed default services
 INSERT INTO services (name, description) VALUES
   ('Social Media Management', 'Monthly social media content and management'),
-  ('SmartPages', 'AI-powered business assistant page'),
+  ('SmartAssistant', 'AI-powered business assistant page'),
   ('Website Build', 'Custom website development'),
   ('PWA/App', 'Progressive web app or mobile app development');
 

@@ -6,12 +6,16 @@ import { createClient } from '@/lib/supabase/client'
 import { usePortalClient } from '@/lib/usePortalClient'
 import type { Invoice } from '@/lib/portal-types'
 
+interface InvoiceWithRecurring extends Invoice {
+  has_recurring: boolean
+}
+
 export default function InvoicesPage() {
   const { clientId: resolvedClientId, loading: authLoading } = usePortalClient()
   const searchParams = useSearchParams()
   const paymentStatus = searchParams.get('payment')
   const [loading, setLoading] = useState(true)
-  const [invoices, setInvoices] = useState<Invoice[]>([])
+  const [invoices, setInvoices] = useState<InvoiceWithRecurring[]>([])
   const [paying, setPaying] = useState<string | null>(null)
 
   useEffect(() => {
@@ -22,11 +26,19 @@ export default function InvoicesPage() {
 
       const { data } = await supabase
         .from('invoices')
-        .select('*')
+        .select('*, invoice_items(client_service_id, client_services(monthly_cost))')
         .eq('client_id', resolvedClientId!)
         .order('created_at', { ascending: false })
 
-      setInvoices((data as Invoice[]) || [])
+      const enriched: InvoiceWithRecurring[] = ((data as any[]) || []).map((inv) => {
+        const hasRecurring = (inv.invoice_items || []).some(
+          (item: any) => item.client_services && Number(item.client_services.monthly_cost) > 0
+        )
+        const { invoice_items, ...rest } = inv
+        return { ...rest, has_recurring: hasRecurring }
+      })
+
+      setInvoices(enriched)
       setLoading(false)
     }
 
@@ -114,7 +126,7 @@ export default function InvoicesPage() {
                         disabled={paying === inv.id}
                         className="px-4 py-2 bg-[#2E8B57] text-white text-sm rounded hover:bg-[#267347] disabled:opacity-50"
                       >
-                        {paying === inv.id ? 'Processing...' : 'Pay Now'}
+                        {paying === inv.id ? 'Processing...' : inv.has_recurring ? 'Pay & Subscribe' : 'Pay Now'}
                       </button>
                     ) : (
                       <span className="text-sm text-gray-500">-</span>

@@ -244,7 +244,7 @@ Welcome, Dani!
 
 Your Services:
 - Hosting: $35/mo
-- SmartPages: $50/mo
+- SmartAssistant: $50/mo
 
 Outstanding Balance: $85.00
 [Pay Now]

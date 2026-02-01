@@ -35,10 +35,10 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'Invoice is already paid' }, { status: 400 })
   }
 
-  // Fetch invoice items for line items
+  // Fetch invoice items with linked client_services to determine recurring vs one-time
   const { data: items } = await supabase
     .from('invoice_items')
-    .select('*')
+    .select('*, client_services(monthly_cost, one_time_cost)')
     .eq('invoice_id', invoiceId)
     .order('sort_order')
 
@@ -71,16 +71,38 @@ export async function POST(request: Request) {
       }, { onConflict: 'client_id' })
   }
 
+  // Determine if any items are recurring (linked to a service with monthly_cost > 0)
+  let hasRecurring = false
+  if (items && items.length > 0) {
+    hasRecurring = items.some((item: any) => {
+      const cs = item.client_services
+      return cs && Number(cs.monthly_cost) > 0
+    })
+  }
+
+  const mode = hasRecurring ? 'subscription' : 'payment'
+
   // Build line items for checkout
   const lineItems = items && items.length > 0
-    ? items.map((item: any) => ({
-        price_data: {
+    ? items.map((item: any) => {
+        const isRecurring = item.client_services && Number(item.client_services.monthly_cost) > 0
+
+        const priceData: any = {
           currency: 'usd',
           product_data: { name: item.description || 'Service' },
           unit_amount: toStripeAmount(Number(item.unit_price) || 0),
-        },
-        quantity: item.quantity || 1,
-      }))
+        }
+
+        // In subscription mode, recurring items get the recurring interval
+        if (mode === 'subscription' && isRecurring) {
+          priceData.recurring = { interval: 'month' }
+        }
+
+        return {
+          price_data: priceData,
+          quantity: item.quantity || 1,
+        }
+      })
     : [{
         price_data: {
           currency: 'usd',
@@ -91,18 +113,30 @@ export async function POST(request: Request) {
       }]
 
   // Create Stripe Checkout Session
-  const session = await stripe.checkout.sessions.create({
+  const sessionParams: any = {
     customer: stripeCustomerId || undefined,
     payment_method_types: ['card'],
     line_items: lineItems,
-    mode: 'payment',
+    mode,
     success_url: `https://my.shortlistpass.com/client-portal/invoices?payment=success`,
     cancel_url: `https://my.shortlistpass.com/client-portal/invoices?payment=cancelled`,
     metadata: {
       invoice_id: invoiceId,
       client_id: invoice.client_id,
     },
-  })
+  }
 
-  return NextResponse.json({ url: session.url })
+  // For subscriptions, metadata goes on the subscription too
+  if (mode === 'subscription') {
+    sessionParams.subscription_data = {
+      metadata: {
+        invoice_id: invoiceId,
+        client_id: invoice.client_id,
+      },
+    }
+  }
+
+  const session = await stripe.checkout.sessions.create(sessionParams)
+
+  return NextResponse.json({ url: session.url, mode })
 }

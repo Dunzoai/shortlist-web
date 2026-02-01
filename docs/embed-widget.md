@@ -1,6 +1,6 @@
 # Shortlist Chat Widget - Embed Guide
 
-Embed the Shortlist AI chat widget on any website to give visitors instant access to your SmartPage assistant.
+Embed the Shortlist AI chat widget on any website to give visitors instant access to your SmartAssistant.
 
 ---
 
@@ -29,7 +29,7 @@ Embed the Shortlist AI chat widget on any website to give visitors instant acces
 
 | Attribute       | What it does                     | Required |
 |-----------------|----------------------------------|----------|
-| data-business   | SmartPage subdomain              | Yes      |
+| data-business   | SmartAssistant subdomain         | Yes      |
 | data-position   | `left` or `right` (default: right) | No     |
 | data-messages   | Pipe-separated rotating CTAs     | No       |
 
@@ -160,7 +160,7 @@ Users can ask about menu, events, ordering, catering, etc.
 
 **Widget not showing?**
 - Check browser console for errors
-- Verify `data-business` matches your SmartPage subdomain exactly
+- Verify `data-business` matches your SmartAssistant subdomain exactly
 - Make sure script is placed before `</body>`
 
 **Next.js issues?**

@@ -99,7 +99,7 @@ export default async function RootLayout({
           </LanguageProvider>
         </ClientProvider>
 
-        {/* SmartPage AI Assistant Widget - TEMPORARILY HIDDEN */}
+        {/* SmartAssistant AI Widget - TEMPORARILY HIDDEN */}
         {/* TODO: Re-enable once positioning is figured out
         {(!client || client.slug !== 'nitos') && (
           <Script
