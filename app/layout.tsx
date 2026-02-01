@@ -81,9 +81,24 @@ export default async function RootLayout({
   const headersList = await headers();
   const hostname = headersList.get('host') || 'localhost:3000';
 
-  // Get client data based on hostname
-  const client = await getClient(hostname);
+  // Detect portal subdomains — skip all client website stuff
+  const isPortal = hostname.startsWith('portal.') || hostname.startsWith('my.') || hostname.startsWith('clients.');
 
+  // Get client data based on hostname (only needed for client websites)
+  const client = isPortal ? null : await getClient(hostname);
+
+  // Portal routes get a clean layout with no client website components
+  if (isPortal) {
+    return (
+      <html lang="en">
+        <body className="antialiased bg-[#2a2a2a] text-white">
+          {children}
+        </body>
+      </html>
+    );
+  }
+
+  // Client website routes get the full branded experience
   return (
     <html lang="en">
       <body

@@ -1,6 +1,7 @@
 import { Composition, Folder } from "remotion";
 import { SmartPageFoodTruckVideo } from "./SmartPageFoodTruckVideo";
 import { NitosInstagramPromo } from "./NitosInstagramPromo";
+import { NitosSuperBowl } from "./NitosSuperBowl";
 import { PalmettoTapsJoke } from "./PalmettoTapsJoke";
 
 export const RemotionRoot = () => {
@@ -21,6 +22,16 @@ export const RemotionRoot = () => {
           id="NitosInstagramPromo"
           component={NitosInstagramPromo}
           durationInFrames={630} // 21 seconds at 30fps
+          fps={30}
+          width={1080}
+          height={1920}
+        />
+      </Folder>
+      <Folder name="NitosSuperBowl">
+        <Composition
+          id="NitosSuperBowl"
+          component={NitosSuperBowl}
+          durationInFrames={690} // ~23 seconds at 30fps
           fps={30}
           width={1080}
           height={1920}
