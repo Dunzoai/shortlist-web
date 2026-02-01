@@ -4,7 +4,7 @@ import { useEffect, useState, useMemo } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { supabase } from '@/lib/supabase';
-import { Trash2, Edit, Home, DollarSign, TrendingUp, ArrowUp, ArrowDown, ArrowLeft } from 'lucide-react';
+import { Trash2, Edit, Home, DollarSign, TrendingUp, ArrowUp, ArrowDown, ArrowLeft, HelpCircle, X as XIcon } from 'lucide-react';
 import { getRandomEncouragement } from '@/lib/encouragements';
 
 interface Property {
@@ -30,6 +30,7 @@ export default function AdminPropertiesList() {
   const [loading, setLoading] = useState(true);
   const [statusFilter, setStatusFilter] = useState<StatusFilter>('all');
   const [encouragement, setEncouragement] = useState('');
+  const [showGuide, setShowGuide] = useState(false);
 
   useEffect(() => {
     setEncouragement(getRandomEncouragement('properties'));
@@ -180,13 +181,22 @@ export default function AdminPropertiesList() {
               </p>
             )}
           </div>
-          <Link
-            href="/admin/properties/new"
-            className="bg-[#1B365D] text-white px-6 py-3 rounded-full hover:bg-[#C4A25A] transition-all hover:shadow-lg flex items-center gap-2"
-          >
-            <span>➕</span>
-            <span>Add Property</span>
-          </Link>
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => setShowGuide(!showGuide)}
+              className="flex items-center gap-2 text-[#1B365D] hover:text-[#C4A25A] transition-colors text-sm"
+            >
+              <HelpCircle className="w-5 h-5" />
+              How it works
+            </button>
+            <Link
+              href="/admin/properties/new"
+              className="bg-[#1B365D] text-white px-6 py-3 rounded-full hover:bg-[#C4A25A] transition-all hover:shadow-lg flex items-center gap-2"
+            >
+              <span>➕</span>
+              <span>Add Property</span>
+            </Link>
+          </div>
         </div>
 
         {/* Stats Cards */}
@@ -239,6 +249,34 @@ export default function AdminPropertiesList() {
             </div>
           </div>
         </div>
+
+        {showGuide && (
+          <div className="bg-[#1B365D]/5 border-2 border-[#1B365D]/20 rounded-lg p-6 mb-8 relative">
+            <button onClick={() => setShowGuide(false)} className="absolute top-3 right-3 text-[#3D3D3D] hover:text-[#1B365D]">
+              <XIcon className="w-4 h-4" />
+            </button>
+            <h3 className="font-semibold text-[#1B365D] text-lg mb-4">How This Page Works</h3>
+            <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 text-sm text-[#3D3D3D]">
+              <div className="bg-white rounded-lg p-4 border border-[#D6BFAE]">
+                <p className="font-semibold text-[#1B365D] mb-1">1. Add a property</p>
+                <p>Click &quot;Add Property&quot; to create a new listing with photos, price, details, and description.</p>
+              </div>
+              <div className="bg-white rounded-lg p-4 border border-[#D6BFAE]">
+                <p className="font-semibold text-[#1B365D] mb-1">2. Domestic vs International</p>
+                <p>When adding a property, choose &quot;Domestic&quot; for your Listings page or &quot;International&quot; for the International page.</p>
+              </div>
+              <div className="bg-white rounded-lg p-4 border border-[#D6BFAE]">
+                <p className="font-semibold text-[#1B365D] mb-1">3. Reorder &amp; Filter</p>
+                <p>Use the up/down arrows to reorder. Filter by status (Active, Pending, Sold) using the chips above the list.</p>
+              </div>
+              <div className="bg-white rounded-lg p-4 border border-[#D6BFAE]">
+                <p className="font-semibold text-[#1B365D] mb-1">4. Edit or Delete</p>
+                <p>Click Edit to update any details, or Delete to permanently remove a listing from your site.</p>
+              </div>
+            </div>
+            <p className="text-xs text-[#3D3D3D]/60 mt-4">Changes appear on your live site immediately. Domestic listings show on the Listings page, international listings show on the International page.</p>
+          </div>
+        )}
 
         {properties.length === 0 ? (
           <div className="bg-white rounded-xl p-12 shadow-sm text-center">
