@@ -4,6 +4,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
+import { useSearchParams } from 'next/navigation';
 import Nav from '@/clients/danidiaz/components/Nav';
 import { useLanguage } from '@/clients/danidiaz/components/LanguageContext';
 import { supabase } from '@/lib/supabase';
@@ -43,6 +44,8 @@ const bedOptions = [
 
 export function ListingsPage() {
   const { language, t } = useLanguage();
+  const searchParams = useSearchParams();
+  const isInternational = searchParams.get('type') === 'international';
   const [listings, setListings] = useState<Listing[]>([]);
   const [filteredListings, setFilteredListings] = useState<Listing[]>([]);
   const [priceRange, setPriceRange] = useState('all');
@@ -53,18 +56,27 @@ export function ListingsPage() {
   useEffect(() => {
     async function fetchListings() {
       // Fetch from both listings and featured_properties tables
+      const featuredQuery = supabase
+        .from('featured_properties')
+        .select('*')
+        .eq('client_id', '3c125122-f3d9-4f75-91d9-69cf84d6d20e');
+
+      if (isInternational) {
+        featuredQuery.eq('listing_type', 'international');
+      } else {
+        featuredQuery.neq('listing_type', 'international');
+      }
+      featuredQuery.order('display_order', { ascending: true });
+
       const [listingsResult, featuredResult] = await Promise.all([
-        supabase
-          .from('listings')
-          .select('*')
-          .eq('client_id', '3c125122-f3d9-4f75-91d9-69cf84d6d20e')
-          .order('created_at', { ascending: false }),
-        supabase
-          .from('featured_properties')
-          .select('*')
-          .eq('client_id', '3c125122-f3d9-4f75-91d9-69cf84d6d20e')
-          .neq('listing_type', 'international')
-          .order('display_order', { ascending: true })
+        isInternational
+          ? Promise.resolve({ data: null })
+          : supabase
+              .from('listings')
+              .select('*')
+              .eq('client_id', '3c125122-f3d9-4f75-91d9-69cf84d6d20e')
+              .order('created_at', { ascending: false }),
+        featuredQuery
       ]);
 
       const allListings: Listing[] = [];
@@ -110,7 +122,7 @@ export function ListingsPage() {
     }
 
     fetchListings();
-  }, []);
+  }, [isInternational]);
 
   useEffect(() => {
     let filtered = [...listings];
@@ -167,13 +179,20 @@ export function ListingsPage() {
             transition={{ duration: 0.8 }}
           >
             <h1 className="font-[family-name:var(--font-playfair)] text-5xl md:text-6xl lg:text-7xl font-bold text-white mb-6">
-              {t('Property Listings', 'Propiedades')}
+              {isInternational
+                ? t('International Listings', 'Propiedades Internacionales')
+                : t('Property Listings', 'Propiedades')}
             </h1>
             <p className="text-[#D6BFAE] text-xl max-w-2xl mx-auto">
-              {t(
-                'Discover your perfect home in Myrtle Beach and the Grand Strand',
-                'Descubre tu hogar perfecto en Myrtle Beach y el Grand Strand'
-              )}
+              {isInternational
+                ? t(
+                    'Featured properties available in international markets',
+                    'Propiedades destacadas disponibles en mercados internacionales'
+                  )
+                : t(
+                    'Discover your perfect home in Myrtle Beach and the Grand Strand',
+                    'Descubre tu hogar perfecto en Myrtle Beach y el Grand Strand'
+                  )}
             </p>
           </motion.div>
         </div>

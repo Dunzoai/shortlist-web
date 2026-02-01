@@ -162,12 +162,12 @@ export function InternationalPage() {
     return d.country
   }
   const getHighlights = (d: Destination) => {
-    if (language === 'es') return (d.highlights_es?.length ? d.highlights_es : translatedCache[d.id]?.highlights) || d.highlights_en
-    return d.highlights_en
+    if (language === 'es') return (d.highlights_es?.length ? d.highlights_es : translatedCache[d.id]?.highlights) || d.highlights_en || []
+    return d.highlights_en || []
   }
   const getWhyInvest = (d: Destination) => {
-    if (language === 'es') return (d.why_invest_es?.length ? d.why_invest_es : translatedCache[d.id]?.why_invest) || d.why_invest_en
-    return d.why_invest_en
+    if (language === 'es') return (d.why_invest_es?.length ? d.why_invest_es : translatedCache[d.id]?.why_invest) || d.why_invest_en || []
+    return d.why_invest_en || []
   }
 
   const countries = Array.from(new Set(destinations.map(d => d.country)))
@@ -587,42 +587,90 @@ export function InternationalPage() {
                 </p>
               </motion.div>
 
-              <motion.div variants={fadeInUp} className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+              <motion.div variants={fadeInUp} className="grid md:grid-cols-3 gap-8">
                 {listings.map((listing) => (
-                  <div key={listing.id} className="bg-white shadow-lg overflow-hidden group">
-                    <div className="relative h-64 overflow-hidden">
+                  <Link
+                    key={listing.id}
+                    href={`/listings/${listing.id}`}
+                    className="relative h-96 overflow-hidden shadow-lg md:hover:shadow-2xl transition-shadow duration-300 group cursor-pointer"
+                  >
+                    {/* Image */}
+                    <div className="absolute inset-0">
                       {listing.images?.[0] ? (
                         <Image
                           src={listing.images[0]}
                           alt={listing.address}
                           fill
-                          className="object-cover group-hover:scale-105 transition-transform duration-500"
+                          className="object-cover"
                         />
                       ) : (
-                        <div className="w-full h-full bg-gray-200 flex items-center justify-center">
-                          <Building2 className="w-12 h-12 text-gray-400" />
-                        </div>
-                      )}
-                      {listing.country && (
-                        <div className="absolute top-3 left-3 bg-[#C4A25A] text-white px-3 py-1 text-xs font-semibold">
-                          {listing.country}
-                        </div>
+                        <div className="w-full h-full bg-gradient-to-br from-[#D6BFAE] to-[#F7F7F7]" />
                       )}
                     </div>
-                    <div className="p-5">
-                      <p className="text-[#C4A25A] text-xl font-bold mb-1">
-                        ${listing.price?.toLocaleString()}
-                      </p>
-                      <p className="font-semibold text-[#1B365D] mb-1">{listing.address}</p>
-                      <p className="text-sm text-[#3D3D3D] mb-3">{listing.city}, {listing.state}</p>
-                      <div className="flex gap-4 text-sm text-[#3D3D3D]/70">
-                        {listing.beds && <span>{listing.beds} {t('Beds', 'Hab')}</span>}
-                        {listing.baths && <span>{listing.baths} {t('Baths', 'Baños')}</span>}
-                        {listing.sqft && <span>{listing.sqft.toLocaleString()} ft²</span>}
+
+                    {/* Price Badge */}
+                    <div
+                      className="absolute top-4 left-4 text-white px-4 py-2 font-semibold z-10"
+                      style={{ backgroundColor: isDark ? '#1B365D' : '#3D3D3D' }}
+                    >
+                      ${listing.price?.toLocaleString()}
+                    </div>
+
+                    {/* Country Badge */}
+                    {listing.country && (
+                      <div className="absolute top-4 right-4 bg-[#C4A25A] text-white px-3 py-1 text-xs font-semibold z-10">
+                        {listing.country}
+                      </div>
+                    )}
+
+                    {/* Content Box - Slides up on hover */}
+                    <div className="absolute inset-x-0 bottom-0 bg-white/95 backdrop-blur-sm p-6 translate-y-full md:group-hover:translate-y-0 transition-transform duration-300 ease-out">
+                      <h3
+                        className="font-[family-name:var(--font-playfair)] text-xl mb-1"
+                        style={{ color: isDark ? '#1B365D' : '#3D3D3D' }}
+                      >
+                        {listing.address}
+                      </h3>
+                      <p className="text-[#3D3D3D] mb-4">{listing.city}, {listing.state}</p>
+                      <div className="flex gap-4 text-sm text-[#3D3D3D]">
+                        {listing.beds && <span>{listing.beds} {t('beds', 'hab')}</span>}
+                        {listing.beds && listing.baths && <span>•</span>}
+                        {listing.baths && <span>{listing.baths} {t('baths', 'baños')}</span>}
+                        {listing.baths && listing.sqft && <span>•</span>}
+                        {listing.sqft && <span>{listing.sqft.toLocaleString()} {t('sq ft', 'pies²')}</span>}
                       </div>
                     </div>
-                  </div>
+
+                    {/* Mobile - Always show content at bottom */}
+                    <div className="md:hidden absolute inset-x-0 bottom-0 bg-white/95 backdrop-blur-sm p-6">
+                      <h3
+                        className="font-[family-name:var(--font-playfair)] text-xl mb-1"
+                        style={{ color: isDark ? '#1B365D' : '#3D3D3D' }}
+                      >
+                        {listing.address}
+                      </h3>
+                      <p className="text-[#3D3D3D] mb-4">{listing.city}, {listing.state}</p>
+                      <div className="flex gap-4 text-sm text-[#3D3D3D]">
+                        {listing.beds && <span>{listing.beds} {t('beds', 'hab')}</span>}
+                        {listing.beds && listing.baths && <span>•</span>}
+                        {listing.baths && <span>{listing.baths} {t('baths', 'baños')}</span>}
+                        {listing.baths && listing.sqft && <span>•</span>}
+                        {listing.sqft && <span>{listing.sqft.toLocaleString()} {t('sq ft', 'pies²')}</span>}
+                      </div>
+                    </div>
+                  </Link>
                 ))}
+              </motion.div>
+
+              {/* View All International Listings */}
+              <motion.div variants={fadeInUp} className="text-center mt-12">
+                <Link
+                  href="/listings?type=international"
+                  className="inline-flex items-center gap-2 bg-[#1B365D] text-white px-8 py-4 text-lg hover:bg-[#C4A25A] transition-colors"
+                >
+                  {t('View All International Listings', 'Ver Todas las Propiedades Internacionales')}
+                  <span className="ml-1">&rarr;</span>
+                </Link>
               </motion.div>
             </motion.div>
           </div>
