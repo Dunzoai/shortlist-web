@@ -12,6 +12,7 @@ const navItems = [
   { href: '/international', labelEn: 'International', labelEs: 'Internacional' },
   { href: '/about', labelEn: 'About', labelEs: 'Acerca' },
   { href: '/blog', labelEn: 'Blog', labelEs: 'Blog' },
+  { href: 'https://app.shortlistpass.com/DaniDiaz', labelEn: 'My SmartAssistant', labelEs: 'Mi SmartAssistant', external: true },
 ];
 
 export default function Nav() {
@@ -44,12 +45,23 @@ export default function Nav() {
           <ul className="hidden md:flex items-center gap-8">
             {navItems.map((item) => (
               <li key={item.href}>
-                <Link
-                  href={item.href}
-                  className="text-white text-sm tracking-wide hover:text-[#C4A25A] transition-colors"
-                >
-                  {language === 'en' ? item.labelEn : item.labelEs}
-                </Link>
+                {item.external ? (
+                  <a
+                    href={item.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-white text-sm tracking-wide hover:text-[#C4A25A] transition-colors"
+                  >
+                    {language === 'en' ? item.labelEn : item.labelEs}
+                  </a>
+                ) : (
+                  <Link
+                    href={item.href}
+                    className="text-white text-sm tracking-wide hover:text-[#C4A25A] transition-colors"
+                  >
+                    {language === 'en' ? item.labelEn : item.labelEs}
+                  </Link>
+                )}
               </li>
             ))}
 
@@ -100,14 +112,27 @@ export default function Nav() {
           >
             <div className="flex flex-col items-center gap-6 p-8">
               {navItems.map((item) => (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  onClick={() => setIsMobileMenuOpen(false)}
-                  className="text-white text-xl font-[family-name:var(--font-playfair)] hover:text-[#C4A25A] transition-colors"
-                >
-                  {language === 'en' ? item.labelEn : item.labelEs}
-                </Link>
+                item.external ? (
+                  <a
+                    key={item.href}
+                    href={item.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className="text-white text-xl font-[family-name:var(--font-playfair)] hover:text-[#C4A25A] transition-colors"
+                  >
+                    {language === 'en' ? item.labelEn : item.labelEs}
+                  </a>
+                ) : (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className="text-white text-xl font-[family-name:var(--font-playfair)] hover:text-[#C4A25A] transition-colors"
+                  >
+                    {language === 'en' ? item.labelEn : item.labelEs}
+                  </Link>
+                )
               ))}
 
               {/* Mobile Language Toggle */}

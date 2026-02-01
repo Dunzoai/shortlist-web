@@ -133,15 +133,15 @@ export default async function RootLayout({
           />
         )} */}
 
-        {/* Shortlist Chat Widget for Dani Diaz */}
-        {(!client || client.slug === 'danidiaz') && (
+        {/* Shortlist Chat Widget for Dani Diaz — TEMPORARILY DISABLED to debug mobile scroll/swipe issues */}
+        {/* {(!client || client.slug === 'danidiaz') && (
           <ShortlistChatWidget
             business="danidiaz"
             position="right"
             theme="dark"
             messages="Schedule an appointment|What areas do you service?|Ask me anything"
           />
-        )}
+        )} */}
       </body>
     </html>
   );
