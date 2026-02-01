@@ -283,10 +283,53 @@ export function ListingsPage() {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.5, delay: index * 0.1 }}
                 >
+                  {isInternational ? (
+                    <Link
+                      href={`/listings/${listing.id}`}
+                      className="relative h-96 overflow-hidden shadow-lg md:hover:shadow-2xl transition-shadow duration-300 group cursor-pointer block"
+                    >
+                      <div className="absolute inset-0">
+                        <Image
+                          src={listing.photos?.[0] || 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=800&q=80'}
+                          alt={listing.address}
+                          fill
+                          className="object-cover"
+                        />
+                      </div>
+                      <div className="absolute top-4 left-4 bg-[#3D3D3D] text-white px-4 py-2 font-semibold z-10">
+                        {formatPrice(listing.price)}
+                      </div>
+                      <div className="absolute inset-x-0 bottom-0 bg-white/95 backdrop-blur-sm p-6 translate-y-full md:group-hover:translate-y-0 transition-transform duration-300 ease-out">
+                        <h3 className="font-[family-name:var(--font-playfair)] text-xl text-[#3D3D3D] mb-1">
+                          {listing.address}
+                        </h3>
+                        <p className="text-[#3D3D3D] mb-4">{listing.city}, {listing.state}</p>
+                        <div className="flex gap-4 text-sm text-[#3D3D3D]">
+                          {listing.beds > 0 && <span>{listing.beds} {t('beds', 'hab')}</span>}
+                          {listing.beds > 0 && listing.baths > 0 && <span>•</span>}
+                          {listing.baths > 0 && <span>{listing.baths} {t('baths', 'baños')}</span>}
+                          {listing.baths > 0 && listing.sqft > 0 && <span>•</span>}
+                          {listing.sqft > 0 && <span>{listing.sqft.toLocaleString()} {t('sq ft', 'pies²')}</span>}
+                        </div>
+                      </div>
+                      <div className="md:hidden absolute inset-x-0 bottom-0 bg-white/95 backdrop-blur-sm p-6">
+                        <h3 className="font-[family-name:var(--font-playfair)] text-xl text-[#3D3D3D] mb-1">
+                          {listing.address}
+                        </h3>
+                        <p className="text-[#3D3D3D] mb-4">{listing.city}, {listing.state}</p>
+                        <div className="flex gap-4 text-sm text-[#3D3D3D]">
+                          {listing.beds > 0 && <span>{listing.beds} {t('beds', 'hab')}</span>}
+                          {listing.beds > 0 && listing.baths > 0 && <span>•</span>}
+                          {listing.baths > 0 && <span>{listing.baths} {t('baths', 'baños')}</span>}
+                          {listing.baths > 0 && listing.sqft > 0 && <span>•</span>}
+                          {listing.sqft > 0 && <span>{listing.sqft.toLocaleString()} {t('sq ft', 'pies²')}</span>}
+                        </div>
+                      </div>
+                    </Link>
+                  ) : (
                   <Link href={`/listings/${listing.id}`} className="group block">
                     <div className="bg-white shadow-lg hover:shadow-xl transition-shadow overflow-hidden">
                       <div className="relative h-64 overflow-hidden">
-                        {/* TODO: Replace with actual listing photos */}
                         <Image
                           src={listing.photos?.[0] || 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=800&q=80'}
                           alt={listing.address}
@@ -337,6 +380,7 @@ export function ListingsPage() {
                       </div>
                     </div>
                   </Link>
+                  )}
                 </motion.div>
               ))}
             </div>

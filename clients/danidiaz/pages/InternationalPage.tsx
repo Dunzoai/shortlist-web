@@ -411,7 +411,10 @@ export function InternationalPage() {
               {filtered.map((destination, index) => (
                 <motion.div
                   key={destination.id}
-                  variants={fadeInUp}
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.6, delay: index * 0.1 }}
                   className={`grid lg:grid-cols-2 gap-12 items-center ${
                     index % 2 === 1 ? 'lg:flex-row-reverse' : ''
                   }`}
