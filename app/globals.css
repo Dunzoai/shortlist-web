@@ -83,4 +83,13 @@ p, span, a, li, label, input, textarea, button {
   }
 }
 
+/* Hide scrollbar for swipe carousels */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
 /* SmartAssistant Widget - Currently disabled, styles reserved for future use */
