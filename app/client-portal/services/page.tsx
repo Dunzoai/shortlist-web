@@ -143,6 +143,8 @@ export default function ServicesPage() {
                       <span className={`px-2 py-1 rounded text-xs font-medium ${
                         svc.status === 'active' ? 'bg-green-500/20 text-green-400' :
                         svc.status === 'trial' ? 'bg-blue-500/20 text-blue-400' :
+                        svc.status === 'pending' ? 'bg-orange-500/20 text-orange-400' :
+                        svc.status === 'completed' ? 'bg-purple-500/20 text-purple-400' :
                         svc.status === 'paused' ? 'bg-yellow-500/20 text-yellow-400' :
                         'bg-red-500/20 text-red-400'
                       }`}>
@@ -153,7 +155,7 @@ export default function ServicesPage() {
                         })() : svc.status.toUpperCase()}
                       </span>
                       {/* Subscription chip for monthly services */}
-                      {isMonthly && svc.status === 'active' && isSubscribed && (
+                      {isMonthly && (svc.status === 'active' || svc.status === 'trial') && isSubscribed && (
                         <span className="px-2 py-1 rounded text-xs font-medium bg-blue-500/20 text-blue-400">
                           SUBSCRIBED
                         </span>
@@ -220,6 +222,9 @@ export default function ServicesPage() {
                       {svc.status === 'paused' && svc.paused_at && (
                         <p className="text-yellow-500 text-xs">Paused: {new Date(svc.paused_at).toLocaleDateString()}</p>
                       )}
+                      {svc.status === 'completed' && svc.ended_at && (
+                        <p className="text-purple-400 text-xs">Completed: {new Date(svc.ended_at).toLocaleDateString()}</p>
+                      )}
                       {svc.status === 'cancelled' && svc.ended_at && (
                         <p className="text-red-500 text-xs">Ended: {new Date(svc.ended_at).toLocaleDateString()}</p>
                       )}
@@ -227,7 +232,7 @@ export default function ServicesPage() {
                   </div>
 
                   {/* Actions */}
-                  {svc.status === 'active' && (
+                  {(svc.status === 'active' || svc.status === 'trial') && (
                     <div className="flex flex-col gap-2 ml-4">
                       <button
                         onClick={() => handlePause(svc.id, svc.services.name)}

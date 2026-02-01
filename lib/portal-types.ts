@@ -36,7 +36,7 @@ export interface ClientService {
   service_id: string
   monthly_cost: number
   one_time_cost: number
-  status: 'active' | 'trial' | 'paused' | 'cancelled'
+  status: 'active' | 'trial' | 'pending' | 'completed' | 'paused' | 'cancelled'
   start_date: string
   notes: string | null
   performed_by_id: string | null

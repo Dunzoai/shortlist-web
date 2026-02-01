@@ -217,6 +217,8 @@ export default function EditClientPage() {
         }
       } else if (value === 'paused') {
         updateData.paused_at = new Date().toISOString()
+      } else if (value === 'completed') {
+        updateData.ended_at = new Date().toISOString()
       } else if (value === 'cancelled') {
         updateData.ended_at = new Date().toISOString()
       }
@@ -459,6 +461,8 @@ export default function EditClientPage() {
                           >
                             <option value="active">Active</option>
                             <option value="trial">Trial</option>
+                            <option value="pending">Pending</option>
+                            <option value="completed">Completed</option>
                             <option value="paused">Paused</option>
                             <option value="cancelled">Cancelled</option>
                           </select>
@@ -508,6 +512,18 @@ export default function EditClientPage() {
                             value={cs.paused_at ? cs.paused_at.split('T')[0] : ''}
                             onChange={(e) => handleUpdateService(cs.id, 'paused_at', e.target.value)}
                             className="w-full px-3 py-1.5 bg-[#444444] border border-yellow-500/50 rounded text-yellow-400 text-sm focus:outline-none focus:ring-2 focus:ring-yellow-500"
+                          />
+                        </div>
+                      )}
+
+                      {cs.status === 'completed' && (
+                        <div>
+                          <label className="block text-xs text-gray-400 mb-1">Completed On</label>
+                          <input
+                            type="date"
+                            value={cs.ended_at ? cs.ended_at.split('T')[0] : ''}
+                            onChange={(e) => handleUpdateService(cs.id, 'ended_at', e.target.value)}
+                            className="w-full px-3 py-1.5 bg-[#444444] border border-purple-500/50 rounded text-purple-400 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
                           />
                         </div>
                       )}
