@@ -113,6 +113,12 @@ export default function AdminLayout({
               Properties
             </Link>
             <Link
+              href="/admin/international"
+              className={`hover:text-[#C4A25A] transition-colors ${pathname.startsWith('/admin/international') ? 'text-[#C4A25A]' : ''}`}
+            >
+              International
+            </Link>
+            <Link
               href="/"
               className="hover:text-[#C4A25A] transition-colors"
               target="_blank"

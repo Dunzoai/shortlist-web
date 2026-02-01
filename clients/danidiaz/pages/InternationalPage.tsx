@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
@@ -25,50 +25,22 @@ const staggerContainer = {
   }
 };
 
-const destinations = [
-  {
-    id: 'dubai',
-    city: 'Dubai',
-    country: 'UAE',
-    countryEs: 'EAU',
-    image: '/dubai.jpg',
-    highlights: [
-      { en: 'Tax-free investment', es: 'Inversión libre de impuestos' },
-      { en: 'Luxury lifestyle', es: 'Estilo de vida de lujo' },
-      { en: 'World-class amenities', es: 'Comodidades de clase mundial' },
-      { en: 'Booming expat community', es: 'Comunidad de expatriados en auge' },
-    ],
-    whyInvest: [
-      { en: 'Strong rental yields (5-9%)', es: 'Altos rendimientos de alquiler (5-9%)' },
-      { en: 'Residency visa options', es: 'Opciones de visa de residencia' },
-      { en: 'Iconic developments', es: 'Desarrollos icónicos' },
-      { en: 'Growing tourism sector', es: 'Sector turístico en crecimiento' },
-    ],
-    descriptionEn: "Dubai offers unparalleled luxury living with zero property taxes and a thriving international community. From stunning beachfront apartments to iconic skyscraper residences, Dubai's real estate market continues to attract global investors.",
-    descriptionEs: "Dubai ofrece una vida de lujo sin igual con cero impuestos sobre la propiedad y una próspera comunidad internacional. Desde impresionantes apartamentos frente al mar hasta residencias icónicas en rascacielos, el mercado inmobiliario de Dubai sigue atrayendo inversores globales.",
-  },
-  {
-    id: 'cancun',
-    city: 'Cancun',
-    country: 'Mexico',
-    countryEs: 'México',
-    image: '/cancun.jpg',
-    highlights: [
-      { en: 'Caribbean paradise', es: 'Paraíso caribeño' },
-      { en: 'Tourism-driven rentals', es: 'Alquileres impulsados por turismo' },
-      { en: 'Affordable luxury', es: 'Lujo accesible' },
-      { en: 'Growing expat community', es: 'Comunidad de expatriados en crecimiento' },
-    ],
-    whyInvest: [
-      { en: 'Vacation rental income', es: 'Ingresos por alquiler vacacional' },
-      { en: 'Lower cost of living', es: 'Menor costo de vida' },
-      { en: 'Beautiful beaches', es: 'Hermosas playas' },
-      { en: 'Strong tourism market', es: 'Fuerte mercado turístico' },
-    ],
-    descriptionEn: "Cancun combines stunning Caribbean beaches with excellent investment potential. The Riviera Maya region offers everything from beachfront condos to gated communities, with strong vacation rental demand year-round.",
-    descriptionEs: "Cancún combina impresionantes playas del Caribe con excelente potencial de inversión. La región de la Riviera Maya ofrece desde condominios frente al mar hasta comunidades cerradas, con fuerte demanda de alquileres vacacionales durante todo el año.",
-  },
-];
+interface Destination {
+  id: string
+  slug: string
+  city: string
+  country: string
+  country_es: string | null
+  image_url: string | null
+  description_en: string | null
+  description_es: string | null
+  highlights_en: string[]
+  highlights_es: string[]
+  why_invest_en: string[]
+  why_invest_es: string[]
+  external_url: string | null
+  display_order: number
+}
 
 const howItWorks = [
   {
@@ -101,6 +73,27 @@ export function InternationalPage() {
   const { language, t } = useLanguage();
   const { styleMode } = useStyle();
   const isDark = styleMode === 'dark';
+
+  const [destinations, setDestinations] = useState<Destination[]>([])
+  const [selectedCountry, setSelectedCountry] = useState<string>('all')
+
+  useEffect(() => {
+    async function load() {
+      const { data } = await supabase
+        .from('international_destinations')
+        .select('*')
+        .eq('is_active', true)
+        .eq('client_id', '3c125122-f3d9-4f75-91d9-69cf84d6d20e')
+        .order('display_order')
+      setDestinations((data as Destination[]) || [])
+    }
+    load()
+  }, [])
+
+  const countries = Array.from(new Set(destinations.map(d => d.country)))
+  const filtered = selectedCountry === 'all'
+    ? destinations
+    : destinations.filter(d => d.country === selectedCountry)
 
   const [formData, setFormData] = useState({
     firstName: '',
@@ -299,10 +292,43 @@ export function InternationalPage() {
                   'Explora oportunidades de inversión premium en estos mercados de clase mundial'
                 )}
               </p>
+
+              {/* Country Filter Chips */}
+              {countries.length > 1 && (
+                <div className="flex flex-wrap justify-center gap-3 mt-8">
+                  <button
+                    onClick={() => setSelectedCountry('all')}
+                    className={`px-5 py-2 rounded-full text-sm font-medium transition-colors ${
+                      selectedCountry === 'all'
+                        ? 'bg-[#1B365D] text-white'
+                        : 'bg-white/80 text-[#3D3D3D] hover:bg-[#1B365D]/10'
+                    }`}
+                  >
+                    {t('All', 'Todos')}
+                  </button>
+                  {countries.map(c => {
+                    const dest = destinations.find(d => d.country === c)
+                    const label = language === 'en' ? c : (dest?.country_es || c)
+                    return (
+                      <button
+                        key={c}
+                        onClick={() => setSelectedCountry(c)}
+                        className={`px-5 py-2 rounded-full text-sm font-medium transition-colors ${
+                          selectedCountry === c
+                            ? 'bg-[#1B365D] text-white'
+                            : 'bg-white/80 text-[#3D3D3D] hover:bg-[#1B365D]/10'
+                        }`}
+                      >
+                        {label}
+                      </button>
+                    )
+                  })}
+                </div>
+              )}
             </motion.div>
 
             <div className="space-y-16">
-              {destinations.map((destination, index) => (
+              {filtered.map((destination, index) => (
                 <motion.div
                   key={destination.id}
                   variants={fadeInUp}
@@ -313,12 +339,14 @@ export function InternationalPage() {
                   {/* Image */}
                   <div className={`relative ${index % 2 === 1 ? 'lg:order-2' : ''}`}>
                     <div className="relative h-[400px] lg:h-[500px] overflow-hidden shadow-2xl">
-                      <Image
-                        src={destination.image}
-                        alt={destination.city}
-                        fill
-                        className="object-cover"
-                      />
+                      {destination.image_url && (
+                        <Image
+                          src={destination.image_url}
+                          alt={destination.city}
+                          fill
+                          className="object-cover"
+                        />
+                      )}
                     </div>
                     {/* City Badge */}
                     <div className="absolute -bottom-4 left-6 bg-[#C4A25A] text-white px-6 py-3">
@@ -326,7 +354,7 @@ export function InternationalPage() {
                         {destination.city}
                       </p>
                       <p className="text-sm opacity-80">
-                        {language === 'en' ? destination.country : destination.countryEs}
+                        {language === 'en' ? destination.country : (destination.country_es || destination.country)}
                       </p>
                     </div>
                   </div>
@@ -337,47 +365,53 @@ export function InternationalPage() {
                       className="font-[family-name:var(--font-playfair)] text-3xl md:text-4xl mb-6 transition-colors duration-500"
                       style={{ color: isDark ? '#1B365D' : '#3D3D3D' }}
                     >
-                      {destination.city}, {language === 'en' ? destination.country : destination.countryEs}
+                      {destination.city}, {language === 'en' ? destination.country : (destination.country_es || destination.country)}
                     </h3>
 
                     <p className="text-[#3D3D3D] text-lg leading-relaxed mb-8">
-                      {language === 'en' ? destination.descriptionEn : destination.descriptionEs}
+                      {language === 'en' ? destination.description_en : destination.description_es}
                     </p>
 
                     {/* Highlights */}
-                    <div className="mb-8">
-                      <h4 className="text-[#C4A25A] font-semibold mb-4 flex items-center gap-2">
-                        <Sun className="w-5 h-5" />
-                        {t('Market Highlights', 'Aspectos Destacados del Mercado')}
-                      </h4>
-                      <div className="grid grid-cols-2 gap-3">
-                        {destination.highlights.map((highlight, i) => (
-                          <div key={i} className="flex items-center gap-2 text-[#3D3D3D]">
-                            <div className="w-2 h-2 bg-[#C4A25A] rounded-full" />
-                            <span>{language === 'en' ? highlight.en : highlight.es}</span>
-                          </div>
-                        ))}
+                    {(language === 'en' ? destination.highlights_en : destination.highlights_es).length > 0 && (
+                      <div className="mb-8">
+                        <h4 className="text-[#C4A25A] font-semibold mb-4 flex items-center gap-2">
+                          <Sun className="w-5 h-5" />
+                          {t('Market Highlights', 'Aspectos Destacados del Mercado')}
+                        </h4>
+                        <div className="grid grid-cols-2 gap-3">
+                          {(language === 'en' ? destination.highlights_en : destination.highlights_es).map((h, i) => (
+                            <div key={i} className="flex items-center gap-2 text-[#3D3D3D]">
+                              <div className="w-2 h-2 bg-[#C4A25A] rounded-full" />
+                              <span>{h}</span>
+                            </div>
+                          ))}
+                        </div>
                       </div>
-                    </div>
+                    )}
 
                     {/* Why Invest */}
-                    <div className="mb-8">
-                      <h4 className="text-[#1B365D] font-semibold mb-4 flex items-center gap-2">
-                        <TrendingUp className="w-5 h-5" />
-                        {t(`Why ${destination.city}`, `¿Por qué ${destination.city}?`)}
-                      </h4>
-                      <div className="grid grid-cols-2 gap-3">
-                        {destination.whyInvest.map((reason, i) => (
-                          <div key={i} className="flex items-center gap-2 text-[#3D3D3D]">
-                            <div className="w-2 h-2 bg-[#1B365D] rounded-full" />
-                            <span>{language === 'en' ? reason.en : reason.es}</span>
-                          </div>
-                        ))}
+                    {(language === 'en' ? destination.why_invest_en : destination.why_invest_es).length > 0 && (
+                      <div className="mb-8">
+                        <h4 className="text-[#1B365D] font-semibold mb-4 flex items-center gap-2">
+                          <TrendingUp className="w-5 h-5" />
+                          {t(`Why ${destination.city}`, `¿Por qué ${destination.city}?`)}
+                        </h4>
+                        <div className="grid grid-cols-2 gap-3">
+                          {(language === 'en' ? destination.why_invest_en : destination.why_invest_es).map((r, i) => (
+                            <div key={i} className="flex items-center gap-2 text-[#3D3D3D]">
+                              <div className="w-2 h-2 bg-[#1B365D] rounded-full" />
+                              <span>{r}</span>
+                            </div>
+                          ))}
+                        </div>
                       </div>
-                    </div>
+                    )}
 
                     <a
-                      href="#contact"
+                      href={destination.external_url || '#contact'}
+                      target={destination.external_url ? '_blank' : undefined}
+                      rel={destination.external_url ? 'noopener noreferrer' : undefined}
                       className="inline-flex items-center gap-2 bg-[#1B365D] text-white px-6 py-3 hover:bg-[#C4A25A] transition-colors"
                     >
                       <Home className="w-5 h-5" />
@@ -617,8 +651,11 @@ export function InternationalPage() {
                         className="w-full px-4 py-3 border border-[#D6BFAE] focus:border-[#1B365D] focus:outline-none transition-colors bg-white"
                       >
                         <option value="">{t('Select a destination', 'Selecciona un destino')}</option>
-                        <option value="dubai">Dubai, UAE</option>
-                        <option value="cancun">{t('Cancun, Mexico', 'Cancún, México')}</option>
+                        {destinations.map(d => (
+                          <option key={d.slug} value={d.slug}>
+                            {d.city}, {language === 'en' ? d.country : (d.country_es || d.country)}
+                          </option>
+                        ))}
                         <option value="other">{t('Other (specify in message)', 'Otro (especificar en mensaje)')}</option>
                       </select>
                     </div>
