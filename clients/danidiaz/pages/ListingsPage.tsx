@@ -51,6 +51,7 @@ export function ListingsPage() {
   const [priceRange, setPriceRange] = useState('all');
   const [beds, setBeds] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
+  const [cityFilter, setCityFilter] = useState('all');
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -144,6 +145,11 @@ export function ListingsPage() {
       filtered = filtered.filter(l => l.beds >= minBeds);
     }
 
+    // Filter by city
+    if (cityFilter !== 'all') {
+      filtered = filtered.filter(l => l.city === cityFilter);
+    }
+
     // Filter by search query
     if (searchQuery) {
       const query = searchQuery.toLowerCase();
@@ -155,7 +161,7 @@ export function ListingsPage() {
     }
 
     setFilteredListings(filtered);
-  }, [priceRange, beds, searchQuery, listings]);
+  }, [priceRange, beds, cityFilter, searchQuery, listings]);
 
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('en-US', {
@@ -242,6 +248,43 @@ export function ListingsPage() {
           </div>
         </div>
       </section>
+
+      {/* City Filter Chips */}
+      {(() => {
+        const cities = Array.from(new Set(listings.map(l => l.city).filter(Boolean))).sort();
+        if (cities.length <= 1) return null;
+        return (
+          <section className="py-4 bg-[#F7F7F7] border-b border-[#D6BFAE]/20">
+            <div className="max-w-7xl mx-auto px-6">
+              <div className="flex flex-wrap gap-2">
+                <button
+                  onClick={() => setCityFilter('all')}
+                  className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
+                    cityFilter === 'all'
+                      ? 'bg-[#1B365D] text-white'
+                      : 'bg-white text-[#3D3D3D] hover:bg-[#1B365D]/10 border border-[#D6BFAE]'
+                  }`}
+                >
+                  {t('All Cities', 'Todas las Ciudades')}
+                </button>
+                {cities.map(city => (
+                  <button
+                    key={city}
+                    onClick={() => setCityFilter(city)}
+                    className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
+                      cityFilter === city
+                        ? 'bg-[#1B365D] text-white'
+                        : 'bg-white text-[#3D3D3D] hover:bg-[#1B365D]/10 border border-[#D6BFAE]'
+                    }`}
+                  >
+                    {city}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </section>
+        );
+      })()}
 
       {/* Results Count */}
       <section className="py-6 bg-[#F7F7F7]">
