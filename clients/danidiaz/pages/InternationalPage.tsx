@@ -573,7 +573,7 @@ export function InternationalPage() {
               </div>
 
               {/* Mobile: horizontal swipe carousel */}
-              <div className="md:hidden flex gap-4 overflow-x-auto snap-x snap-mandatory pb-4 -mx-6 px-6 scrollbar-hide" style={{ WebkitOverflowScrolling: 'touch' }}>
+              <div className="md:hidden flex gap-4 overflow-x-auto snap-x snap-mandatory pb-4 -mx-6 px-6 scrollbar-hide relative z-[10000]" style={{ WebkitOverflowScrolling: 'touch' }}>
                 {listings.map((listing) => (
                   <Link
                     key={listing.id}
