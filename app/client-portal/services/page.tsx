@@ -9,6 +9,31 @@ interface ClientServiceWithService extends ClientService {
   services: Service
 }
 
+function getNextRenewalDate(startDate: string): string {
+  const start = new Date(startDate)
+  const now = new Date()
+  const renewal = new Date(start)
+
+  // Move renewal forward month by month until it's in the future
+  while (renewal <= now) {
+    renewal.setMonth(renewal.getMonth() + 1)
+  }
+
+  return renewal.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+}
+
+function getOneTimeStatus(svc: ClientServiceWithService) {
+  if (svc.one_time_cost <= 0) return null
+  const paid = svc.amount_paid || 0
+  const deposit = svc.deposit_amount || 0
+  const total = svc.one_time_cost
+  const owed = total - paid
+
+  if (paid >= total) return { label: 'PAID', color: 'bg-green-500/20 text-green-400', owed: 0 }
+  if (paid > 0 || deposit > 0) return { label: 'DEPOSIT PAID', color: 'bg-yellow-500/20 text-yellow-400', owed }
+  return { label: 'UNPAID', color: 'bg-red-500/20 text-red-400', owed }
+}
+
 export default function ServicesPage() {
   const { clientId: resolvedClientId, loading: authLoading } = usePortalClient()
   const [loading, setLoading] = useState(true)
@@ -41,7 +66,7 @@ export default function ServicesPage() {
     }
 
     const supabase = createClient()
-    
+
     await supabase
       .from('client_services')
       .update({ status: 'cancelled', is_active: false })
@@ -53,7 +78,7 @@ export default function ServicesPage() {
       body: JSON.stringify({ serviceId, serviceName, clientId })
     })
 
-    setServices(services.map(s => 
+    setServices(services.map(s =>
       s.id === serviceId ? { ...s, status: 'cancelled', is_active: false } : s
     ))
   }
@@ -62,7 +87,7 @@ export default function ServicesPage() {
     if (!confirm(`Pause ${serviceName}?`)) return
 
     const supabase = createClient()
-    
+
     await supabase
       .from('client_services')
       .update({ status: 'paused', is_active: false })
@@ -74,7 +99,7 @@ export default function ServicesPage() {
       body: JSON.stringify({ serviceId, serviceName, clientId, action: 'paused' })
     })
 
-    setServices(services.map(s => 
+    setServices(services.map(s =>
       s.id === serviceId ? { ...s, status: 'paused', is_active: false } : s
     ))
   }
@@ -91,50 +116,98 @@ export default function ServicesPage() {
         <p className="text-gray-400">No services found</p>
       ) : (
         <div className="space-y-4">
-          {services.map((svc) => (
-            <div key={svc.id} className="bg-[#333333] border border-[#444444] rounded-lg p-6">
-              <div className="flex justify-between items-start">
-                <div>
-                  <h3 className="text-xl font-semibold text-white mb-2">{svc.services.name}</h3>
-                  <p className="text-gray-400 text-sm mb-4">{svc.services.description}</p>
-                  
-                  <div className="space-y-1 text-sm">
-                    {svc.monthly_cost > 0 && (
-                      <p className="text-gray-300">Monthly: ${Number(svc.monthly_cost).toFixed(2)}</p>
-                    )}
-                    {svc.one_time_cost > 0 && (
-                      <p className="text-gray-300">One-time: ${Number(svc.one_time_cost).toFixed(2)}</p>
-                    )}
-                    <p className="text-gray-400">Started: {new Date(svc.start_date).toLocaleDateString()}</p>
-                    <p className={`inline-block px-2 py-1 rounded text-xs ${
-                      svc.status === 'active' ? 'bg-green-500/20 text-green-400' :
-                      svc.status === 'paused' ? 'bg-yellow-500/20 text-yellow-400' :
-                      'bg-red-500/20 text-red-400'
-                    }`}>
-                      {svc.status.toUpperCase()}
-                    </p>
-                  </div>
-                </div>
+          {services.map((svc) => {
+            const oneTimeStatus = getOneTimeStatus(svc)
+            const isMonthly = svc.monthly_cost > 0
+            const isOneTime = svc.one_time_cost > 0
 
-                {svc.status === 'active' && (
-                  <div className="space-x-2">
-                    <button
-                      onClick={() => handlePause(svc.id, svc.services.name)}
-                      className="px-4 py-2 bg-yellow-600 text-white text-sm rounded hover:bg-yellow-700"
-                    >
-                      Pause
-                    </button>
-                    <button
-                      onClick={() => handleCancel(svc.id, svc.services.name)}
-                      className="px-4 py-2 bg-red-600 text-white text-sm rounded hover:bg-red-700"
-                    >
-                      Cancel
-                    </button>
+            return (
+              <div key={svc.id} className="bg-[#333333] border border-[#444444] rounded-lg p-6">
+                <div className="flex justify-between items-start">
+                  <div className="flex-1">
+                    {/* Header: Name + Status */}
+                    <div className="flex items-center gap-3 mb-3">
+                      <h3 className="text-xl font-semibold text-white">{svc.services.name}</h3>
+                      <span className={`px-2 py-1 rounded text-xs font-medium ${
+                        svc.status === 'active' ? 'bg-green-500/20 text-green-400' :
+                        svc.status === 'paused' ? 'bg-yellow-500/20 text-yellow-400' :
+                        'bg-red-500/20 text-red-400'
+                      }`}>
+                        {svc.status.toUpperCase()}
+                      </span>
+                    </div>
+
+                    {/* Description */}
+                    {svc.services.description && (
+                      <p className="text-gray-400 text-sm mb-3">{svc.services.description}</p>
+                    )}
+
+                    {/* Scope / Notes from admin */}
+                    {svc.notes && (
+                      <div className="bg-[#2a2a2a] rounded-lg p-3 mb-3 border border-[#444444]">
+                        <p className="text-xs text-gray-500 mb-1">Service Details</p>
+                        <p className="text-sm text-gray-300 whitespace-pre-wrap">{svc.notes}</p>
+                      </div>
+                    )}
+
+                    {/* Pricing & Dates */}
+                    <div className="space-y-1 text-sm">
+                      {/* Monthly recurring */}
+                      {isMonthly && (
+                        <div className="flex items-center gap-4">
+                          <p className="text-gray-300">${Number(svc.monthly_cost).toFixed(2)}/mo</p>
+                          {svc.status === 'active' && svc.start_date && (
+                            <p className="text-gray-500">Renews: {getNextRenewalDate(svc.start_date)}</p>
+                          )}
+                        </div>
+                      )}
+
+                      {/* One-time with deposit tracking */}
+                      {isOneTime && (
+                        <div className="flex items-center gap-3 flex-wrap">
+                          <p className="text-gray-300">Total: ${Number(svc.one_time_cost).toFixed(2)}</p>
+                          {(svc.deposit_amount || 0) > 0 && (
+                            <p className="text-gray-400">Deposit: ${Number(svc.deposit_amount).toFixed(2)}</p>
+                          )}
+                          {oneTimeStatus && (
+                            <>
+                              {oneTimeStatus.owed > 0 && (
+                                <p className="text-gray-300 font-medium">Owed: ${oneTimeStatus.owed.toFixed(2)}</p>
+                              )}
+                              <span className={`px-2 py-0.5 rounded text-xs font-medium ${oneTimeStatus.color}`}>
+                                {oneTimeStatus.label}
+                              </span>
+                            </>
+                          )}
+                        </div>
+                      )}
+
+                      {/* Start date */}
+                      <p className="text-gray-500 text-xs">Started: {new Date(svc.start_date).toLocaleDateString()}</p>
+                    </div>
                   </div>
-                )}
+
+                  {/* Actions */}
+                  {svc.status === 'active' && (
+                    <div className="flex flex-col gap-2 ml-4">
+                      <button
+                        onClick={() => handlePause(svc.id, svc.services.name)}
+                        className="px-4 py-2 bg-yellow-600 text-white text-sm rounded hover:bg-yellow-700"
+                      >
+                        Pause
+                      </button>
+                      <button
+                        onClick={() => handleCancel(svc.id, svc.services.name)}
+                        className="px-4 py-2 bg-red-600 text-white text-sm rounded hover:bg-red-700"
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  )}
+                </div>
               </div>
-            </div>
-          ))}
+            )
+          })}
         </div>
       )}
     </div>

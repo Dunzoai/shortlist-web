@@ -21,7 +21,7 @@ export async function middleware(request: NextRequest) {
   // Handle client portal subdomain - map paths to /client-portal routes
   if (isClientPortalSubdomain) {
     if (!effectivePathname.startsWith('/client-portal')) {
-      effectivePathname = `/client-portal${effectivePathname === '/' ? '/login' : effectivePathname}`
+      effectivePathname = `/client-portal${effectivePathname === '/' ? '/services' : effectivePathname}`
       needsRewrite = true
     }
   }

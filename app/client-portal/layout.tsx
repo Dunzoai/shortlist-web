@@ -10,6 +10,11 @@ interface ClientOption {
   name: string
 }
 
+interface AccountManager {
+  name: string
+  email: string | null
+}
+
 export default function PortalLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
   const router = useRouter()
@@ -18,16 +23,21 @@ export default function PortalLayout({ children }: { children: React.ReactNode }
   const [isSuperAdmin, setIsSuperAdmin] = useState(false)
   const [clients, setClients] = useState<ClientOption[]>([])
   const [selectedClientId, setSelectedClientId] = useState<string>('')
+  const [invoiceCount, setInvoiceCount] = useState(0)
+  const [accountManager, setAccountManager] = useState<AccountManager | null>(null)
 
   useEffect(() => {
     const sub = window.location.hostname.startsWith('my.') || window.location.hostname.startsWith('clients.')
     setIsSubdomain(sub)
 
-    async function checkSuperAdmin() {
+    async function init() {
       const supabase = createClient()
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) return
 
+      let clientId = ''
+
+      // Check if super admin (Owner in representatives)
       const { data: rep } = await supabase
         .from('representatives')
         .select('id, role')
@@ -43,19 +53,54 @@ export default function PortalLayout({ children }: { children: React.ReactNode }
           .order('name')
         setClients((allClients as ClientOption[]) || [])
 
-        // Set selected client from URL or localStorage
         const urlClientId = searchParams.get('client')
         const storedClientId = localStorage.getItem('superadmin_client_id')
-        const clientId = urlClientId || storedClientId || allClients?.[0]?.id || ''
+        clientId = urlClientId || storedClientId || allClients?.[0]?.id || ''
         setSelectedClientId(clientId)
         if (clientId) localStorage.setItem('superadmin_client_id', clientId)
+      } else {
+        // Regular client user
+        const { data: portalUser } = await supabase
+          .from('client_portal_users')
+          .select('client_id')
+          .eq('user_id', user.id)
+          .single()
+        if (portalUser) clientId = portalUser.client_id
+      }
+
+      if (!clientId) return
+
+      // Fetch invoice count for badge
+      const { count } = await supabase
+        .from('invoices')
+        .select('*', { count: 'exact', head: true })
+        .eq('client_id', clientId)
+        .in('status', ['sent', 'overdue', 'partially_paid'])
+
+      setInvoiceCount(count || 0)
+
+      // Fetch account manager
+      const { data: clientData } = await supabase
+        .from('clients')
+        .select('representative_id')
+        .eq('id', clientId)
+        .single()
+
+      if (clientData?.representative_id) {
+        const { data: repData } = await supabase
+          .from('representatives')
+          .select('name, email')
+          .eq('id', clientData.representative_id)
+          .single()
+
+        if (repData) setAccountManager(repData as AccountManager)
       }
     }
 
-    checkSuperAdmin()
+    init()
   }, [searchParams])
 
-  // Check for login/set-password pages (works for both subdomain and full path)
+  // Public pages — no sidebar
   if (pathname === '/client-portal/login' || pathname === '/login' ||
       pathname === '/client-portal/set-password' || pathname === '/set-password' ||
       pathname === '/client-portal/forgot-password' || pathname === '/forgot-password') {
@@ -72,14 +117,12 @@ export default function PortalLayout({ children }: { children: React.ReactNode }
   const handleClientSwitch = (clientId: string) => {
     setSelectedClientId(clientId)
     localStorage.setItem('superadmin_client_id', clientId)
-    // Force reload to re-fetch data for the new client
     window.location.reload()
   }
 
   const nav = [
-    { name: 'Dashboard', href: isSubdomain ? '/dashboard' : '/client-portal/dashboard', path: 'dashboard' },
     { name: 'Services', href: isSubdomain ? '/services' : '/client-portal/services', path: 'services' },
-    { name: 'Invoices', href: isSubdomain ? '/invoices' : '/client-portal/invoices', path: 'invoices' },
+    { name: 'Invoices', href: isSubdomain ? '/invoices' : '/client-portal/invoices', path: 'invoices', badge: invoiceCount },
     { name: 'Billing', href: isSubdomain ? '/billing' : '/client-portal/billing', path: 'billing' },
     { name: 'Settings', href: isSubdomain ? '/settings' : '/client-portal/settings', path: 'settings' },
   ]
@@ -89,7 +132,7 @@ export default function PortalLayout({ children }: { children: React.ReactNode }
       <aside className="fixed inset-y-0 left-0 w-64 bg-[#333333] border-r border-[#444444]">
         <div className="flex flex-col h-full">
           <div className="p-6 border-b border-[#444444]">
-            <Link href={isSubdomain ? '/dashboard' : '/client-portal/dashboard'} className="text-xl font-bold text-white">
+            <Link href={isSubdomain ? '/services' : '/client-portal/services'} className="text-xl font-bold text-white">
               Client Portal
             </Link>
             {isSuperAdmin && (
@@ -117,24 +160,43 @@ export default function PortalLayout({ children }: { children: React.ReactNode }
               <Link
                 key={item.name}
                 href={item.href}
-                className={`block px-4 py-3 rounded-lg text-sm font-medium transition-colors ${
+                className={`flex items-center justify-between px-4 py-3 rounded-lg text-sm font-medium transition-colors ${
                   pathname.endsWith(item.path)
                     ? 'bg-[#2E8B57] text-white'
                     : 'text-gray-300 hover:bg-[#444444] hover:text-white'
                 }`}
               >
                 {item.name}
+                {item.badge && item.badge > 0 ? (
+                  <span className="flex items-center justify-center w-5 h-5 text-xs font-bold bg-red-500 text-white rounded-full">
+                    {item.badge}
+                  </span>
+                ) : null}
               </Link>
             ))}
           </nav>
 
-          <div className="p-4 border-t border-[#444444]">
-            <button
-              onClick={handleLogout}
-              className="w-full px-4 py-2 text-sm text-gray-300 hover:text-white transition-colors"
-            >
-              Sign Out
-            </button>
+          <div className="border-t border-[#444444]">
+            {accountManager && (
+              <div className="p-4 border-b border-[#444444]">
+                <p className="text-xs text-gray-500 mb-1">Account Managed By</p>
+                <p className="text-sm font-medium text-white">{accountManager.name}</p>
+                {accountManager.email && (
+                  <a href={`mailto:${accountManager.email}`} className="text-xs text-[#2E8B57] hover:underline">
+                    {accountManager.email}
+                  </a>
+                )}
+              </div>
+            )}
+
+            <div className="p-4">
+              <button
+                onClick={handleLogout}
+                className="w-full px-4 py-2 text-sm text-gray-300 hover:text-white transition-colors"
+              >
+                Sign Out
+              </button>
+            </div>
           </div>
         </div>
       </aside>

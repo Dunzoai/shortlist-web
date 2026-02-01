@@ -185,14 +185,16 @@ export default function EditClientPage() {
     setClientServices([...clientServices, data as ClientServiceWithService])
   }
 
-  const handleUpdateService = async (csId: string, field: 'monthly_cost' | 'one_time_cost' | 'status' | 'performed_by_id' | 'commission_rate' | 'start_date', value: string | number | null) => {
+  const handleUpdateService = async (csId: string, field: 'monthly_cost' | 'one_time_cost' | 'status' | 'performed_by_id' | 'commission_rate' | 'start_date' | 'notes' | 'deposit_amount' | 'amount_paid', value: string | number | null) => {
     const supabase = createClient()
 
     const updateData: Record<string, string | number | null> = {}
-    if (field === 'monthly_cost' || field === 'one_time_cost' || field === 'commission_rate') {
+    if (field === 'monthly_cost' || field === 'one_time_cost' || field === 'commission_rate' || field === 'deposit_amount' || field === 'amount_paid') {
       updateData[field] = Number(value) || 0
     } else if (field === 'performed_by_id' || field === 'start_date') {
       updateData[field] = value || null
+    } else if (field === 'notes') {
+      updateData[field] = value as string || null
     } else {
       updateData[field] = value
     }
@@ -381,6 +383,44 @@ export default function EditClientPage() {
                             />
                           </div>
                         </div>
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-3">
+                        <div>
+                          <label className="block text-xs text-gray-400 mb-1">Deposit Amount</label>
+                          <div className="relative">
+                            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">$</span>
+                            <input
+                              type="number"
+                              value={cs.deposit_amount || 0}
+                              onChange={(e) => handleUpdateService(cs.id, 'deposit_amount', e.target.value)}
+                              className="w-full pl-7 pr-3 py-1.5 bg-[#444444] border border-[#555555] rounded text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#2E8B57]"
+                            />
+                          </div>
+                        </div>
+                        <div>
+                          <label className="block text-xs text-gray-400 mb-1">Amount Paid</label>
+                          <div className="relative">
+                            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">$</span>
+                            <input
+                              type="number"
+                              value={cs.amount_paid || 0}
+                              onChange={(e) => handleUpdateService(cs.id, 'amount_paid', e.target.value)}
+                              className="w-full pl-7 pr-3 py-1.5 bg-[#444444] border border-[#555555] rounded text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#2E8B57]"
+                            />
+                          </div>
+                        </div>
+                      </div>
+
+                      <div>
+                        <label className="block text-xs text-gray-400 mb-1">Service Notes (visible to client)</label>
+                        <textarea
+                          value={cs.notes || ''}
+                          onChange={(e) => handleUpdateService(cs.id, 'notes', e.target.value)}
+                          rows={2}
+                          placeholder="e.g., 3 posts/month, no UGC. 5-page website with contact form..."
+                          className="w-full px-3 py-1.5 bg-[#444444] border border-[#555555] rounded text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#2E8B57] resize-none"
+                        />
                       </div>
 
                       <div className="grid grid-cols-3 gap-3">

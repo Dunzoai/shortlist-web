@@ -1,12 +1,15 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { useSearchParams } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { usePortalClient } from '@/lib/usePortalClient'
 import type { Invoice } from '@/lib/portal-types'
 
 export default function InvoicesPage() {
   const { clientId: resolvedClientId, loading: authLoading } = usePortalClient()
+  const searchParams = useSearchParams()
+  const paymentStatus = searchParams.get('payment')
   const [loading, setLoading] = useState(true)
   const [invoices, setInvoices] = useState<Invoice[]>([])
   const [paying, setPaying] = useState<string | null>(null)
@@ -32,22 +35,22 @@ export default function InvoicesPage() {
 
   const handlePay = async (invoiceId: string) => {
     setPaying(invoiceId)
-    
+
     try {
-      const res = await fetch('/api/stripe/create-payment-intent', {
+      const res = await fetch('/api/stripe/create-checkout-session', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ invoiceId })
       })
 
       const data = await res.json()
-      
+
       if (data.error) {
         alert(data.error)
-      } else {
-        alert('Payment processing - Stripe integration pending')
+      } else if (data.url) {
+        window.location.href = data.url
       }
-    } catch (err) {
+    } catch {
       alert('Payment failed')
     } finally {
       setPaying(null)
@@ -61,6 +64,17 @@ export default function InvoicesPage() {
   return (
     <div>
       <h1 className="text-3xl font-bold text-white mb-8">Invoices</h1>
+
+      {paymentStatus === 'success' && (
+        <div className="mb-6 p-4 bg-green-500/10 border border-green-500/50 rounded-lg text-green-400 text-sm">
+          Payment successful! Your invoice will be updated shortly.
+        </div>
+      )}
+      {paymentStatus === 'cancelled' && (
+        <div className="mb-6 p-4 bg-yellow-500/10 border border-yellow-500/50 rounded-lg text-yellow-400 text-sm">
+          Payment was cancelled. You can try again when ready.
+        </div>
+      )}
 
       {invoices.length === 0 ? (
         <p className="text-gray-400">No invoices found</p>

@@ -41,6 +41,8 @@ export interface ClientService {
   notes: string | null
   performed_by_id: string | null
   commission_rate: number
+  deposit_amount: number
+  amount_paid: number
   created_at: string
   updated_at: string
 }
