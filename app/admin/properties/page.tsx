@@ -21,6 +21,8 @@ interface Property {
   images: string[];
   display_order: number;
   created_at: string;
+  listing_type: string | null;
+  country: string | null;
 }
 
 type StatusFilter = 'all' | 'active' | 'pending' | 'sold';
@@ -45,7 +47,6 @@ export default function AdminPropertiesList() {
       .from('featured_properties')
       .select('*')
       .eq('client_id', '3c125122-f3d9-4f75-91d9-69cf84d6d20e')
-      .neq('listing_type', 'international')
       .order('display_order', { ascending: true });
 
     if (data) {
@@ -322,8 +323,9 @@ export default function AdminPropertiesList() {
                 </button>
               </div>
             ) : (
+              <>
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                {filteredProperties.map((property, index) => (
+                {filteredProperties.filter(p => p.listing_type !== 'international').map((property, index) => (
                   <div
                     key={property.id}
                     className="bg-white rounded-xl shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden group"
@@ -415,6 +417,109 @@ export default function AdminPropertiesList() {
                   </div>
                 ))}
               </div>
+
+              {/* International Listings Separator */}
+              {filteredProperties.some(p => p.listing_type === 'international') && (
+                <>
+                  <div className="flex items-center gap-4 mt-10 mb-6">
+                    <div className="flex-1 h-px bg-[#C4A25A]/30" />
+                    <span className="text-[#C4A25A] font-semibold text-sm tracking-wide flex items-center gap-2">
+                      🌍 International Listings
+                    </span>
+                    <div className="flex-1 h-px bg-[#C4A25A]/30" />
+                  </div>
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    {filteredProperties.filter(p => p.listing_type === 'international').map((property, index) => (
+                      <div
+                        key={property.id}
+                        className="bg-white rounded-xl shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden group border-l-4 border-[#C4A25A]"
+                      >
+                        <div className="flex flex-col sm:flex-row">
+                          {/* Property Image */}
+                          <div className="relative w-full sm:w-48 h-48 sm:h-auto flex-shrink-0">
+                            {property.images && property.images.length > 0 ? (
+                              <Image
+                                src={property.images[0]}
+                                alt={property.address}
+                                fill
+                                className="object-cover"
+                              />
+                            ) : (
+                              <div className="w-full h-full bg-gradient-to-br from-[#D6BFAE] to-[#F7F7F7] flex items-center justify-center">
+                                <Home size={48} className="text-[#3D3D3D] opacity-30" />
+                              </div>
+                            )}
+                            <div className="absolute top-3 right-3">
+                              <span className={`px-3 py-1 rounded-full text-xs font-semibold shadow-lg ${getStatusColor(property.status)}`}>
+                                {property.status.charAt(0).toUpperCase() + property.status.slice(1)}
+                              </span>
+                            </div>
+                          </div>
+
+                          {/* Content */}
+                          <div className="flex-1 p-6 flex flex-col">
+                            <div className="flex-1">
+                              <div className="flex items-center gap-2 mb-1">
+                                <h3 className="font-[family-name:var(--font-playfair)] text-xl text-[#1B365D] font-semibold">
+                                  {property.address}
+                                </h3>
+                              </div>
+                              <p className="text-[#3D3D3D] text-sm mb-3">
+                                {property.city}, {property.state}
+                                {property.country && <span className="ml-2 text-[#C4A25A] font-medium">· {property.country}</span>}
+                              </p>
+                              <div className="text-2xl font-bold text-[#C4A25A] mb-3">
+                                {formatPrice(property.price)}
+                              </div>
+                              <div className="flex items-center gap-4 text-sm text-[#3D3D3D] mb-4">
+                                {property.beds && <span>{property.beds} beds</span>}
+                                {property.baths && <span>{property.baths} baths</span>}
+                                {property.sqft && <span>{property.sqft.toLocaleString()} sqft</span>}
+                              </div>
+                            </div>
+
+                            {/* Actions */}
+                            <div className="flex items-center gap-3 pt-4 border-t border-[#D6BFAE]/20">
+                              <button
+                                onClick={() => handleReorder(property.id, 'up')}
+                                disabled={index === 0}
+                                className="text-[#3D3D3D] hover:text-[#C4A25A] transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+                                title="Move up"
+                              >
+                                <ArrowUp size={16} />
+                              </button>
+                              <button
+                                onClick={() => handleReorder(property.id, 'down')}
+                                disabled={index === filteredProperties.filter(p => p.listing_type === 'international').length - 1}
+                                className="text-[#3D3D3D] hover:text-[#C4A25A] transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+                                title="Move down"
+                              >
+                                <ArrowDown size={16} />
+                              </button>
+                              <Link
+                                href={`/admin/properties/${property.id}`}
+                                className="flex items-center gap-1.5 text-[#C4A25A] hover:text-[#1B365D] transition-colors font-medium text-sm"
+                              >
+                                <Edit size={16} />
+                                <span>Edit</span>
+                              </Link>
+                              <button
+                                onClick={() => handleDelete(property.id)}
+                                className="flex items-center gap-1.5 text-red-600 hover:text-red-700 transition-colors text-sm ml-auto"
+                                title="Delete property"
+                              >
+                                <Trash2 size={16} />
+                                <span>Delete</span>
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </>
+              )}
+              </>
             )}
           </>
         )}
