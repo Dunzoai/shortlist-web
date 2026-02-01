@@ -29,10 +29,13 @@ export async function middleware(request: NextRequest) {
   const isPortalRoute = effectivePathname.startsWith('/portal')
   const isClientRoute = effectivePathname.startsWith('/client-portal')
   const isLoginPage = effectivePathname === '/portal/login'
-  const isClientLoginPage = effectivePathname === '/client-portal/login'
+  const isPublicClientPage = effectivePathname === '/client-portal/login' ||
+    effectivePathname === '/client-portal/forgot-password' ||
+    effectivePathname === '/client-portal/set-password' ||
+    effectivePathname.startsWith('/client-portal/auth/')
 
-  // Only protect portal/client routes (but not login pages)
-  if ((!isPortalRoute && !isClientRoute) || isLoginPage || isClientLoginPage) {
+  // Only protect portal/client routes (but not login/public pages)
+  if ((!isPortalRoute && !isClientRoute) || isLoginPage || isPublicClientPage) {
     if (needsRewrite) {
       const url = request.nextUrl.clone()
       url.pathname = effectivePathname
