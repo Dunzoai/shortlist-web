@@ -84,12 +84,12 @@ export default function PortalLoginPage() {
           </form>
 
           <div className="mt-4 text-center">
-            <Link
-              href={isSubdomain ? '/forgot-password' : '/client-portal/forgot-password'}
+            <a
+              href="/client-portal/forgot-password"
               className="text-sm text-gray-400 hover:text-[#2E8B57]"
             >
               Forgot your password?
-            </Link>
+            </a>
           </div>
         </div>
       </div>
