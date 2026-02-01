@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import Link from 'next/link'
-import { Users, UserCheck, DollarSign, Receipt } from 'lucide-react'
+import { Users, UserCheck, DollarSign, Receipt, type LucideIcon } from 'lucide-react'
 import type { Client, ClientService } from '@/lib/portal-types'
 
 interface DashboardStats {
@@ -149,13 +149,13 @@ export default function PortalDashboard() {
   )
 }
 
-function StatCard({ title, value, subtitle, href, icon: Icon, accent }: { title: string; value: string | number; subtitle?: string; href?: string; icon: React.ComponentType<{ className?: string; size?: number }>; accent: string }) {
+function StatCard({ title, value, subtitle, href, icon: Icon, accent }: { title: string; value: string | number; subtitle?: string; href?: string; icon: LucideIcon; accent: string }) {
   const content = (
     <div className="relative overflow-hidden bg-[#333333] rounded-xl p-4 md:p-6 border border-white/5 hover:border-white/10 transition-all">
       <div className="absolute top-0 left-0 right-0 h-1 rounded-t-xl" style={{ backgroundColor: accent }} />
       <div className="flex items-start justify-between mb-2 md:mb-3">
-        <div className="p-1.5 md:p-2 rounded-lg bg-white/5">
-          <Icon className="w-4 h-4 md:w-5 md:h-5" style={{ color: accent }} />
+        <div className="p-1.5 md:p-2 rounded-lg bg-white/5" style={{ color: accent }}>
+          <Icon className="w-4 h-4 md:w-5 md:h-5" />
         </div>
       </div>
       <p className="text-2xl md:text-3xl font-bold text-white tracking-tight">{value}</p>
