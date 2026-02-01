@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import Link from 'next/link'
+import { Users, UserCheck, DollarSign, Receipt } from 'lucide-react'
 import type { Client, ClientService } from '@/lib/portal-types'
 
 interface DashboardStats {
@@ -83,7 +84,7 @@ export default function PortalDashboard() {
       <div className="p-8">
         <div className="animate-pulse space-y-8">
           <div className="h-8 bg-[#444444] rounded w-48"></div>
-          <div className="grid grid-cols-4 gap-6">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6">
             {[1, 2, 3, 4].map((i) => (
               <div key={i} className="h-32 bg-[#444444] rounded-lg"></div>
             ))}
@@ -97,20 +98,24 @@ export default function PortalDashboard() {
     <div className="p-8">
       <h1 className="text-2xl font-bold text-white mb-8">Dashboard</h1>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        <StatCard title="Total Clients" value={stats.totalClients} href="/portal/clients" />
-        <StatCard title="Active Clients" value={stats.activeClients} subtitle="With active services" />
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6 mb-8">
+        <StatCard title="Total Clients" value={stats.totalClients} href="/portal/clients" icon={Users} accent="#2E8B57" />
+        <StatCard title="Active" value={stats.activeClients} subtitle="With services" icon={UserCheck} accent="#3B82F6" />
         <StatCard
-          title="Monthly Revenue"
+          title="Monthly"
           value={`$${stats.monthlyRevenue.toLocaleString()}`}
-          subtitle="From active services"
+          subtitle="Recurring"
           href="/portal/revenue"
+          icon={DollarSign}
+          accent="#F59E0B"
         />
         <StatCard
-          title={`One-Time (${currentYear})`}
+          title={`One-Time`}
           value={`$${stats.oneTimeRevenue.toLocaleString()}`}
-          subtitle="Project fees"
+          subtitle={`${currentYear}`}
           href="/portal/revenue"
+          icon={Receipt}
+          accent="#8B5CF6"
         />
       </div>
 
@@ -144,17 +149,23 @@ export default function PortalDashboard() {
   )
 }
 
-function StatCard({ title, value, subtitle, href }: { title: string; value: string | number; subtitle?: string; href?: string }) {
+function StatCard({ title, value, subtitle, href, icon: Icon, accent }: { title: string; value: string | number; subtitle?: string; href?: string; icon: React.ComponentType<{ className?: string; size?: number }>; accent: string }) {
   const content = (
-    <div className="bg-[#333333] rounded-lg p-6">
-      <p className="text-sm text-gray-400 mb-1">{title}</p>
-      <p className="text-3xl font-bold text-white">{value}</p>
-      {subtitle && <p className="text-sm text-gray-500 mt-1">{subtitle}</p>}
+    <div className="relative overflow-hidden bg-[#333333] rounded-xl p-4 md:p-6 border border-white/5 hover:border-white/10 transition-all">
+      <div className="absolute top-0 left-0 right-0 h-1 rounded-t-xl" style={{ backgroundColor: accent }} />
+      <div className="flex items-start justify-between mb-2 md:mb-3">
+        <div className="p-1.5 md:p-2 rounded-lg bg-white/5">
+          <Icon className="w-4 h-4 md:w-5 md:h-5" style={{ color: accent }} />
+        </div>
+      </div>
+      <p className="text-2xl md:text-3xl font-bold text-white tracking-tight">{value}</p>
+      <p className="text-xs md:text-sm text-gray-400 mt-0.5">{title}</p>
+      {subtitle && <p className="text-[10px] md:text-xs text-gray-500 mt-0.5">{subtitle}</p>}
     </div>
   )
 
   if (href) {
-    return <Link href={href} className="block hover:ring-2 hover:ring-[#2E8B57] rounded-lg transition-all">{content}</Link>
+    return <Link href={href} className="block hover:scale-[1.02] active:scale-[0.98] rounded-xl transition-transform">{content}</Link>
   }
-  return content
+  return <div className="hover:scale-[1.02] active:scale-[0.98] rounded-xl transition-transform">{content}</div>
 }
