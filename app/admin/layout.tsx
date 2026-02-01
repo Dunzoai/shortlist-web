@@ -96,9 +96,9 @@ export default function AdminLayout({
       {/* Admin Header */}
       <header className="bg-[#1B365D] text-white py-4 shadow-lg border-b-2 border-[#C4A25A]">
         <div className="max-w-7xl mx-auto px-6 flex justify-between items-center">
-          <h1 className="font-[family-name:var(--font-playfair)] text-2xl">
+          <Link href="/admin" className="font-[family-name:var(--font-playfair)] text-2xl hover:text-[#C4A25A] transition-colors">
             Dani Díaz Admin
-          </h1>
+          </Link>
           <nav className="flex items-center gap-6">
             <Link
               href="/admin/blog"

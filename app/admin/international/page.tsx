@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { supabase } from '@/lib/supabase';
-import { Trash2, Edit, ArrowUp, ArrowDown, Eye, EyeOff, Plus, Globe, HelpCircle, X as XIcon } from 'lucide-react';
+import { Trash2, Edit, ArrowUp, ArrowDown, Eye, EyeOff, Plus, Globe, HelpCircle, X as XIcon, ArrowLeft } from 'lucide-react';
 
 interface Destination {
   id: string;
@@ -78,6 +78,14 @@ export default function AdminInternationalList() {
 
   return (
     <div>
+      <Link
+        href="/admin"
+        className="inline-flex items-center gap-2 text-[#3D3D3D] hover:text-[#C4A25A] transition-colors mb-6"
+      >
+        <ArrowLeft size={20} />
+        <span>Back to Dashboard</span>
+      </Link>
+
       <div className="flex justify-between items-center mb-8">
         <div>
           <h1 className="font-[family-name:var(--font-playfair)] text-3xl text-[#1B365D]">

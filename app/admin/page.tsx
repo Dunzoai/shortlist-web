@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabase';
-import { Users } from 'lucide-react';
+import { Users, Globe } from 'lucide-react';
 
 export default function AdminDashboard() {
   const [newLeadsCount, setNewLeadsCount] = useState(0);
@@ -72,6 +72,21 @@ export default function AdminDashboard() {
           </div>
           <p className="text-[#3D3D3D]">
             View and manage incoming leads
+          </p>
+        </Link>
+
+        <Link
+          href="/admin/international"
+          className="bg-white p-6 rounded-lg shadow-md border-2 border-[#D6BFAE] hover:border-[#C4A25A] hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
+        >
+          <div className="flex items-center gap-3 mb-2">
+            <Globe className="text-[#C4A25A]" size={24} />
+            <h2 className="font-[family-name:var(--font-playfair)] text-2xl text-[#1B365D]">
+              International
+            </h2>
+          </div>
+          <p className="text-[#3D3D3D]">
+            Manage international destinations
           </p>
         </Link>
       </div>
