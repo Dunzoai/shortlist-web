@@ -150,7 +150,9 @@ export default function ServicesPage() {
                       }`}>
                         {svc.status === 'trial' ? (() => {
                           if (!svc.trial_end_date) return 'TRIAL'
-                          const daysLeft = Math.ceil((new Date(svc.trial_end_date).getTime() - Date.now()) / (1000 * 60 * 60 * 24))
+                          const endDate = new Date(svc.trial_end_date + 'T23:59:59')
+                          const now = new Date()
+                          const daysLeft = Math.ceil((endDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24))
                           return daysLeft > 0 ? `TRIAL - ${daysLeft} DAY${daysLeft === 1 ? '' : 'S'} LEFT` : 'TRIAL ENDED'
                         })() : svc.status.toUpperCase()}
                       </span>

@@ -211,7 +211,7 @@ export default function EditClientPage() {
       if (value === 'trial') {
         const cs = clientServices.find(s => s.id === csId)
         if (cs && !cs.trial_end_date) {
-          const trialEnd = new Date(cs.start_date || Date.now())
+          const trialEnd = new Date()
           trialEnd.setDate(trialEnd.getDate() + 7)
           updateData.trial_end_date = trialEnd.toISOString().split('T')[0]
         }
