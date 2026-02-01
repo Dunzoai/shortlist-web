@@ -1,12 +1,17 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
+import { usePathname } from 'next/navigation';
 import { useLanguage } from './LanguageContext';
 
 export default function ChatLanguageControls() {
   const { language, setLanguage } = useLanguage();
   const [isScrolling, setIsScrolling] = useState(false);
   const scrollTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const pathname = usePathname();
+
+  // Hide on admin and portal routes
+  if (pathname.startsWith('/admin') || pathname.startsWith('/client-portal')) return null;
 
   // Scroll detection - hide while scrolling, show after 500ms pause
   useEffect(() => {

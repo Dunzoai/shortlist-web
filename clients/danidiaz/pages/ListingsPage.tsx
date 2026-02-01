@@ -63,6 +63,7 @@ export function ListingsPage() {
           .from('featured_properties')
           .select('*')
           .eq('client_id', '3c125122-f3d9-4f75-91d9-69cf84d6d20e')
+          .neq('listing_type', 'international')
           .order('display_order', { ascending: true })
       ]);
 

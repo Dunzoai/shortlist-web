@@ -17,26 +17,19 @@ export default function EditInternationalDestination() {
   const [form, setForm] = useState({
     city: '',
     country: '',
-    country_es: '',
     slug: '',
     image_url: '',
-    description_en: '',
-    description_es: '',
-    highlights_en: [] as string[],
-    highlights_es: [] as string[],
-    why_invest_en: [] as string[],
-    why_invest_es: [] as string[],
+    description: '',
+    highlights: [] as string[],
+    why_invest: [] as string[],
     external_url: '',
     display_order: 0,
     is_active: true,
   });
 
-  const [tagInputs, setTagInputs] = useState({
-    highlights_en: '',
-    highlights_es: '',
-    why_invest_en: '',
-    why_invest_es: '',
-  });
+  const [tagInputs, setTagInputs] = useState({ highlights: '', why_invest: '' });
+
+  type TagField = 'highlights' | 'why_invest';
 
   useEffect(() => {
     async function load() {
@@ -50,15 +43,11 @@ export default function EditInternationalDestination() {
         setForm({
           city: data.city || '',
           country: data.country || '',
-          country_es: data.country_es || '',
           slug: data.slug || '',
           image_url: data.image_url || '',
-          description_en: data.description_en || '',
-          description_es: data.description_es || '',
-          highlights_en: data.highlights_en || [],
-          highlights_es: data.highlights_es || [],
-          why_invest_en: data.why_invest_en || [],
-          why_invest_es: data.why_invest_es || [],
+          description: data.description_en || '',
+          highlights: data.highlights_en || [],
+          why_invest: data.why_invest_en || [],
           external_url: data.external_url || '',
           display_order: data.display_order || 0,
           is_active: data.is_active ?? true,
@@ -69,14 +58,14 @@ export default function EditInternationalDestination() {
     load();
   }, [id]);
 
-  const handleAddTag = (field: 'highlights_en' | 'highlights_es' | 'why_invest_en' | 'why_invest_es') => {
+  const handleAddTag = (field: TagField) => {
     const val = tagInputs[field].trim();
     if (!val) return;
     setForm({ ...form, [field]: [...form[field], val] });
     setTagInputs({ ...tagInputs, [field]: '' });
   };
 
-  const handleRemoveTag = (field: 'highlights_en' | 'highlights_es' | 'why_invest_en' | 'why_invest_es', idx: number) => {
+  const handleRemoveTag = (field: TagField, idx: number) => {
     setForm({ ...form, [field]: form[field].filter((_, i) => i !== idx) });
   };
 
@@ -111,14 +100,10 @@ export default function EditInternationalDestination() {
         slug: form.slug,
         city: form.city,
         country: form.country,
-        country_es: form.country_es || null,
         image_url: form.image_url || null,
-        description_en: form.description_en || null,
-        description_es: form.description_es || null,
-        highlights_en: form.highlights_en,
-        highlights_es: form.highlights_es,
-        why_invest_en: form.why_invest_en,
-        why_invest_es: form.why_invest_es,
+        description_en: form.description || null,
+        highlights_en: form.highlights,
+        why_invest_en: form.why_invest,
         external_url: form.external_url || null,
         display_order: form.display_order,
         is_active: form.is_active,
@@ -140,16 +125,14 @@ export default function EditInternationalDestination() {
   const inputClass = 'w-full px-4 py-2 border-2 border-[#D6BFAE] rounded focus:outline-none focus:border-[#C4A25A] transition-all';
   const labelClass = 'block text-sm font-medium text-[#3D3D3D] mb-1';
 
-  const TagField = ({ label, field }: { label: string; field: 'highlights_en' | 'highlights_es' | 'why_invest_en' | 'why_invest_es' }) => (
+  const TagInput = ({ label, field }: { label: string; field: TagField }) => (
     <div>
       <label className={labelClass}>{label}</label>
       <div className="flex flex-wrap gap-2 mb-2">
         {form[field].map((tag, i) => (
           <span key={i} className="flex items-center gap-1 bg-[#1B365D]/10 text-[#1B365D] px-3 py-1 rounded-full text-sm">
             {tag}
-            <button type="button" onClick={() => handleRemoveTag(field, i)}>
-              <X className="w-3 h-3" />
-            </button>
+            <button type="button" onClick={() => handleRemoveTag(field, i)}><X className="w-3 h-3" /></button>
           </span>
         ))}
       </div>
@@ -175,7 +158,8 @@ export default function EditInternationalDestination() {
         <ArrowLeft className="w-4 h-4" /> Back to Destinations
       </Link>
 
-      <h1 className="font-[family-name:var(--font-playfair)] text-3xl text-[#1B365D] mb-8">Edit: {form.city}</h1>
+      <h1 className="font-[family-name:var(--font-playfair)] text-3xl text-[#1B365D] mb-2">Edit: {form.city}</h1>
+      <p className="text-sm text-[#3D3D3D] mb-8">Write everything in English — Spanish translations are generated automatically.</p>
 
       <form onSubmit={handleSubmit} className="bg-white rounded-lg border-2 border-[#D6BFAE] p-6 space-y-6 max-w-3xl">
         <div className="grid sm:grid-cols-2 gap-4">
@@ -184,19 +168,8 @@ export default function EditInternationalDestination() {
             <input type="text" required value={form.city} onChange={(e) => setForm({ ...form, city: e.target.value })} className={inputClass} />
           </div>
           <div>
-            <label className={labelClass}>Slug</label>
-            <input type="text" value={form.slug} onChange={(e) => setForm({ ...form, slug: e.target.value })} className={inputClass} />
-          </div>
-        </div>
-
-        <div className="grid sm:grid-cols-2 gap-4">
-          <div>
-            <label className={labelClass}>Country (English) *</label>
+            <label className={labelClass}>Country *</label>
             <input type="text" required value={form.country} onChange={(e) => setForm({ ...form, country: e.target.value })} className={inputClass} />
-          </div>
-          <div>
-            <label className={labelClass}>Country (Spanish)</label>
-            <input type="text" value={form.country_es} onChange={(e) => setForm({ ...form, country_es: e.target.value })} className={inputClass} />
           </div>
         </div>
 
@@ -214,29 +187,17 @@ export default function EditInternationalDestination() {
               <input type="file" accept="image/*" onChange={handleImageUpload} className="hidden" />
             </label>
             <span className="text-sm text-[#3D3D3D]">or</span>
-            <input
-              type="text"
-              value={form.image_url}
-              onChange={(e) => setForm({ ...form, image_url: e.target.value })}
-              className={inputClass}
-              placeholder="Paste image URL"
-            />
+            <input type="text" value={form.image_url} onChange={(e) => setForm({ ...form, image_url: e.target.value })} className={inputClass} placeholder="Paste image URL" />
           </div>
         </div>
 
         <div>
-          <label className={labelClass}>Description (English)</label>
-          <textarea rows={4} value={form.description_en} onChange={(e) => setForm({ ...form, description_en: e.target.value })} className={inputClass} />
-        </div>
-        <div>
-          <label className={labelClass}>Description (Spanish)</label>
-          <textarea rows={4} value={form.description_es} onChange={(e) => setForm({ ...form, description_es: e.target.value })} className={inputClass} />
+          <label className={labelClass}>Description</label>
+          <textarea rows={4} value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} className={inputClass} />
         </div>
 
-        <TagField label="Market Highlights (English)" field="highlights_en" />
-        <TagField label="Market Highlights (Spanish)" field="highlights_es" />
-        <TagField label="Why Invest (English)" field="why_invest_en" />
-        <TagField label="Why Invest (Spanish)" field="why_invest_es" />
+        <TagInput label="Market Highlights" field="highlights" />
+        <TagInput label="Why Invest" field="why_invest" />
 
         <div>
           <label className={labelClass}>External Project URL (optional)</label>
@@ -250,22 +211,12 @@ export default function EditInternationalDestination() {
             <input type="number" value={form.display_order} onChange={(e) => setForm({ ...form, display_order: parseInt(e.target.value) || 0 })} className={inputClass} />
           </div>
           <div className="flex items-center gap-3 pt-6">
-            <input
-              type="checkbox"
-              id="is_active"
-              checked={form.is_active}
-              onChange={(e) => setForm({ ...form, is_active: e.target.checked })}
-              className="w-5 h-5 accent-[#C4A25A]"
-            />
+            <input type="checkbox" id="is_active" checked={form.is_active} onChange={(e) => setForm({ ...form, is_active: e.target.checked })} className="w-5 h-5 accent-[#C4A25A]" />
             <label htmlFor="is_active" className="text-[#3D3D3D]">Active (visible on site)</label>
           </div>
         </div>
 
-        <button
-          type="submit"
-          disabled={saving}
-          className="w-full bg-[#C4A25A] text-white py-3 rounded hover:bg-[#1B365D] transition-colors font-medium disabled:opacity-50"
-        >
+        <button type="submit" disabled={saving} className="w-full bg-[#C4A25A] text-white py-3 rounded hover:bg-[#1B365D] transition-colors font-medium disabled:opacity-50">
           {saving ? 'Saving...' : 'Save Changes'}
         </button>
       </form>

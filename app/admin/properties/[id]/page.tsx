@@ -48,6 +48,8 @@ export default function EditProperty() {
     mlsNumber: '',
     description: '',
     status: '',
+    listingType: 'domestic',
+    country: '',
   });
 
   useEffect(() => {
@@ -94,6 +96,8 @@ export default function EditProperty() {
         mlsNumber: data.mls_number || '',
         description: data.description || '',
         status: data.status || 'active',
+        listingType: data.listing_type || 'domestic',
+        country: data.country || '',
       });
 
       if (data.images && Array.isArray(data.images)) {
@@ -211,6 +215,8 @@ export default function EditProperty() {
           features: features,
           images: allImageUrls,
           status: formData.status,
+          listing_type: formData.listingType,
+          country: formData.listingType === 'international' ? formData.country || null : null,
           updated_at: new Date().toISOString(),
         })
         .eq('id', propertyId);
@@ -417,6 +423,33 @@ export default function EditProperty() {
                     <option value="sold">Sold</option>
                   </select>
                 </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-[#3D3D3D] mb-2 font-medium">Listing Type</label>
+                  <select
+                    value={formData.listingType}
+                    onChange={(e) => setFormData({ ...formData, listingType: e.target.value })}
+                    className="w-full px-4 py-2 border border-[#D6BFAE] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#C4A25A]"
+                  >
+                    <option value="domestic">Domestic</option>
+                    <option value="international">International</option>
+                  </select>
+                </div>
+
+                {formData.listingType === 'international' && (
+                  <div>
+                    <label className="block text-[#3D3D3D] mb-2 font-medium">Country</label>
+                    <input
+                      type="text"
+                      value={formData.country}
+                      onChange={(e) => setFormData({ ...formData, country: e.target.value })}
+                      className="w-full px-4 py-2 border border-[#D6BFAE] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#C4A25A]"
+                      placeholder="e.g. UAE, Mexico"
+                    />
+                  </div>
+                )}
               </div>
 
               <div className="grid grid-cols-2 gap-4">

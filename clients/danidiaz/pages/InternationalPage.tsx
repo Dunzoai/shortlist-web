@@ -42,6 +42,22 @@ interface Destination {
   display_order: number
 }
 
+interface IntlListing {
+  id: string
+  address: string
+  city: string
+  state: string
+  price: number
+  beds: number | null
+  baths: number | null
+  sqft: number | null
+  property_type: string
+  description: string | null
+  images: string[]
+  status: string
+  country: string | null
+}
+
 const howItWorks = [
   {
     step: 1,
@@ -75,20 +91,84 @@ export function InternationalPage() {
   const isDark = styleMode === 'dark';
 
   const [destinations, setDestinations] = useState<Destination[]>([])
+  const [listings, setListings] = useState<IntlListing[]>([])
   const [selectedCountry, setSelectedCountry] = useState<string>('all')
+  const [translatedCache, setTranslatedCache] = useState<Record<string, { description: string, country: string, highlights: string[], why_invest: string[] }>>({})
 
   useEffect(() => {
     async function load() {
-      const { data } = await supabase
-        .from('international_destinations')
-        .select('*')
-        .eq('is_active', true)
-        .eq('client_id', '3c125122-f3d9-4f75-91d9-69cf84d6d20e')
-        .order('display_order')
-      setDestinations((data as Destination[]) || [])
+      const [{ data: destData }, { data: listData }] = await Promise.all([
+        supabase
+          .from('international_destinations')
+          .select('*')
+          .eq('is_active', true)
+          .eq('client_id', '3c125122-f3d9-4f75-91d9-69cf84d6d20e')
+          .order('display_order'),
+        supabase
+          .from('featured_properties')
+          .select('*')
+          .eq('client_id', '3c125122-f3d9-4f75-91d9-69cf84d6d20e')
+          .eq('listing_type', 'international')
+          .eq('status', 'active')
+          .order('display_order')
+      ])
+      setDestinations((destData as Destination[]) || [])
+      setListings((listData as IntlListing[]) || [])
     }
     load()
   }, [])
+
+  // Auto-translate destinations when language switches to ES
+  useEffect(() => {
+    if (language !== 'es' || destinations.length === 0) return
+
+    destinations.forEach(async (dest) => {
+      // Skip if already has Spanish data in DB or cache
+      if (dest.description_es || translatedCache[dest.id]) return
+
+      try {
+        const res = await fetch('/api/international/translate', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            description: dest.description_en || '',
+            highlights: dest.highlights_en || [],
+            why_invest: dest.why_invest_en || [],
+            country: dest.country,
+          })
+        })
+        if (res.ok) {
+          const data = await res.json()
+          setTranslatedCache(prev => ({ ...prev, [dest.id]: {
+            description: data.description_es,
+            country: data.country_es,
+            highlights: data.highlights_es,
+            why_invest: data.why_invest_es,
+          }}))
+        }
+      } catch (e) {
+        // Fallback to English silently
+      }
+    })
+  }, [language, destinations])
+
+  // Helper to get translated content for a destination
+  const getDesc = (d: Destination) => {
+    if (language === 'es') return d.description_es || translatedCache[d.id]?.description || d.description_en
+    return d.description_en
+  }
+  const getCountry = (d: Destination) => {
+    if (language === 'es') return d.country_es || translatedCache[d.id]?.country || d.country
+    return d.country
+  }
+  const getHighlights = (d: Destination) => {
+    if (language === 'es') return (d.highlights_es?.length ? d.highlights_es : translatedCache[d.id]?.highlights) || d.highlights_en
+    return d.highlights_en
+  }
+  const getWhyInvest = (d: Destination) => {
+    if (language === 'es') return (d.why_invest_es?.length ? d.why_invest_es : translatedCache[d.id]?.why_invest) || d.why_invest_en
+    return d.why_invest_en
+  }
 
   const countries = Array.from(new Set(destinations.map(d => d.country)))
   const filtered = selectedCountry === 'all'
@@ -308,7 +388,7 @@ export function InternationalPage() {
                   </button>
                   {countries.map(c => {
                     const dest = destinations.find(d => d.country === c)
-                    const label = language === 'en' ? c : (dest?.country_es || c)
+                    const label = dest ? getCountry(dest) : c
                     return (
                       <button
                         key={c}
@@ -354,7 +434,7 @@ export function InternationalPage() {
                         {destination.city}
                       </p>
                       <p className="text-sm opacity-80">
-                        {language === 'en' ? destination.country : (destination.country_es || destination.country)}
+                        {getCountry(destination)}
                       </p>
                     </div>
                   </div>
@@ -365,22 +445,22 @@ export function InternationalPage() {
                       className="font-[family-name:var(--font-playfair)] text-3xl md:text-4xl mb-6 transition-colors duration-500"
                       style={{ color: isDark ? '#1B365D' : '#3D3D3D' }}
                     >
-                      {destination.city}, {language === 'en' ? destination.country : (destination.country_es || destination.country)}
+                      {destination.city}, {getCountry(destination)}
                     </h3>
 
                     <p className="text-[#3D3D3D] text-lg leading-relaxed mb-8">
-                      {language === 'en' ? destination.description_en : destination.description_es}
+                      {getDesc(destination)}
                     </p>
 
                     {/* Highlights */}
-                    {(language === 'en' ? destination.highlights_en : destination.highlights_es).length > 0 && (
+                    {getHighlights(destination).length > 0 && (
                       <div className="mb-8">
                         <h4 className="text-[#C4A25A] font-semibold mb-4 flex items-center gap-2">
                           <Sun className="w-5 h-5" />
                           {t('Market Highlights', 'Aspectos Destacados del Mercado')}
                         </h4>
                         <div className="grid grid-cols-2 gap-3">
-                          {(language === 'en' ? destination.highlights_en : destination.highlights_es).map((h, i) => (
+                          {getHighlights(destination).map((h, i) => (
                             <div key={i} className="flex items-center gap-2 text-[#3D3D3D]">
                               <div className="w-2 h-2 bg-[#C4A25A] rounded-full" />
                               <span>{h}</span>
@@ -391,14 +471,14 @@ export function InternationalPage() {
                     )}
 
                     {/* Why Invest */}
-                    {(language === 'en' ? destination.why_invest_en : destination.why_invest_es).length > 0 && (
+                    {getWhyInvest(destination).length > 0 && (
                       <div className="mb-8">
                         <h4 className="text-[#1B365D] font-semibold mb-4 flex items-center gap-2">
                           <TrendingUp className="w-5 h-5" />
                           {t(`Why ${destination.city}`, `¿Por qué ${destination.city}?`)}
                         </h4>
                         <div className="grid grid-cols-2 gap-3">
-                          {(language === 'en' ? destination.why_invest_en : destination.why_invest_es).map((r, i) => (
+                          {getWhyInvest(destination).map((r, i) => (
                             <div key={i} className="flex items-center gap-2 text-[#3D3D3D]">
                               <div className="w-2 h-2 bg-[#1B365D] rounded-full" />
                               <span>{r}</span>
@@ -478,6 +558,76 @@ export function InternationalPage() {
           </motion.div>
         </div>
       </section>
+
+      {/* International Listings */}
+      {listings.length > 0 && (
+        <section
+          className="py-24 transition-colors duration-500"
+          style={{ backgroundColor: isDark ? '#FFFFFF' : '#FFFBF5' }}
+        >
+          <div className="max-w-7xl mx-auto px-6">
+            <motion.div
+              initial="initial"
+              whileInView="animate"
+              viewport={{ once: true }}
+              variants={staggerContainer}
+            >
+              <motion.div variants={fadeInUp} className="text-center mb-16">
+                <h2
+                  className="font-[family-name:var(--font-playfair)] text-4xl md:text-5xl mb-4 transition-colors duration-500"
+                  style={{ color: isDark ? '#1B365D' : '#3D3D3D' }}
+                >
+                  {t('International Listings', 'Propiedades Internacionales')}
+                </h2>
+                <p className="text-[#3D3D3D] text-lg max-w-2xl mx-auto">
+                  {t(
+                    'Featured properties available in international markets',
+                    'Propiedades destacadas disponibles en mercados internacionales'
+                  )}
+                </p>
+              </motion.div>
+
+              <motion.div variants={fadeInUp} className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                {listings.map((listing) => (
+                  <div key={listing.id} className="bg-white shadow-lg overflow-hidden group">
+                    <div className="relative h-64 overflow-hidden">
+                      {listing.images?.[0] ? (
+                        <Image
+                          src={listing.images[0]}
+                          alt={listing.address}
+                          fill
+                          className="object-cover group-hover:scale-105 transition-transform duration-500"
+                        />
+                      ) : (
+                        <div className="w-full h-full bg-gray-200 flex items-center justify-center">
+                          <Building2 className="w-12 h-12 text-gray-400" />
+                        </div>
+                      )}
+                      {listing.country && (
+                        <div className="absolute top-3 left-3 bg-[#C4A25A] text-white px-3 py-1 text-xs font-semibold">
+                          {listing.country}
+                        </div>
+                      )}
+                    </div>
+                    <div className="p-5">
+                      <p className="text-[#C4A25A] text-xl font-bold mb-1">
+                        ${listing.price?.toLocaleString()}
+                      </p>
+                      <p className="font-semibold text-[#1B365D] mb-1">{listing.address}</p>
+                      <p className="text-sm text-[#3D3D3D] mb-3">{listing.city}, {listing.state}</p>
+                      <div className="flex gap-4 text-sm text-[#3D3D3D]/70">
+                        {listing.beds && <span>{listing.beds} {t('Beds', 'Hab')}</span>}
+                        {listing.baths && <span>{listing.baths} {t('Baths', 'Baños')}</span>}
+                        {listing.sqft && <span>{listing.sqft.toLocaleString()} ft²</span>}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </motion.div>
+            </motion.div>
+          </div>
+        </section>
+      )}
 
       {/* CTA / Contact Section */}
       <section

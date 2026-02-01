@@ -36,6 +36,8 @@ export default function NewProperty() {
     mlsNumber: '',
     description: '',
     status: 'active',
+    listingType: 'domestic',
+    country: '',
   });
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -125,6 +127,8 @@ export default function NewProperty() {
           features: features,
           images: imageUrls,
           status: formData.status,
+          listing_type: formData.listingType,
+          country: formData.listingType === 'international' ? formData.country || null : null,
           display_order: 0,
         }]);
 
@@ -290,6 +294,33 @@ export default function NewProperty() {
                     <option value="sold">Sold</option>
                   </select>
                 </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-[#3D3D3D] mb-2 font-medium">Listing Type</label>
+                  <select
+                    value={formData.listingType}
+                    onChange={(e) => setFormData({ ...formData, listingType: e.target.value })}
+                    className="w-full px-4 py-2 border border-[#D6BFAE] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#C4A25A]"
+                  >
+                    <option value="domestic">Domestic</option>
+                    <option value="international">International</option>
+                  </select>
+                </div>
+
+                {formData.listingType === 'international' && (
+                  <div>
+                    <label className="block text-[#3D3D3D] mb-2 font-medium">Country</label>
+                    <input
+                      type="text"
+                      value={formData.country}
+                      onChange={(e) => setFormData({ ...formData, country: e.target.value })}
+                      className="w-full px-4 py-2 border border-[#D6BFAE] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#C4A25A]"
+                      placeholder="e.g. UAE, Mexico"
+                    />
+                  </div>
+                )}
               </div>
 
               <div className="grid grid-cols-2 gap-4">
