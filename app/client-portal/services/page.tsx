@@ -142,10 +142,15 @@ export default function ServicesPage() {
                       <h3 className="text-xl font-semibold text-white">{svc.services.name}</h3>
                       <span className={`px-2 py-1 rounded text-xs font-medium ${
                         svc.status === 'active' ? 'bg-green-500/20 text-green-400' :
+                        svc.status === 'trial' ? 'bg-blue-500/20 text-blue-400' :
                         svc.status === 'paused' ? 'bg-yellow-500/20 text-yellow-400' :
                         'bg-red-500/20 text-red-400'
                       }`}>
-                        {svc.status.toUpperCase()}
+                        {svc.status === 'trial' ? (() => {
+                          if (!svc.trial_end_date) return 'TRIAL'
+                          const daysLeft = Math.ceil((new Date(svc.trial_end_date).getTime() - Date.now()) / (1000 * 60 * 60 * 24))
+                          return daysLeft > 0 ? `TRIAL - ${daysLeft} DAY${daysLeft === 1 ? '' : 'S'} LEFT` : 'TRIAL ENDED'
+                        })() : svc.status.toUpperCase()}
                       </span>
                       {/* Subscription chip for monthly services */}
                       {isMonthly && svc.status === 'active' && isSubscribed && (
@@ -210,8 +215,14 @@ export default function ServicesPage() {
                         </div>
                       )}
 
-                      {/* Start date */}
+                      {/* Dates */}
                       <p className="text-gray-500 text-xs">Started: {new Date(svc.start_date).toLocaleDateString()}</p>
+                      {svc.status === 'paused' && svc.paused_at && (
+                        <p className="text-yellow-500 text-xs">Paused: {new Date(svc.paused_at).toLocaleDateString()}</p>
+                      )}
+                      {svc.status === 'cancelled' && svc.ended_at && (
+                        <p className="text-red-500 text-xs">Ended: {new Date(svc.ended_at).toLocaleDateString()}</p>
+                      )}
                     </div>
                   </div>
 

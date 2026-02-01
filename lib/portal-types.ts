@@ -36,13 +36,16 @@ export interface ClientService {
   service_id: string
   monthly_cost: number
   one_time_cost: number
-  status: 'active' | 'paused' | 'cancelled'
+  status: 'active' | 'trial' | 'paused' | 'cancelled'
   start_date: string
   notes: string | null
   performed_by_id: string | null
   commission_rate: number
   deposit_amount: number
   amount_paid: number
+  trial_end_date: string | null
+  paused_at: string | null
+  ended_at: string | null
   created_at: string
   updated_at: string
 }

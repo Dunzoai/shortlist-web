@@ -195,16 +195,31 @@ export default function EditClientPage() {
     setClientServices([...clientServices, data as ClientServiceWithService])
   }
 
-  const handleUpdateService = async (csId: string, field: 'monthly_cost' | 'one_time_cost' | 'status' | 'performed_by_id' | 'commission_rate' | 'start_date' | 'notes' | 'deposit_amount' | 'amount_paid', value: string | number | null) => {
+  const handleUpdateService = async (csId: string, field: 'monthly_cost' | 'one_time_cost' | 'status' | 'performed_by_id' | 'commission_rate' | 'start_date' | 'notes' | 'deposit_amount' | 'amount_paid' | 'trial_end_date' | 'paused_at' | 'ended_at', value: string | number | null) => {
     const supabase = createClient()
 
     const updateData: Record<string, string | number | null> = {}
     if (field === 'monthly_cost' || field === 'one_time_cost' || field === 'commission_rate' || field === 'deposit_amount' || field === 'amount_paid') {
       updateData[field] = Number(value) || 0
-    } else if (field === 'performed_by_id' || field === 'start_date') {
+    } else if (field === 'performed_by_id' || field === 'start_date' || field === 'trial_end_date' || field === 'paused_at' || field === 'ended_at') {
       updateData[field] = value || null
     } else if (field === 'notes') {
       updateData[field] = value as string || null
+    } else if (field === 'status') {
+      updateData[field] = value
+      // Auto-set dates when status changes
+      if (value === 'trial') {
+        const cs = clientServices.find(s => s.id === csId)
+        if (cs && !cs.trial_end_date) {
+          const trialEnd = new Date(cs.start_date || Date.now())
+          trialEnd.setDate(trialEnd.getDate() + 7)
+          updateData.trial_end_date = trialEnd.toISOString().split('T')[0]
+        }
+      } else if (value === 'paused') {
+        updateData.paused_at = new Date().toISOString()
+      } else if (value === 'cancelled') {
+        updateData.ended_at = new Date().toISOString()
+      }
     } else {
       updateData[field] = value
     }
@@ -425,8 +440,9 @@ export default function EditClientPage() {
                       <div>
                         <label className="block text-xs text-gray-400 mb-1">Service Notes (visible to client)</label>
                         <textarea
-                          value={cs.notes || ''}
-                          onChange={(e) => handleUpdateService(cs.id, 'notes', e.target.value)}
+                          key={cs.id + '-notes'}
+                          defaultValue={cs.notes || ''}
+                          onBlur={(e) => handleUpdateService(cs.id, 'notes', e.target.value)}
                           rows={2}
                           placeholder="e.g., 3 posts/month, no UGC. 5-page website with contact form..."
                           className="w-full px-3 py-1.5 bg-[#444444] border border-[#555555] rounded text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#2E8B57] resize-none"
@@ -442,6 +458,7 @@ export default function EditClientPage() {
                             className="w-full px-3 py-1.5 bg-[#444444] border border-[#555555] rounded text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#2E8B57]"
                           >
                             <option value="active">Active</option>
+                            <option value="trial">Trial</option>
                             <option value="paused">Paused</option>
                             <option value="cancelled">Cancelled</option>
                           </select>
@@ -469,6 +486,43 @@ export default function EditClientPage() {
                           />
                         </div>
                       </div>
+
+                      {/* Conditional date fields based on status */}
+                      {cs.status === 'trial' && (
+                        <div>
+                          <label className="block text-xs text-gray-400 mb-1">Trial Ends</label>
+                          <input
+                            type="date"
+                            value={cs.trial_end_date ? cs.trial_end_date.split('T')[0] : ''}
+                            onChange={(e) => handleUpdateService(cs.id, 'trial_end_date', e.target.value)}
+                            className="w-full px-3 py-1.5 bg-[#444444] border border-yellow-500/50 rounded text-yellow-400 text-sm focus:outline-none focus:ring-2 focus:ring-yellow-500"
+                          />
+                        </div>
+                      )}
+
+                      {cs.status === 'paused' && (
+                        <div>
+                          <label className="block text-xs text-gray-400 mb-1">Paused On</label>
+                          <input
+                            type="date"
+                            value={cs.paused_at ? cs.paused_at.split('T')[0] : ''}
+                            onChange={(e) => handleUpdateService(cs.id, 'paused_at', e.target.value)}
+                            className="w-full px-3 py-1.5 bg-[#444444] border border-yellow-500/50 rounded text-yellow-400 text-sm focus:outline-none focus:ring-2 focus:ring-yellow-500"
+                          />
+                        </div>
+                      )}
+
+                      {cs.status === 'cancelled' && (
+                        <div>
+                          <label className="block text-xs text-gray-400 mb-1">Ended On</label>
+                          <input
+                            type="date"
+                            value={cs.ended_at ? cs.ended_at.split('T')[0] : ''}
+                            onChange={(e) => handleUpdateService(cs.id, 'ended_at', e.target.value)}
+                            className="w-full px-3 py-1.5 bg-[#444444] border border-red-500/50 rounded text-red-400 text-sm focus:outline-none focus:ring-2 focus:ring-red-500"
+                          />
+                        </div>
+                      )}
                     </div>
                   ))}
 
@@ -476,7 +530,7 @@ export default function EditClientPage() {
                     <div className="flex justify-between text-sm">
                       <span className="text-gray-400">Total Monthly</span>
                       <span className="font-medium text-white">
-                        ${clientServices.filter((cs) => cs.status === 'active').reduce((sum, cs) => sum + Number(cs.monthly_cost), 0).toLocaleString()}
+                        ${clientServices.filter((cs) => cs.status === 'active' || cs.status === 'trial').reduce((sum, cs) => sum + Number(cs.monthly_cost), 0).toLocaleString()}
                       </span>
                     </div>
                     <div className="flex justify-between text-sm">
