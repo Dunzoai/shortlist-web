@@ -37,7 +37,7 @@ export async function generateMetadata(): Promise<Metadata> {
       keywords: ["empanadas", "food truck", "Myrtle Beach", "handcrafted", "authentic", "savory", "sweet", "catering"],
       authors: [{ name: "Nito's Empanadas" }],
       creator: "Nito's Empanadas",
-      metadataBase: new URL('https://demo-nitos.shortlistpass.com'),
+      metadataBase: new URL('https://nitosempanadas.com'),
       icons: { icon: '/nitos-favicon.png', apple: '/nitos-favicon.png' },
       openGraph: {
         type: 'website',
