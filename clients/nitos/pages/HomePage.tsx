@@ -6,6 +6,7 @@ import { ParallaxSection } from '@/clients/nitos/components/ParallaxSection';
 import { AnimatedHero } from '@/clients/nitos/components/AnimatedHero';
 import { Header } from '@/clients/nitos/components/Header';
 import { MenuSection } from '@/clients/nitos/components/MenuSection';
+import { GalleryMarquee } from '@/clients/nitos/components/GalleryMarquee';
 
 const fadeInUp = {
   initial: { opacity: 0, y: 30 },
@@ -136,6 +137,9 @@ export function HomePage() {
       <div id="menu">
         <MenuSection />
       </div>
+
+      {/* Gallery */}
+      <GalleryMarquee />
 
       {/* Footer */}
       <footer className="bg-[#D4C5A9] py-16 border-t border-[#C4A052]/30">

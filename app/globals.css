@@ -110,6 +110,24 @@ p, span, a, li, label, input, textarea, button {
   animation: pulse-glow 2s ease-in-out infinite;
 }
 
+/* Gallery marquee - infinite scroll rows */
+@keyframes marquee-left {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+@keyframes marquee-right {
+  0% { transform: translateX(-50%); }
+  100% { transform: translateX(0); }
+}
+.marquee-left {
+  animation: marquee-left 30s linear infinite;
+  width: max-content;
+}
+.marquee-right {
+  animation: marquee-right 30s linear infinite;
+  width: max-content;
+}
+
 /* Subtle shimmy - gentle nudge every few seconds */
 @keyframes shimmy {
   0%, 92% { transform: translateX(0); }
