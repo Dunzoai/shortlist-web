@@ -52,7 +52,8 @@ export function Header() {
       {showBanner && (
         <div className="bg-[#2D5A3D] text-white text-center text-sm py-2 px-4 relative">
           <span>
-            🏈 Now taking orders for the Super Bowl!{' '}
+            🏈 Now taking orders for the Super Bowl!
+            <br className="md:hidden" />{' '}
             <a
               href={CTA_HREF}
               target="_blank"
