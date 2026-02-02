@@ -385,6 +385,19 @@ export function MenuSection() {
       >
         * Prices do not include tax
       </p>
+
+      {/* Order Online CTA */}
+      <div className="flex justify-center mt-8">
+        <a
+          href="https://nitos.shortlistpass.com"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="bg-[#C4A052] text-white px-8 py-3 rounded-full font-bold text-lg animate-pulse-glow hover:bg-[#2D5A3D] transition-colors"
+          style={{ fontFamily: "var(--font-permanent-marker), cursive, sans-serif" }}
+        >
+          Order Online
+        </a>
+      </div>
     </div>
   );
 
