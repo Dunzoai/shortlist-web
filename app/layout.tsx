@@ -38,7 +38,7 @@ export async function generateMetadata(): Promise<Metadata> {
       authors: [{ name: "Nito's Empanadas" }],
       creator: "Nito's Empanadas",
       metadataBase: new URL('https://demo-nitos.shortlistpass.com'),
-      icons: { icon: '/nitos-logo.avif' },
+      icons: { icon: '/nitos-favicon.png', apple: '/nitos-favicon.png' },
       openGraph: {
         type: 'website',
         locale: 'en_US',
