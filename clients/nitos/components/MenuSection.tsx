@@ -392,7 +392,7 @@ export function MenuSection() {
           href="https://nitos.shortlistpass.com"
           target="_blank"
           rel="noopener noreferrer"
-          className="relative bg-[#2D5A3D] text-white px-10 py-4 rounded-full font-bold text-xl shadow-lg hover:bg-[#1a4028] hover:scale-105 active:scale-95 transition-all animate-order-pulse"
+          className="relative bg-[#2D5A3D] text-white px-10 py-4 rounded-full font-bold text-xl shadow-lg hover:bg-[#1a4028] hover:scale-105 active:scale-95 transition-all animate-shimmy"
           style={{ fontFamily: "var(--font-permanent-marker), cursive, sans-serif" }}
         >
           Order Online

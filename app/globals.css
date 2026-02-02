@@ -110,11 +110,15 @@ p, span, a, li, label, input, textarea, button {
   animation: pulse-glow 2s ease-in-out infinite;
 }
 
-/* Order button pulse - green ring */
-@keyframes order-pulse {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(45, 90, 61, 0.7), 0 4px 12px rgba(0,0,0,0.2); }
-  50% { box-shadow: 0 0 0 10px rgba(45, 90, 61, 0), 0 4px 12px rgba(0,0,0,0.2); }
+/* Subtle shimmy - gentle nudge every few seconds */
+@keyframes shimmy {
+  0%, 92% { transform: translateX(0); }
+  93% { transform: translateX(-3px) rotate(-1deg); }
+  95% { transform: translateX(3px) rotate(1deg); }
+  97% { transform: translateX(-2px) rotate(0deg); }
+  99% { transform: translateX(1px); }
+  100% { transform: translateX(0); }
 }
-.animate-order-pulse {
-  animation: order-pulse 1.8s ease-in-out infinite;
+.animate-shimmy {
+  animation: shimmy 4s ease-in-out infinite;
 }
