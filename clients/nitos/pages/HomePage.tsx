@@ -215,8 +215,16 @@ export function HomePage() {
             </div>
 
             <p className="text-[#4A5A3C]/60 text-sm">
-              © {new Date().getFullYear()} Nito's Empanadas. All rights reserved.
+              © {new Date().getFullYear()} Nito&apos;s Empanadas. All rights reserved.
             </p>
+            <a
+              href="https://www.shortlistpass.com/digital"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-[#4A5A3C]/30 hover:text-[#4A5A3C]/50 transition-colors text-xs mt-2 inline-block"
+            >
+              Built by The Shortlist Co.
+            </a>
           </motion.div>
         </div>
       </footer>

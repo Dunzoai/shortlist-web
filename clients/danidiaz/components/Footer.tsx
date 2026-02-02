@@ -162,7 +162,7 @@ export default function Footer() {
               </a>
               <span className="text-white/20">|</span>
               <a
-                href="https://www.shortlistpass.com"
+                href="https://www.shortlistpass.com/digital"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-white/30 hover:text-white/50 transition-colors text-xs"
