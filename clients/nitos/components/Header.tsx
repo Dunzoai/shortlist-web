@@ -44,9 +44,34 @@ function RotatingCTA({ className }: { className?: string }) {
 
 export function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [showBanner, setShowBanner] = useState(true);
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 bg-[#D4C5A9]/95 backdrop-blur-sm border-b border-[#2D5A3D]/10">
+    <header className="fixed top-0 left-0 right-0 z-50">
+      {/* Announcement Banner */}
+      {showBanner && (
+        <div className="bg-[#2D5A3D] text-white text-center text-sm py-2 px-4 relative">
+          <span>
+            🏈 Now taking preorders for the Super Bowl!{' '}
+            <a
+              href={CTA_HREF}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="underline font-bold text-[#FFD93D] hover:text-white transition-colors"
+            >
+              Order right here!
+            </a>
+          </span>
+          <button
+            onClick={() => setShowBanner(false)}
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-white/60 hover:text-white transition-colors"
+            aria-label="Dismiss"
+          >
+            ✕
+          </button>
+        </div>
+      )}
+      <div className="bg-[#D4C5A9]/95 backdrop-blur-sm border-b border-[#2D5A3D]/10">
       <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Logo/Brand */}
@@ -126,6 +151,7 @@ export function Header() {
           </div>
         )}
       </nav>
+      </div>
     </header>
   );
 }
