@@ -32,7 +32,7 @@ export async function generateMetadata(): Promise<Metadata> {
 
   if (client?.slug === 'nitos') {
     return {
-      title: "Nito's Empanadas | Myrtle Beach Food Truck",
+      title: "Nito's Empanadas | The Best Empanadas in Town",
       description: "Authentic handcrafted empanadas made fresh daily. Find our food truck around Myrtle Beach, SC. Savory and sweet flavors available!",
       keywords: ["empanadas", "food truck", "Myrtle Beach", "handcrafted", "authentic", "savory", "sweet", "catering"],
       authors: [{ name: "Nito's Empanadas" }],
@@ -44,13 +44,13 @@ export async function generateMetadata(): Promise<Metadata> {
         locale: 'en_US',
         url: '/',
         siteName: "Nito's Empanadas",
-        title: "Nito's Empanadas | Myrtle Beach Food Truck",
+        title: "Nito's Empanadas | The Best Empanadas in Town",
         description: "Authentic handcrafted empanadas made fresh daily. Savory & sweet flavors. Order online or book our truck for your next event!",
         images: [{ url: '/nitos-name-behind-truck.png', width: 1200, height: 630, alt: "Nito's Empanadas Food Truck" }],
       },
       twitter: {
         card: 'summary_large_image',
-        title: "Nito's Empanadas | Myrtle Beach Food Truck",
+        title: "Nito's Empanadas | The Best Empanadas in Town",
         description: "Authentic handcrafted empanadas made fresh daily. Savory & sweet flavors. Order online or book our truck!",
         images: ['/nitos-name-behind-truck.png'],
       },
