@@ -110,10 +110,10 @@ p, span, a, li, label, input, textarea, button {
   animation: pulse-glow 2s ease-in-out infinite;
 }
 
-/* Order button pulse - vibrant orange ring */
+/* Order button pulse - green ring */
 @keyframes order-pulse {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(255, 107, 53, 0.7), 0 4px 12px rgba(0,0,0,0.2); }
-  50% { box-shadow: 0 0 0 10px rgba(255, 107, 53, 0), 0 4px 12px rgba(0,0,0,0.2); }
+  0%, 100% { box-shadow: 0 0 0 0 rgba(45, 90, 61, 0.7), 0 4px 12px rgba(0,0,0,0.2); }
+  50% { box-shadow: 0 0 0 10px rgba(45, 90, 61, 0), 0 4px 12px rgba(0,0,0,0.2); }
 }
 .animate-order-pulse {
   animation: order-pulse 1.8s ease-in-out infinite;

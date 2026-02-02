@@ -52,14 +52,14 @@ export function Header() {
       {showBanner && (
         <div className="bg-[#2D5A3D] text-white text-center text-sm py-2 px-4 relative">
           <span>
-            🏈 Now taking preorders for the Super Bowl!{' '}
+            🏈 Now taking orders for the Super Bowl!{' '}
             <a
               href={CTA_HREF}
               target="_blank"
               rel="noopener noreferrer"
               className="underline font-bold text-[#FFD93D] hover:text-white transition-colors"
             >
-              Order right here!
+              Buy 10 get 2 free!
             </a>
           </span>
           <button
@@ -90,7 +90,7 @@ export function Header() {
                 {link.label}
               </Link>
             ))}
-            <RotatingCTA className="bg-[#FF6B35] text-white px-5 py-2 rounded-full font-bold shadow-md hover:bg-[#e55a2a] hover:scale-105 active:scale-95 transition-all animate-order-pulse" />
+            <RotatingCTA className="bg-[#2D5A3D] text-white px-5 py-2 rounded-full font-bold shadow-md hover:bg-[#1a4028] hover:scale-105 active:scale-95 transition-all" />
           </div>
 
           {/* Mobile Menu Button */}
@@ -142,7 +142,7 @@ export function Header() {
                 href={CTA_HREF}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="mx-2 mt-2 bg-[#FF6B35] text-white text-center px-4 py-3 rounded-full font-bold shadow-md animate-order-pulse"
+                className="mx-2 mt-2 bg-[#2D5A3D] text-white text-center px-4 py-3 rounded-full font-bold shadow-md"
                 onClick={() => setIsMenuOpen(false)}
               >
                 Order Online
