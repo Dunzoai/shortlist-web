@@ -43,32 +43,25 @@ export function GalleryMarquee() {
   if (topImages.length === 0) return null;
 
   return (
-    <section className="py-12 bg-[#1a1a1a] overflow-hidden">
-      <h2
-        className="text-3xl md:text-4xl font-bold text-center text-white mb-8"
-        style={{ fontFamily: 'serif' }}
-      >
-        Fresh Off the Grill
-      </h2>
-
+    <section className="py-4 bg-[#D4C5A9] overflow-hidden">
       {/* Top row - scrolls left */}
-      <div className="mb-3">
+      <div className="mb-2">
         <div
-          className="flex gap-3 marquee-left"
+          className="flex gap-2 marquee-left"
           style={{ animationPlayState: paused ? 'paused' : 'running' }}
         >
           {topRow.map((src, i) => (
             <button
               key={`top-${i}`}
               onClick={() => handleSelect(src)}
-              className="flex-shrink-0 rounded-xl overflow-hidden hover:scale-105 transition-transform duration-200"
+              className="flex-shrink-0 rounded-lg overflow-hidden shadow-md hover:scale-105 transition-transform duration-200"
             >
               <Image
                 src={src}
                 alt="Nito's Empanadas"
                 width={280}
                 height={280}
-                className="w-48 h-48 md:w-64 md:h-64 object-cover"
+                className="w-44 h-44 md:w-56 md:h-56 object-cover"
               />
             </button>
           ))}
@@ -78,21 +71,21 @@ export function GalleryMarquee() {
       {/* Bottom row - scrolls right */}
       <div>
         <div
-          className="flex gap-3 marquee-right"
+          className="flex gap-2 marquee-right"
           style={{ animationPlayState: paused ? 'paused' : 'running' }}
         >
           {bottomRow.map((src, i) => (
             <button
               key={`bottom-${i}`}
               onClick={() => handleSelect(src)}
-              className="flex-shrink-0 rounded-xl overflow-hidden hover:scale-105 transition-transform duration-200"
+              className="flex-shrink-0 rounded-lg overflow-hidden shadow-md hover:scale-105 transition-transform duration-200"
             >
               <Image
                 src={src}
                 alt="Nito's Empanadas"
                 width={280}
                 height={280}
-                className="w-48 h-48 md:w-64 md:h-64 object-cover"
+                className="w-44 h-44 md:w-56 md:h-56 object-cover"
               />
             </button>
           ))}
