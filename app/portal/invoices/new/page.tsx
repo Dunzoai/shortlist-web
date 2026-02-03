@@ -47,6 +47,7 @@ export default function NewInvoicePage() {
   const [notes, setNotes] = useState('')
   const [lineItems, setLineItems] = useState<LineItem[]>([])
   const [useAutoGenerate, setUseAutoGenerate] = useState(true)
+  const [markAsPaid, setMarkAsPaid] = useState(false)
 
   useEffect(() => {
     async function fetchData() {
@@ -82,13 +83,29 @@ export default function NewInvoicePage() {
   // Auto-populate line items when client selected and auto-generate is on
   useEffect(() => {
     if (useAutoGenerate && selectedClientId && invoiceableServices.length > 0) {
-      setLineItems(invoiceableServices.map(cs => ({
-        description: cs.service?.name || 'Service',
-        quantity: 1,
-        unit_price: cs.monthly_cost > 0 ? cs.monthly_cost : cs.one_time_cost,
-        service_id: cs.service_id,
-        isCustom: false,
-      })))
+      setLineItems(invoiceableServices.map(cs => {
+        const name = cs.service?.name || 'Service'
+        const statusLabel = cs.status !== 'active' ? ` (${cs.status})` : ''
+        const costType = cs.monthly_cost > 0 ? '/mo' : ' one-time'
+        const desc = cs.notes
+          ? `${name}${statusLabel} — ${cs.notes}`
+          : `${name}${statusLabel}`
+        return {
+          description: desc,
+          quantity: 1,
+          unit_price: cs.monthly_cost > 0 ? cs.monthly_cost : cs.one_time_cost,
+          service_id: cs.service_id,
+          isCustom: false,
+        }
+      }))
+      // Auto-populate notes with service details if not already set
+      if (!notes) {
+        const serviceNotes = invoiceableServices
+          .filter(cs => cs.notes)
+          .map(cs => `${cs.service?.name}: ${cs.notes}`)
+          .join('\n')
+        if (serviceNotes) setNotes(serviceNotes)
+      }
     }
   }, [selectedClientId, useAutoGenerate, clients])
 
@@ -141,16 +158,19 @@ export default function NewInvoicePage() {
     setCreating(true)
     const supabase = createClient()
 
+    const invoiceTotal = lineItems.reduce((sum, item) => sum + (item.quantity * item.unit_price), 0)
+
     // Create invoice
     const { data: invoice, error: invoiceError } = await supabase
       .from('invoices')
       .insert({
         client_id: selectedClientId,
-        due_date: dueDate,
+        due_date: dueDate || null,
         period_start: periodStart,
         period_end: periodEnd,
         notes: notes || null,
-        status: 'draft',
+        status: markAsPaid ? 'paid' : 'draft',
+        ...(markAsPaid ? { amount_paid: invoiceTotal, paid_at: new Date().toISOString() } : {}),
       })
       .select()
       .single()
@@ -179,6 +199,18 @@ export default function NewInvoicePage() {
       alert('Error creating line items: ' + itemsError.message)
       setCreating(false)
       return
+    }
+
+    // If marking as paid, also create a payment record
+    if (markAsPaid) {
+      await supabase.from('payments').insert({
+        client_id: selectedClientId,
+        invoice_id: invoice.id,
+        amount: invoiceTotal,
+        payment_method: 'other',
+        status: 'completed',
+        notes: 'Marked as paid on creation',
+      })
     }
 
     router.push(`/portal/invoices/${invoice.id}`)
@@ -396,10 +428,19 @@ export default function NewInvoicePage() {
           <div className="flex flex-col sm:flex-row items-center gap-4">
             <button
               type="submit"
+              onClick={() => setMarkAsPaid(false)}
               disabled={creating || !selectedClientId || lineItems.length === 0}
               className="w-full sm:w-auto px-6 py-2 bg-[#2E8B57] hover:bg-[#25724a] disabled:opacity-50 text-white font-medium rounded-lg transition-colors"
             >
-              {creating ? 'Creating...' : 'Create Draft Invoice'}
+              {creating && !markAsPaid ? 'Creating...' : 'Create Draft Invoice'}
+            </button>
+            <button
+              type="submit"
+              onClick={() => setMarkAsPaid(true)}
+              disabled={creating || !selectedClientId || lineItems.length === 0}
+              className="w-full sm:w-auto px-6 py-2 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white font-medium rounded-lg transition-colors"
+            >
+              {creating && markAsPaid ? 'Creating...' : 'Create as Paid (Receipt)'}
             </button>
             <Link
               href="/portal/invoices"

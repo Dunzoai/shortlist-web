@@ -252,11 +252,18 @@ export default function InvoiceDetailPage() {
                   {updating ? 'Sending...' : 'Send Invoice'}
                 </button>
                 <button
+                  onClick={handleMarkAsPaid}
+                  disabled={updating}
+                  className="px-4 py-2 bg-green-600 hover:bg-green-700 disabled:opacity-50 text-white text-sm font-medium rounded-lg transition-colors"
+                >
+                  Mark as Paid
+                </button>
+                <button
                   onClick={handleMarkAsSent}
                   disabled={updating}
                   className="px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white text-sm font-medium rounded-lg transition-colors"
                 >
-                  Mark as Sent (Manual)
+                  Mark as Sent
                 </button>
                 <button
                   onClick={handleDelete}
