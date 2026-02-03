@@ -45,6 +45,7 @@ export default function EditClientPage() {
   const [payments, setPayments] = useState<Payment[]>([])
   const [expandedService, setExpandedService] = useState<string | null>(null)
   const [selectedForInvoice, setSelectedForInvoice] = useState<Set<string>>(new Set())
+  const [lastLoginAt, setLastLoginAt] = useState<string | null>(null)
 
   const { register, handleSubmit, reset, watch, formState: { errors } } = useForm<ClientFormData>({
     resolver: zodResolver(clientSchema),
@@ -95,6 +96,18 @@ export default function EditClientPage() {
         .limit(20)
 
       setPayments((paymentsData as Payment[]) ?? [])
+
+      // Fetch last login from client_portal_users
+      const { data: portalUser } = await supabase
+        .from('client_portal_users')
+        .select('last_login_at')
+        .eq('client_id', clientId)
+        .single()
+
+      if (portalUser?.last_login_at) {
+        setLastLoginAt(portalUser.last_login_at)
+      }
+
       setLoading(false)
     }
 
@@ -421,6 +434,11 @@ export default function EditClientPage() {
                 {inviteStatus && (
                   <p className={`text-sm ${inviteStatus.startsWith('Error') ? 'text-red-400' : 'text-green-400'}`}>
                     {inviteStatus}
+                  </p>
+                )}
+                {lastLoginAt && (
+                  <p className="text-sm text-gray-400 mt-3 pt-3 border-t border-[#444444]">
+                    Last seen: {new Date(lastLoginAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })} at {new Date(lastLoginAt).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })}
                   </p>
                 )}
               </div>

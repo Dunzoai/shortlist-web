@@ -28,7 +28,15 @@ export async function GET(request: Request) {
       }
     )
 
-    await supabase.auth.exchangeCodeForSession(code)
+    const { data: { user } } = await supabase.auth.exchangeCodeForSession(code)
+
+    // Update last_login_at for tracking
+    if (user) {
+      await supabase
+        .from('client_portal_users')
+        .update({ last_login_at: new Date().toISOString() })
+        .eq('user_id', user.id)
+    }
 
     // If this is an invite/signup flow, redirect to set-password
     if (type === 'invite' || type === 'signup' || type === 'recovery') {

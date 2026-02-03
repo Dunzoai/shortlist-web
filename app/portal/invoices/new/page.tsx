@@ -47,7 +47,7 @@ export default function NewInvoicePage() {
   const [notes, setNotes] = useState('')
   const [lineItems, setLineItems] = useState<LineItem[]>([])
   const [useAutoGenerate, setUseAutoGenerate] = useState(true)
-  const [markAsPaid, setMarkAsPaid] = useState(false)
+  const [submitAction, setSubmitAction] = useState<'draft' | 'send' | 'paid'>('draft')
 
   useEffect(() => {
     async function fetchData() {
@@ -160,6 +160,13 @@ export default function NewInvoicePage() {
 
     const invoiceTotal = lineItems.reduce((sum, item) => sum + (item.quantity * item.unit_price), 0)
 
+    // Determine status based on action
+    const statusMap = {
+      draft: 'draft',
+      send: 'sent',
+      paid: 'paid',
+    } as const
+
     // Create invoice
     const { data: invoice, error: invoiceError } = await supabase
       .from('invoices')
@@ -169,8 +176,9 @@ export default function NewInvoicePage() {
         period_start: periodStart,
         period_end: periodEnd,
         notes: notes || null,
-        status: markAsPaid ? 'paid' : 'draft',
-        ...(markAsPaid ? { amount_paid: invoiceTotal, paid_at: new Date().toISOString() } : {}),
+        status: statusMap[submitAction],
+        issue_date: submitAction === 'send' || submitAction === 'paid' ? new Date().toISOString() : null,
+        ...(submitAction === 'paid' ? { amount_paid: invoiceTotal, paid_at: new Date().toISOString() } : {}),
       })
       .select()
       .single()
@@ -202,7 +210,7 @@ export default function NewInvoicePage() {
     }
 
     // If marking as paid, also create a payment record
-    if (markAsPaid) {
+    if (submitAction === 'paid') {
       await supabase.from('payments').insert({
         client_id: selectedClientId,
         invoice_id: invoice.id,
@@ -428,19 +436,27 @@ export default function NewInvoicePage() {
           <div className="flex flex-col sm:flex-row items-center gap-4">
             <button
               type="submit"
-              onClick={() => setMarkAsPaid(false)}
+              onClick={() => setSubmitAction('send')}
               disabled={creating || !selectedClientId || lineItems.length === 0}
-              className="w-full sm:w-auto px-6 py-2 bg-[#2E8B57] hover:bg-[#25724a] disabled:opacity-50 text-white font-medium rounded-lg transition-colors"
+              className="w-full sm:w-auto px-6 py-3 bg-[#2E8B57] hover:bg-[#25724a] disabled:opacity-50 text-white font-semibold rounded-lg transition-colors"
             >
-              {creating && !markAsPaid ? 'Creating...' : 'Create Draft Invoice'}
+              {creating && submitAction === 'send' ? 'Creating...' : 'Create & Send'}
             </button>
             <button
               type="submit"
-              onClick={() => setMarkAsPaid(true)}
+              onClick={() => setSubmitAction('draft')}
+              disabled={creating || !selectedClientId || lineItems.length === 0}
+              className="w-full sm:w-auto px-6 py-2 bg-[#444444] hover:bg-[#555555] disabled:opacity-50 text-white font-medium rounded-lg transition-colors border border-[#555555]"
+            >
+              {creating && submitAction === 'draft' ? 'Saving...' : 'Save Draft'}
+            </button>
+            <button
+              type="submit"
+              onClick={() => setSubmitAction('paid')}
               disabled={creating || !selectedClientId || lineItems.length === 0}
               className="w-full sm:w-auto px-6 py-2 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white font-medium rounded-lg transition-colors"
             >
-              {creating && markAsPaid ? 'Creating...' : 'Create as Paid (Receipt)'}
+              {creating && submitAction === 'paid' ? 'Creating...' : 'Mark as Paid'}
             </button>
             <Link
               href="/portal/invoices"
