@@ -93,6 +93,7 @@ export default function ClientInvoiceDetailPage() {
           .select('*')
           .eq('id', invoiceId)
           .eq('client_id', clientId!)
+          .neq('status', 'draft')
           .single(),
         supabase
           .from('invoice_items')

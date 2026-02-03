@@ -31,6 +31,7 @@ export default function InvoicesPage() {
         .from('invoices')
         .select('*, invoice_items(client_service_id, service_id, client_services(monthly_cost), services:service_id(name))')
         .eq('client_id', resolvedClientId!)
+        .neq('status', 'draft')
         .order('created_at', { ascending: false })
 
       const enriched: InvoiceWithRecurring[] = ((data as any[]) || []).map((inv) => {
