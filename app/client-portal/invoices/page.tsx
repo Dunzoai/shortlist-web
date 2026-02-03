@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { useSearchParams } from 'next/navigation'
+import { useSearchParams, useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { usePortalClient } from '@/lib/usePortalClient'
 import type { Invoice } from '@/lib/portal-types'
@@ -12,6 +12,7 @@ interface InvoiceWithRecurring extends Invoice {
 
 export default function InvoicesPage() {
   const { clientId: resolvedClientId, loading: authLoading } = usePortalClient()
+  const router = useRouter()
   const searchParams = useSearchParams()
   const paymentStatus = searchParams.get('payment')
   const [loading, setLoading] = useState(true)
@@ -103,8 +104,11 @@ export default function InvoicesPage() {
               </tr>
             </thead>
             <tbody className="divide-y divide-[#444444]">
-              {invoices.map((inv) => (
-                <tr key={inv.id}>
+              {invoices.map((inv) => {
+                const isSubdomain = typeof window !== 'undefined' && (window.location.hostname.startsWith('my.') || window.location.hostname.startsWith('clients.'))
+                const detailHref = isSubdomain ? `/invoices/${inv.id}` : `/client-portal/invoices/${inv.id}`
+                return (
+                <tr key={inv.id} onClick={() => router.push(detailHref)} className="cursor-pointer hover:bg-[#3a3a3a] transition-colors">
                   <td className="px-6 py-4 text-sm text-gray-300">{inv.invoice_number}</td>
                   <td className="px-6 py-4 text-sm text-white font-semibold">${Number(inv.total).toFixed(2)}</td>
                   <td className="px-6 py-4">
@@ -122,18 +126,19 @@ export default function InvoicesPage() {
                   <td className="px-6 py-4">
                     {inv.status === 'sent' || inv.status === 'overdue' || inv.status === 'partially_paid' ? (
                       <button
-                        onClick={() => handlePay(inv.id)}
+                        onClick={(e) => { e.stopPropagation(); handlePay(inv.id) }}
                         disabled={paying === inv.id}
                         className="px-4 py-2 bg-[#2E8B57] text-white text-sm rounded hover:bg-[#267347] disabled:opacity-50"
                       >
                         {paying === inv.id ? 'Processing...' : inv.has_recurring ? 'Pay & Subscribe' : 'Pay Now'}
                       </button>
                     ) : (
-                      <span className="text-sm text-gray-500">-</span>
+                      <span className="text-sm text-gray-500">View</span>
                     )}
                   </td>
                 </tr>
-              ))}
+                )
+              })}
             </tbody>
           </table>
         </div>
