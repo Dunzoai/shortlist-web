@@ -10,7 +10,7 @@ import { ArrowLeft } from 'lucide-react'
 function linkify(text: string) {
   // Match URLs (http/https) and bare domains (word.tld patterns)
   const urlRegex = /(https?:\/\/[^\s,)]+)|(?<![/@])\b([a-zA-Z0-9][-a-zA-Z0-9]*\.(?:com|net|org|io|co|app|dev|ai|xyz|me|info|biz|us|uk|ca|edu|gov)(?:\.[a-z]{2})?(?:\/[^\s,)]*)?)/gi
-  const parts: (string | JSX.Element)[] = []
+  const parts: (string | React.ReactElement)[] = []
   let lastIndex = 0
   let match: RegExpExecArray | null
 
