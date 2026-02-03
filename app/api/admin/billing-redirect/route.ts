@@ -21,11 +21,11 @@ export async function GET(request: Request) {
       auth: { autoRefreshToken: false, persistSession: false },
     })
 
-    // Get Dani's email from her client record (search by name since ID was truncated)
+    // Get Dani's email from her client record
     const { data: client, error: clientError } = await supabaseAdmin
       .from('clients')
       .select('id, email, name')
-      .eq('name', 'Dani Diaz')
+      .ilike('email', 'danidiazrealestate@gmail.com')
       .single()
 
     if (clientError || !client?.email) {
