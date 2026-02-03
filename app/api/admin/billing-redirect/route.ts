@@ -42,7 +42,7 @@ export async function GET() {
       type: 'magiclink',
       email: user.email,
       options: {
-        redirectTo: 'https://my.shortlistpass.com/services',
+        redirectTo: 'https://my.shortlistpass.com/client-portal/auth/callback',
       },
     })
 
