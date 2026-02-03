@@ -8,6 +8,7 @@ import type { Invoice } from '@/lib/portal-types'
 
 interface InvoiceWithRecurring extends Invoice {
   has_recurring: boolean
+  service_names: string
 }
 
 export default function InvoicesPage() {
@@ -27,7 +28,7 @@ export default function InvoicesPage() {
 
       const { data } = await supabase
         .from('invoices')
-        .select('*, invoice_items(client_service_id, client_services(monthly_cost))')
+        .select('*, invoice_items(client_service_id, service_id, client_services(monthly_cost), services:service_id(name))')
         .eq('client_id', resolvedClientId!)
         .order('created_at', { ascending: false })
 
@@ -35,8 +36,12 @@ export default function InvoicesPage() {
         const hasRecurring = (inv.invoice_items || []).some(
           (item: any) => item.client_services && Number(item.client_services.monthly_cost) > 0
         )
+        const names = (inv.invoice_items || [])
+          .map((item: any) => item.services?.name)
+          .filter(Boolean)
+        const uniqueNames = [...new Set(names)]
         const { invoice_items, ...rest } = inv
-        return { ...rest, has_recurring: hasRecurring }
+        return { ...rest, has_recurring: hasRecurring, service_names: uniqueNames.join(', ') || '-' }
       })
 
       setInvoices(enriched)
@@ -97,6 +102,7 @@ export default function InvoicesPage() {
             <thead className="bg-[#2a2a2a]">
               <tr>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase">Invoice #</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase">Service</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase">Amount</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase">Status</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase">Due Date</th>
@@ -110,6 +116,7 @@ export default function InvoicesPage() {
                 return (
                 <tr key={inv.id} onClick={() => router.push(detailHref)} className="cursor-pointer hover:bg-[#3a3a3a] transition-colors">
                   <td className="px-6 py-4 text-sm text-gray-300">{inv.invoice_number}</td>
+                  <td className="px-6 py-4 text-sm text-[#2E8B57] font-medium">{inv.service_names}</td>
                   <td className="px-6 py-4 text-sm text-white font-semibold">${Number(inv.total).toFixed(2)}</td>
                   <td className="px-6 py-4">
                     <span className={`px-2 py-1 rounded text-xs ${
