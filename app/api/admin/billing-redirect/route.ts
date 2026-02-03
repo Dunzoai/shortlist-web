@@ -21,11 +21,11 @@ export async function GET(request: Request) {
       auth: { autoRefreshToken: false, persistSession: false },
     })
 
-    // Get Dani's email from her client record
+    // Get Dani's email from her client record (search by name since ID was truncated)
     const { data: client, error: clientError } = await supabaseAdmin
       .from('clients')
-      .select('email, name')
-      .eq('id', DANI_CLIENT_ID)
+      .select('id, email, name')
+      .eq('name', 'Dani Diaz')
       .single()
 
     if (clientError || !client?.email) {
@@ -40,7 +40,7 @@ export async function GET(request: Request) {
     const { data: portalLink } = await supabaseAdmin
       .from('client_portal_users')
       .select('*')
-      .eq('client_id', DANI_CLIENT_ID)
+      .eq('client_id', client.id)
       .single()
 
     if (debug) {
@@ -48,8 +48,7 @@ export async function GET(request: Request) {
         client,
         authUserExists: !!authUser,
         authUserId: authUser?.id,
-        portalLink,
-        clientId: DANI_CLIENT_ID
+        portalLink
       })
     }
 
