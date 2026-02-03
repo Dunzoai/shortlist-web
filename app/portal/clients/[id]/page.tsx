@@ -160,7 +160,7 @@ export default function EditClientPage() {
       if (!res.ok) {
         setInviteStatus(`Error: ${data.error || 'Unknown error'}`)
       } else if (data.alreadyExisted) {
-        setInviteStatus('User already has an account. Linked to this client.')
+        setInviteStatus('Done! User already has an account and is now linked to this client. They can log in at my.shortlistpass.com.')
       } else {
         setInviteStatus('Invite sent! Client will receive an email to set their password.')
       }
