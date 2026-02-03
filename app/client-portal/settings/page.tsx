@@ -32,7 +32,7 @@ export default function SettingsPage() {
 
   return (
     <div>
-      <h1 className="text-3xl font-bold text-white mb-8">Settings</h1>
+      <h1 className="text-2xl lg:text-3xl font-bold text-white mb-6">Settings</h1>
 
       <div className="bg-[#333333] border border-[#444444] rounded-lg p-6">
         <h2 className="text-xl font-semibold text-white mb-4">Account Information</h2>
