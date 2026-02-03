@@ -84,7 +84,7 @@ export default function NewInvoicePage() {
         isCustom: false,
       })))
     }
-  }, [selectedClientId, useAutoGenerate])
+  }, [selectedClientId, useAutoGenerate, clients])
 
   const addLineItem = () => {
     setLineItems([...lineItems, { description: '', quantity: 1, unit_price: 0, isCustom: true }])
