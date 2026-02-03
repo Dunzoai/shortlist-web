@@ -7,7 +7,7 @@ import { createClient } from '@/lib/supabase/client'
 export default function RequestAccessPage() {
   const [email, setEmail] = useState('')
   const [loading, setLoading] = useState(false)
-  const [status, setStatus] = useState<'idle' | 'success' | 'not_found' | 'error'>('idle')
+  const [status, setStatus] = useState<'idle' | 'success' | 'success_existing' | 'not_found' | 'error'>('idle')
   const [errorMessage, setErrorMessage] = useState('')
 
   const handleRequest = async (e: React.FormEvent) => {
@@ -48,6 +48,8 @@ export default function RequestAccessPage() {
       if (!res.ok) {
         setErrorMessage(data.error || 'Something went wrong')
         setStatus('error')
+      } else if (data.alreadyExisted) {
+        setStatus('success_existing')
       } else {
         setStatus('success')
       }
@@ -81,6 +83,21 @@ export default function RequestAccessPage() {
               </div>
               <Link href={loginHref} className="block text-center text-sm text-[#2E8B57] hover:underline">
                 Back to login
+              </Link>
+            </div>
+          ) : status === 'success_existing' ? (
+            <div className="space-y-4">
+              <div className="p-4 bg-green-500/10 border border-green-500/50 rounded-lg">
+                <p className="text-green-400 font-medium mb-1">You're all set!</p>
+                <p className="text-green-400/80 text-sm">
+                  You already have an account. Log in with your existing password to access the client portal.
+                </p>
+              </div>
+              <Link href={loginHref} className="block w-full px-4 py-3 bg-[#2E8B57] text-white font-medium rounded hover:bg-[#267347] text-center">
+                Go to Login
+              </Link>
+              <Link href={isSubdomain ? '/forgot-password' : '/client-portal/forgot-password'} className="block text-center text-sm text-gray-400 hover:text-white">
+                Forgot your password?
               </Link>
             </div>
           ) : status === 'not_found' ? (
