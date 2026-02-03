@@ -10,8 +10,11 @@ export async function middleware(request: NextRequest) {
   let effectivePathname = request.nextUrl.pathname
   let needsRewrite = false
 
+  // Skip rewriting for API routes - they should work as-is from any subdomain
+  const isApiRoute = effectivePathname.startsWith('/api/')
+
   // Handle portal subdomain - map paths to /portal routes
-  if (isPortalSubdomain) {
+  if (isPortalSubdomain && !isApiRoute) {
     if (!effectivePathname.startsWith('/portal') && !effectivePathname.startsWith('/auth')) {
       effectivePathname = `/portal${effectivePathname === '/' ? '' : effectivePathname}`
       needsRewrite = true
@@ -19,7 +22,7 @@ export async function middleware(request: NextRequest) {
   }
 
   // Handle client portal subdomain - map paths to /client-portal routes
-  if (isClientPortalSubdomain) {
+  if (isClientPortalSubdomain && !isApiRoute) {
     if (!effectivePathname.startsWith('/client-portal')) {
       effectivePathname = `/client-portal${effectivePathname === '/' ? '/services' : effectivePathname}`
       needsRewrite = true
@@ -35,8 +38,8 @@ export async function middleware(request: NextRequest) {
     effectivePathname === '/client-portal/request-access' ||
     effectivePathname.startsWith('/client-portal/auth/')
 
-  // Only protect portal/client routes (but not login/public pages)
-  if ((!isPortalRoute && !isClientRoute) || isLoginPage || isPublicClientPage) {
+  // Only protect portal/client routes (but not login/public pages or API routes)
+  if ((!isPortalRoute && !isClientRoute) || isLoginPage || isPublicClientPage || isApiRoute) {
     if (needsRewrite) {
       const url = request.nextUrl.clone()
       url.pathname = effectivePathname
