@@ -40,6 +40,8 @@ export default function EditClientPage() {
   const [inviting, setInviting] = useState(false)
   const [inviteStatus, setInviteStatus] = useState('')
   const [payments, setPayments] = useState<Payment[]>([])
+  const [expandedService, setExpandedService] = useState<string | null>(null)
+  const [selectedForInvoice, setSelectedForInvoice] = useState<Set<string>>(new Set())
 
   const { register, handleSubmit, reset, watch, formState: { errors } } = useForm<ClientFormData>({
     resolver: zodResolver(clientSchema),
@@ -365,191 +367,199 @@ export default function EditClientPage() {
           </div>
 
           <div className="space-y-8">
-            <div className="bg-[#333333] rounded-lg p-6">
-              <div className="flex items-center justify-between mb-6">
+            <div>
+              <div className="flex items-center justify-between mb-4">
                 <h2 className="text-lg font-semibold text-white">Services</h2>
-                {availableServices.length > 0 && (
-                  <select
-                    onChange={(e) => { if (e.target.value) { handleAddService(e.target.value); e.target.value = '' } }}
-                    className="px-3 py-1.5 bg-[#444444] border border-[#555555] rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#2E8B57]"
-                  >
-                    <option value="">+ Add Service</option>
-                    {availableServices.map((service) => (
-                      <option key={service.id} value={service.id}>{service.name}</option>
-                    ))}
-                  </select>
-                )}
+                <div className="flex items-center gap-2">
+                  {selectedForInvoice.size > 0 && (
+                    <Link
+                      href={`/portal/invoices/new?client_id=${clientId}&service_ids=${Array.from(selectedForInvoice).join(',')}`}
+                      className="px-3 py-1.5 bg-[#2E8B57] hover:bg-[#25724a] text-white text-xs font-medium rounded-lg transition-colors"
+                    >
+                      Invoice {selectedForInvoice.size} Service{selectedForInvoice.size > 1 ? 's' : ''}
+                    </Link>
+                  )}
+                  {availableServices.length > 0 && (
+                    <select
+                      onChange={(e) => { if (e.target.value) { handleAddService(e.target.value); e.target.value = '' } }}
+                      className="px-3 py-1.5 bg-[#444444] border border-[#555555] rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#2E8B57]"
+                    >
+                      <option value="">+ Add Service</option>
+                      {availableServices.map((service) => (
+                        <option key={service.id} value={service.id}>{service.name}</option>
+                      ))}
+                    </select>
+                  )}
+                </div>
               </div>
 
               {clientServices.length === 0 ? (
-                <p className="text-gray-400 text-center py-8">No services assigned yet. Use the dropdown above to add services.</p>
+                <div className="bg-[#333333] rounded-lg p-6">
+                  <p className="text-gray-400 text-center py-8">No services assigned yet. Use the dropdown above to add services.</p>
+                </div>
               ) : (
-                <div className="space-y-4">
-                  {clientServices.map((cs) => (
-                    <div key={cs.id} className="bg-[#3a3a3a] rounded-lg p-4 space-y-3">
-                      <div className="flex items-center justify-between">
-                        <span className="font-medium text-white">{cs.services.name}</span>
-                        <button onClick={() => handleRemoveService(cs.id)} className="text-gray-400 hover:text-red-400 text-sm">Remove</button>
-                      </div>
+                <div className="space-y-3">
+                  {clientServices.map((cs) => {
+                    const isExpanded = expandedService === cs.id
+                    const totalCost = Number(cs.monthly_cost) + Number(cs.one_time_cost)
+                    const statusColors: Record<string, { border: string; badge: string; text: string }> = {
+                      active: { border: 'border-green-500/40', badge: 'bg-green-500/20 text-green-400', text: 'Active' },
+                      trial: { border: 'border-blue-500/40', badge: 'bg-blue-500/20 text-blue-400', text: 'Trial' },
+                      pending: { border: 'border-orange-500/40', badge: 'bg-orange-500/20 text-orange-400', text: 'Pending' },
+                      completed: { border: 'border-purple-500/40', badge: 'bg-purple-500/20 text-purple-400', text: 'Completed' },
+                      paused: { border: 'border-yellow-500/40', badge: 'bg-yellow-500/20 text-yellow-400', text: 'Paused' },
+                      cancelled: { border: 'border-red-500/30', badge: 'bg-red-500/20 text-red-400', text: 'Cancelled' },
+                    }
+                    const sc = statusColors[cs.status] || statusColors.cancelled
+                    const isChecked = selectedForInvoice.has(cs.id)
 
-                      <div className="grid grid-cols-2 gap-3">
-                        <div>
-                          <label className="block text-xs text-gray-400 mb-1">Monthly Cost</label>
-                          <div className="relative">
-                            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">$</span>
-                            <input
-                              type="number"
-                              value={cs.monthly_cost}
-                              onChange={(e) => handleUpdateService(cs.id, 'monthly_cost', e.target.value)}
-                              className="w-full pl-7 pr-3 py-1.5 bg-[#444444] border border-[#555555] rounded text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#2E8B57]"
-                            />
+                    return (
+                      <div key={cs.id} className={`bg-[#333333] border ${sc.border} rounded-xl overflow-hidden transition-all`}>
+                        {/* Card header - always visible */}
+                        <div
+                          className="flex items-center gap-3 p-4 cursor-pointer hover:bg-[#3a3a3a] transition-colors"
+                          onClick={() => setExpandedService(isExpanded ? null : cs.id)}
+                        >
+                          <input
+                            type="checkbox"
+                            checked={isChecked}
+                            onClick={(e) => e.stopPropagation()}
+                            onChange={() => {
+                              const next = new Set(selectedForInvoice)
+                              if (isChecked) next.delete(cs.id)
+                              else next.add(cs.id)
+                              setSelectedForInvoice(next)
+                            }}
+                            className="w-4 h-4 rounded bg-[#444444] border-[#555555] text-[#2E8B57] focus:ring-[#2E8B57] flex-shrink-0"
+                          />
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-2 mb-1">
+                              <span className="font-semibold text-white truncate">{cs.services.name}</span>
+                              <span className={`px-2 py-0.5 rounded text-[10px] font-semibold ${sc.badge}`}>{sc.text.toUpperCase()}</span>
+                            </div>
+                            <div className="flex items-center gap-3 text-xs text-gray-400">
+                              {Number(cs.monthly_cost) > 0 && <span>${Number(cs.monthly_cost).toLocaleString()}/mo</span>}
+                              {Number(cs.one_time_cost) > 0 && <span>${Number(cs.one_time_cost).toLocaleString()} one-time</span>}
+                              {totalCost === 0 && <span>No cost set</span>}
+                            </div>
                           </div>
+                          <svg className={`w-5 h-5 text-gray-400 flex-shrink-0 transition-transform ${isExpanded ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
+                          </svg>
                         </div>
-                        <div>
-                          <label className="block text-xs text-gray-400 mb-1">One-time Cost</label>
-                          <div className="relative">
-                            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">$</span>
-                            <input
-                              type="number"
-                              value={cs.one_time_cost}
-                              onChange={(e) => handleUpdateService(cs.id, 'one_time_cost', e.target.value)}
-                              className="w-full pl-7 pr-3 py-1.5 bg-[#444444] border border-[#555555] rounded text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#2E8B57]"
-                            />
+
+                        {/* Expanded details */}
+                        {isExpanded && (
+                          <div className="border-t border-[#444444] p-4 space-y-3">
+                            <div className="grid grid-cols-2 gap-3">
+                              <div>
+                                <label className="block text-xs text-gray-400 mb-1">Monthly Cost</label>
+                                <div className="relative">
+                                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">$</span>
+                                  <input type="number" value={cs.monthly_cost} onChange={(e) => handleUpdateService(cs.id, 'monthly_cost', e.target.value)} className="w-full pl-7 pr-3 py-1.5 bg-[#444444] border border-[#555555] rounded text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#2E8B57]" />
+                                </div>
+                              </div>
+                              <div>
+                                <label className="block text-xs text-gray-400 mb-1">One-time Cost</label>
+                                <div className="relative">
+                                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">$</span>
+                                  <input type="number" value={cs.one_time_cost} onChange={(e) => handleUpdateService(cs.id, 'one_time_cost', e.target.value)} className="w-full pl-7 pr-3 py-1.5 bg-[#444444] border border-[#555555] rounded text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#2E8B57]" />
+                                </div>
+                              </div>
+                            </div>
+
+                            <div className="grid grid-cols-2 gap-3">
+                              <div>
+                                <label className="block text-xs text-gray-400 mb-1">Deposit Amount</label>
+                                <div className="relative">
+                                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">$</span>
+                                  <input type="number" value={cs.deposit_amount || 0} onChange={(e) => handleUpdateService(cs.id, 'deposit_amount', e.target.value)} className="w-full pl-7 pr-3 py-1.5 bg-[#444444] border border-[#555555] rounded text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#2E8B57]" />
+                                </div>
+                              </div>
+                              <div>
+                                <label className="block text-xs text-gray-400 mb-1">Amount Paid</label>
+                                <div className="relative">
+                                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">$</span>
+                                  <input type="number" value={cs.amount_paid || 0} onChange={(e) => handleUpdateService(cs.id, 'amount_paid', e.target.value)} className="w-full pl-7 pr-3 py-1.5 bg-[#444444] border border-[#555555] rounded text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#2E8B57]" />
+                                </div>
+                              </div>
+                            </div>
+
+                            <div>
+                              <label className="block text-xs text-gray-400 mb-1">Service Notes (visible to client)</label>
+                              <textarea key={cs.id + '-notes'} defaultValue={cs.notes || ''} onBlur={(e) => handleUpdateService(cs.id, 'notes', e.target.value)} rows={2} placeholder="e.g., 3 posts/month, no UGC. 5-page website with contact form..." className="w-full px-3 py-1.5 bg-[#444444] border border-[#555555] rounded text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#2E8B57] resize-none" />
+                            </div>
+
+                            <div className="grid grid-cols-3 gap-3">
+                              <div>
+                                <label className="block text-xs text-gray-400 mb-1">Status</label>
+                                <select value={cs.status} onChange={(e) => handleUpdateService(cs.id, 'status', e.target.value)} className="w-full px-3 py-1.5 bg-[#444444] border border-[#555555] rounded text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#2E8B57]">
+                                  <option value="active">Active</option>
+                                  <option value="trial">Trial</option>
+                                  <option value="pending">Pending</option>
+                                  <option value="completed">Completed</option>
+                                  <option value="paused">Paused</option>
+                                  <option value="cancelled">Cancelled</option>
+                                </select>
+                              </div>
+                              <div>
+                                <label className="block text-xs text-gray-400 mb-1">Performed By</label>
+                                <select value={cs.performed_by_id || ''} onChange={(e) => handleUpdateService(cs.id, 'performed_by_id', e.target.value)} className="w-full px-3 py-1.5 bg-[#444444] border border-[#555555] rounded text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#2E8B57]">
+                                  <option value="">Not assigned</option>
+                                  {representatives.map((rep) => (
+                                    <option key={rep.id} value={rep.id}>{rep.name}</option>
+                                  ))}
+                                </select>
+                              </div>
+                              <div>
+                                <label className="block text-xs text-gray-400 mb-1">Start Date</label>
+                                <input type="date" value={cs.start_date || ''} onChange={(e) => handleUpdateService(cs.id, 'start_date', e.target.value)} className="w-full px-3 py-1.5 bg-[#444444] border border-[#555555] rounded text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#2E8B57]" />
+                              </div>
+                            </div>
+
+                            {cs.status === 'trial' && (
+                              <div>
+                                <label className="block text-xs text-gray-400 mb-1">Trial Ends</label>
+                                <input type="date" value={cs.trial_end_date ? cs.trial_end_date.split('T')[0] : ''} onChange={(e) => handleUpdateService(cs.id, 'trial_end_date', e.target.value)} className="w-full px-3 py-1.5 bg-[#444444] border border-yellow-500/50 rounded text-yellow-400 text-sm focus:outline-none focus:ring-2 focus:ring-yellow-500" />
+                              </div>
+                            )}
+                            {cs.status === 'paused' && (
+                              <div>
+                                <label className="block text-xs text-gray-400 mb-1">Paused On</label>
+                                <input type="date" value={cs.paused_at ? cs.paused_at.split('T')[0] : ''} onChange={(e) => handleUpdateService(cs.id, 'paused_at', e.target.value)} className="w-full px-3 py-1.5 bg-[#444444] border border-yellow-500/50 rounded text-yellow-400 text-sm focus:outline-none focus:ring-2 focus:ring-yellow-500" />
+                              </div>
+                            )}
+                            {cs.status === 'completed' && (
+                              <div>
+                                <label className="block text-xs text-gray-400 mb-1">Completed On</label>
+                                <input type="date" value={cs.ended_at ? cs.ended_at.split('T')[0] : ''} onChange={(e) => handleUpdateService(cs.id, 'ended_at', e.target.value)} className="w-full px-3 py-1.5 bg-[#444444] border border-purple-500/50 rounded text-purple-400 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500" />
+                              </div>
+                            )}
+                            {cs.status === 'cancelled' && (
+                              <div>
+                                <label className="block text-xs text-gray-400 mb-1">Ended On</label>
+                                <input type="date" value={cs.ended_at ? cs.ended_at.split('T')[0] : ''} onChange={(e) => handleUpdateService(cs.id, 'ended_at', e.target.value)} className="w-full px-3 py-1.5 bg-[#444444] border border-red-500/50 rounded text-red-400 text-sm focus:outline-none focus:ring-2 focus:ring-red-500" />
+                              </div>
+                            )}
+
+                            {/* Actions row */}
+                            <div className="flex items-center justify-between pt-3 border-t border-[#444444]">
+                              <Link
+                                href={`/portal/invoices/new?client_id=${clientId}&service_ids=${cs.id}`}
+                                className="px-3 py-1.5 bg-[#2E8B57] hover:bg-[#25724a] text-white text-xs font-medium rounded-lg transition-colors"
+                              >
+                                Generate Invoice
+                              </Link>
+                              <button onClick={() => handleRemoveService(cs.id)} className="text-gray-400 hover:text-red-400 text-xs transition-colors">Remove</button>
+                            </div>
                           </div>
-                        </div>
+                        )}
                       </div>
+                    )
+                  })}
 
-                      <div className="grid grid-cols-2 gap-3">
-                        <div>
-                          <label className="block text-xs text-gray-400 mb-1">Deposit Amount</label>
-                          <div className="relative">
-                            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">$</span>
-                            <input
-                              type="number"
-                              value={cs.deposit_amount || 0}
-                              onChange={(e) => handleUpdateService(cs.id, 'deposit_amount', e.target.value)}
-                              className="w-full pl-7 pr-3 py-1.5 bg-[#444444] border border-[#555555] rounded text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#2E8B57]"
-                            />
-                          </div>
-                        </div>
-                        <div>
-                          <label className="block text-xs text-gray-400 mb-1">Amount Paid</label>
-                          <div className="relative">
-                            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">$</span>
-                            <input
-                              type="number"
-                              value={cs.amount_paid || 0}
-                              onChange={(e) => handleUpdateService(cs.id, 'amount_paid', e.target.value)}
-                              className="w-full pl-7 pr-3 py-1.5 bg-[#444444] border border-[#555555] rounded text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#2E8B57]"
-                            />
-                          </div>
-                        </div>
-                      </div>
-
-                      <div>
-                        <label className="block text-xs text-gray-400 mb-1">Service Notes (visible to client)</label>
-                        <textarea
-                          key={cs.id + '-notes'}
-                          defaultValue={cs.notes || ''}
-                          onBlur={(e) => handleUpdateService(cs.id, 'notes', e.target.value)}
-                          rows={2}
-                          placeholder="e.g., 3 posts/month, no UGC. 5-page website with contact form..."
-                          className="w-full px-3 py-1.5 bg-[#444444] border border-[#555555] rounded text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#2E8B57] resize-none"
-                        />
-                      </div>
-
-                      <div className="grid grid-cols-3 gap-3">
-                        <div>
-                          <label className="block text-xs text-gray-400 mb-1">Status</label>
-                          <select
-                            value={cs.status}
-                            onChange={(e) => handleUpdateService(cs.id, 'status', e.target.value)}
-                            className="w-full px-3 py-1.5 bg-[#444444] border border-[#555555] rounded text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#2E8B57]"
-                          >
-                            <option value="active">Active</option>
-                            <option value="trial">Trial</option>
-                            <option value="pending">Pending</option>
-                            <option value="completed">Completed</option>
-                            <option value="paused">Paused</option>
-                            <option value="cancelled">Cancelled</option>
-                          </select>
-                        </div>
-                        <div>
-                          <label className="block text-xs text-gray-400 mb-1">Performed By</label>
-                          <select
-                            value={cs.performed_by_id || ''}
-                            onChange={(e) => handleUpdateService(cs.id, 'performed_by_id', e.target.value)}
-                            className="w-full px-3 py-1.5 bg-[#444444] border border-[#555555] rounded text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#2E8B57]"
-                          >
-                            <option value="">Not assigned</option>
-                            {representatives.map((rep) => (
-                              <option key={rep.id} value={rep.id}>{rep.name}</option>
-                            ))}
-                          </select>
-                        </div>
-                        <div>
-                          <label className="block text-xs text-gray-400 mb-1">Start Date</label>
-                          <input
-                            type="date"
-                            value={cs.start_date || ''}
-                            onChange={(e) => handleUpdateService(cs.id, 'start_date', e.target.value)}
-                            className="w-full px-3 py-1.5 bg-[#444444] border border-[#555555] rounded text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#2E8B57]"
-                          />
-                        </div>
-                      </div>
-
-                      {/* Conditional date fields based on status */}
-                      {cs.status === 'trial' && (
-                        <div>
-                          <label className="block text-xs text-gray-400 mb-1">Trial Ends</label>
-                          <input
-                            type="date"
-                            value={cs.trial_end_date ? cs.trial_end_date.split('T')[0] : ''}
-                            onChange={(e) => handleUpdateService(cs.id, 'trial_end_date', e.target.value)}
-                            className="w-full px-3 py-1.5 bg-[#444444] border border-yellow-500/50 rounded text-yellow-400 text-sm focus:outline-none focus:ring-2 focus:ring-yellow-500"
-                          />
-                        </div>
-                      )}
-
-                      {cs.status === 'paused' && (
-                        <div>
-                          <label className="block text-xs text-gray-400 mb-1">Paused On</label>
-                          <input
-                            type="date"
-                            value={cs.paused_at ? cs.paused_at.split('T')[0] : ''}
-                            onChange={(e) => handleUpdateService(cs.id, 'paused_at', e.target.value)}
-                            className="w-full px-3 py-1.5 bg-[#444444] border border-yellow-500/50 rounded text-yellow-400 text-sm focus:outline-none focus:ring-2 focus:ring-yellow-500"
-                          />
-                        </div>
-                      )}
-
-                      {cs.status === 'completed' && (
-                        <div>
-                          <label className="block text-xs text-gray-400 mb-1">Completed On</label>
-                          <input
-                            type="date"
-                            value={cs.ended_at ? cs.ended_at.split('T')[0] : ''}
-                            onChange={(e) => handleUpdateService(cs.id, 'ended_at', e.target.value)}
-                            className="w-full px-3 py-1.5 bg-[#444444] border border-purple-500/50 rounded text-purple-400 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
-                          />
-                        </div>
-                      )}
-
-                      {cs.status === 'cancelled' && (
-                        <div>
-                          <label className="block text-xs text-gray-400 mb-1">Ended On</label>
-                          <input
-                            type="date"
-                            value={cs.ended_at ? cs.ended_at.split('T')[0] : ''}
-                            onChange={(e) => handleUpdateService(cs.id, 'ended_at', e.target.value)}
-                            className="w-full px-3 py-1.5 bg-[#444444] border border-red-500/50 rounded text-red-400 text-sm focus:outline-none focus:ring-2 focus:ring-red-500"
-                          />
-                        </div>
-                      )}
-                    </div>
-                  ))}
-
-                  <div className="pt-4 border-t border-[#444444] space-y-2">
+                  {/* Totals */}
+                  <div className="bg-[#333333] rounded-xl p-4 space-y-2">
                     <div className="flex justify-between text-sm">
                       <span className="text-gray-400">Total Monthly</span>
                       <span className="font-medium text-white">

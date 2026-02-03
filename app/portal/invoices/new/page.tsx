@@ -22,6 +22,7 @@ export default function NewInvoicePage() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const preselectedClientId = searchParams.get('client_id') || ''
+  const preselectedServiceIds = searchParams.get('service_ids')?.split(',').filter(Boolean) || []
   const [clients, setClients] = useState<ClientWithServices[]>([])
   const [services, setServices] = useState<Service[]>([])
   const [loading, setLoading] = useState(true)
@@ -71,15 +72,20 @@ export default function NewInvoicePage() {
   }, [])
 
   const selectedClient = clients.find(c => c.id === selectedClientId)
-  const activeServices = selectedClient?.client_services?.filter(cs => cs.status === 'active' && cs.monthly_cost > 0) || []
+
+  // If specific service_ids passed, use those; otherwise all services with any cost
+  const invoiceableServices = selectedClient?.client_services?.filter(cs => {
+    if (preselectedServiceIds.length > 0) return preselectedServiceIds.includes(cs.id)
+    return (cs.status === 'active' || cs.status === 'trial' || cs.status === 'completed') && (cs.monthly_cost > 0 || cs.one_time_cost > 0)
+  }) || []
 
   // Auto-populate line items when client selected and auto-generate is on
   useEffect(() => {
-    if (useAutoGenerate && selectedClientId && activeServices.length > 0) {
-      setLineItems(activeServices.map(cs => ({
+    if (useAutoGenerate && selectedClientId && invoiceableServices.length > 0) {
+      setLineItems(invoiceableServices.map(cs => ({
         description: cs.service?.name || 'Service',
         quantity: 1,
-        unit_price: cs.monthly_cost,
+        unit_price: cs.monthly_cost > 0 ? cs.monthly_cost : cs.one_time_cost,
         service_id: cs.service_id,
         isCustom: false,
       })))
@@ -221,7 +227,7 @@ export default function NewInvoicePage() {
               </select>
             </div>
 
-            {selectedClient && activeServices.length > 0 && (
+            {selectedClient && invoiceableServices.length > 0 && (
               <label className="flex items-center gap-3 text-sm text-gray-300">
                 <input
                   type="checkbox"
@@ -232,7 +238,7 @@ export default function NewInvoicePage() {
                   }}
                   className="w-4 h-4 rounded bg-[#444444] border-[#555555] text-[#2E8B57] focus:ring-[#2E8B57]"
                 />
-                Auto-populate from {activeServices.length} active service{activeServices.length !== 1 ? 's' : ''}
+                Auto-populate from {invoiceableServices.length} service{invoiceableServices.length !== 1 ? 's' : ''}
               </label>
             )}
           </div>
