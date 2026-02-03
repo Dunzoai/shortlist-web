@@ -4,11 +4,15 @@ import { NextResponse } from 'next/server'
 // Dani Diaz's client ID
 const DANI_CLIENT_ID = 'a6601136-0ab3-40f0-a4ba-79b6be33a24c'
 
-export async function GET() {
+export async function GET(request: Request) {
+  const { searchParams } = new URL(request.url)
+  const debug = searchParams.get('debug')
+
   const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
 
   if (!serviceRoleKey || !supabaseUrl) {
+    if (debug) return NextResponse.json({ error: 'Missing env vars' })
     return NextResponse.redirect('https://my.shortlistpass.com/login')
   }
 
@@ -20,13 +24,33 @@ export async function GET() {
     // Get Dani's email from her client record
     const { data: client, error: clientError } = await supabaseAdmin
       .from('clients')
-      .select('email')
+      .select('email, name')
       .eq('id', DANI_CLIENT_ID)
       .single()
 
     if (clientError || !client?.email) {
-      console.error('[billing-redirect] Client not found:', clientError)
+      if (debug) return NextResponse.json({ error: 'Client not found', clientError })
       return NextResponse.redirect('https://my.shortlistpass.com/login')
+    }
+
+    // Check if user exists and is linked
+    const { data: existingUsers } = await supabaseAdmin.auth.admin.listUsers()
+    const authUser = existingUsers?.users?.find(u => u.email?.toLowerCase() === client.email.toLowerCase())
+
+    const { data: portalLink } = await supabaseAdmin
+      .from('client_portal_users')
+      .select('*')
+      .eq('client_id', DANI_CLIENT_ID)
+      .single()
+
+    if (debug) {
+      return NextResponse.json({
+        client,
+        authUserExists: !!authUser,
+        authUserId: authUser?.id,
+        portalLink,
+        clientId: DANI_CLIENT_ID
+      })
     }
 
     // Generate magic link for her email
@@ -39,14 +63,13 @@ export async function GET() {
     })
 
     if (error || !data?.properties?.action_link) {
-      console.error('[billing-redirect] Error generating link:', error)
       return NextResponse.redirect('https://my.shortlistpass.com/login')
     }
 
     // Redirect to the magic link
     return NextResponse.redirect(data.properties.action_link)
   } catch (err) {
-    console.error('[billing-redirect] Error:', err)
+    if (debug) return NextResponse.json({ error: String(err) })
     return NextResponse.redirect('https://my.shortlistpass.com/login')
   }
 }
