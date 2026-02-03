@@ -36,5 +36,5 @@ export async function GET(request: Request) {
     }
   }
 
-  return NextResponse.redirect(new URL('/client-portal/dashboard', request.url))
+  return NextResponse.redirect(new URL('/client-portal/services', request.url))
 }

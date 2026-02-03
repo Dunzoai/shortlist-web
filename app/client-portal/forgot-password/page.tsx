@@ -18,7 +18,7 @@ export default function ForgotPasswordPage() {
     const supabase = createClient()
 
     const { error: resetError } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: 'https://my.shortlistpass.com/client-portal/set-password',
+      redirectTo: 'https://my.shortlistpass.com/client-portal/auth/callback?type=recovery',
     })
 
     if (resetError) {

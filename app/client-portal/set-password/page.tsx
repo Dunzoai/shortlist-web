@@ -37,7 +37,7 @@ export default function SetPasswordPage() {
     }
 
     const isSubdomain = window.location.hostname.startsWith('my.') || window.location.hostname.startsWith('clients.')
-    router.push(isSubdomain ? '/dashboard' : '/client-portal/dashboard')
+    router.push(isSubdomain ? '/services' : '/client-portal/services')
   }
 
   return (
