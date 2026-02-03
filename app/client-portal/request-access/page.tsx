@@ -18,11 +18,11 @@ export default function RequestAccessPage() {
 
     const supabase = createClient()
 
-    // Check if this email exists as a client
+    // Check if this email exists as a client (case-insensitive)
     const { data: client, error: clientError } = await supabase
       .from('clients')
-      .select('id, name')
-      .eq('email', email.toLowerCase().trim())
+      .select('id, name, email')
+      .ilike('email', email.trim())
       .single()
 
     if (clientError || !client) {
@@ -38,7 +38,7 @@ export default function RequestAccessPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           clientId: client.id,
-          email: email.toLowerCase().trim(),
+          email: client.email, // Use email from DB to preserve original case
           name: client.name,
         }),
       })
