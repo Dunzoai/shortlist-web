@@ -56,7 +56,7 @@ export default function NewInvoicePage() {
       const [clientsRes, servicesRes] = await Promise.all([
         supabase
           .from('clients')
-          .select('*, client_services(*, service:services(*))')
+          .select('*, client_services(*, service:services(*), performed_by:representatives!client_services_performed_by_id_fkey(name))')
           .order('name'),
         supabase
           .from('services')
@@ -86,10 +86,10 @@ export default function NewInvoicePage() {
       setLineItems(invoiceableServices.map(cs => {
         const name = cs.service?.name || 'Service'
         const statusLabel = cs.status !== 'active' ? ` (${cs.status})` : ''
-        const costType = cs.monthly_cost > 0 ? '/mo' : ' one-time'
+        const performedBy = (cs as any).performed_by?.name ? ` | Performed by: ${(cs as any).performed_by.name}` : ''
         const desc = cs.notes
-          ? `${name}${statusLabel} — ${cs.notes}`
-          : `${name}${statusLabel}`
+          ? `${name}${statusLabel}${performedBy} — ${cs.notes}`
+          : `${name}${statusLabel}${performedBy}`
         return {
           description: desc,
           quantity: 1,
