@@ -1,7 +1,8 @@
 import { createClient } from '@supabase/supabase-js'
 import { NextResponse } from 'next/server'
-import { cookies } from 'next/headers'
-import { createServerClient } from '@supabase/ssr'
+
+// Dani Diaz's client ID
+const DANI_CLIENT_ID = 'a6601136-0ab3-40f0-a4ba-79b6be33a24c'
 
 export async function GET() {
   const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY
@@ -12,35 +13,26 @@ export async function GET() {
   }
 
   try {
-    // Get current user from the admin session
-    const cookieStore = await cookies()
-    const supabase = createServerClient(
-      supabaseUrl,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-      {
-        cookies: {
-          getAll() {
-            return cookieStore.getAll()
-          },
-          setAll() {},
-        },
-      }
-    )
-
-    const { data: { user } } = await supabase.auth.getUser()
-
-    if (!user?.email) {
-      return NextResponse.redirect('https://my.shortlistpass.com/login')
-    }
-
-    // Generate magic link for the client portal
     const supabaseAdmin = createClient(supabaseUrl, serviceRoleKey, {
       auth: { autoRefreshToken: false, persistSession: false },
     })
 
+    // Get Dani's email from her client record
+    const { data: client, error: clientError } = await supabaseAdmin
+      .from('clients')
+      .select('email')
+      .eq('id', DANI_CLIENT_ID)
+      .single()
+
+    if (clientError || !client?.email) {
+      console.error('[billing-redirect] Client not found:', clientError)
+      return NextResponse.redirect('https://my.shortlistpass.com/login')
+    }
+
+    // Generate magic link for her email
     const { data, error } = await supabaseAdmin.auth.admin.generateLink({
       type: 'magiclink',
-      email: user.email,
+      email: client.email,
       options: {
         redirectTo: 'https://my.shortlistpass.com/client-portal/auth/callback',
       },
