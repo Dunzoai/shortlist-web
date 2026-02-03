@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import Link from 'next/link'
 import type { Client, ClientService, Service } from '@/lib/portal-types'
@@ -20,12 +20,14 @@ interface LineItem {
 
 export default function NewInvoicePage() {
   const router = useRouter()
+  const searchParams = useSearchParams()
+  const preselectedClientId = searchParams.get('client_id') || ''
   const [clients, setClients] = useState<ClientWithServices[]>([])
   const [services, setServices] = useState<Service[]>([])
   const [loading, setLoading] = useState(true)
   const [creating, setCreating] = useState(false)
 
-  const [selectedClientId, setSelectedClientId] = useState('')
+  const [selectedClientId, setSelectedClientId] = useState(preselectedClientId)
   const [dueDate, setDueDate] = useState(() => {
     const date = new Date()
     date.setDate(date.getDate() + 30)

@@ -125,6 +125,7 @@ export default function ClientPortalShell({ children }: { children: React.ReactN
     { name: 'Invoices', href: isSubdomain ? '/invoices' : '/client-portal/invoices', path: 'invoices', badge: invoiceCount },
     { name: 'Billing', href: isSubdomain ? '/billing' : '/client-portal/billing', path: 'billing' },
     { name: 'Settings', href: isSubdomain ? '/settings' : '/client-portal/settings', path: 'settings' },
+    { name: 'How We Work', href: isSubdomain ? '/how-we-work' : '/client-portal/how-we-work', path: 'how-we-work' },
   ]
 
   return (

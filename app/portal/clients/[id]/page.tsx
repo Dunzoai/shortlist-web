@@ -329,16 +329,23 @@ export default function EditClientPage() {
               </div>
 
               <div className="bg-[#333333] rounded-lg p-6 space-y-4">
-                <h2 className="text-lg font-semibold text-white">Client Portal Access</h2>
-                <p className="text-sm text-gray-400">Send an invite email so this client can log into their dashboard at my.shortlistpass.com</p>
-                <button
-                  type="button"
-                  onClick={handleInviteToPortal}
-                  disabled={inviting}
-                  className="px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white text-sm font-medium rounded-lg transition-colors"
-                >
-                  {inviting ? 'Sending...' : 'Invite to Portal'}
-                </button>
+                <h2 className="text-lg font-semibold text-white">Actions</h2>
+                <div className="flex flex-wrap gap-3">
+                  <Link
+                    href={`/portal/invoices/new?client_id=${clientId}`}
+                    className="px-4 py-2 bg-[#2E8B57] hover:bg-[#25724a] text-white text-sm font-medium rounded-lg transition-colors"
+                  >
+                    Create Invoice
+                  </Link>
+                  <button
+                    type="button"
+                    onClick={handleInviteToPortal}
+                    disabled={inviting}
+                    className="px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white text-sm font-medium rounded-lg transition-colors"
+                  >
+                    {inviting ? 'Sending...' : 'Invite to Portal'}
+                  </button>
+                </div>
                 {inviteStatus && (
                   <p className={`text-sm ${inviteStatus.startsWith('Error') ? 'text-red-400' : 'text-green-400'}`}>
                     {inviteStatus}
