@@ -39,6 +39,9 @@ export default function EditClientPage() {
   const [deleting, setDeleting] = useState(false)
   const [inviting, setInviting] = useState(false)
   const [inviteStatus, setInviteStatus] = useState('')
+  const [showPasswordModal, setShowPasswordModal] = useState(false)
+  const [tempPassword, setTempPassword] = useState('')
+  const [settingPassword, setSettingPassword] = useState(false)
   const [payments, setPayments] = useState<Payment[]>([])
   const [expandedService, setExpandedService] = useState<string | null>(null)
   const [selectedForInvoice, setSelectedForInvoice] = useState<Set<string>>(new Set())
@@ -168,6 +171,37 @@ export default function EditClientPage() {
       setInviteStatus(`Failed to send invite: ${err instanceof Error ? err.message : 'Network error'}`)
     }
     setInviting(false)
+  }
+
+  const handleSetPassword = async () => {
+    const email = watch('email')
+    const name = watch('name')
+    if (!email) {
+      alert('Client must have an email address.')
+      return
+    }
+    if (!tempPassword || tempPassword.length < 6) {
+      alert('Password must be at least 6 characters.')
+      return
+    }
+    setSettingPassword(true)
+    try {
+      const res = await fetch('/api/portal/set-client-password', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ clientId, email, name, password: tempPassword }),
+      })
+      const data = await res.json()
+      if (!res.ok) {
+        setInviteStatus(`Error: ${data.error}`)
+      } else {
+        setInviteStatus(`Password set! Client can log in at my.shortlistpass.com with password: ${tempPassword}`)
+        setShowPasswordModal(false)
+      }
+    } catch (err) {
+      setInviteStatus(`Error: ${err instanceof Error ? err.message : 'Network error'}`)
+    }
+    setSettingPassword(false)
   }
 
   const handleAddService = async (serviceId: string) => {
@@ -347,7 +381,43 @@ export default function EditClientPage() {
                   >
                     {inviting ? 'Sending...' : 'Invite to Portal'}
                   </button>
+                  <button
+                    type="button"
+                    onClick={() => { setTempPassword('Welcome123!'); setShowPasswordModal(true) }}
+                    className="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white text-sm font-medium rounded-lg transition-colors"
+                  >
+                    Set Password
+                  </button>
                 </div>
+                {showPasswordModal && (
+                  <div className="mt-3 p-4 bg-[#2a2a2a] rounded-lg border border-[#444444]">
+                    <p className="text-sm text-gray-300 mb-2">Set a temporary password for this client:</p>
+                    <input
+                      type="text"
+                      value={tempPassword}
+                      onChange={(e) => setTempPassword(e.target.value)}
+                      className="w-full px-3 py-2 bg-[#333333] border border-[#444444] rounded text-white text-sm mb-3"
+                      placeholder="Enter password (min 6 chars)"
+                    />
+                    <div className="flex gap-2">
+                      <button
+                        type="button"
+                        onClick={handleSetPassword}
+                        disabled={settingPassword}
+                        className="px-3 py-1.5 bg-purple-600 hover:bg-purple-700 disabled:opacity-50 text-white text-sm rounded"
+                      >
+                        {settingPassword ? 'Setting...' : 'Confirm'}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setShowPasswordModal(false)}
+                        className="px-3 py-1.5 bg-gray-600 hover:bg-gray-700 text-white text-sm rounded"
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  </div>
+                )}
                 {inviteStatus && (
                   <p className={`text-sm ${inviteStatus.startsWith('Error') ? 'text-red-400' : 'text-green-400'}`}>
                     {inviteStatus}
