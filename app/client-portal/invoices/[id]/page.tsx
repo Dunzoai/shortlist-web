@@ -7,6 +7,32 @@ import { usePortalClient } from '@/lib/usePortalClient'
 import Link from 'next/link'
 import { ArrowLeft } from 'lucide-react'
 
+function linkify(text: string) {
+  // Match URLs (http/https) and bare domains (word.tld patterns)
+  const urlRegex = /(https?:\/\/[^\s,)]+)|(?<![/@])\b([a-zA-Z0-9][-a-zA-Z0-9]*\.(?:com|net|org|io|co|app|dev|ai|xyz|me|info|biz|us|uk|ca|edu|gov)(?:\.[a-z]{2})?(?:\/[^\s,)]*)?)/gi
+  const parts: (string | JSX.Element)[] = []
+  let lastIndex = 0
+  let match: RegExpExecArray | null
+
+  while ((match = urlRegex.exec(text)) !== null) {
+    if (match.index > lastIndex) {
+      parts.push(text.slice(lastIndex, match.index))
+    }
+    const url = match[0]
+    const href = url.startsWith('http') ? url : `https://${url}`
+    parts.push(
+      <a key={match.index} href={href} target="_blank" rel="noopener noreferrer" className="text-[#2E8B57] hover:underline">
+        {url}
+      </a>
+    )
+    lastIndex = match.index + match[0].length
+  }
+  if (lastIndex < text.length) {
+    parts.push(text.slice(lastIndex))
+  }
+  return parts.length > 0 ? parts : [text]
+}
+
 interface InvoiceItem {
   id: string
   description: string
@@ -179,7 +205,7 @@ export default function ClientInvoiceDetailPage() {
                   {item.services?.name && (
                     <p className="text-xs text-[#2E8B57] font-medium mb-1">{item.services.name}</p>
                   )}
-                  <p className="text-white text-sm">{item.description}</p>
+                  <p className="text-white text-sm">{linkify(item.description)}</p>
                 </div>
                 <div className="text-right flex-shrink-0">
                   <p className="text-white font-semibold">${Number(item.amount).toLocaleString('en-US', { minimumFractionDigits: 2 })}</p>
@@ -227,7 +253,7 @@ export default function ClientInvoiceDetailPage() {
       {invoice.notes && (
         <div className="bg-[#333333] border border-[#444444] rounded-xl p-4 mb-6">
           <p className="text-xs text-gray-500 mb-2">Notes</p>
-          <p className="text-sm text-gray-300 whitespace-pre-wrap leading-relaxed">{invoice.notes}</p>
+          <p className="text-sm text-gray-300 whitespace-pre-wrap leading-relaxed">{linkify(invoice.notes)}</p>
         </div>
       )}
 
