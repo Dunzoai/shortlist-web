@@ -64,7 +64,6 @@ export async function POST(request: Request) {
       .upsert({
         client_id: clientId,
         user_id: userId,
-        role: 'client',
       }, { onConflict: 'user_id' })
 
     if (linkError) {
