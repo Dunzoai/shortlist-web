@@ -103,7 +103,8 @@ export default function ClientPortalShell({ children }: { children: React.ReactN
   // Public pages — no sidebar
   if (pathname === '/client-portal/login' || pathname === '/login' ||
       pathname === '/client-portal/set-password' || pathname === '/set-password' ||
-      pathname === '/client-portal/forgot-password' || pathname === '/forgot-password') {
+      pathname === '/client-portal/forgot-password' || pathname === '/forgot-password' ||
+      pathname === '/client-portal/request-access' || pathname === '/request-access') {
     return <>{children}</>
   }
 

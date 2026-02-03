@@ -32,6 +32,7 @@ export async function middleware(request: NextRequest) {
   const isPublicClientPage = effectivePathname === '/client-portal/login' ||
     effectivePathname === '/client-portal/forgot-password' ||
     effectivePathname === '/client-portal/set-password' ||
+    effectivePathname === '/client-portal/request-access' ||
     effectivePathname.startsWith('/client-portal/auth/')
 
   // Only protect portal/client routes (but not login/public pages)

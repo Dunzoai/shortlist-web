@@ -83,12 +83,18 @@ export default function PortalLoginPage() {
             </button>
           </form>
 
-          <div className="mt-4 text-center">
+          <div className="mt-4 text-center space-y-2">
             <a
-              href="/client-portal/forgot-password"
-              className="text-sm text-gray-400 hover:text-[#2E8B57]"
+              href={isSubdomain ? '/forgot-password' : '/client-portal/forgot-password'}
+              className="block text-sm text-gray-400 hover:text-[#2E8B57]"
             >
               Forgot your password?
+            </a>
+            <a
+              href={isSubdomain ? '/request-access' : '/client-portal/request-access'}
+              className="block text-sm text-gray-400 hover:text-[#2E8B57]"
+            >
+              First time? Request access
             </a>
           </div>
         </div>
