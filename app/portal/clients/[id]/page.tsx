@@ -158,14 +158,14 @@ export default function EditClientPage() {
       })
       const data = await res.json()
       if (!res.ok) {
-        setInviteStatus(`Error: ${data.error}`)
+        setInviteStatus(`Error: ${data.error || 'Unknown error'}`)
       } else if (data.alreadyExisted) {
         setInviteStatus('User already has an account. Linked to this client.')
       } else {
         setInviteStatus('Invite sent! Client will receive an email to set their password.')
       }
-    } catch {
-      setInviteStatus('Failed to send invite.')
+    } catch (err) {
+      setInviteStatus(`Failed to send invite: ${err instanceof Error ? err.message : 'Network error'}`)
     }
     setInviting(false)
   }
