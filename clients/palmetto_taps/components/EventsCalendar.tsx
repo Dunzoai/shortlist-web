@@ -15,9 +15,16 @@ interface Event {
   location_notes?: string;
 }
 
+// Event template type
+interface EventTemplate {
+  keywords: string[];
+  image: string;
+  gradient: string;
+}
+
 // Event type templates - add your own images to /public/clients/palmetto_taps/events/
 // Updated with brown/tan/green branding
-const eventTemplates = {
+const eventTemplates: Record<string, EventTemplate> = {
   liveMusic: {
     keywords: ["music", "band", "live", "concert", "performer", "acoustic"],
     image: "/clients/palmetto_taps/events/live-music.jpg",
@@ -66,7 +73,7 @@ const eventTemplates = {
 };
 
 // Detect event type from title/description
-function detectEventType(title: string, description?: string | null): typeof eventTemplates.default {
+function detectEventType(title: string, description?: string | null): EventTemplate {
   const searchText = `${title} ${description || ""}`.toLowerCase();
 
   for (const [key, template] of Object.entries(eventTemplates)) {
