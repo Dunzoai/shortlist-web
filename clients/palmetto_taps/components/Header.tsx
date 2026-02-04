@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
-import { business } from "@/content/business";
+import { business } from "@/clients/palmetto_taps/content/business";
 
 const navLinks = [
   { href: "/", label: "Home" },
