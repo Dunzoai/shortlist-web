@@ -22,53 +22,52 @@ interface EventTemplate {
   gradient: string;
 }
 
-// Event type templates - add your own images to /public/clients/palmetto_taps/events/
-// Updated with brown/tan/green branding
+// Event type templates - updated to match homepage (tan/beige/brown/charcoal)
 const eventTemplates: Record<string, EventTemplate> = {
   liveMusic: {
     keywords: ["music", "band", "live", "concert", "performer", "acoustic"],
     image: "/clients/palmetto_taps/events/live-music.jpg",
-    gradient: "from-[#8B7355] to-[#6F5C45]", // Brown tones
+    gradient: "from-[#8B6A4F] to-[#6F5536]",
   },
   thirstyThursday: {
     keywords: ["thirsty thursday", "thursday", "$3"],
     image: "/clients/palmetto_taps/events/thirsty-thursday.jpg",
-    gradient: "from-[#D4A574] to-[#B8935F]", // Golden/amber tones
+    gradient: "from-[#D4A574] to-[#B8935F]",
   },
   wineWednesday: {
     keywords: ["wine wednesday", "wine", "wednesday"],
     image: "/clients/palmetto_taps/events/wine-wednesday.jpg",
-    gradient: "from-[#8B6F5E] to-[#6F584A]", // Wine brown tones
+    gradient: "from-[#8B6F5E] to-[#6F584A]",
   },
   tealTuesday: {
     keywords: ["teal tuesday", "tuesday", "coastal carolina"],
     image: "/clients/palmetto_taps/events/teal-tuesday.jpg",
-    gradient: "from-[#2D5A52] to-[#1F4540]", // Muted teal/green
+    gradient: "from-[#5A7A76] to-[#3D5A56]",
   },
   food: {
     keywords: ["burger", "food", "smash", "eat", "kitchen", "meal"],
     image: "/clients/palmetto_taps/events/food.jpg",
-    gradient: "from-[#C2956E] to-[#A67C52]", // Warm brown
+    gradient: "from-[#C2956E] to-[#A67C52]",
   },
   trivia: {
     keywords: ["trivia", "quiz", "game night"],
     image: "/clients/palmetto_taps/events/trivia.jpg",
-    gradient: "from-[#5A6F5A] to-[#3D4E3C]", // Forest green
+    gradient: "from-[#6B5D4F] to-[#4A3F35]",
   },
   cigars: {
     keywords: ["cigar", "humidor", "hookup", "smoke"],
     image: "/clients/palmetto_taps/events/cigars.jpg",
-    gradient: "from-[#6B5D4F] to-[#4A3F35]", // Dark tobacco brown
+    gradient: "from-[#4A3F35] to-[#2F2621]",
   },
   tasting: {
     keywords: ["tasting", "flight", "sample", "brewery", "craft"],
     image: "/clients/palmetto_taps/events/tasting.jpg",
-    gradient: "from-[#7A9B76] to-[#5A7A56]", // Sage green
+    gradient: "from-[#B89968] to-[#9A7D4F]",
   },
   default: {
     keywords: [],
     image: "/clients/palmetto_taps/events/default.jpg",
-    gradient: "from-[#8B7355] to-[#6F5C45]", // Brand brown
+    gradient: "from-[#8B6A4F] to-[#6F5536]",
   },
 };
 
@@ -155,7 +154,7 @@ export function EventsCalendar() {
             href="https://www.facebook.com/profile.php?id=100089634545976"
             target="_blank"
             rel="noopener noreferrer"
-            className="text-[#8B7355] hover:underline"
+            className="text-[#8B6A4F] hover:underline"
           >
             Facebook
           </a>{" "}
@@ -164,7 +163,7 @@ export function EventsCalendar() {
             href="https://www.instagram.com/palmettotaps/?hl=en"
             target="_blank"
             rel="noopener noreferrer"
-            className="text-[#8B7355] hover:underline"
+            className="text-[#8B6A4F] hover:underline"
           >
             Instagram
           </a>{" "}
@@ -191,7 +190,7 @@ export function EventsCalendar() {
             href="https://www.facebook.com/profile.php?id=100089634545976"
             target="_blank"
             rel="noopener noreferrer"
-            className="px-6 py-2 bg-[#8B7355] text-white rounded-lg hover:bg-[#6F5C45] transition-colors"
+            className="px-6 py-2 bg-[#8B6A4F] text-white rounded-lg hover:bg-[#6F5536] transition-colors"
           >
             Facebook
           </a>
@@ -199,7 +198,7 @@ export function EventsCalendar() {
             href="https://www.instagram.com/palmettotaps/?hl=en"
             target="_blank"
             rel="noopener noreferrer"
-            className="px-6 py-2 bg-[#8B7355] text-white rounded-lg hover:bg-[#6F5C45] transition-colors"
+            className="px-6 py-2 bg-[#8B6A4F] text-white rounded-lg hover:bg-[#6F5536] transition-colors"
           >
             Instagram
           </a>
@@ -219,7 +218,7 @@ export function EventsCalendar() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: index * 0.1 }}
-            className="bg-white rounded-xl shadow-xl overflow-hidden hover:shadow-2xl transition-shadow"
+            className="bg-white rounded-xl shadow-xl overflow-hidden hover:shadow-2xl transition-shadow border border-[#8B6A4F]/20"
           >
             {/* Event Image Header */}
             <div className={`relative h-48 bg-gradient-to-br ${template.gradient} overflow-hidden`}>
@@ -232,9 +231,9 @@ export function EventsCalendar() {
               <div className="absolute inset-0 bg-black/30" />
               
               {/* Date Badge */}
-              <div className="absolute top-4 right-4 bg-white/95 backdrop-blur rounded-lg px-4 py-2 shadow-lg">
+              <div className="absolute top-4 right-4 bg-white/95 backdrop-blur rounded-lg px-4 py-2 shadow-lg border border-[#8B6A4F]/20">
                 <div className="text-center">
-                  <div className="text-2xl font-bold text-[#2D3E2C]">
+                  <div className="text-2xl font-bold text-[#1F1F1E]">
                     {new Date(event.event_date + "T00:00:00").getDate()}
                   </div>
                   <div className="text-xs uppercase font-semibold text-neutral-600">
@@ -246,19 +245,19 @@ export function EventsCalendar() {
 
             {/* Event Details */}
             <div className="p-6">
-              <h3 className="text-2xl font-bold text-[#2D3E2C] mb-3">
+              <h3 className="text-2xl font-bold text-[#1F1F1E] mb-3">
                 {event.title}
               </h3>
               
               <div className="space-y-2 mb-4">
                 <p className="flex items-center gap-2 text-neutral-600">
-                  <svg className="w-5 h-5 text-[#8B7355]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-5 h-5 text-[#8B6A4F]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                   </svg>
                   <span className="font-semibold">{formatDate(event.event_date)}</span>
                 </p>
                 <p className="flex items-center gap-2 text-neutral-600">
-                  <svg className="w-5 h-5 text-[#8B7355]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-5 h-5 text-[#8B6A4F]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                   </svg>
                   <span>{formatTime(event.start_time)} - {formatTime(event.end_time)}</span>
@@ -272,7 +271,7 @@ export function EventsCalendar() {
               {event.location_notes && (
                 <div className="mt-4 pt-4 border-t border-neutral-200">
                   <p className="flex items-start gap-2 text-sm text-neutral-600">
-                    <svg className="w-4 h-4 text-[#8B7355] mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="w-4 h-4 text-[#8B6A4F] mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                     </svg>
