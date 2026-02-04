@@ -39,7 +39,7 @@ export default function AgeVerification() {
             className="bg-neutral-900 border border-white/10 rounded-lg p-8 max-w-md w-full text-center"
           >
             <img
-              src="/palmetto_taps_logo.PNG"
+              src="/clients/palmetto_taps/palmetto_taps_logo.PNG"
               alt="Palmetto Taps"
               className="h-20 mx-auto mb-6"
             />

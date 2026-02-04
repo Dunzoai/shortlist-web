@@ -21,7 +21,7 @@ export default function Header() {
       <div className="max-w-6xl mx-auto px-6 py-2 flex items-center justify-between">
         <Link href="/" className="block">
           <img
-            src="/palmetto-taps-logo.webp"
+            src="/clients/palmetto_taps/palmetto-taps-logo.webp"
             alt="Palmetto Taps"
             className="h-12 w-auto"
           />

@@ -6,8 +6,8 @@ import { EventsCalendar } from "@/clients/palmetto_taps/components/EventsCalenda
 export default function EventsPage() {
   return (
     <div className="min-h-screen bg-[#E2D6C7]">
-      {/* Hero Section */}
-      <section className="py-16 px-6 bg-gradient-to-b from-[#2D3E50] to-[#3D4E60] text-white">
+      {/* Hero Section - Match site branding */}
+      <section className="py-16 px-6 bg-gradient-to-b from-[#2D3E2C] to-[#3D4E3C] text-white">
         <div className="max-w-4xl mx-auto text-center">
           <h1 className="text-4xl md:text-5xl font-bold mb-4">What's Happening</h1>
           <p className="text-xl text-white/80">
@@ -19,7 +19,7 @@ export default function EventsPage() {
       {/* Special Events from SmartPage */}
       <section className="py-12 px-6">
         <div className="max-w-5xl mx-auto">
-          <h2 className="text-3xl font-bold text-neutral-800 mb-8 text-center">
+          <h2 className="text-3xl font-bold text-[#2D3E2C] mb-8 text-center">
             Upcoming Special Events
           </h2>
           <EventsCalendar />
@@ -29,7 +29,7 @@ export default function EventsPage() {
       {/* Weekly Recurring Events */}
       <section className="py-12 px-6 bg-white">
         <div className="max-w-5xl mx-auto">
-          <h2 className="text-3xl font-bold text-neutral-800 mb-4 text-center">
+          <h2 className="text-3xl font-bold text-[#2D3E2C] mb-4 text-center">
             Weekly Schedule
           </h2>
           <p className="text-center text-neutral-600 mb-10">
@@ -42,10 +42,10 @@ export default function EventsPage() {
                 className="bg-gradient-to-br from-[#E4DED4] to-[#D4CFC5] rounded-lg p-6 shadow-md hover:shadow-xl transition-shadow"
               >
                 <div className="flex items-center gap-3 mb-3">
-                  <div className="w-12 h-12 rounded-full bg-[#8B7355] text-white flex items-center justify-center font-bold text-sm">
+                  <div className="w-12 h-12 rounded-full bg-[#2D3E2C] text-white flex items-center justify-center font-bold text-sm">
                     {event.day.slice(0, 3)}
                   </div>
-                  <h3 className="text-xl font-bold text-neutral-800">
+                  <h3 className="text-xl font-bold text-[#2D3E2C]">
                     {event.name}
                   </h3>
                 </div>
@@ -57,7 +57,7 @@ export default function EventsPage() {
       </section>
 
       {/* Call to Action */}
-      <section className="py-16 px-6 bg-gradient-to-b from-[#2D3E50] to-[#3D4E60] text-white text-center">
+      <section className="py-16 px-6 bg-gradient-to-b from-[#2D3E2C] to-[#3D4E3C] text-white text-center">
         <div className="max-w-3xl mx-auto">
           <h2 className="text-3xl md:text-4xl font-bold mb-4">
             Stay in the Loop
@@ -70,7 +70,7 @@ export default function EventsPage() {
               href={business.socials.facebook}
               target="_blank"
               rel="noopener noreferrer"
-              className="px-8 py-3 bg-white text-[#2D3E50] rounded-lg font-semibold hover:bg-[#E2D6C7] transition-colors"
+              className="px-8 py-3 bg-white text-[#2D3E2C] rounded-lg font-semibold hover:bg-[#E2D6C7] transition-colors"
             >
               Follow on Facebook
             </a>
@@ -78,7 +78,7 @@ export default function EventsPage() {
               href={business.socials.instagram}
               target="_blank"
               rel="noopener noreferrer"
-              className="px-8 py-3 bg-white text-[#2D3E50] rounded-lg font-semibold hover:bg-[#E2D6C7] transition-colors"
+              className="px-8 py-3 bg-white text-[#2D3E2C] rounded-lg font-semibold hover:bg-[#E2D6C7] transition-colors"
             >
               Follow on Instagram
             </a>

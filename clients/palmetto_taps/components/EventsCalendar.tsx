@@ -16,51 +16,52 @@ interface Event {
 }
 
 // Event type templates - add your own images to /public/clients/palmetto_taps/events/
+// Updated with brown/tan/green branding
 const eventTemplates = {
   liveMusic: {
     keywords: ["music", "band", "live", "concert", "performer", "acoustic"],
-    image: "/clients/palmetto_taps/events/live-music.jpg", // ADD YOUR IMAGE HERE
-    gradient: "from-purple-500 to-pink-500",
+    image: "/clients/palmetto_taps/events/live-music.jpg",
+    gradient: "from-[#8B7355] to-[#6F5C45]", // Brown tones
   },
   thirstyThursday: {
     keywords: ["thirsty thursday", "thursday", "$3"],
-    image: "/clients/palmetto_taps/events/thirsty-thursday.jpg", // ADD YOUR IMAGE HERE
-    gradient: "from-amber-500 to-yellow-500",
+    image: "/clients/palmetto_taps/events/thirsty-thursday.jpg",
+    gradient: "from-[#D4A574] to-[#B8935F]", // Golden/amber tones
   },
   wineWednesday: {
     keywords: ["wine wednesday", "wine", "wednesday"],
-    image: "/clients/palmetto_taps/events/wine-wednesday.jpg", // ADD YOUR IMAGE HERE
-    gradient: "from-rose-500 to-red-500",
+    image: "/clients/palmetto_taps/events/wine-wednesday.jpg",
+    gradient: "from-[#8B6F5E] to-[#6F584A]", // Wine brown tones
   },
   tealTuesday: {
     keywords: ["teal tuesday", "tuesday", "coastal carolina"],
-    image: "/clients/palmetto_taps/events/teal-tuesday.jpg", // ADD YOUR IMAGE HERE
-    gradient: "from-teal-500 to-cyan-500",
+    image: "/clients/palmetto_taps/events/teal-tuesday.jpg",
+    gradient: "from-[#2D5A52] to-[#1F4540]", // Muted teal/green
   },
   food: {
     keywords: ["burger", "food", "smash", "eat", "kitchen", "meal"],
-    image: "/clients/palmetto_taps/events/food.jpg", // ADD YOUR IMAGE HERE
-    gradient: "from-orange-500 to-red-500",
+    image: "/clients/palmetto_taps/events/food.jpg",
+    gradient: "from-[#C2956E] to-[#A67C52]", // Warm brown
   },
   trivia: {
     keywords: ["trivia", "quiz", "game night"],
-    image: "/clients/palmetto_taps/events/trivia.jpg", // ADD YOUR IMAGE HERE
-    gradient: "from-blue-500 to-indigo-500",
+    image: "/clients/palmetto_taps/events/trivia.jpg",
+    gradient: "from-[#5A6F5A] to-[#3D4E3C]", // Forest green
   },
   cigars: {
     keywords: ["cigar", "humidor", "hookup", "smoke"],
-    image: "/clients/palmetto_taps/events/cigars.jpg", // ADD YOUR IMAGE HERE
-    gradient: "from-gray-600 to-gray-800",
+    image: "/clients/palmetto_taps/events/cigars.jpg",
+    gradient: "from-[#6B5D4F] to-[#4A3F35]", // Dark tobacco brown
   },
   tasting: {
     keywords: ["tasting", "flight", "sample", "brewery", "craft"],
-    image: "/clients/palmetto_taps/events/tasting.jpg", // ADD YOUR IMAGE HERE
-    gradient: "from-green-500 to-emerald-500",
+    image: "/clients/palmetto_taps/events/tasting.jpg",
+    gradient: "from-[#7A9B76] to-[#5A7A56]", // Sage green
   },
   default: {
     keywords: [],
-    image: "/clients/palmetto_taps/events/default.jpg", // ADD YOUR IMAGE HERE
-    gradient: "from-[#8B7355] to-[#6F5C45]",
+    image: "/clients/palmetto_taps/events/default.jpg",
+    gradient: "from-[#8B7355] to-[#6F5C45]", // Brand brown
   },
 };
 
@@ -226,7 +227,7 @@ export function EventsCalendar() {
               {/* Date Badge */}
               <div className="absolute top-4 right-4 bg-white/95 backdrop-blur rounded-lg px-4 py-2 shadow-lg">
                 <div className="text-center">
-                  <div className="text-2xl font-bold text-neutral-800">
+                  <div className="text-2xl font-bold text-[#2D3E2C]">
                     {new Date(event.event_date + "T00:00:00").getDate()}
                   </div>
                   <div className="text-xs uppercase font-semibold text-neutral-600">
@@ -238,7 +239,7 @@ export function EventsCalendar() {
 
             {/* Event Details */}
             <div className="p-6">
-              <h3 className="text-2xl font-bold text-neutral-800 mb-3">
+              <h3 className="text-2xl font-bold text-[#2D3E2C] mb-3">
                 {event.title}
               </h3>
               
