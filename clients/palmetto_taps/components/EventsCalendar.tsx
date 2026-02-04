@@ -15,61 +15,52 @@ interface Event {
   location_notes?: string;
 }
 
-// Event type templates with images/colors
+// Event type templates - add your own images to /public/clients/palmetto_taps/events/
 const eventTemplates = {
   liveMusic: {
     keywords: ["music", "band", "live", "concert", "performer", "acoustic"],
-    icon: "🎸",
+    image: "/clients/palmetto_taps/events/live-music.jpg", // ADD YOUR IMAGE HERE
     gradient: "from-purple-500 to-pink-500",
-    image: "/clients/palmetto_taps/tap-party.jpg", // band/crowd
   },
   thirstyThursday: {
     keywords: ["thirsty thursday", "thursday", "$3"],
-    icon: "🍺",
+    image: "/clients/palmetto_taps/events/thirsty-thursday.jpg", // ADD YOUR IMAGE HERE
     gradient: "from-amber-500 to-yellow-500",
-    image: "/clients/palmetto_taps/kona_big_wave.png", // beer bottle
   },
   wineWednesday: {
     keywords: ["wine wednesday", "wine", "wednesday"],
-    icon: "🍷",
+    image: "/clients/palmetto_taps/events/wine-wednesday.jpg", // ADD YOUR IMAGE HERE
     gradient: "from-rose-500 to-red-500",
-    image: "/clients/palmetto_taps/prosecco_pint.png",
   },
   tealTuesday: {
     keywords: ["teal tuesday", "tuesday", "coastal carolina"],
-    icon: "🏈",
+    image: "/clients/palmetto_taps/events/teal-tuesday.jpg", // ADD YOUR IMAGE HERE
     gradient: "from-teal-500 to-cyan-500",
-    image: "/clients/palmetto_taps/keeping_it_teal.png",
   },
   food: {
     keywords: ["burger", "food", "smash", "eat", "kitchen", "meal"],
-    icon: "🍔",
+    image: "/clients/palmetto_taps/events/food.jpg", // ADD YOUR IMAGE HERE
     gradient: "from-orange-500 to-red-500",
-    image: "/clients/palmetto_taps/Burger.png",
   },
   trivia: {
     keywords: ["trivia", "quiz", "game night"],
-    icon: "🧠",
+    image: "/clients/palmetto_taps/events/trivia.jpg", // ADD YOUR IMAGE HERE
     gradient: "from-blue-500 to-indigo-500",
-    image: "/clients/palmetto_taps/tap-wall.jpg",
   },
   cigars: {
     keywords: ["cigar", "humidor", "hookup", "smoke"],
-    icon: "🚬",
+    image: "/clients/palmetto_taps/events/cigars.jpg", // ADD YOUR IMAGE HERE
     gradient: "from-gray-600 to-gray-800",
-    image: "/clients/palmetto_taps/bar-scene.png",
   },
   tasting: {
     keywords: ["tasting", "flight", "sample", "brewery", "craft"],
-    icon: "🍻",
+    image: "/clients/palmetto_taps/events/tasting.jpg", // ADD YOUR IMAGE HERE
     gradient: "from-green-500 to-emerald-500",
-    image: "/clients/palmetto_taps/tap-wall.webp",
   },
   default: {
     keywords: [],
-    icon: "🎉",
+    image: "/clients/palmetto_taps/events/default.jpg", // ADD YOUR IMAGE HERE
     gradient: "from-[#8B7355] to-[#6F5C45]",
-    image: "/clients/palmetto_taps/palmetto-taps-opening.jpg",
   },
 };
 
@@ -222,20 +213,16 @@ export function EventsCalendar() {
             transition={{ delay: index * 0.1 }}
             className="bg-white rounded-xl shadow-xl overflow-hidden hover:shadow-2xl transition-shadow"
           >
-            {/* Event Image/Icon Header */}
+            {/* Event Image Header */}
             <div className={`relative h-48 bg-gradient-to-br ${template.gradient} overflow-hidden`}>
               <div 
-                className="absolute inset-0 opacity-30"
+                className="absolute inset-0 bg-cover bg-center"
                 style={{
                   backgroundImage: `url('${template.image}')`,
-                  backgroundSize: 'cover',
-                  backgroundPosition: 'center',
                 }}
               />
-              <div className="absolute inset-0 bg-black/20" />
-              <div className="absolute inset-0 flex items-center justify-center">
-                <span className="text-7xl drop-shadow-2xl">{template.icon}</span>
-              </div>
+              <div className="absolute inset-0 bg-black/30" />
+              
               {/* Date Badge */}
               <div className="absolute top-4 right-4 bg-white/95 backdrop-blur rounded-lg px-4 py-2 shadow-lg">
                 <div className="text-center">
