@@ -1,6 +1,8 @@
 import { headers } from 'next/headers';
 import { getClient } from '@/lib/getClient';
 import { ContactPage as DaniDiazContactPage } from '@/clients/danidiaz/pages/ContactPage';
+import ContactPage from '@/clients/palmetto_taps/pages/ContactPage';
+import Layout from '@/clients/palmetto_taps/components/Layout';
 
 function ComingSoonPage() {
   return (
@@ -18,9 +20,8 @@ export default async function Page() {
   const hostname = headersList.get('host') || 'localhost:3000';
   const client = await getClient(hostname);
 
-  if (client?.slug === 'nitos') {
-    // TODO: Create /clients/nitos/pages/ContactPage.tsx
-    return <ComingSoonPage />;
+  if (client?.slug === 'palmetto_taps') {
+    return <Layout><ContactPage /></Layout>;
   }
 
   return <DaniDiazContactPage />;

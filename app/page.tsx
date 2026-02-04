@@ -2,6 +2,8 @@ import { headers } from 'next/headers';
 import { getClient } from '@/lib/getClient';
 import { HomePage as DaniDiazHomePage } from '@/clients/danidiaz/pages/HomePage';
 import { HomePage as NitosHomePage } from '@/clients/nitos/pages/HomePage';
+import HomePage from '@/clients/palmetto_taps/pages/HomePage';
+import Layout from '@/clients/palmetto_taps/components/Layout';
 
 // Coming Soon placeholder for clients without a HomePage yet
 function ComingSoonPage() {
@@ -23,6 +25,10 @@ export default async function Page() {
   // Route to client-specific HomePage based on slug
   if (client?.slug === 'nitos') {
     return <NitosHomePage />;
+  }
+
+  if (client?.slug === 'palmetto_taps') {
+    return <Layout><HomePage /></Layout>;
   }
 
   // Default to danidiaz
