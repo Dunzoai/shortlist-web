@@ -101,12 +101,12 @@ export const features = [
 ];
 
 export const alwaysOnTap = [
-  { name: "Low Tide Blue Quencher", image: "/low_tide_blue.png" },
-  { name: "Snafu Keepin' It Teal", image: "/keepin_it_teal.png" },
-  { name: "Golden Road Mango Cart", image: "/mango_cart.png" },
-  { name: "Kona Big Wave", image: "/kona_big_wave.png" },
-  { name: "New South Dirty Myrtle", image: "/new_south_dirty.png" },
-  { name: "Prosecco", image: "/prosecco_pint.png" }
+  { name: "Low Tide Blue Quencher", image: "/clients/palmetto_taps/low_tide_blue.png" },
+  { name: "Snafu Keepin' It Teal", image: "/clients/palmetto_taps/keepin_it_teal.png" },
+  { name: "Golden Road Mango Cart", image: "/clients/palmetto_taps/mango_cart.png" },
+  { name: "Kona Big Wave", image: "/clients/palmetto_taps/kona_big_wave.png" },
+  { name: "New South Dirty Myrtle", image: "/clients/palmetto_taps/new_south_dirty.png" },
+  { name: "Prosecco", image: "/clients/palmetto_taps/prosecco_pint.png" }
 ];
 
 export const food = {
