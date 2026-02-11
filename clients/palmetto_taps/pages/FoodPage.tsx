@@ -44,14 +44,11 @@ export default function Food() {
               viewport={{ once: true }}
               transition={{ duration: 0.6 }}
             >
-              {/* IMAGE PLACEHOLDER: Salad bar or finished bowl - Suggested: 600x450px */}
-              <div className="w-full aspect-[4/3] bg-[#D1CBC1] rounded-lg shadow-lg flex items-center justify-center border-2 border-dashed border-[#8B6A4F]">
-                <div className="text-center text-[#6B6B66] p-6">
-                  <p className="text-sm uppercase tracking-wide mb-2">Image Placeholder</p>
-                  <p className="font-semibold">Salad Bar Photo</p>
-                  <p className="text-sm mt-1">Suggested: 600 x 450px</p>
-                </div>
-              </div>
+              <img
+                src="/palmetto-taps/salad-bar.png"
+                alt="Build Your Own Salad Bar"
+                className="w-full aspect-[4/3] object-cover rounded-lg shadow-lg"
+              />
             </motion.div>
 
             {/* Content */}
@@ -152,21 +149,6 @@ export default function Food() {
         </div>
       </section>
 
-      {/* Pizza Squared Image */}
-      <section className="py-16 md:py-24 px-6 bg-[#E4DED4]">
-        <div className="max-w-4xl mx-auto">
-          <motion.img
-            src="/palmetto-taps/pizza-squared.JPG"
-            alt="Pizza Squared"
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-            className="w-full rounded-lg shadow-lg"
-          />
-        </div>
-      </section>
-
       {/* Section 3: Sundays & Kitchen Takeovers - Warm Light Background */}
       <section className="py-16 md:py-24 px-6 bg-[#D1CBC1]">
         <div className="max-w-2xl mx-auto">
@@ -177,14 +159,11 @@ export default function Food() {
             transition={{ duration: 0.6 }}
             className="bg-[#E4DED4] p-8 md:p-12 shadow-lg text-center"
           >
-            {/* Optional Image Strip Placeholder */}
-            {/* IMAGE PLACEHOLDER: Optional small image strip - Suggested: 500x150px */}
-            <div className="w-full aspect-[10/3] bg-[#D1CBC1] rounded mb-8 flex items-center justify-center border-2 border-dashed border-[#8B6A4F]">
-              <div className="text-center text-[#6B6B66] p-4">
-                <p className="text-xs uppercase tracking-wide mb-1">Optional Image Strip</p>
-                <p className="text-sm">Suggested: 500 x 150px</p>
-              </div>
-            </div>
+            <img
+              src="/palmetto-taps/pizza-squared.JPG"
+              alt="Pizza Squared"
+              className="w-full max-w-md mx-auto rounded mb-8 shadow-lg"
+            />
 
             <p className="text-[#8B6A4F] text-sm uppercase tracking-widest mb-3">
               Something Different
