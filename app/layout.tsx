@@ -152,8 +152,8 @@ export default async function RootLayout({
           <LanguageProvider>
             <StyleProvider>
               {children}
-              {/* Floating Language Toggle - Show for Dani Diaz site */}
-              {(!client || client.slug !== 'nitos') && <ChatLanguageControls />}
+              {/* Floating Language Toggle - Show for Dani Diaz site only */}
+              {(!client || client.slug === 'danidiaz') && <ChatLanguageControls />}
             </StyleProvider>
           </LanguageProvider>
         </ClientProvider>
