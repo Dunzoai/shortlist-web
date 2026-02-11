@@ -30,6 +30,34 @@ export async function generateMetadata(): Promise<Metadata> {
   const hostname = headersList.get('host') || 'localhost:3000';
   const client = await getClient(hostname);
 
+  if (client?.slug === 'palmetto_taps') {
+    return {
+      title: "Palmetto Taps | Horry County's First Self-Serve Taproom",
+      description: "Conway & Myrtle Beach's premier self-serve taproom. 40+ beers on tap, craft cocktails, and local favorites. Pour your own pint in historic downtown Conway, SC.",
+      keywords: ["self-serve taproom", "Conway SC", "Myrtle Beach beer", "Horry County taproom", "craft beer", "beers on tap", "pour your own beer", "downtown Conway", "self pour bar", "draft beer"],
+      authors: [{ name: "Palmetto Taps" }],
+      creator: "Palmetto Taps",
+      metadataBase: new URL('https://palmettotaps.com'),
+      icons: { icon: '/palmetto-taps/palmetto-taps-logo.webp', apple: '/palmetto-taps/palmetto-taps-logo.webp' },
+      openGraph: {
+        type: 'website',
+        locale: 'en_US',
+        url: '/',
+        siteName: "Palmetto Taps",
+        title: "Palmetto Taps | Horry County's First Self-Serve Taproom",
+        description: "Conway & Myrtle Beach's premier self-serve taproom. 40+ beers on tap. Pour your own pint in historic downtown Conway, SC.",
+        images: [{ url: '/palmetto-taps/palmetto-tap-wall.png', width: 1200, height: 630, alt: "Palmetto Taps - Self Serve Taproom" }],
+      },
+      twitter: {
+        card: 'summary_large_image',
+        title: "Palmetto Taps | Horry County's First Self-Serve Taproom",
+        description: "Conway & Myrtle Beach's premier self-serve taproom. 40+ beers on tap. Pour your own pint!",
+        images: ['/palmetto-taps/palmetto-tap-wall.png'],
+      },
+      robots: { index: true, follow: true, googleBot: { index: true, follow: true, 'max-video-preview': -1, 'max-image-preview': 'large', 'max-snippet': -1 } },
+    };
+  }
+
   if (client?.slug === 'nitos') {
     return {
       title: "Nito's Empanadas | The Best Empanadas in Town",
