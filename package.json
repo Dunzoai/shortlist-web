@@ -9,6 +9,8 @@
     "lint": "eslint",
     "remotion:studio": "remotion studio src/remotion/index.ts",
     "remotion:render": "remotion render src/remotion/index.ts SmartPageFoodTruck out/smartpage-foodtruck.mp4",
+    "remotion:render:receipt": "remotion render src/remotion/index.ts SmartAssistantReceipt out/smartassistant-receipt.mp4",
+    "remotion:render:sb-teaser": "remotion render src/remotion/index.ts NitosSuperBowlTeaser out/nitos-superbowl-teaser.mp4",
     "remotion:preview": "remotion preview src/remotion/index.ts"
   },
   "dependencies": {

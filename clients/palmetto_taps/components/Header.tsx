@@ -8,7 +8,7 @@ import { business } from "@/clients/palmetto_taps/content/business";
 const navLinks = [
   { href: "/", label: "Home" },
   { href: "/events", label: "Events" },
-  { href: "/how-it-works", label: "How It Works" },
+  // { href: "/how-it-works", label: "How It Works" }, // Temporarily hidden
   { href: "/food", label: "Food" },
   { href: "/contact", label: "Contact" },
 ];

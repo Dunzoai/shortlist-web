@@ -181,17 +181,17 @@ function FeaturedDrinksCarousel() {
 export default function Home() {
   return (
     <div className="min-h-screen overflow-x-hidden">
-      {/* Hero Section */}
-      <section className="relative h-screen flex items-center justify-center overflow-hidden bg-[#1F1F1E]">
+      {/* Hero Section - 2.4:1 aspect ratio video (1920x800) */}
+      <section className="relative w-full flex items-center justify-center overflow-hidden bg-[#1F1F1E]" style={{ aspectRatio: '1920/800' }}>
         {/* Video Background */}
         <video
           autoPlay
           muted
           loop
           playsInline
-          className="absolute inset-0 w-full h-full object-cover md:object-contain scale-[0.95] md:scale-100"
+          className="absolute inset-0 w-full h-full object-cover"
         >
-          <source src="/palmetto-taps-hero-desktop.m4v" type="video/mp4" />
+          <source src="/clients/palmetto_taps/palmetto-taps-hero.m4v" type="video/mp4" />
         </video>
 
         {/* Scroll indicator */}

@@ -2,7 +2,11 @@ import { Composition, Folder } from "remotion";
 import { SmartPageFoodTruckVideo } from "./SmartPageFoodTruckVideo";
 import { NitosInstagramPromo } from "./NitosInstagramPromo";
 import { NitosSuperBowl } from "./NitosSuperBowl";
+import { NitosSuperBowlTeaser } from "./NitosSuperBowlTeaser";
+import { NitosHypnoTeaser } from "./NitosHypnoTeaser";
 import { PalmettoTapsJoke } from "./PalmettoTapsJoke";
+import { SmartAssistantReceipt } from "./SmartAssistantReceipt";
+import { FoodTruckPromo } from "./FoodTruckPromo";
 
 export const RemotionRoot = () => {
   return (
@@ -36,12 +40,46 @@ export const RemotionRoot = () => {
           width={1080}
           height={1920}
         />
+        <Composition
+          id="NitosSuperBowlTeaser"
+          component={NitosSuperBowlTeaser}
+          durationInFrames={330} // 11 seconds at 30fps
+          fps={30}
+          width={1080}
+          height={1920}
+        />
+        <Composition
+          id="NitosHypnoTeaser"
+          component={NitosHypnoTeaser}
+          durationInFrames={240} // 8 seconds at 30fps
+          fps={30}
+          width={1080}
+          height={1920}
+        />
       </Folder>
       <Folder name="PalmettoTaps">
         <Composition
           id="PalmettoTapsJoke"
           component={PalmettoTapsJoke}
           durationInFrames={240} // 8 seconds at 30fps
+          fps={30}
+          width={1080}
+          height={1920}
+        />
+      </Folder>
+      <Folder name="SmartAssistant">
+        <Composition
+          id="SmartAssistantReceipt"
+          component={SmartAssistantReceipt}
+          durationInFrames={600} // 20 seconds at 30fps
+          fps={30}
+          width={1080}
+          height={1920}
+        />
+        <Composition
+          id="FoodTruckPromo"
+          component={FoodTruckPromo}
+          durationInFrames={800} // ~27 seconds at 30fps
           fps={30}
           width={1080}
           height={1920}
