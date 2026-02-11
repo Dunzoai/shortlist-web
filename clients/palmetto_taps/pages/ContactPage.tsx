@@ -120,12 +120,14 @@ export default function Contact() {
                     {business.phone}
                   </a>
                 </div>
+{/* Email hidden until client provides
                 <div>
                   <p className="text-white/50 text-sm mb-1">Email</p>
                   <a href={`mailto:${business.email}`} className="text-white text-xl font-semibold hover:text-[#D4C4A8] transition-colors">
                     {business.email}
                   </a>
                 </div>
+                */}
               </div>
               <div className="mt-6 pt-4 border-t border-white/10">
                 <p className="text-white/50 text-sm mb-3">Follow Us</p>
@@ -179,12 +181,14 @@ export default function Contact() {
                 >
                   Call Us
                 </a>
+                {/* Email button hidden until client provides
                 <a
                   href={`mailto:${business.email}?subject=Private Event Inquiry`}
                   className="inline-block border border-[#8B6A4F] hover:bg-[#8B6A4F] text-white font-semibold px-6 py-3 rounded transition-all duration-300 uppercase tracking-wide text-sm text-center"
                 >
                   Email Us
                 </a>
+                */}
               </div>
             </motion.div>
           </div>

@@ -39,11 +39,9 @@ export async function generateMetadata(): Promise<Metadata> {
       creator: "Palmetto Taps",
       metadataBase: new URL('https://palmettotaps.com'),
       icons: {
-        icon: [
-          { url: '/palmetto-taps/palmetto-taps-logo.webp', type: 'image/webp' },
-        ],
-        apple: '/palmetto-taps/palmetto-taps-logo.webp',
-        shortcut: '/palmetto-taps/palmetto-taps-logo.webp',
+        icon: '/palmetto-taps/palmetto-taps-logo.png',
+        apple: '/palmetto-taps/palmetto-taps-logo.png',
+        shortcut: '/palmetto-taps/palmetto-taps-logo.png',
       },
       openGraph: {
         type: 'website',
