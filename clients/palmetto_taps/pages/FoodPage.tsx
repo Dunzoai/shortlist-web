@@ -102,14 +102,11 @@ export default function Food() {
             transition={{ duration: 0.6 }}
             className="mb-12"
           >
-            {/* IMAGE PLACEHOLDER: Wide smashburger shot - Suggested: 900x400px */}
-            <div className="w-full max-w-3xl mx-auto aspect-[9/4] bg-[#2F2F2D] rounded-lg flex items-center justify-center border-2 border-dashed border-[#8B6A4F]">
-              <div className="text-center text-[#6B6B66] p-6">
-                <p className="text-sm uppercase tracking-wide mb-2">Image Placeholder</p>
-                <p className="font-semibold text-white/60">Smashburger Hero Photo</p>
-                <p className="text-sm mt-1">Suggested: 900 x 400px</p>
-              </div>
-            </div>
+            <img
+              src="/palmetto-taps/smashburger-web.png"
+              alt="Project Smashburger"
+              className="w-full max-w-3xl mx-auto rounded-lg shadow-lg object-cover"
+            />
           </motion.div>
 
           {/* Content */}
@@ -152,6 +149,21 @@ export default function Food() {
               </div>
             </div>
           </motion.div>
+        </div>
+      </section>
+
+      {/* Pizza Squared Image */}
+      <section className="py-16 md:py-24 px-6 bg-[#E4DED4]">
+        <div className="max-w-4xl mx-auto">
+          <motion.img
+            src="/palmetto-taps/pizza-squared.JPG"
+            alt="Pizza Squared"
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+            className="w-full rounded-lg shadow-lg"
+          />
         </div>
       </section>
 
