@@ -191,7 +191,7 @@ export default function Home() {
           playsInline
           className="absolute inset-0 w-full h-full object-cover"
         >
-          <source src="/clients/palmetto_taps/palmetto-taps-hero.m4v" type="video/mp4" />
+          <source src="/palmetto-taps/taps video.mov" type="video/mp4" />
         </video>
 
         {/* Scroll indicator */}
