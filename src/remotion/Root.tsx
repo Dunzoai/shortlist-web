@@ -4,6 +4,8 @@ import { NitosInstagramPromo } from "./NitosInstagramPromo";
 import { NitosSuperBowl } from "./NitosSuperBowl";
 import { NitosSuperBowlTeaser } from "./NitosSuperBowlTeaser";
 import { NitosHypnoTeaser } from "./NitosHypnoTeaser";
+import { NitosHiring } from "./NitosHiring";
+import { NitosVday } from "./NitosVday";
 import { PalmettoTapsJoke } from "./PalmettoTapsJoke";
 import { SmartAssistantReceipt } from "./SmartAssistantReceipt";
 import { FoodTruckPromo } from "./FoodTruckPromo";
@@ -26,6 +28,22 @@ export const RemotionRoot = () => {
           id="NitosInstagramPromo"
           component={NitosInstagramPromo}
           durationInFrames={630} // 21 seconds at 30fps
+          fps={30}
+          width={1080}
+          height={1920}
+        />
+        <Composition
+          id="NitosHiring"
+          component={NitosHiring}
+          durationInFrames={450} // 15 seconds at 30fps
+          fps={30}
+          width={1080}
+          height={1920}
+        />
+        <Composition
+          id="NitosVday"
+          component={NitosVday}
+          durationInFrames={360} // 12 seconds at 30fps
           fps={30}
           width={1080}
           height={1920}
