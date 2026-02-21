@@ -966,7 +966,7 @@ export default function Home() {
                 />
               </motion.svg>
               <p className="text-[#3A3A38] text-lg md:text-xl font-semibold text-center relative z-10">
-                Happy Hour Daily 5pm – 7pm
+                Happy Hour Daily 4pm – 7pm
               </p>
             </div>
           </motion.div>

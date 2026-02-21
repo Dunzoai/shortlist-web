@@ -87,8 +87,8 @@ export const features = [
     description: "Get a digital card and pour your own. Try as many as you want."
   },
   {
-    title: "Dog-Friendly Patio",
-    description: "Bring your pup. We've got outdoor seating and good vibes."
+    title: "Family-Friendly",
+    description: "Bring the whole crew — well-behaved kids with attentive parents are welcome here. We do our best to be a community space for all, but with glass and bottles present, we ask that parents stay actively engaged to keep everyone safe."
   },
   {
     title: "Games & Hangouts",

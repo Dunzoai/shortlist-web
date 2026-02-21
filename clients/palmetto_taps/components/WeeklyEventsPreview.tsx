@@ -15,7 +15,7 @@ interface Event {
 const PLACEHOLDER_MESSAGES = [
   { title: "How does a flight sound?", description: "Stop in for a bite and a pint" },
   { title: "40 taps waiting", description: "Pour your own perfect beer" },
-  { title: "Happy Hour", description: "Daily 5pm – 7pm" },
+  { title: "Happy Hour", description: "Daily 4pm – 7pm" },
   { title: "Open today", description: "Self-serve beer & good vibes" },
   { title: "Something special", description: "Check out today's taps" },
   { title: "Thirsty?", description: "We've got 40 beers on tap" },
@@ -47,13 +47,17 @@ export function WeeklyEventsPreview() {
         const data = await response.json();
         const events: Event[] = data.events || [];
 
-        // Get next 7 days
+        // Get next 7 days (using local timezone)
         const today = new Date();
         const week = [];
         for (let i = 0; i < 7; i++) {
           const date = new Date(today);
           date.setDate(today.getDate() + i);
-          week.push(date.toISOString().split("T")[0]);
+          // Format as YYYY-MM-DD in local timezone
+          const year = date.getFullYear();
+          const month = String(date.getMonth() + 1).padStart(2, '0');
+          const day = String(date.getDate()).padStart(2, '0');
+          week.push(`${year}-${month}-${day}`);
         }
 
         // Map events to days
@@ -87,6 +91,9 @@ export function WeeklyEventsPreview() {
           }
         });
 
+        console.log('[WeeklyEventsPreview] Fetched events:', events);
+        console.log('[WeeklyEventsPreview] Week dates:', week);
+        console.log('[WeeklyEventsPreview] Built week data:', weekData);
         setWeekEvents(weekData);
       } catch (error) {
         console.error("Error fetching events:", error);
@@ -96,7 +103,10 @@ export function WeeklyEventsPreview() {
         for (let i = 0; i < 7; i++) {
           const date = new Date(today);
           date.setDate(today.getDate() + i);
-          const dateStr = date.toISOString().split("T")[0];
+          const year = date.getFullYear();
+          const month = String(date.getMonth() + 1).padStart(2, '0');
+          const day = String(date.getDate()).padStart(2, '0');
+          const dateStr = `${year}-${month}-${day}`;
           const day = getDayName(dateStr);
           const placeholder = getPlaceholderForDate(dateStr);
           week.push({
