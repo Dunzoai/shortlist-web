@@ -83,12 +83,25 @@ function buildWeekSchedule(events: Event[]): DayData[] {
   return week.map((date) => {
     const dateStr = getDateString(date);
     const event = eventsByDate[dateStr];
+    const dayName = getFullDay(date);
+
+    // Check if it's Wednesday - always show closed message
+    if (dayName === "Wednesday") {
+      return {
+        day: getDayAbbrev(date),
+        fullDay: dayName,
+        date: dateStr,
+        title: "Closed Wednesdays",
+        details: "Letting the beers get ice cold for the weekend",
+        isPlaceholder: true,
+      };
+    }
 
     if (event) {
       // Real event
       return {
         day: getDayAbbrev(date),
-        fullDay: getFullDay(date),
+        fullDay: dayName,
         date: dateStr,
         title: event.title,
         details: event.description || "See you there!",
@@ -99,7 +112,7 @@ function buildWeekSchedule(events: Event[]): DayData[] {
       const placeholder = getPlaceholderForDate(dateStr);
       return {
         day: getDayAbbrev(date),
-        fullDay: getFullDay(date),
+        fullDay: dayName,
         date: dateStr,
         title: placeholder.title,
         details: placeholder.details,

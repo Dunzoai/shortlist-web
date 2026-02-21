@@ -19,16 +19,16 @@ export const business = {
   email: "info@palmettotaps.com",
 
   hours: {
-    sunday: "12pm – 8pm",
-    monday: "4pm – 9:30pm",
-    tuesday: "4pm – 9:30pm",
-    wednesday: "4pm – 9:30pm",
-    thursday: "4pm – 9:30pm",
-    friday: "12pm – 11pm",
-    saturday: "12pm – 11pm"
+    sunday: "11am – 8pm",
+    monday: "11am – 9:30pm",
+    tuesday: "11am – 9:30pm",
+    wednesday: "Closed",
+    thursday: "11am – 9:30pm",
+    friday: "11am – 11pm",
+    saturday: "11am – 11pm"
   },
 
-  happyHour: "Daily 5pm – 7pm",
+  happyHour: "Daily 4pm – 7pm",
 
   socials: {
     facebook: "https://www.facebook.com/profile.php?id=100089634545976",

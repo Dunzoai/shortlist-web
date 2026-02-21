@@ -1044,7 +1044,8 @@ export default function Home() {
             <h4 className="font-semibold mb-4 text-[#F5F2EC]">Hours</h4>
             <div className="text-[#D6D2C8] text-sm space-y-1">
               <p>Sun: {business.hours.sunday}</p>
-              <p>Mon-Thu: {business.hours.monday}</p>
+              <p>Mon-Tue, Thu: {business.hours.monday}</p>
+              <p>Wed: Closed</p>
               <p>Fri-Sat: {business.hours.friday}</p>
             </div>
           </div>
