@@ -130,10 +130,10 @@ export default function Food() {
             </h2>
             <div className="space-y-4 text-white/80 text-lg leading-relaxed">
               <p>
-                We've partnered with Project Smashburger to bring smashed-to-order burgers right to our kitchen. Crispy edges. Juicy centers. The kind of burger that pairs perfectly with a cold draft.
+                We've partnered with Project Smashburger to bring you smashed-to-order burgers made right here in our kitchen. Each burger is crafted fresh with crispy edges, juicy centers, and the perfect char — the kind that pairs perfectly with a cold draft.
               </p>
               <p>
-                This isn't fast food. It's fresh food, made fast.
+                Choose from our signature smashburgers or build your own with premium toppings. This isn't fast food. It's fresh food, made fast.
               </p>
             </div>
 
@@ -141,8 +141,9 @@ export default function Food() {
             <div className="mt-8 p-6 bg-[#2A2A2A] rounded-lg inline-block">
               <p className="text-[#8B6A4F] text-sm uppercase tracking-widest mb-3">Hours</p>
               <div className="text-white/90 space-y-1">
-                <p>Thursday - Friday: 5pm - 9pm</p>
-                <p>Saturday: 12pm - 9pm</p>
+                <p><strong>Thursday - Friday:</strong> 5pm - 9pm</p>
+                <p><strong>Saturday:</strong> 12pm - 9pm</p>
+                <p className="text-white/60 text-sm mt-3 italic">Not served on Sundays</p>
               </div>
             </div>
           </motion.div>

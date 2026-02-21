@@ -853,8 +853,8 @@ export default function Home() {
                 content="Your four-legged friends are part of the family too. Our outdoor patio is fully pet-friendly, so grab a seat, order a cold one, and let your pup enjoy the fresh air with you."
               />
               <AccordionItem
-                title="Full Bar"
-                content="Not just beer — we've got a full bar with wine, cocktails, seltzers, and more. Whether you're in the mood for a craft IPA or a glass of prosecco, we've got you covered."
+                title="More than Just Beer"
+                content="Yes, we have 40+ taps but we've also got wine, prosecco, seltzers, shots, and more. Whatever you're in the mood for, Palmetto Taps has you covered."
               />
               <AccordionItem
                 title="Free Parking"
