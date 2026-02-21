@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
+import { motion } from "framer-motion";
 
 interface Event {
   id: string;
@@ -11,16 +12,25 @@ interface Event {
   end_time: string | null;
 }
 
+interface DayData {
+  day: string;
+  fullDay: string;
+  date: string;
+  title: string;
+  details: string;
+  isPlaceholder: boolean;
+}
+
 // Placeholder messages for days without events
 const PLACEHOLDER_MESSAGES = [
-  { title: "How does a flight sound?", description: "Stop in for a bite and a pint" },
-  { title: "40 taps waiting", description: "Pour your own perfect beer" },
-  { title: "Happy Hour", description: "Daily 4pm – 7pm" },
-  { title: "Open today", description: "Self-serve beer & good vibes" },
-  { title: "Something special", description: "Check out today's taps" },
-  { title: "Thirsty?", description: "We've got 40 beers on tap" },
-  { title: "Pour your own", description: "Try as many as you want" },
-  { title: "Taproom vibes", description: "Games, patio, cold beer" },
+  { title: "How does a flight sound?", details: "Stop in for a bite and a pint" },
+  { title: "40 taps waiting", details: "Pour your own perfect beer" },
+  { title: "Happy Hour", details: "Daily 4pm – 7pm" },
+  { title: "Open today", details: "Self-serve beer & good vibes" },
+  { title: "Something special", details: "Check out today's taps" },
+  { title: "Thirsty?", details: "We've got 40 beers on tap" },
+  { title: "Pour your own", details: "Try as many as you want" },
+  { title: "Taproom vibes", details: "Games, patio, cold beer" },
 ];
 
 // Get consistent placeholder for a date
@@ -30,16 +40,85 @@ function getPlaceholderForDate(dateStr: string) {
   return PLACEHOLDER_MESSAGES[index];
 }
 
-// Get day name from date string
-function getDayName(dateStr: string): string {
-  const date = new Date(dateStr + "T00:00:00");
-  return date.toLocaleDateString("en-US", { weekday: "long" }).toUpperCase();
+// Get day abbreviation (Sat, Sun, Mon, etc.)
+function getDayAbbrev(date: Date): string {
+  return date.toLocaleDateString("en-US", { weekday: "short" }).toUpperCase();
+}
+
+// Get full day name
+function getFullDay(date: Date): string {
+  return date.toLocaleDateString("en-US", { weekday: "long" });
+}
+
+// Get date string YYYY-MM-DD in local timezone
+function getDateString(date: Date): string {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
+
+// Get current week (7 days starting from today)
+function getCurrentWeek(): Date[] {
+  const today = new Date();
+  const week = [];
+  for (let i = 0; i < 7; i++) {
+    const date = new Date(today);
+    date.setDate(today.getDate() + i);
+    week.push(date);
+  }
+  return week;
+}
+
+// Build the week schedule, merging real events with placeholders
+function buildWeekSchedule(events: Event[]): DayData[] {
+  const week = getCurrentWeek();
+
+  // Create a map of events by date
+  const eventsByDate: Record<string, Event> = {};
+  events.forEach((event) => {
+    eventsByDate[event.event_date] = event;
+  });
+
+  return week.map((date) => {
+    const dateStr = getDateString(date);
+    const event = eventsByDate[dateStr];
+
+    if (event) {
+      // Real event
+      return {
+        day: getDayAbbrev(date),
+        fullDay: getFullDay(date),
+        date: dateStr,
+        title: event.title,
+        details: event.description || "See you there!",
+        isPlaceholder: false,
+      };
+    } else {
+      // Placeholder
+      const placeholder = getPlaceholderForDate(dateStr);
+      return {
+        day: getDayAbbrev(date),
+        fullDay: getFullDay(date),
+        date: dateStr,
+        title: placeholder.title,
+        details: placeholder.details,
+        isPlaceholder: true,
+      };
+    }
+  });
 }
 
 export function WeeklyEventsPreview() {
-  const [weekEvents, setWeekEvents] = useState<{ day: string; title: string; description: string; isPlaceholder: boolean }[]>([]);
-  const [loading, setLoading] = useState(true);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const [activeIndex, setActiveIndex] = useState(0);
+  const [tapX, setTapX] = useState(0);
+  const cardRefs = useRef<(HTMLDivElement | null)[]>([]);
 
+  const [scheduleData, setScheduleData] = useState<DayData[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  // Fetch events from SmartPage API
   useEffect(() => {
     async function fetchEvents() {
       try {
@@ -47,118 +126,184 @@ export function WeeklyEventsPreview() {
         const data = await response.json();
         const events: Event[] = data.events || [];
 
-        // Get next 7 days (using local timezone)
-        const today = new Date();
-        const week = [];
-        for (let i = 0; i < 7; i++) {
-          const date = new Date(today);
-          date.setDate(today.getDate() + i);
-          // Format as YYYY-MM-DD in local timezone
-          const year = date.getFullYear();
-          const month = String(date.getMonth() + 1).padStart(2, '0');
-          const day = String(date.getDate()).padStart(2, '0');
-          week.push(`${year}-${month}-${day}`);
-        }
-
-        // Map events to days
-        const eventsByDate: Record<string, Event> = {};
-        events.forEach((event) => {
-          if (!eventsByDate[event.event_date]) {
-            eventsByDate[event.event_date] = event;
-          }
-        });
-
-        // Build week with events or placeholders
-        const weekData = week.map((dateStr) => {
-          const event = eventsByDate[dateStr];
-          const day = getDayName(dateStr);
-
-          if (event) {
-            return {
-              day,
-              title: event.title,
-              description: event.description || "See you there!",
-              isPlaceholder: false,
-            };
-          } else {
-            const placeholder = getPlaceholderForDate(dateStr);
-            return {
-              day,
-              title: placeholder.title,
-              description: placeholder.description,
-              isPlaceholder: true,
-            };
-          }
-        });
-
-        console.log('[WeeklyEventsPreview] Fetched events:', events);
-        console.log('[WeeklyEventsPreview] Week dates:', week);
-        console.log('[WeeklyEventsPreview] Built week data:', weekData);
-        setWeekEvents(weekData);
+        const weekSchedule = buildWeekSchedule(events);
+        setScheduleData(weekSchedule);
       } catch (error) {
         console.error("Error fetching events:", error);
-        // Show placeholders on error
-        const today = new Date();
-        const week = [];
-        for (let i = 0; i < 7; i++) {
-          const date = new Date(today);
-          date.setDate(today.getDate() + i);
-          const year = date.getFullYear();
-          const month = String(date.getMonth() + 1).padStart(2, '0');
-          const dayNum = String(date.getDate()).padStart(2, '0');
-          const dateStr = `${year}-${month}-${dayNum}`;
-          const day = getDayName(dateStr);
-          const placeholder = getPlaceholderForDate(dateStr);
-          week.push({
-            day,
-            title: placeholder.title,
-            description: placeholder.description,
-            isPlaceholder: true,
-          });
-        }
-        setWeekEvents(week);
+        // Even on error, show the week with all placeholders
+        const weekSchedule = buildWeekSchedule([]);
+        setScheduleData(weekSchedule);
       } finally {
-        setLoading(false);
+        setIsLoading(false);
       }
     }
 
     fetchEvents();
   }, []);
 
-  if (loading) {
+  // Scroll handling for tap/glass animation
+  useEffect(() => {
+    const container = scrollContainerRef.current;
+    if (!container || scheduleData.length === 0) return;
+
+    const handleScroll = () => {
+      const containerRect = container.getBoundingClientRect();
+      const containerCenter = containerRect.left + containerRect.width / 2;
+
+      let closestIndex = 0;
+      let closestDistance = Infinity;
+
+      cardRefs.current.forEach((card, index) => {
+        if (card) {
+          const cardRect = card.getBoundingClientRect();
+          const cardCenter = cardRect.left + cardRect.width / 2;
+          const distance = Math.abs(cardCenter - containerCenter);
+
+          if (distance < closestDistance) {
+            closestDistance = distance;
+            closestIndex = index;
+          }
+        }
+      });
+
+      setActiveIndex(closestIndex);
+
+      // Position the tap/glass icon
+      const activeCard = cardRefs.current[closestIndex];
+      if (activeCard) {
+        const cardRect = activeCard.getBoundingClientRect();
+        const cardCenter = cardRect.left + cardRect.width / 2;
+        setTapX(cardCenter - containerRect.left);
+      }
+    };
+
+    container.addEventListener("scroll", handleScroll);
+    handleScroll(); // Initial position
+
+    return () => container.removeEventListener("scroll", handleScroll);
+  }, [scheduleData]);
+
+  const scrollToCard = (index: number) => {
+    const card = cardRefs.current[index];
+    if (card && scrollContainerRef.current) {
+      const container = scrollContainerRef.current;
+      const cardRect = card.getBoundingClientRect();
+      const containerRect = container.getBoundingClientRect();
+      const scrollLeft =
+        container.scrollLeft +
+        cardRect.left -
+        containerRect.left -
+        containerRect.width / 2 +
+        cardRect.width / 2;
+
+      container.scrollTo({
+        left: scrollLeft,
+        behavior: "smooth",
+      });
+    }
+  };
+
+  if (isLoading) {
     return (
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        {[1, 2, 3, 4].map((i) => (
-          <div key={i} className="bg-white/70 rounded-lg p-6 shadow-md animate-pulse">
-            <div className="h-6 bg-neutral-300 rounded mb-2"></div>
-            <div className="h-4 bg-neutral-200 rounded"></div>
-          </div>
-        ))}
+      <div className="text-center py-8">
+        <div className="animate-pulse text-[#1F1F1E]">Loading weekly schedule...</div>
       </div>
     );
   }
 
-  // Show first 4 days for homepage preview
-  const previewEvents = weekEvents.slice(0, 4);
-
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-      {previewEvents.map((event, index) => (
-        <div
-          key={index}
-          className={`rounded-lg p-6 shadow-md transition-all hover:shadow-xl ${
-            event.isPlaceholder
-              ? "bg-white/70 border border-neutral-200"
-              : "bg-white border-2 border-[#8B6A4F]"
-          }`}
+    <div className="relative">
+      {/* Beer tap icon that follows scroll (like Nito's truck) */}
+      <div className="relative h-24 flex justify-center mb-4">
+        <motion.div
+          className="absolute -top-2"
+          style={{ left: 0 }}
+          animate={{ x: tapX - 30 }}
+          transition={{
+            type: "spring",
+            stiffness: 200,
+            damping: 25,
+            mass: 0.8,
+          }}
         >
-          <div className="text-sm font-semibold text-neutral-500 mb-2">{event.day}</div>
-          <h3 className={`text-xl font-bold mb-2 ${event.isPlaceholder ? "italic" : ""}`}>
-            {event.title}
-          </h3>
-          <p className="text-neutral-600 text-sm">{event.description}</p>
-        </div>
-      ))}
+          {/* Simple beer tap SVG */}
+          <svg width="60" height="80" viewBox="0 0 60 80" className="drop-shadow-2xl">
+            <rect x="20" y="10" width="20" height="50" fill="#8B6A4F" rx="2" />
+            <ellipse cx="30" cy="10" rx="10" ry="5" fill="#6F5536" />
+            <rect x="15" y="55" width="30" height="5" fill="#D4A574" />
+            <path d="M 25 60 Q 30 75, 35 60" fill="none" stroke="#FFD700" strokeWidth="3" opacity="0.6" />
+          </svg>
+        </motion.div>
+      </div>
+
+      {/* Horizontal scrolling calendar */}
+      <div
+        ref={scrollContainerRef}
+        className="flex gap-4 overflow-x-auto pb-4 snap-x snap-mandatory"
+        style={{
+          scrollbarWidth: "none",
+          msOverflowStyle: "none",
+        }}
+      >
+        {/* Left padding for centering first card */}
+        <div className="shrink-0 w-[calc(50%-140px)]" />
+
+        {scheduleData.map((day, index) => (
+          <div
+            key={day.date}
+            ref={(el) => {
+              cardRefs.current[index] = el;
+            }}
+            onClick={() => scrollToCard(index)}
+            className="shrink-0 w-[280px] snap-center cursor-pointer"
+          >
+            <motion.div
+              className="rounded-xl p-6 h-[160px] flex flex-col justify-between transition-colors duration-300"
+              animate={{
+                scale: index === activeIndex ? 1 : 0.92,
+                opacity: index === activeIndex ? 1 : 0.5,
+              }}
+              transition={{ duration: 0.3 }}
+              style={{
+                background:
+                  index === activeIndex
+                    ? day.isPlaceholder
+                      ? "rgba(255, 255, 255, 0.7)"
+                      : "rgba(255, 255, 255, 0.95)"
+                    : "rgba(255, 255, 255, 0.4)",
+                border:
+                  index === activeIndex
+                    ? day.isPlaceholder
+                      ? "1px dashed rgba(139, 106, 79, 0.4)"
+                      : "2px solid rgba(139, 106, 79, 0.6)"
+                    : "1px solid rgba(139, 106, 79, 0.2)",
+              }}
+            >
+              <div>
+                <div className="text-xs uppercase tracking-wider text-neutral-500 mb-1">
+                  {day.day}
+                </div>
+                <div className={`text-xl font-bold mb-2 ${day.isPlaceholder ? "italic" : ""}`}>
+                  {day.title}
+                </div>
+              </div>
+              <div className={`text-sm ${day.isPlaceholder ? "italic text-neutral-500" : "text-neutral-700"}`}>
+                {day.details}
+              </div>
+            </motion.div>
+          </div>
+        ))}
+
+        {/* Right padding for centering last card */}
+        <div className="shrink-0 w-[calc(50%-140px)]" />
+      </div>
+
+      {/* CSS to hide scrollbar */}
+      <style jsx>{`
+        div::-webkit-scrollbar {
+          display: none;
+        }
+      `}</style>
     </div>
   );
 }
