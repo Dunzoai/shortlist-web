@@ -8,8 +8,8 @@ interface Event {
   title: string;
   description: string | null;
   event_date: string;
-  start_time: string;
-  end_time: string;
+  start_time: string | null;
+  end_time: string | null;
   city: string;
   state: string;
   location_notes?: string;
@@ -87,7 +87,8 @@ function detectEventType(title: string, description?: string | null): EventTempl
 }
 
 // Format time from "14:30:00" to "2:30 PM"
-function formatTime(time: string): string {
+function formatTime(time: string | null): string | null {
+  if (!time) return null;
   const [hours, minutes] = time.split(":");
   const hour = parseInt(hours, 10);
   const ampm = hour >= 12 ? "PM" : "AM";
@@ -256,12 +257,14 @@ export function EventsCalendar() {
                   </svg>
                   <span className="font-semibold">{formatDate(event.event_date)}</span>
                 </p>
-                <p className="flex items-center gap-2 text-neutral-600">
-                  <svg className="w-5 h-5 text-[#8B6A4F]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
-                  <span>{formatTime(event.start_time)} - {formatTime(event.end_time)}</span>
-                </p>
+                {event.start_time && event.end_time && (
+                  <p className="flex items-center gap-2 text-neutral-600">
+                    <svg className="w-5 h-5 text-[#8B6A4F]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <span>{formatTime(event.start_time)} - {formatTime(event.end_time)}</span>
+                  </p>
+                )}
               </div>
 
               {event.description && (
