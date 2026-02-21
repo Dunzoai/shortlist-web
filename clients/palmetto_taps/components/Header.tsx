@@ -28,7 +28,7 @@ export default function Header() {
         </Link>
 
         {/* Desktop Nav */}
-        <nav className="hidden md:flex gap-8">
+        <nav className="hidden md:flex gap-6 items-center">
           {navLinks.map((link) => (
             <Link
               key={link.href}
@@ -38,6 +38,14 @@ export default function Header() {
               {link.label}
             </Link>
           ))}
+          <a
+            href="https://palmettotaps.shortlistpass.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="bg-[#8B6A4F] hover:bg-[#6F5536] text-white px-5 py-2 rounded-md text-sm uppercase tracking-wide font-semibold transition-all duration-200 hover:scale-105"
+          >
+            Ask Us
+          </a>
         </nav>
 
         {/* Mobile Menu Button */}
@@ -90,6 +98,21 @@ export default function Header() {
                   </Link>
                 </motion.div>
               ))}
+              <motion.div
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: navLinks.length * 0.1 }}
+              >
+                <a
+                  href="https://palmettotaps.shortlistpass.com"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={() => setIsOpen(false)}
+                  className="bg-[#8B6A4F] hover:bg-[#6F5536] text-white px-6 py-3 rounded-md text-lg uppercase tracking-wide font-semibold transition-colors duration-200 block text-center"
+                >
+                  Ask Us a Question
+                </a>
+              </motion.div>
             </div>
           </motion.nav>
         )}
