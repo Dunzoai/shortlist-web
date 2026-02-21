@@ -32,10 +32,12 @@ export default function EditBlogPost() {
   }, [params.id]);
 
   const fetchPost = async () => {
+    if (!params.id) return;
+    
     const { data, error } = await supabase
       .from('blog_posts')
       .select('*')
-      .eq('id', params.id)
+      .eq('id', params.id as string)
       .single();
 
     if (error) {
@@ -128,7 +130,7 @@ export default function EditBlogPost() {
           featured_image: featuredImageUrl,
           updated_at: formData.updatedDate ? new Date(formData.updatedDate).toISOString() : new Date().toISOString(),
         })
-        .eq('id', params.id);
+        .eq('id', params.id as string);
 
       if (updateError) {
         throw new Error(`Failed to update post: ${updateError.message}`);
@@ -137,7 +139,7 @@ export default function EditBlogPost() {
       // Call translate-all endpoint to re-generate Spanish translation
       try {
         const translateResponse = await fetch(
-          `/api/blog/translate-all?secret=dani2026&post_id=${params.id}`,
+          `/api/blog/translate-all?secret=dani2026&post_id=${params.id as string}`,
           { method: 'GET' }
         );
 
@@ -168,7 +170,7 @@ export default function EditBlogPost() {
       const { error: deleteError } = await supabase
         .from('blog_posts')
         .delete()
-        .eq('id', params.id);
+        .eq('id', params.id as string);
 
       if (deleteError) {
         throw new Error(`Failed to delete post: ${deleteError.message}`);
