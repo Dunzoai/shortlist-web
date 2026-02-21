@@ -8,8 +8,8 @@ interface Event {
   title: string;
   description: string | null;
   event_date: string;
-  start_time: string;
-  end_time: string;
+  start_time: string | null;
+  end_time: string | null;
   city: string;
   state: string;
   location_notes?: string;
