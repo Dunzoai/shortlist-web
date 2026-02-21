@@ -3,8 +3,10 @@
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { useState, useEffect } from "react";
-import { business, weeklyEvents, features, alwaysOnTap } from "@/clients/palmetto_taps/content/business";
+import { business, features, alwaysOnTap } from "@/clients/palmetto_taps/content/business";
 import AccordionItem from "@/clients/palmetto_taps/components/AccordionItem";
+import AgeVerification from "@/clients/palmetto_taps/components/AgeVerification";
+import { WeeklyEventsPreview } from "@/clients/palmetto_taps/components/WeeklyEventsPreview";
 
 // Reusable noise texture overlay component
 function NoiseTexture({ opacity = 0.08 }: { opacity?: number }) {
@@ -180,7 +182,9 @@ function FeaturedDrinksCarousel() {
 
 export default function Home() {
   return (
-    <div className="min-h-screen overflow-x-hidden">
+    <>
+      <AgeVerification />
+      <div className="min-h-screen overflow-x-hidden">
       {/* Hero Section - 2.4:1 aspect ratio video (1920x800) */}
       <section className="relative w-full flex items-center justify-center overflow-hidden bg-[#1F1F1E]" style={{ aspectRatio: '1920/800' }}>
         {/* Video Background */}
@@ -189,6 +193,8 @@ export default function Home() {
           muted
           loop
           playsInline
+          preload="auto"
+          poster="/clients/palmetto_taps/tap-wall.jpg"
           className="absolute inset-0 w-full h-full object-cover"
         >
           <source src="/palmetto-taps/taps video.mov" type="video/mp4" />
@@ -965,27 +971,9 @@ export default function Home() {
             </div>
           </motion.div>
 
-          {/* Horizontal scrolling calendar */}
-          <div className="relative mb-12">
-            <div
-              className="flex gap-4 md:gap-6 overflow-x-auto pb-6 scrollbar-hide snap-x snap-mandatory px-4"
-              style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
-            >
-              {weeklyEvents.map((event) => (
-                <div
-                  key={event.day}
-                  className="flex-shrink-0 w-64 md:w-72 h-40 snap-center bg-[#F3EFE8] p-6 shadow-md hover:shadow-lg hover:bg-white transition-all duration-300 cursor-pointer flex flex-col"
-                >
-                  <p className="text-[#1F1F1E] text-sm uppercase tracking-wide mb-2">{event.day}</p>
-                  <h3 className="text-2xl font-bold mb-3 italic" style={{ fontFamily: 'Georgia, serif' }}>{event.name}</h3>
-                  <p className="text-[#6B6B66] text-sm flex-grow">{event.description}</p>
-                </div>
-              ))}
-            </div>
-
-            {/* Fade edges */}
-            <div className="absolute left-0 top-0 bottom-6 w-8 md:w-12 bg-gradient-to-r from-[#D1CBC1] to-transparent pointer-events-none" />
-            <div className="absolute right-0 top-0 bottom-6 w-8 md:w-12 bg-gradient-to-l from-[#D1CBC1] to-transparent pointer-events-none" />
+          {/* Weekly Events from PWA Dashboard */}
+          <div className="mb-12">
+            <WeeklyEventsPreview />
           </div>
 
           {/* Events Button */}
@@ -1099,6 +1087,7 @@ export default function Home() {
           </div>
         </div>
       </footer>
-    </div>
+      </div>
+    </>
   );
 }
