@@ -112,7 +112,7 @@ function buildWeekSchedule(events: Event[]): DayData[] {
 export function WeeklyEventsPreview() {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const [activeIndex, setActiveIndex] = useState(0);
-  const [tapX, setTapX] = useState(0);
+
   const cardRefs = useRef<(HTMLDivElement | null)[]>([]);
 
   const [scheduleData, setScheduleData] = useState<DayData[]>([]);
@@ -168,13 +168,6 @@ export function WeeklyEventsPreview() {
 
       setActiveIndex(closestIndex);
 
-      // Position the tap/glass icon
-      const activeCard = cardRefs.current[closestIndex];
-      if (activeCard) {
-        const cardRect = activeCard.getBoundingClientRect();
-        const cardCenter = cardRect.left + cardRect.width / 2;
-        setTapX(cardCenter - containerRect.left);
-      }
     };
 
     container.addEventListener("scroll", handleScroll);
@@ -213,29 +206,6 @@ export function WeeklyEventsPreview() {
 
   return (
     <div className="relative">
-      {/* Beer tap icon that follows scroll (like Nito's truck) */}
-      <div className="relative h-24 flex justify-center mb-4">
-        <motion.div
-          className="absolute -top-2"
-          style={{ left: 0 }}
-          animate={{ x: tapX - 30 }}
-          transition={{
-            type: "spring",
-            stiffness: 200,
-            damping: 25,
-            mass: 0.8,
-          }}
-        >
-          {/* Simple beer tap SVG */}
-          <svg width="60" height="80" viewBox="0 0 60 80" className="drop-shadow-2xl">
-            <rect x="20" y="10" width="20" height="50" fill="#8B6A4F" rx="2" />
-            <ellipse cx="30" cy="10" rx="10" ry="5" fill="#6F5536" />
-            <rect x="15" y="55" width="30" height="5" fill="#D4A574" />
-            <path d="M 25 60 Q 30 75, 35 60" fill="none" stroke="#FFD700" strokeWidth="3" opacity="0.6" />
-          </svg>
-        </motion.div>
-      </div>
-
       {/* Horizontal scrolling calendar */}
       <div
         ref={scrollContainerRef}
@@ -246,7 +216,7 @@ export function WeeklyEventsPreview() {
         }}
       >
         {/* Left padding for centering first card */}
-        <div className="shrink-0 w-[calc(50%-140px)]" />
+        <div className="shrink-0 w-[calc(50%-160px)]" />
 
         {scheduleData.map((day, index) => (
           <div
@@ -255,10 +225,10 @@ export function WeeklyEventsPreview() {
               cardRefs.current[index] = el;
             }}
             onClick={() => scrollToCard(index)}
-            className="shrink-0 w-[280px] snap-center cursor-pointer"
+            className="shrink-0 w-[320px] snap-center cursor-pointer"
           >
             <motion.div
-              className="rounded-xl p-6 h-[160px] flex flex-col justify-between transition-colors duration-300"
+              className="rounded-xl p-6 h-[180px] flex flex-col justify-between transition-colors duration-300"
               animate={{
                 scale: index === activeIndex ? 1 : 0.92,
                 opacity: index === activeIndex ? 1 : 0.5,
@@ -295,7 +265,7 @@ export function WeeklyEventsPreview() {
         ))}
 
         {/* Right padding for centering last card */}
-        <div className="shrink-0 w-[calc(50%-140px)]" />
+        <div className="shrink-0 w-[calc(50%-160px)]" />
       </div>
 
       {/* CSS to hide scrollbar */}
