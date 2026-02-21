@@ -80,7 +80,7 @@ export default function Food() {
                   Our all-you-can-eat salad bar puts you in control. Load up your bowl with crisp greens, fresh veggies, proteins, and all the fixings.
                 </p>
                 <p className="font-semibold text-[#1F1F1E]">
-                  Lunch only. Monday through Saturday.
+                  Available daily.
                 </p>
               </div>
             </motion.div>
@@ -140,10 +140,11 @@ export default function Food() {
             {/* Hours Block */}
             <div className="mt-8 p-6 bg-[#2A2A2A] rounded-lg inline-block">
               <p className="text-[#8B6A4F] text-sm uppercase tracking-widest mb-3">Hours</p>
-              <div className="text-white/90 space-y-1">
-                <p><strong>Thursday - Friday:</strong> 5pm - 9pm</p>
-                <p><strong>Saturday:</strong> 12pm - 9pm</p>
-                <p className="text-white/60 text-sm mt-3 italic">Not served on Sundays</p>
+              <div className="text-white/90 space-y-2">
+                <p><strong>Monday - Thursday:</strong> 11am - 8pm</p>
+                <p><strong>Friday - Saturday:</strong> 11am - 10pm</p>
+                <p className="text-white/70 text-sm mt-3">(Shareable menu only after 8pm)</p>
+                <p className="text-white/60 text-sm italic">Smashburgers are not available on Sundays</p>
               </div>
             </div>
           </motion.div>
@@ -182,10 +183,10 @@ export default function Food() {
             </h2>
             <div className="space-y-4 text-[#3A3A38] text-lg leading-relaxed">
               <p>
-                Every Sunday, we switch things up. Food trucks. Guest chefs. Kitchen takeovers. The menu changes week to week.
+                On Sundays, we offer our full salad bar and shareable menu items from 11am - 7pm. Perfect for a relaxed afternoon with friends.
               </p>
               <p>
-                Follow along to see who's cooking next.
+                We also host rotating food trucks, guest chefs, and kitchen takeovers throughout the month. Follow along to see who's cooking next.
               </p>
             </div>
             <div className="mt-8 flex justify-center gap-4">
