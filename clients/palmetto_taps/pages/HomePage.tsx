@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { useState, useEffect } from "react";
@@ -181,6 +182,8 @@ function FeaturedDrinksCarousel() {
 }
 
 export default function Home() {
+  const [videoLoaded, setVideoLoaded] = useState(false);
+
   return (
     <>
       <AgeVerification />
@@ -195,7 +198,10 @@ export default function Home() {
           playsInline
           preload="auto"
           poster="/clients/palmetto_taps/tap-wall.jpg"
-          className="absolute inset-0 w-full h-full object-cover"
+          onLoadedData={() => setVideoLoaded(true)}
+          className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-700 ${
+            videoLoaded ? 'opacity-100' : 'opacity-0'
+          }`}
         >
           <source src="/palmetto-taps/taps video.mov" type="video/mp4" />
         </video>
