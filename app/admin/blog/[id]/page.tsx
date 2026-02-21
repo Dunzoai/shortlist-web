@@ -32,12 +32,16 @@ export default function EditBlogPost() {
   }, [params.id]);
 
   const fetchPost = async () => {
-    if (!params.id) return;
+    if (!params.id) {
+      setError('No post ID provided');
+      setLoading(false);
+      return;
+    }
     
-    const { data, error } = await supabase
+    const { data, error }: { data: any; error: any } = await supabase
       .from('blog_posts')
       .select('*')
-      .eq('id', params.id as string)
+      .eq('id', params.id)
       .single();
 
     if (error) {
