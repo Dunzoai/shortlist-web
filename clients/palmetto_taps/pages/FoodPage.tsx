@@ -186,7 +186,7 @@ export default function Food() {
                 On Sundays, we offer our full salad bar and shareable menu items from 11am - 7pm. Perfect for a relaxed afternoon with friends.
               </p>
               <p>
-                We also host rotating food trucks, guest chefs, and kitchen takeovers throughout the month. Follow along to see who's cooking next.
+                We also host Pizza Squared for their famous Detroit style pizza. Check their social for dates. We also try to support local guest chefs, and plan occasional kitchen takeovers throughout the month. Follow along to see who's cooking next.
               </p>
             </div>
             <div className="mt-8 flex justify-center gap-4">

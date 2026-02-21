@@ -862,7 +862,7 @@ export default function Home() {
               />
               <AccordionItem
                 title="Community Events"
-                content="We're more than a taproom — we're a gathering place for Conway. From holiday parties to live music nights, food trucks to bouncy houses for the kids, we host events that bring our community together. Follow us on social media to stay in the loop."
+                content="We're more than a taproom — we're a gathering place for Conway. From holiday parties to live music nights, (sometimes) food trucks to bouncy houses for the kids, we host events that bring our community together. Follow us on social media to stay in the loop."
               />
             </div>
           </div>
