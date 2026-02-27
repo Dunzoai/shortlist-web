@@ -851,7 +851,7 @@ export default function Home() {
             <div className="space-y-0">
               <AccordionItem
                 title="Family Friendly"
-                content="Bring the whole crew — kids are welcome here. We've designed a laid-back space where families can hang out, catch a game, and enjoy good drinks without the stuffy atmosphere. Regular events, outdoor games, and a relaxed vibe make us a go-to spot for all ages."
+                content="Well-behaved children with attentive parents are welcome. We do our best to be a family-friendly space for the community, but with glass and other accessible items throughout the taproom, we want to ensure everyone stays safe. We kindly ask that all children remain well-behaved and supervised at all times."
               />
               <AccordionItem
                 title="Pet Friendly"
