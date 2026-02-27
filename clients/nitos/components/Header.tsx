@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 
 const navLinks = [
   { href: '/', label: 'Home' },
@@ -52,15 +53,13 @@ export function Header() {
       {showBanner && (
         <div className="bg-[#2D5A3D] text-white text-center text-sm py-2 px-4 relative">
           <span>
-            🏈 Now taking orders for the Super Bowl!
-            <br className="md:hidden" />{' '}
             <a
-              href={CTA_HREF}
+              href="https://nitos.shortlistpass.com"
               target="_blank"
               rel="noopener noreferrer"
               className="underline font-bold text-[#FFD93D] hover:text-white transition-colors"
             >
-              Buy 10 get 2 free!
+              🍽️ Tap This to Find our Truck & Order Empanadas
             </a>
           </span>
           <button
@@ -76,8 +75,15 @@ export function Header() {
       <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Logo/Brand */}
-          <Link href="/" className="text-[#2D5A3D] font-bold text-xl italic">
-            Nito&apos;s
+          <Link href="/" className="block">
+            <Image
+              src="/nitos-logo.avif"
+              alt="Nito's Empanadas"
+              width={120}
+              height={60}
+              className="h-12 w-auto object-contain"
+              priority
+            />
           </Link>
 
           {/* Desktop Navigation */}
