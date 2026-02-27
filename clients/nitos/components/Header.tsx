@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
 
 const navLinks = [
   { href: '/', label: 'Home' },
@@ -59,7 +58,7 @@ export function Header() {
               rel="noopener noreferrer"
               className="underline font-bold text-[#FFD93D] hover:text-white transition-colors"
             >
-              🍽️ Tap This to Find our Truck & Order Empanadas
+              🍽️ Tap This to Find Our Truck & Order Empanadas
             </a>
           </span>
           <button
@@ -75,14 +74,11 @@ export function Header() {
       <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Logo/Brand */}
-          <Link href="/" className="block">
-            <Image
+          <Link href="/" className="block relative z-10">
+            <img
               src="/nitos-logo.avif"
               alt="Nito's Empanadas"
-              width={120}
-              height={60}
               className="h-12 w-auto object-contain"
-              priority
             />
           </Link>
 
