@@ -859,7 +859,7 @@ export default function Home() {
               />
               <AccordionItem
                 title="More than Just Beer"
-                content="Yes, we have 40+ taps but we've also got wine, prosecco, seltzers, jell-o shots, Fireball cinnamon whiskey, sake, and more. Whatever you're in the mood for, Palmetto Taps has you covered."
+                content="Yes, we have 40+ taps but we've also got wine, prosecco, seltzers, and shots (jell-o shots, Fireball cinnamon whiskey, and sake). Whatever you're in the mood for, Palmetto Taps has you covered."
               />
               <AccordionItem
                 title="Free Parking"

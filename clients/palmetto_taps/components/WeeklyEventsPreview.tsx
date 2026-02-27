@@ -31,6 +31,12 @@ const PLACEHOLDER_MESSAGES = [
   { title: "Thirsty?", details: "We've got 40 beers on tap" },
   { title: "Pour your own", details: "Try as many as you want" },
   { title: "Taproom vibes", details: "Games, patio, cold beer" },
+  { title: "Cold beer calling", details: "Self-serve taps ready for you" },
+  { title: "Craft your perfect pour", details: "40+ options on tap" },
+  { title: "Unwind with us", details: "Great drinks, better vibes" },
+  { title: "Drop by today", details: "Your favorite seat is waiting" },
+  { title: "Fresh taps flowing", details: "Discover something new" },
+  { title: "Good times on tap", details: "Pull up and pour your own" },
 ];
 
 // Get consistent placeholder for a date
