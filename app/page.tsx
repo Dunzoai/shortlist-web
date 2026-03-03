@@ -1,6 +1,7 @@
 import { headers } from 'next/headers';
 import { getClient } from '@/lib/getClient';
 import { HomePage as DaniDiazHomePage } from '@/clients/danidiaz/pages/HomePage';
+import SuspendedPage from '@/clients/danidiaz/pages/SuspendedPage';
 import { HomePage as NitosHomePage } from '@/clients/nitos/pages/HomePage';
 import HomePage from '@/clients/palmetto_taps/pages/HomePage';
 import Layout from '@/clients/palmetto_taps/components/Layout';
@@ -31,6 +32,7 @@ export default async function Page() {
     return <Layout><HomePage /></Layout>;
   }
 
-  // Default to danidiaz
-  return <DaniDiazHomePage />;
+  // Default to danidiaz - SUSPENDED (non-payment)
+  // To restore: change SuspendedPage back to DaniDiazHomePage
+  return <SuspendedPage />;
 }
