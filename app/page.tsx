@@ -32,7 +32,6 @@ export default async function Page() {
     return <Layout><HomePage /></Layout>;
   }
 
-  // Default to danidiaz - SUSPENDED (non-payment)
-  // To restore: change SuspendedPage back to DaniDiazHomePage
-  return <SuspendedPage />;
+  // Default to danidiaz
+  return <DaniDiazHomePage />;
 }
