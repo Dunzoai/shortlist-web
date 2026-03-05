@@ -44,3 +44,13 @@ Client: Dani Diaz
 Issue: Non-payment  
 Action: Site suspended but content preserved  
 Next step: Wait for payment or delete after 60 days
+
+---
+
+## RESTORED
+
+**Date Restored:** March 5, 2026  
+**Status:** Site is LIVE again  
+**Action:** Changed routing from SuspendedPage back to DaniDiazHomePage
+
+Payment received / Agreement reached. Site fully operational.
