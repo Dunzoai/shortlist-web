@@ -27,14 +27,19 @@ export default function PalmettoTapsLayout({ children }: { children: React.React
         {children}
       </main>
       {/* Built by footer */}
-      <div className="bg-[#1F1F1E] py-4 text-center border-t border-[#3A3A38]">
+      <div className="bg-[#1F1F1E] py-4 border-t border-[#3A3A38]">
         <a
           href="https://www.shortlistpass.com"
           target="_blank"
           rel="noopener noreferrer"
-          className="text-[#A8A59D] text-sm hover:text-white transition-colors"
+          className="flex items-center justify-center gap-2 text-[#A8A59D] text-sm hover:text-white transition-colors"
         >
-          Built by the Shortlist Pass Company
+          <span>Built by the Shortlist Pass Company</span>
+          <img
+            src="/shortlist-logo-ivory-transparent.png"
+            alt="Shortlist Pass"
+            className="h-5 w-auto opacity-70 hover:opacity-100 transition-opacity"
+          />
         </a>
       </div>
     </div>
