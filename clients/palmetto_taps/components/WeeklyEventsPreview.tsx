@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, useRef } from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 
 interface Event {
   id: string;
@@ -131,11 +131,15 @@ function buildWeekSchedule(events: Event[]): DayData[] {
 export function WeeklyEventsPreview() {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const [activeIndex, setActiveIndex] = useState(0);
+  const [selectedEvent, setSelectedEvent] = useState<DayData | null>(null);
 
   const cardRefs = useRef<(HTMLDivElement | null)[]>([]);
 
   const [scheduleData, setScheduleData] = useState<DayData[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+
+  // Check if text would be truncated (rough estimate)
+  const isTextLong = (text: string) => text.length > 80;
 
   // Fetch events from SmartPage API
   useEffect(() => {
@@ -215,6 +219,16 @@ export function WeeklyEventsPreview() {
     }
   };
 
+  const handleCardClick = (index: number, day: DayData) => {
+    if (index === activeIndex && !day.isPlaceholder) {
+      // If already centered and it's a real event, open modal
+      setSelectedEvent(day);
+    } else {
+      // Otherwise just scroll to center it
+      scrollToCard(index);
+    }
+  };
+
   if (isLoading) {
     return (
       <div className="text-center py-8">
@@ -243,11 +257,11 @@ export function WeeklyEventsPreview() {
             ref={(el) => {
               cardRefs.current[index] = el;
             }}
-            onClick={() => scrollToCard(index)}
+            onClick={() => handleCardClick(index, day)}
             className="shrink-0 w-[320px] snap-center cursor-pointer"
           >
             <motion.div
-              className="rounded-xl p-6 h-[180px] flex flex-col justify-between transition-colors duration-300 overflow-hidden"
+              className="rounded-xl p-6 h-[180px] flex flex-col justify-between transition-colors duration-300 overflow-hidden relative"
               animate={{
                 scale: index === activeIndex ? 1 : 0.92,
                 opacity: index === activeIndex ? 1 : 0.5,
@@ -279,6 +293,12 @@ export function WeeklyEventsPreview() {
               <div className={`text-sm line-clamp-3 ${day.isPlaceholder ? "italic text-neutral-500" : "text-neutral-700"}`}>
                 {day.details}
               </div>
+              {/* Tap for more indicator - only show for real events with long text when active */}
+              {index === activeIndex && !day.isPlaceholder && isTextLong(day.details) && (
+                <div className="absolute bottom-2 right-3 text-xs text-[#8B6A4F] opacity-60">
+                  tap to expand
+                </div>
+              )}
             </motion.div>
           </div>
         ))}
@@ -293,6 +313,57 @@ export function WeeklyEventsPreview() {
           display: none;
         }
       `}</style>
+
+      {/* Event Detail Modal */}
+      <AnimatePresence>
+        {selectedEvent && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            className="fixed inset-0 z-50 flex items-center justify-center p-6"
+            onClick={() => setSelectedEvent(null)}
+          >
+            {/* Blurred backdrop */}
+            <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" />
+
+            {/* Modal card */}
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              onClick={(e) => e.stopPropagation()}
+              className="relative w-full max-w-md rounded-xl p-8 bg-white shadow-2xl"
+              style={{
+                border: "2px solid rgba(139, 106, 79, 0.6)",
+              }}
+            >
+              {/* Close button */}
+              <button
+                onClick={() => setSelectedEvent(null)}
+                className="absolute top-4 right-4 text-neutral-400 hover:text-neutral-600 transition-colors"
+              >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+
+              {/* Event content */}
+              <div className="text-xs uppercase tracking-wider text-neutral-500 mb-2">
+                {selectedEvent.fullDay}
+              </div>
+              <h3 className="text-2xl font-bold mb-4 text-[#1F1F1E]">
+                {selectedEvent.title}
+              </h3>
+              <p className="text-neutral-700 leading-relaxed">
+                {selectedEvent.details}
+              </p>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
