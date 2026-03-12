@@ -247,7 +247,7 @@ export function WeeklyEventsPreview() {
             className="shrink-0 w-[320px] snap-center cursor-pointer"
           >
             <motion.div
-              className="rounded-xl p-6 h-[180px] flex flex-col justify-between transition-colors duration-300"
+              className="rounded-xl p-6 h-[180px] flex flex-col justify-between transition-colors duration-300 overflow-hidden"
               animate={{
                 scale: index === activeIndex ? 1 : 0.92,
                 opacity: index === activeIndex ? 1 : 0.5,
@@ -272,11 +272,11 @@ export function WeeklyEventsPreview() {
                 <div className="text-xs uppercase tracking-wider text-neutral-500 mb-1">
                   {day.day}
                 </div>
-                <div className={`text-xl font-bold mb-2 ${day.isPlaceholder ? "italic" : ""}`}>
+                <div className={`text-xl font-bold mb-2 line-clamp-2 ${day.isPlaceholder ? "italic" : ""}`}>
                   {day.title}
                 </div>
               </div>
-              <div className={`text-sm ${day.isPlaceholder ? "italic text-neutral-500" : "text-neutral-700"}`}>
+              <div className={`text-sm line-clamp-3 ${day.isPlaceholder ? "italic text-neutral-500" : "text-neutral-700"}`}>
                 {day.details}
               </div>
             </motion.div>
