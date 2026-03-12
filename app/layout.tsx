@@ -145,6 +145,63 @@ export default async function RootLayout({
   // Client website routes get the full branded experience
   return (
     <html lang="en">
+      <head>
+        {/* JSON-LD Structured Data for Local Business SEO */}
+        {client?.slug === 'palmetto_taps' && (
+          <script
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{
+              __html: JSON.stringify({
+                "@context": "https://schema.org",
+                "@type": "BarOrPub",
+                "name": "Palmetto Taps",
+                "description": "Horry County's First Self-Serve Taproom. 40+ beers on tap, pour your own pint in historic downtown Conway, SC.",
+                "url": "https://palmettotaps.com",
+                "telephone": "(843) 438-8277",
+                "email": "info@palmettotaps.com",
+                "address": {
+                  "@type": "PostalAddress",
+                  "streetAddress": "909 4th Avenue",
+                  "addressLocality": "Conway",
+                  "addressRegion": "SC",
+                  "postalCode": "29526",
+                  "addressCountry": "US"
+                },
+                "geo": {
+                  "@type": "GeoCoordinates",
+                  "latitude": "33.8360",
+                  "longitude": "-79.0478"
+                },
+                "openingHoursSpecification": [
+                  { "@type": "OpeningHoursSpecification", "dayOfWeek": "Sunday", "opens": "11:00", "closes": "20:00" },
+                  { "@type": "OpeningHoursSpecification", "dayOfWeek": "Monday", "opens": "11:00", "closes": "21:30" },
+                  { "@type": "OpeningHoursSpecification", "dayOfWeek": "Tuesday", "opens": "11:00", "closes": "21:30" },
+                  { "@type": "OpeningHoursSpecification", "dayOfWeek": "Thursday", "opens": "11:00", "closes": "21:30" },
+                  { "@type": "OpeningHoursSpecification", "dayOfWeek": "Friday", "opens": "11:00", "closes": "23:00" },
+                  { "@type": "OpeningHoursSpecification", "dayOfWeek": "Saturday", "opens": "11:00", "closes": "23:00" }
+                ],
+                "servesCuisine": ["Beer", "Craft Beer", "Wine", "Cocktails"],
+                "priceRange": "$$",
+                "image": "https://palmettotaps.com/palmetto-taps/palmetto-tap-wall.png",
+                "sameAs": [
+                  "https://www.facebook.com/profile.php?id=100089634545976",
+                  "https://www.instagram.com/palmettotaps/",
+                  "https://untappd.com/v/palmetto-taps/12893204"
+                ],
+                "hasMenu": "https://untappd.com/v/palmetto-taps/12893204",
+                "acceptsReservations": false,
+                "amenityFeature": [
+                  { "@type": "LocationFeatureSpecification", "name": "Self-Serve Beer Taps", "value": true },
+                  { "@type": "LocationFeatureSpecification", "name": "Pet Friendly Patio", "value": true },
+                  { "@type": "LocationFeatureSpecification", "name": "Family Friendly", "value": true },
+                  { "@type": "LocationFeatureSpecification", "name": "Free Parking", "value": true },
+                  { "@type": "LocationFeatureSpecification", "name": "Outdoor Seating", "value": true }
+                ]
+              })
+            }}
+          />
+        )}
+      </head>
       <body
         className={`${playfair.variable} ${lora.variable} ${permanentMarker.variable} antialiased bg-[#F7F7F7] text-[#3D3D3D]`}
       >
