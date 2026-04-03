@@ -62,48 +62,48 @@ function PetalSplashHero() {
     };
   }, []);
 
-  // Corner blobs like the Spark app — large organic shapes anchored to
-  // the edges/corners. They create a flower-shaped negative space in the center.
-  // Each blob is ~70-80% off-screen, only the curved inner edge is visible.
+  // 4 massive blobs filling each corner. They're so big they nearly meet
+  // at center, leaving a small star-shaped cream gap for the text.
+  // No white circle — just the cream background showing through.
   const blobs = [
     {
       // Top-left — pink
       color: PETAL_COLORS.pink,
-      pos: { top: '-40%', left: '-30%' },
-      from: { x: '-60%', y: '-60%' },
-      w: '75%', h: '85%',
-      radius: '60% 40% 55% 45% / 55% 65% 35% 45%',
+      pos: { top: '-20%', left: '-22%' },
+      from: { x: '-50%', y: '-50%' },
+      w: '70%', h: '75%',
+      radius: '0% 50% 50% 0% / 0% 0% 50% 50%',
     },
     {
-      // Top-right — teal (largest)
+      // Top-right — teal
       color: PETAL_COLORS.teal,
-      pos: { top: '-35%', right: '-25%' },
-      from: { x: '60%', y: '-60%' },
-      w: '80%', h: '90%',
-      radius: '45% 55% 40% 60% / 50% 45% 55% 50%',
+      pos: { top: '-22%', right: '-20%' },
+      from: { x: '50%', y: '-50%' },
+      w: '72%', h: '78%',
+      radius: '50% 0% 0% 50% / 0% 0% 50% 50%',
     },
     {
       // Bottom-left — lime
       color: PETAL_COLORS.lime,
-      pos: { bottom: '-38%', left: '-20%' },
-      from: { x: '-60%', y: '60%' },
-      w: '72%', h: '80%',
-      radius: '55% 45% 60% 40% / 40% 55% 45% 60%',
+      pos: { bottom: '-22%', left: '-18%' },
+      from: { x: '-50%', y: '50%' },
+      w: '68%', h: '72%',
+      radius: '0% 50% 50% 0% / 50% 50% 0% 0%',
     },
     {
       // Bottom-right — lavender
       color: PETAL_COLORS.lavender,
-      pos: { bottom: '-42%', right: '-28%' },
-      from: { x: '60%', y: '60%' },
-      w: '65%', h: '75%',
-      radius: '50% 50% 45% 55% / 55% 50% 50% 45%',
+      pos: { bottom: '-20%', right: '-22%' },
+      from: { x: '50%', y: '50%' },
+      w: '62%', h: '68%',
+      radius: '50% 0% 0% 50% / 50% 50% 0% 0%',
     },
   ];
 
   return (
     <section className="relative h-screen w-full overflow-hidden" style={{ backgroundColor: BG_CREAM }}>
 
-      {/* Text "Grow with Gia" — small, centered in the negative space */}
+      {/* Text "Grow with Gia" — centered in the cream negative space */}
       <div className="absolute inset-0 flex items-center justify-center z-10">
         <AnimatePresence>
           {showText && (
@@ -132,7 +132,7 @@ function PetalSplashHero() {
         </AnimatePresence>
       </div>
 
-      {/* Corner blobs — slide in from off-screen, then slowly rotate as a group */}
+      {/* Corner blobs — slide in, then slowly rotate as a group */}
       <motion.div
         className="absolute inset-0 z-[5] pointer-events-none"
         animate={petalsReady ? { rotate: 360 } : { rotate: 0 }}
@@ -160,11 +160,11 @@ function PetalSplashHero() {
             animate={{
               x: '0%',
               y: '0%',
-              opacity: 0.9,
+              opacity: 1,
             }}
             transition={{
-              duration: 1.8,
-              delay: i * 0.2,
+              duration: 1.6,
+              delay: i * 0.18,
               ease: [0.25, 0.46, 0.45, 0.94],
             }}
           >
