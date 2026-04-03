@@ -62,49 +62,32 @@ function PetalSplashHero() {
     };
   }, []);
 
-  // 4 massive blobs filling each corner. They're so big they nearly meet
-  // at center, leaving a small star-shaped cream gap for the text.
-  // No white circle — just the cream background showing through.
-  const blobs = [
-    {
-      // Top-left — pink
-      color: PETAL_COLORS.pink,
-      pos: { top: '-20%', left: '-22%' },
-      from: { x: '-50%', y: '-50%' },
-      w: '70%', h: '75%',
-      radius: '0% 50% 50% 0% / 0% 0% 50% 50%',
-    },
-    {
-      // Top-right — teal
-      color: PETAL_COLORS.teal,
-      pos: { top: '-22%', right: '-20%' },
-      from: { x: '50%', y: '-50%' },
-      w: '72%', h: '78%',
-      radius: '50% 0% 0% 50% / 0% 0% 50% 50%',
-    },
-    {
-      // Bottom-left — lime
-      color: PETAL_COLORS.lime,
-      pos: { bottom: '-22%', left: '-18%' },
-      from: { x: '-50%', y: '50%' },
-      w: '68%', h: '72%',
-      radius: '0% 50% 50% 0% / 50% 50% 0% 0%',
-    },
-    {
-      // Bottom-right — lavender
-      color: PETAL_COLORS.lavender,
-      pos: { bottom: '-20%', right: '-22%' },
-      from: { x: '50%', y: '50%' },
-      w: '62%', h: '68%',
-      radius: '50% 0% 0% 50% / 50% 50% 0% 0%',
-    },
+  // SVG flower with 8 petals. Each petal is an ellipse whose base sits on
+  // the edge of a center circle, extending outward far enough to go off-screen.
+  // The center circle is cream (matching bg) so text shows through.
+  const petalCount = 8;
+  const petalColors = [
+    PETAL_COLORS.pink,
+    PETAL_COLORS.teal,
+    PETAL_COLORS.lime,
+    PETAL_COLORS.lavender,
+    PETAL_COLORS.pink,
+    PETAL_COLORS.teal,
+    PETAL_COLORS.lime,
+    PETAL_COLORS.lavender,
   ];
+  // SVG viewBox is 1000x1000, center at 500,500
+  const cx = 500, cy = 500;
+  const circleR = 120; // center circle radius
+  const petalRx = 160; // petal half-width
+  const petalRy = 420; // petal length (extends way out from circle)
+  const petalOffset = circleR + petalRy - 30; // center of petal ellipse, slight overlap with circle
 
   return (
     <section className="relative h-screen w-full overflow-hidden" style={{ backgroundColor: BG_CREAM }}>
 
-      {/* Text "Grow with Gia" — centered in the cream negative space */}
-      <div className="absolute inset-0 flex items-center justify-center z-10">
+      {/* Text — centered, inside the circle, on top */}
+      <div className="absolute inset-0 flex items-center justify-center z-20">
         <AnimatePresence>
           {showText && (
             <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight select-none" style={{ fontFamily: "'Georgia', 'Times New Roman', serif" }}>
@@ -132,53 +115,57 @@ function PetalSplashHero() {
         </AnimatePresence>
       </div>
 
-      {/* Corner blobs — slide in, then slowly rotate as a group */}
-      <motion.div
-        className="absolute inset-0 z-[5] pointer-events-none"
-        animate={petalsReady ? { rotate: 360 } : { rotate: 0 }}
-        transition={petalsReady ? {
-          duration: 180,
-          repeat: Infinity,
-          ease: 'linear',
-        } : {}}
-        style={{ transformOrigin: '50% 50%' }}
-      >
-        {blobs.map((blob, i) => (
-          <motion.div
-            key={i}
-            className="absolute"
-            style={{
-              ...blob.pos,
-              width: blob.w,
-              height: blob.h,
-            }}
-            initial={{
-              x: blob.from.x,
-              y: blob.from.y,
-              opacity: 0,
-            }}
-            animate={{
-              x: '0%',
-              y: '0%',
-              opacity: 1,
-            }}
-            transition={{
-              duration: 1.6,
-              delay: i * 0.18,
-              ease: [0.25, 0.46, 0.45, 0.94],
-            }}
-          >
-            <div
-              style={{
-                width: '100%',
-                height: '100%',
-                backgroundColor: blob.color,
-                borderRadius: blob.radius,
-              }}
-            />
-          </motion.div>
-        ))}
-      </motion.div>
+      {/* SVG flower — petals + cream center circle */}
+      <div className="absolute inset-0 flex items-center justify-center z-10 pointer-events-none">
+        <motion.svg
+          viewBox="0 0 1000 1000"
+          className="w-[250vmax] h-[250vmax]"
+          style={{ overflow: 'visible' }}
+          animate={petalsReady ? { rotate: 360 } : { rotate: 0 }}
+          transition={petalsReady ? {
+            duration: 120,
+            repeat: Infinity,
+            ease: 'linear',
+          } : {}}
+        >
+          {/* Petals */}
+          {Array.from({ length: petalCount }).map((_, i) => {
+            const angle = (360 / petalCount) * i;
+            return (
+              <motion.ellipse
+                key={i}
+                cx={cx}
+                cy={cy - petalOffset}
+                rx={petalRx}
+                ry={petalRy}
+                fill={petalColors[i]}
+                opacity={0.88}
+                transform={`rotate(${angle}, ${cx}, ${cy})`}
+                initial={{ scale: 0, opacity: 0 }}
+                animate={{ scale: 1, opacity: 0.88 }}
+                transition={{
+                  duration: 1.4,
+                  delay: i * 0.12,
+                  ease: [0.34, 1.4, 0.64, 1],
+                }}
+                style={{ transformOrigin: `${cx}px ${cy}px` }}
+              />
+            );
+          })}
+
+          {/* Center circle — cream, covers petal bases, text shows through */}
+          <motion.circle
+            cx={cx}
+            cy={cy}
+            r={circleR}
+            fill={BG_CREAM}
+            initial={{ scale: 0 }}
+            animate={{ scale: 1 }}
+            transition={{ duration: 0.8, delay: 0.4, ease: [0.34, 1.56, 0.64, 1] }}
+            style={{ transformOrigin: `${cx}px ${cy}px` }}
+          />
+        </motion.svg>
+      </div>
 
       {/* Scroll hint */}
       <AnimatePresence>
