@@ -62,9 +62,8 @@ function PetalSplashHero() {
     };
   }, []);
 
-  // SVG flower with 8 petals. Each petal is an ellipse whose base sits on
-  // the edge of a center circle, extending outward far enough to go off-screen.
-  // The center circle is cream (matching bg) so text shows through.
+  // SVG flower: 8 petals radiating from center. Sized so the flower
+  // fills the viewport with petal tips just bleeding off the edges.
   const petalCount = 8;
   const petalColors = [
     PETAL_COLORS.pink,
@@ -76,12 +75,12 @@ function PetalSplashHero() {
     PETAL_COLORS.lime,
     PETAL_COLORS.lavender,
   ];
-  // SVG viewBox is 1000x1000, center at 500,500
+  // SVG viewBox 1000x1000, center 500,500
   const cx = 500, cy = 500;
-  const circleR = 120; // center circle radius
-  const petalRx = 160; // petal half-width
-  const petalRy = 420; // petal length (extends way out from circle)
-  const petalOffset = circleR + petalRy - 30; // center of petal ellipse, slight overlap with circle
+  const circleR = 90;   // center circle — ~18% of viewBox
+  const petalRx = 120;  // petal half-width
+  const petalRy = 340;  // petal length
+  const petalOffset = circleR + petalRy - 20; // slight overlap at base
 
   return (
     <section className="relative h-screen w-full overflow-hidden" style={{ backgroundColor: BG_CREAM }}>
@@ -130,7 +129,7 @@ function PetalSplashHero() {
       <div className="absolute inset-0 flex items-center justify-center z-10 pointer-events-none">
         <motion.svg
           viewBox="0 0 1000 1000"
-          className="w-[250vmax] h-[250vmax]"
+          className="w-[130vmin] h-[130vmin] md:w-[110vmin] md:h-[110vmin]"
           style={{ overflow: 'visible' }}
           animate={petalsReady ? { rotate: 360 } : { rotate: 0 }}
           transition={petalsReady ? {
@@ -144,7 +143,7 @@ function PetalSplashHero() {
             const angle = (360 / petalCount) * i;
             const rad = (angle * Math.PI) / 180;
             // Slide in from far away along each petal's own angle
-            const slideDist = 800;
+            const slideDist = 500;
             const startTx = Math.sin(rad) * slideDist;
             const startTy = -Math.cos(rad) * slideDist;
             return (
