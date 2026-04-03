@@ -62,24 +62,23 @@ function PetalSplashHero() {
     };
   }, []);
 
-  // 6 petals evenly spaced, each is a teardrop/ellipse rotated to point outward
-  const petalCount = 6;
-  const petalColors = [
-    PETAL_COLORS.pink,
-    PETAL_COLORS.teal,
-    PETAL_COLORS.lime,
-    PETAL_COLORS.lavender,
-    PETAL_COLORS.pink,
-    PETAL_COLORS.teal,
+  // Petals are massive — they bleed off screen. Positioned by angle from center.
+  const petals = [
+    { color: PETAL_COLORS.pink, angle: 0 },       // top
+    { color: PETAL_COLORS.teal, angle: 60 },       // top-right
+    { color: PETAL_COLORS.lime, angle: 120 },      // bottom-right
+    { color: PETAL_COLORS.lavender, angle: 180 },  // bottom
+    { color: PETAL_COLORS.pink, angle: 240 },      // bottom-left
+    { color: PETAL_COLORS.teal, angle: 300 },      // top-left
   ];
 
   return (
     <section className="relative h-screen w-full overflow-hidden" style={{ backgroundColor: BG_CREAM }}>
-      {/* Rotating container for petals */}
+      {/* Rotating flower — massive, bleeds off screen */}
       <div className="absolute inset-0 flex items-center justify-center">
         <motion.div
           className="relative"
-          style={{ width: '60vmin', height: '60vmin' }}
+          style={{ width: '200vmax', height: '200vmax' }}
           animate={petalsReady ? { rotate: 360 } : { rotate: 0 }}
           transition={petalsReady ? {
             duration: 90,
@@ -87,71 +86,51 @@ function PetalSplashHero() {
             ease: 'linear',
           } : {}}
         >
-          {Array.from({ length: petalCount }).map((_, i) => {
-            const angle = (360 / petalCount) * i;
-            const radians = (angle * Math.PI) / 180;
-            // Each petal flies in from far outside along its angle
-            const farDist = 600;
-            const restDist = 0; // petals anchor at center, shape extends outward via CSS
-            const startX = Math.cos(radians) * farDist;
-            const startY = Math.sin(radians) * farDist;
+          {petals.map((petal, i) => {
+            const rad = (petal.angle * Math.PI) / 180;
+            // Petal tip sits far from center (bleeds off screen)
+            const petalLength = '45%';
+            const petalWidth = '28%';
 
             return (
               <motion.div
                 key={i}
                 className="absolute"
                 style={{
-                  width: '50%',
-                  height: '50%',
-                  left: '25%',
-                  top: '25%',
+                  width: petalWidth,
+                  height: petalLength,
+                  left: '50%',
+                  top: '50%',
+                  marginLeft: '-14%',
+                  marginTop: `-${petalLength}`,
                   transformOrigin: '50% 100%',
-                  rotate: `${angle - 90}deg`,
+                  rotate: `${petal.angle}deg`,
                 }}
                 initial={{
-                  scale: 0,
+                  y: '-80%',
                   opacity: 0,
-                  x: startX,
-                  y: startY,
                 }}
                 animate={{
-                  scale: 1,
-                  opacity: 0.8,
-                  x: restDist,
-                  y: restDist,
+                  y: '0%',
+                  opacity: 0.85,
                 }}
                 transition={{
-                  duration: 1.4,
-                  delay: i * 0.15,
-                  ease: [0.34, 1.4, 0.64, 1],
+                  duration: 1.8,
+                  delay: i * 0.12,
+                  ease: [0.25, 0.46, 0.45, 0.94],
                 }}
               >
                 <div
                   style={{
                     width: '100%',
                     height: '100%',
-                    backgroundColor: petalColors[i],
-                    borderRadius: '50% 50% 50% 50% / 70% 70% 30% 30%',
+                    backgroundColor: petal.color,
+                    borderRadius: '50% 50% 45% 45% / 65% 65% 35% 35%',
                   }}
                 />
               </motion.div>
             );
           })}
-
-          {/* Center circle */}
-          <motion.div
-            className="absolute rounded-full"
-            style={{
-              width: '22%',
-              height: '22%',
-              left: '39%',
-              top: '39%',
-              backgroundColor: '#F9E547',
-            }}
-            initial={{ scale: 0, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            transition={{ duration: 0.6, delay: 1.2, ease: [0.34, 1.56, 0.64, 1] }}
-          />
         </motion.div>
       </div>
 
