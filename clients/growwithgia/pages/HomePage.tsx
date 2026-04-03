@@ -62,46 +62,56 @@ function PetalSplashHero() {
     };
   }, []);
 
-  // Petals: large ellipses whose inner edge touches the white circle.
-  // They're so big their outer halves bleed off screen.
-  // circleR = radius of white center circle in vmin
-  const circleR = 21; // half of 42vmin
-  const petalCount = 5;
-  const petalW = 65; // vmin — wide enough to bleed off screen
-  const petalH = 55; // vmin
-  const petalColors = [
-    PETAL_COLORS.pink,
-    PETAL_COLORS.teal,
-    PETAL_COLORS.lime,
-    PETAL_COLORS.lavender,
-    PETAL_COLORS.teal,
+  // Corner blobs like the Spark app — large organic shapes anchored to
+  // the edges/corners. They create a flower-shaped negative space in the center.
+  // Each blob is ~70-80% off-screen, only the curved inner edge is visible.
+  const blobs = [
+    {
+      // Top-left — pink
+      color: PETAL_COLORS.pink,
+      pos: { top: '-40%', left: '-30%' },
+      from: { x: '-60%', y: '-60%' },
+      w: '75%', h: '85%',
+      radius: '60% 40% 55% 45% / 55% 65% 35% 45%',
+    },
+    {
+      // Top-right — teal (largest)
+      color: PETAL_COLORS.teal,
+      pos: { top: '-35%', right: '-25%' },
+      from: { x: '60%', y: '-60%' },
+      w: '80%', h: '90%',
+      radius: '45% 55% 40% 60% / 50% 45% 55% 50%',
+    },
+    {
+      // Bottom-left — lime
+      color: PETAL_COLORS.lime,
+      pos: { bottom: '-38%', left: '-20%' },
+      from: { x: '-60%', y: '60%' },
+      w: '72%', h: '80%',
+      radius: '55% 45% 60% 40% / 40% 55% 45% 60%',
+    },
+    {
+      // Bottom-right — lavender
+      color: PETAL_COLORS.lavender,
+      pos: { bottom: '-42%', right: '-28%' },
+      from: { x: '60%', y: '60%' },
+      w: '65%', h: '75%',
+      radius: '50% 50% 45% 55% / 55% 50% 50% 45%',
+    },
   ];
 
   return (
     <section className="relative h-screen w-full overflow-hidden" style={{ backgroundColor: BG_CREAM }}>
 
-      {/* LAYER 1: White center circle — always visible */}
+      {/* Text "Grow with Gia" — small, centered in the negative space */}
       <div className="absolute inset-0 flex items-center justify-center z-10">
-        <div
-          className="rounded-full"
-          style={{
-            width: `${circleR * 2}vmin`,
-            height: `${circleR * 2}vmin`,
-            backgroundColor: '#FFFFFF',
-            boxShadow: '0 0 120px rgba(0,0,0,0.04)',
-          }}
-        />
-      </div>
-
-      {/* LAYER 2: Text "Grow with Gia" — inside the white circle */}
-      <div className="absolute inset-0 flex items-center justify-center z-20">
         <AnimatePresence>
           {showText && (
-            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight select-none" style={{ fontFamily: "'Georgia', 'Times New Roman', serif" }}>
+            <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight select-none" style={{ fontFamily: "'Georgia', 'Times New Roman', serif" }}>
               {title.split('').map((char, i) => (
                 <motion.span
                   key={i}
-                  initial={{ opacity: 0, y: 30, scale: 0.5 }}
+                  initial={{ opacity: 0, y: 20, scale: 0.5 }}
                   animate={{ opacity: 1, y: 0, scale: 1 }}
                   transition={{
                     duration: 0.4,
@@ -122,58 +132,53 @@ function PetalSplashHero() {
         </AnimatePresence>
       </div>
 
-      {/* LAYER 3: Petals — rotate around the circle as a group */}
-      <div className="absolute inset-0 flex items-center justify-center z-[5] pointer-events-none">
-        <motion.div
-          className="relative"
-          style={{ width: 0, height: 0 }}
-          animate={petalsReady ? { rotate: 360 } : { rotate: 0 }}
-          transition={petalsReady ? {
-            duration: 90,
-            repeat: Infinity,
-            ease: 'linear',
-          } : {}}
-        >
-          {Array.from({ length: petalCount }).map((_, i) => {
-            const angle = (360 / petalCount) * i - 90; // start from top
-            const rad = ((angle) * Math.PI) / 180;
-            // Position: petal center sits at circleR + half petal height out from center
-            const dist = circleR + petalH / 2 - 6; // slight overlap with circle edge
-            const cx = Math.cos(rad) * dist;
-            const cy = Math.sin(rad) * dist;
-
-            return (
-              <motion.div
-                key={i}
-                className="absolute"
-                style={{
-                  width: `${petalW}vmin`,
-                  height: `${petalH}vmin`,
-                  left: `${cx}vmin`,
-                  top: `${cy}vmin`,
-                  transform: `translate(-50%, -50%) rotate(${angle + 90}deg)`,
-                  backgroundColor: petalColors[i],
-                  borderRadius: '50% 50% 45% 45% / 60% 60% 40% 40%',
-                  opacity: 0,
-                }}
-                initial={{
-                  scale: 0,
-                  opacity: 0,
-                }}
-                animate={{
-                  scale: 1,
-                  opacity: 0.8,
-                }}
-                transition={{
-                  duration: 1.4,
-                  delay: 0.3 + i * 0.18,
-                  ease: [0.34, 1.4, 0.64, 1],
-                }}
-              />
-            );
-          })}
-        </motion.div>
-      </div>
+      {/* Corner blobs — slide in from off-screen, then slowly rotate as a group */}
+      <motion.div
+        className="absolute inset-0 z-[5] pointer-events-none"
+        animate={petalsReady ? { rotate: 360 } : { rotate: 0 }}
+        transition={petalsReady ? {
+          duration: 180,
+          repeat: Infinity,
+          ease: 'linear',
+        } : {}}
+        style={{ transformOrigin: '50% 50%' }}
+      >
+        {blobs.map((blob, i) => (
+          <motion.div
+            key={i}
+            className="absolute"
+            style={{
+              ...blob.pos,
+              width: blob.w,
+              height: blob.h,
+            }}
+            initial={{
+              x: blob.from.x,
+              y: blob.from.y,
+              opacity: 0,
+            }}
+            animate={{
+              x: '0%',
+              y: '0%',
+              opacity: 0.9,
+            }}
+            transition={{
+              duration: 1.8,
+              delay: i * 0.2,
+              ease: [0.25, 0.46, 0.45, 0.94],
+            }}
+          >
+            <div
+              style={{
+                width: '100%',
+                height: '100%',
+                backgroundColor: blob.color,
+                borderRadius: blob.radius,
+              }}
+            />
+          </motion.div>
+        ))}
+      </motion.div>
 
       {/* Scroll hint */}
       <AnimatePresence>
