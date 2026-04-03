@@ -1,7 +1,8 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { useState, useEffect, useCallback } from 'react';
+import { motion, AnimatePresence, Reorder } from 'framer-motion';
+import Image from 'next/image';
 import {
   BookOpen,
   Calculator,
@@ -18,6 +19,13 @@ import {
   GraduationCap,
   Quote,
   ChevronDown,
+  Brain,
+  Microscope,
+  Languages,
+  Send,
+  GripVertical,
+  Plus,
+  X,
 } from 'lucide-react';
 import Nav from '@/clients/growwithgia/components/Nav';
 import Footer from '@/clients/growwithgia/components/Footer';
@@ -193,6 +201,227 @@ function PetalSplashHero() {
   );
 }
 
+// ─── INTERACTIVE INTAKE ───
+
+interface SubjectCard {
+  id: string;
+  icon: React.ElementType;
+  label: string;
+  color: string;
+}
+
+const ALL_SUBJECTS: SubjectCard[] = [
+  { id: 'math', icon: Calculator, label: 'Math', color: PETAL_COLORS.pink },
+  { id: 'reading', icon: BookOpen, label: 'Reading', color: PETAL_COLORS.teal },
+  { id: 'writing', icon: Pen, label: 'Writing', color: PETAL_COLORS.lavender },
+  { id: 'science', icon: FlaskConical, label: 'Science', color: PETAL_COLORS.yellow },
+  { id: 'social-studies', icon: Globe2, label: 'Social Studies', color: PETAL_COLORS.pink },
+  { id: 'test-prep', icon: Star, label: 'Test Prep', color: PETAL_COLORS.teal },
+  { id: 'study-skills', icon: Brain, label: 'Study Skills', color: PETAL_COLORS.lavender },
+  { id: 'language', icon: Languages, label: 'Language Arts', color: PETAL_COLORS.yellow },
+];
+
+function IntakeSection() {
+  const [childName, setChildName] = useState('');
+  const [selected, setSelected] = useState<SubjectCard[]>([]);
+  const [submitted, setSubmitted] = useState(false);
+
+  const available = ALL_SUBJECTS.filter(s => !selected.find(sel => sel.id === s.id));
+
+  const addSubject = useCallback((subject: SubjectCard) => {
+    setSelected(prev => [...prev, subject]);
+  }, []);
+
+  const removeSubject = useCallback((id: string) => {
+    setSelected(prev => prev.filter(s => s.id !== id));
+  }, []);
+
+  const handleSubmit = () => {
+    if (!childName.trim() || selected.length === 0) return;
+    // Future: POST to Supabase
+    console.log('Intake:', { childName, subjects: selected.map(s => s.id) });
+    setSubmitted(true);
+  };
+
+  const displayName = childName.trim() || '____';
+
+  return (
+    <section className="py-20 md:py-28 px-6">
+      <div className="max-w-4xl mx-auto">
+        <motion.div
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true }}
+          variants={fadeIn}
+          className="text-center mb-12"
+        >
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-slate-800 mb-3" style={{ fontFamily: "'Georgia', serif" }}>
+            Let&apos;s get{' '}
+            <span style={{ color: PETAL_COLORS.pink }}>started</span>
+          </h2>
+          <p className="text-slate-500 text-lg">Tell me a little about your student</p>
+        </motion.div>
+
+        {submitted ? (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="text-center py-16"
+          >
+            <div className="w-20 h-20 rounded-full mx-auto mb-6 flex items-center justify-center" style={{ backgroundColor: `${PETAL_COLORS.teal}20` }}>
+              <CheckCircle2 className="w-10 h-10" style={{ color: PETAL_COLORS.teal }} />
+            </div>
+            <h3 className="text-2xl md:text-3xl font-bold text-slate-800 mb-3" style={{ fontFamily: "'Georgia', serif" }}>
+              Can&apos;t wait to meet {childName}!
+            </h3>
+            <p className="text-slate-500 text-lg max-w-md mx-auto">
+              I&apos;ll reach out soon to schedule a free intro call. This is going to be great.
+            </p>
+          </motion.div>
+        ) : (
+          <>
+            {/* Step 1: Child's name */}
+            <motion.div
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true }}
+              variants={fadeIn}
+              className="mb-12"
+            >
+              <label className="block text-lg font-semibold text-slate-700 mb-3" style={{ fontFamily: "'Georgia', serif" }}>
+                What&apos;s your child&apos;s first name?
+              </label>
+              <input
+                type="text"
+                value={childName}
+                onChange={(e) => setChildName(e.target.value)}
+                placeholder="e.g. Sarah"
+                className="w-full max-w-sm px-5 py-4 rounded-2xl border-2 text-lg focus:outline-none transition-colors"
+                style={{
+                  borderColor: childName ? PETAL_COLORS.teal : '#e2e8f0',
+                  backgroundColor: 'white',
+                }}
+              />
+              <AnimatePresence>
+                {childName.trim() && (
+                  <motion.p
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0 }}
+                    className="mt-4 text-lg md:text-xl leading-relaxed"
+                    style={{ fontFamily: "'Georgia', serif", color: '#6B7280' }}
+                  >
+                    I&apos;m so excited to help{' '}
+                    <span className="font-bold" style={{ color: PETAL_COLORS.pink }}>{displayName}</span>{' '}
+                    discover what they&apos;re truly capable of. Every kid has a moment where it all clicks — let&apos;s find {displayName}&apos;s.
+                  </motion.p>
+                )}
+              </AnimatePresence>
+            </motion.div>
+
+            {/* Step 2: Subject picker */}
+            <motion.div
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true }}
+              variants={fadeIn}
+              transition={{ delay: 0.1 }}
+            >
+              <label className="block text-lg font-semibold text-slate-700 mb-2" style={{ fontFamily: "'Georgia', serif" }}>
+                What areas does {displayName} need help with?
+              </label>
+              <p className="text-slate-400 text-sm mb-5">Tap to add — pick as many as you like</p>
+
+              {/* Available subjects */}
+              <div className="flex flex-wrap gap-3 mb-6">
+                {available.map((subject) => (
+                  <motion.button
+                    key={subject.id}
+                    layout
+                    onClick={() => addSubject(subject)}
+                    className="flex items-center gap-2.5 px-5 py-3 rounded-2xl border-2 border-dashed transition-all hover:scale-105 active:scale-95 cursor-pointer"
+                    style={{
+                      borderColor: `${subject.color}40`,
+                      backgroundColor: 'white',
+                    }}
+                    whileHover={{ y: -2 }}
+                  >
+                    <subject.icon className="w-5 h-5" style={{ color: subject.color }} />
+                    <span className="font-medium text-slate-600">{subject.label}</span>
+                    <Plus className="w-4 h-4 text-slate-300" />
+                  </motion.button>
+                ))}
+              </div>
+
+              {/* Selected subjects — drop zone */}
+              <div
+                className="min-h-[80px] rounded-2xl border-2 border-dashed p-4 transition-colors"
+                style={{
+                  borderColor: selected.length > 0 ? `${PETAL_COLORS.teal}50` : '#e2e8f0',
+                  backgroundColor: selected.length > 0 ? `${PETAL_COLORS.teal}05` : 'transparent',
+                }}
+              >
+                {selected.length === 0 ? (
+                  <p className="text-slate-300 text-center py-4 text-sm">
+                    {displayName}&apos;s subjects will appear here
+                  </p>
+                ) : (
+                  <div className="flex flex-wrap gap-3">
+                    <AnimatePresence>
+                      {selected.map((subject) => (
+                        <motion.div
+                          key={subject.id}
+                          layout
+                          initial={{ opacity: 0, scale: 0.8 }}
+                          animate={{ opacity: 1, scale: 1 }}
+                          exit={{ opacity: 0, scale: 0.8 }}
+                          className="flex items-center gap-2 px-4 py-2.5 rounded-xl shadow-sm"
+                          style={{ backgroundColor: `${subject.color}18` }}
+                        >
+                          <subject.icon className="w-4.5 h-4.5" style={{ color: subject.color }} />
+                          <span className="font-medium text-sm" style={{ color: subject.color }}>{subject.label}</span>
+                          <button
+                            onClick={() => removeSubject(subject.id)}
+                            className="ml-1 p-0.5 rounded-full hover:bg-white/50 transition-colors"
+                          >
+                            <X className="w-3.5 h-3.5 text-slate-400" />
+                          </button>
+                        </motion.div>
+                      ))}
+                    </AnimatePresence>
+                  </div>
+                )}
+              </div>
+
+              {/* Submit */}
+              <AnimatePresence>
+                {childName.trim() && selected.length > 0 && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0 }}
+                    className="mt-8 text-center"
+                  >
+                    <button
+                      onClick={handleSubmit}
+                      className="inline-flex items-center gap-2 text-white font-semibold px-8 py-4 rounded-2xl text-lg hover:opacity-90 transition-all hover:scale-105 active:scale-95 shadow-lg"
+                      style={{ backgroundColor: PETAL_COLORS.lavender }}
+                    >
+                      <Send className="w-5 h-5" />
+                      Let&apos;s grow, {displayName}!
+                    </button>
+                    <p className="text-slate-400 text-xs mt-3">Free intro call — no commitment</p>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </motion.div>
+          </>
+        )}
+      </div>
+    </section>
+  );
+}
+
 // ─── MAIN PAGE ───
 
 export function HomePage() {
@@ -214,16 +443,14 @@ export function HomePage() {
               transition={{ duration: 0.6 }}
               className="relative mx-auto md:mx-0"
             >
-              <div className="w-72 h-80 sm:w-80 sm:h-96 rounded-3xl overflow-hidden relative" style={{ backgroundColor: PETAL_COLORS.teal }}>
-                {/* Decorative circles */}
-                <div className="absolute -top-8 -right-8 w-32 h-32 rounded-full opacity-30" style={{ backgroundColor: PETAL_COLORS.pink }} />
-                <div className="absolute -bottom-6 -left-6 w-28 h-28 rounded-full opacity-30" style={{ backgroundColor: PETAL_COLORS.yellow }} />
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="text-center text-white/80">
-                    <GraduationCap className="w-16 h-16 mx-auto mb-3 text-white/60" />
-                    <p className="text-sm font-medium tracking-wider uppercase">Photo coming soon</p>
-                  </div>
-                </div>
+              <div className="w-72 h-80 sm:w-80 sm:h-96 rounded-3xl overflow-hidden relative">
+                <Image
+                  src="/clients/Gia/gia_about.jpeg"
+                  alt="Gia — your tutor"
+                  fill
+                  className="object-cover"
+                  priority
+                />
               </div>
               {/* Fun accent blob behind the image */}
               <div className="absolute -z-10 -bottom-4 -right-4 w-72 h-80 sm:w-80 sm:h-96 rounded-3xl" style={{ backgroundColor: `${PETAL_COLORS.lavender}30` }} />
@@ -297,6 +524,9 @@ export function HomePage() {
           ))}
         </div>
       </section>
+
+      {/* ─── INTERACTIVE INTAKE ─── */}
+      <IntakeSection />
 
       {/* ─── ABOUT ─── */}
       <section id="about" className="py-24 px-6">
