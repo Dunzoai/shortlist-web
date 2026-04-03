@@ -79,7 +79,7 @@ function PetalSplashHero() {
   const circleR = 155;  // center circle — big enough for text
   const petalRx = 175;  // petal half-width — wider, rounder petals
   const petalRy = 320;  // petal length
-  const petalOffset = circleR + petalRy - 70; // more overlap — petals curl over circle edge
+  const petalOffset = circleR + petalRy - 40; // slight overlap at base
 
   return (
     <section className="relative h-screen w-full overflow-hidden" style={{ backgroundColor: BG_CREAM }}>
@@ -137,15 +137,7 @@ function PetalSplashHero() {
             ease: 'linear',
           } : {}}
         >
-          {/* Center circle — cream, drawn first (behind petals) */}
-          <circle
-            cx={cx}
-            cy={cy}
-            r={circleR}
-            fill={BG_CREAM}
-          />
-
-          {/* Petals — drawn on top, bases overlap the circle edge */}
+          {/* Petals — drawn first (behind circle) */}
           {Array.from({ length: petalCount }).map((_, i) => {
             const angle = (360 / petalCount) * i;
             return (
@@ -167,6 +159,14 @@ function PetalSplashHero() {
               />
             );
           })}
+
+          {/* Center circle — cream, on top of petal bases */}
+          <circle
+            cx={cx}
+            cy={cy}
+            r={circleR}
+            fill={BG_CREAM}
+          />
         </motion.svg>
       </div>
 
