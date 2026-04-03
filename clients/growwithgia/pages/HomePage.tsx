@@ -201,7 +201,7 @@ function PetalSplashHero() {
   );
 }
 
-// ─── INTERACTIVE INTAKE ───
+// ─── INTAKE DATA ───
 
 interface SubjectCard {
   id: string;
@@ -211,25 +211,34 @@ interface SubjectCard {
 }
 
 const ALL_SUBJECTS: SubjectCard[] = [
-  { id: 'math', icon: Calculator, label: 'Math', color: PETAL_COLORS.pink },
-  { id: 'reading', icon: BookOpen, label: 'Reading', color: PETAL_COLORS.teal },
-  { id: 'writing', icon: Pen, label: 'Writing', color: PETAL_COLORS.lavender },
-  { id: 'science', icon: FlaskConical, label: 'Science', color: PETAL_COLORS.yellow },
-  { id: 'social-studies', icon: Globe2, label: 'Social Studies', color: PETAL_COLORS.pink },
-  { id: 'test-prep', icon: Star, label: 'Test Prep', color: PETAL_COLORS.teal },
-  { id: 'study-skills', icon: Brain, label: 'Study Skills', color: PETAL_COLORS.lavender },
-  { id: 'language', icon: Languages, label: 'Language Arts', color: PETAL_COLORS.yellow },
+  { id: 'math', icon: Calculator, label: 'Math', color: '#F2A1B3' },
+  { id: 'reading', icon: BookOpen, label: 'Reading', color: '#8DD3D6' },
+  { id: 'writing', icon: Pen, label: 'Writing', color: '#C6B4E2' },
+  { id: 'science', icon: FlaskConical, label: 'Science', color: '#F0D264' },
+  { id: 'social-studies', icon: Globe2, label: 'Social Studies', color: '#7BC8A4' },
+  { id: 'test-prep', icon: Star, label: 'Test Prep', color: '#F4976C' },
+  { id: 'study-skills', icon: Brain, label: 'Study Skills', color: '#89B4E8' },
+  { id: 'language', icon: Languages, label: 'Language Arts', color: '#E8A0BF' },
 ];
 
-function IntakeSection() {
+const GRADES = ['3rd', '4th', '5th', '6th', '7th', '8th'];
+
+// ─── MAIN PAGE ───
+
+export function HomePage() {
   const [childName, setChildName] = useState('');
+  const [selectedGrade, setSelectedGrade] = useState('');
   const [selected, setSelected] = useState<SubjectCard[]>([]);
   const [submitted, setSubmitted] = useState(false);
 
   const available = ALL_SUBJECTS.filter(s => !selected.find(sel => sel.id === s.id));
+  const displayName = childName.trim();
 
   const addSubject = useCallback((subject: SubjectCard) => {
-    setSelected(prev => [...prev, subject]);
+    setSelected(prev => {
+      if (prev.find(s => s.id === subject.id)) return prev;
+      return [...prev, subject];
+    });
   }, []);
 
   const removeSubject = useCallback((id: string) => {
@@ -238,206 +247,19 @@ function IntakeSection() {
 
   const handleSubmit = () => {
     if (!childName.trim() || selected.length === 0) return;
-    // Future: POST to Supabase
-    console.log('Intake:', { childName, subjects: selected.map(s => s.id) });
+    console.log('Intake:', { childName, grade: selectedGrade, subjects: selected.map(s => s.id) });
     setSubmitted(true);
   };
 
-  const displayName = childName.trim() || '____';
-
-  return (
-    <section className="py-20 md:py-28 px-6">
-      <div className="max-w-4xl mx-auto">
-        <motion.div
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true }}
-          variants={fadeIn}
-          className="text-center mb-12"
-        >
-          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-slate-800 mb-3" style={{ fontFamily: "'Georgia', serif" }}>
-            Let&apos;s get{' '}
-            <span style={{ color: PETAL_COLORS.pink }}>started</span>
-          </h2>
-          <p className="text-slate-500 text-lg">Tell me a little about your student</p>
-        </motion.div>
-
-        {submitted ? (
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            className="text-center py-16"
-          >
-            <div className="w-20 h-20 rounded-full mx-auto mb-6 flex items-center justify-center" style={{ backgroundColor: `${PETAL_COLORS.teal}20` }}>
-              <CheckCircle2 className="w-10 h-10" style={{ color: PETAL_COLORS.teal }} />
-            </div>
-            <h3 className="text-2xl md:text-3xl font-bold text-slate-800 mb-3" style={{ fontFamily: "'Georgia', serif" }}>
-              Can&apos;t wait to meet {childName}!
-            </h3>
-            <p className="text-slate-500 text-lg max-w-md mx-auto">
-              I&apos;ll reach out soon to schedule a free intro call. This is going to be great.
-            </p>
-          </motion.div>
-        ) : (
-          <>
-            {/* Step 1: Child's name */}
-            <motion.div
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true }}
-              variants={fadeIn}
-              className="mb-12"
-            >
-              <label className="block text-lg font-semibold text-slate-700 mb-3" style={{ fontFamily: "'Georgia', serif" }}>
-                What&apos;s your child&apos;s first name?
-              </label>
-              <input
-                type="text"
-                value={childName}
-                onChange={(e) => setChildName(e.target.value)}
-                placeholder="e.g. Sarah"
-                className="w-full max-w-sm px-5 py-4 rounded-2xl border-2 text-lg focus:outline-none transition-colors"
-                style={{
-                  borderColor: childName ? PETAL_COLORS.teal : '#e2e8f0',
-                  backgroundColor: 'white',
-                }}
-              />
-              <AnimatePresence>
-                {childName.trim() && (
-                  <motion.p
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0 }}
-                    className="mt-4 text-lg md:text-xl leading-relaxed"
-                    style={{ fontFamily: "'Georgia', serif", color: '#6B7280' }}
-                  >
-                    I&apos;m so excited to help{' '}
-                    <span className="font-bold" style={{ color: PETAL_COLORS.pink }}>{displayName}</span>{' '}
-                    discover what they&apos;re truly capable of. Every kid has a moment where it all clicks — let&apos;s find {displayName}&apos;s.
-                  </motion.p>
-                )}
-              </AnimatePresence>
-            </motion.div>
-
-            {/* Step 2: Subject picker */}
-            <motion.div
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true }}
-              variants={fadeIn}
-              transition={{ delay: 0.1 }}
-            >
-              <label className="block text-lg font-semibold text-slate-700 mb-2" style={{ fontFamily: "'Georgia', serif" }}>
-                What areas does {displayName} need help with?
-              </label>
-              <p className="text-slate-400 text-sm mb-5">Drag cards into the box below — or tap to add</p>
-
-              {/* Available subjects — colorful cards */}
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-8">
-                {available.map((subject) => (
-                  <motion.button
-                    key={subject.id}
-                    layout
-                    onClick={() => addSubject(subject)}
-                    className="flex flex-col items-center gap-2 p-5 rounded-2xl shadow-md cursor-grab active:cursor-grabbing transition-shadow hover:shadow-lg"
-                    style={{ backgroundColor: subject.color }}
-                    whileHover={{ y: -4, rotate: -2 }}
-                    whileTap={{ scale: 0.95 }}
-                    draggable
-                    onDragEnd={() => addSubject(subject)}
-                  >
-                    <subject.icon className="w-7 h-7 text-white" />
-                    <span className="font-semibold text-white text-sm">{subject.label}</span>
-                  </motion.button>
-                ))}
-              </div>
-
-              {/* Selected subjects — drop zone */}
-              <div
-                className="min-h-[100px] rounded-2xl border-3 border-dashed p-5 transition-all"
-                style={{
-                  borderColor: selected.length > 0 ? PETAL_COLORS.lavender : '#d1d5db',
-                  backgroundColor: selected.length > 0 ? `${PETAL_COLORS.lavender}08` : '#fafafa',
-                }}
-                onDragOver={(e) => e.preventDefault()}
-              >
-                {selected.length === 0 ? (
-                  <div className="text-center py-6">
-                    <GripVertical className="w-6 h-6 text-slate-300 mx-auto mb-2" />
-                    <p className="text-slate-400 text-sm">
-                      Drop {displayName}&apos;s subjects here
-                    </p>
-                  </div>
-                ) : (
-                  <div className="flex flex-wrap gap-3">
-                    <AnimatePresence>
-                      {selected.map((subject) => (
-                        <motion.div
-                          key={subject.id}
-                          layout
-                          initial={{ opacity: 0, scale: 0.7, rotate: -5 }}
-                          animate={{ opacity: 1, scale: 1, rotate: 0 }}
-                          exit={{ opacity: 0, scale: 0.7 }}
-                          className="flex items-center gap-2 px-4 py-3 rounded-xl shadow-md"
-                          style={{ backgroundColor: subject.color }}
-                        >
-                          <subject.icon className="w-4 h-4 text-white" />
-                          <span className="font-semibold text-white text-sm">{subject.label}</span>
-                          <button
-                            onClick={() => removeSubject(subject.id)}
-                            className="ml-1 p-0.5 rounded-full bg-white/20 hover:bg-white/40 transition-colors"
-                          >
-                            <X className="w-3.5 h-3.5 text-white" />
-                          </button>
-                        </motion.div>
-                      ))}
-                    </AnimatePresence>
-                  </div>
-                )}
-              </div>
-
-              {/* Submit */}
-              <AnimatePresence>
-                {childName.trim() && selected.length > 0 && (
-                  <motion.div
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0 }}
-                    className="mt-8 text-center"
-                  >
-                    <button
-                      onClick={handleSubmit}
-                      className="inline-flex items-center gap-2 text-white font-semibold px-8 py-4 rounded-2xl text-lg hover:opacity-90 transition-all hover:scale-105 active:scale-95 shadow-lg"
-                      style={{ backgroundColor: PETAL_COLORS.lavender }}
-                    >
-                      <Send className="w-5 h-5" />
-                      Let&apos;s grow, {displayName}!
-                    </button>
-                    <p className="text-slate-400 text-xs mt-3">Free intro call — no commitment</p>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </motion.div>
-          </>
-        )}
-      </div>
-    </section>
-  );
-}
-
-// ─── MAIN PAGE ───
-
-export function HomePage() {
   return (
     <main className="min-h-screen" style={{ backgroundColor: BG_CREAM }}>
       <Nav />
       <PetalSplashHero />
 
       {/* ─── HI, I'M GIA ─── */}
-      <section className="py-20 md:py-28 px-6">
+      <section id="about" className="py-20 md:py-28 px-6">
         <div className="max-w-5xl mx-auto">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-16 items-center">
-            {/* Placeholder image */}
             <motion.div
               initial="hidden"
               whileInView="visible"
@@ -452,14 +274,11 @@ export function HomePage() {
                   alt="Gia — your tutor"
                   fill
                   className="object-cover"
-                  priority
                 />
               </div>
-              {/* Fun accent blob behind the image */}
               <div className="absolute -z-10 -bottom-4 -right-4 w-72 h-80 sm:w-80 sm:h-96 rounded-3xl" style={{ backgroundColor: `${PETAL_COLORS.lavender}30` }} />
             </motion.div>
 
-            {/* Text */}
             <motion.div
               initial="hidden"
               whileInView="visible"
@@ -469,31 +288,22 @@ export function HomePage() {
             >
               <h2 className="text-4xl sm:text-5xl md:text-6xl font-bold mb-4" style={{ fontFamily: "'Georgia', serif", color: PETAL_COLORS.pink }}>
                 Hi, I&apos;m Gia
-                <span className="inline-block ml-2 text-3xl" role="img">
-                  <Sparkles className="w-7 h-7 inline" style={{ color: PETAL_COLORS.yellow }} />
-                </span>
+                <Sparkles className="w-7 h-7 inline ml-2" style={{ color: PETAL_COLORS.yellow }} />
               </h2>
               <p className="text-lg md:text-xl text-slate-600 leading-relaxed mb-4" style={{ fontFamily: "'Georgia', serif" }}>
                 I&apos;m the kind of tutor who thinks learning should feel like a superpower, not a punishment.
               </p>
               <p className="text-base text-slate-500 leading-relaxed mb-4">
-                Whether your kid is blanking on fractions at 9pm or needs someone to finally make essay writing click — that&apos;s where I come in. I work one-on-one with students from elementary through high school, and I build every single lesson around <em>them</em> — how they think, what they&apos;re into, what makes it stick.
+                Whether your kid is blanking on fractions at 9pm or needs someone to finally make essay writing click — that&apos;s where I come in. I build every lesson around <em>them</em>.
               </p>
               <p className="text-base text-slate-500 leading-relaxed mb-6">
-                I&apos;m not here to lecture. I&apos;m here to make your kid say <span className="font-semibold" style={{ color: PETAL_COLORS.teal }}>&ldquo;oh wait, I actually get it.&rdquo;</span> That&apos;s the whole gig.
+                I&apos;m here to make your kid say <span className="font-semibold" style={{ color: PETAL_COLORS.teal }}>&ldquo;oh wait, I actually get it.&rdquo;</span>
               </p>
               <div className="flex flex-wrap gap-3">
                 {['Math whiz', 'Science nerd', 'Writing coach', 'Test prep pro', 'Patient human'].map((tag, i) => {
-                  const tagColors = [PETAL_COLORS.pink, PETAL_COLORS.teal, PETAL_COLORS.yellow, PETAL_COLORS.lavender, PETAL_COLORS.pink];
+                  const tagColors = ['#F2A1B3', '#8DD3D6', '#F0D264', '#C6B4E2', '#7BC8A4'];
                   return (
-                    <span
-                      key={i}
-                      className="px-4 py-1.5 rounded-full text-sm font-medium"
-                      style={{
-                        backgroundColor: `${tagColors[i]}20`,
-                        color: tagColors[i],
-                      }}
-                    >
+                    <span key={i} className="px-4 py-1.5 rounded-full text-sm font-medium" style={{ backgroundColor: `${tagColors[i]}20`, color: tagColors[i] }}>
                       {tag}
                     </span>
                   );
@@ -504,84 +314,224 @@ export function HomePage() {
         </div>
       </section>
 
-      {/* ─── STATS BAR ─── */}
-      <section className="py-12 px-6 mx-6 md:mx-12 rounded-3xl" style={{ backgroundColor: PETAL_COLORS.teal }}>
-        <div className="max-w-5xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-8 text-center text-white">
-          {[
-            { value: '150+', label: 'Students Tutored' },
-            { value: '4.9', label: 'Average Rating' },
-            { value: '8+', label: 'Subjects Offered' },
-            { value: '95%', label: 'See Grade Improvement' },
-          ].map((s, i) => (
-            <motion.div
-              key={i}
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true }}
-              variants={fadeIn}
-              transition={{ delay: i * 0.1 }}
-            >
-              <p className="text-3xl md:text-4xl font-bold">{s.value}</p>
-              <p className="text-white/80 text-sm mt-1">{s.label}</p>
-            </motion.div>
-          ))}
+      {/* ─── SECTION 1: NAME + GRADE (sneaky intake start) ─── */}
+      <section className="py-20 md:py-28 px-6">
+        <div className="max-w-3xl mx-auto text-center">
+          <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeIn}>
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-slate-800 mb-3" style={{ fontFamily: "'Georgia', serif" }}>
+              Let&apos;s get{' '}
+              <span style={{ color: PETAL_COLORS.pink }}>started</span>
+            </h2>
+            <p className="text-slate-500 text-lg mb-10">It only takes a minute</p>
+
+            <label className="block text-lg font-semibold text-slate-700 mb-3" style={{ fontFamily: "'Georgia', serif" }}>
+              What&apos;s your child&apos;s first name?
+            </label>
+            <input
+              type="text"
+              value={childName}
+              onChange={(e) => setChildName(e.target.value)}
+              placeholder="e.g. Sarah"
+              className="w-full max-w-sm mx-auto block px-5 py-4 rounded-2xl border-2 text-lg text-center focus:outline-none transition-colors"
+              style={{ borderColor: childName ? PETAL_COLORS.teal : '#e2e8f0', backgroundColor: 'white' }}
+            />
+
+            {/* Grade picker carousel */}
+            <AnimatePresence>
+              {childName.trim() && (
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0 }}
+                  className="mt-10"
+                >
+                  <label className="block text-lg font-semibold text-slate-700 mb-4" style={{ fontFamily: "'Georgia', serif" }}>
+                    What grade is {childName.trim()} in?
+                  </label>
+                  <div className="flex gap-3 overflow-x-auto pb-2 justify-center snap-x snap-mandatory">
+                    {GRADES.map((grade, i) => {
+                      const gradeColors = ['#F2A1B3', '#8DD3D6', '#C6B4E2', '#F0D264', '#7BC8A4', '#F4976C'];
+                      const isSelected = selectedGrade === grade;
+                      return (
+                        <motion.button
+                          key={grade}
+                          onClick={() => setSelectedGrade(grade)}
+                          className="snap-center shrink-0 w-20 h-20 rounded-2xl flex flex-col items-center justify-center font-bold text-lg transition-all shadow-md"
+                          style={{
+                            backgroundColor: isSelected ? gradeColors[i] : 'white',
+                            color: isSelected ? 'white' : gradeColors[i],
+                            border: `2px solid ${gradeColors[i]}`,
+                          }}
+                          whileHover={{ scale: 1.05 }}
+                          whileTap={{ scale: 0.95 }}
+                        >
+                          {grade}
+                          <span className="text-xs font-normal mt-0.5" style={{ opacity: 0.8 }}>grade</span>
+                        </motion.button>
+                      );
+                    })}
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </motion.div>
         </div>
       </section>
 
-      {/* ─── INTERACTIVE INTAKE ─── */}
-      <IntakeSection />
+      {/* ─── SECTION 2: SUBJECT PICKER (auto-populates with name) ─── */}
+      {childName.trim() && (
+        <section id="subjects" className="py-20 md:py-28 px-6">
+          <div className="max-w-4xl mx-auto">
+            {!submitted ? (
+              <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeIn}>
+                <motion.p
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="text-lg md:text-xl leading-relaxed mb-10 text-center"
+                  style={{ fontFamily: "'Georgia', serif", color: '#6B7280' }}
+                >
+                  I&apos;m so excited to help{' '}
+                  <span className="font-bold" style={{ color: PETAL_COLORS.pink }}>{displayName}</span>{' '}
+                  discover what they&apos;re truly capable of. Every kid has a moment where it all clicks — let&apos;s find {displayName}&apos;s.
+                </motion.p>
 
-      {/* ─── ABOUT ─── */}
-      <section id="about" className="py-24 px-6">
-        <div className="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
-          <motion.div
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true }}
-            variants={fadeIn}
-            transition={{ duration: 0.5 }}
-          >
-            <div className="rounded-3xl p-8 relative" style={{ backgroundColor: `${PETAL_COLORS.pink}20` }}>
-              <div className="absolute -top-3 -right-3 w-16 h-16 rounded-xl flex items-center justify-center shadow-lg" style={{ backgroundColor: PETAL_COLORS.yellow }}>
-                <GraduationCap className="w-8 h-8 text-white" />
-              </div>
-              <h3 className="text-2xl font-bold text-slate-800 mb-4" style={{ fontFamily: "'Georgia', serif" }}>Meet Gia</h3>
-              <p className="text-slate-600 leading-relaxed mb-4">
-                With over 5 years of experience in education, Gia specializes in making complex subjects feel simple. Whether your child is struggling with algebra or wants to get ahead in science, Gia creates a personalized plan that works.
-              </p>
-              <p className="text-slate-600 leading-relaxed italic">
-                &ldquo;I believe every student has the ability to succeed &mdash; they just need someone who believes in them and knows how to unlock their potential.&rdquo;
-              </p>
-            </div>
-          </motion.div>
+                <label className="block text-lg font-semibold text-slate-700 mb-2" style={{ fontFamily: "'Georgia', serif" }}>
+                  What areas does {displayName} need help with?
+                </label>
+                <p className="text-slate-400 text-sm mb-6">Tap to add — or press and hold to drag</p>
 
-          <motion.div
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true }}
-            variants={fadeIn}
-            transition={{ duration: 0.5, delay: 0.15 }}
-          >
-            <h2 className="text-3xl md:text-4xl font-bold text-slate-800 mb-6" style={{ fontFamily: "'Georgia', serif" }}>
+                {/* Colorful subject cards — all unique colors */}
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-8">
+                  {available.map((subject) => (
+                    <motion.button
+                      key={subject.id}
+                      layout
+                      onClick={() => addSubject(subject)}
+                      className="flex flex-col items-center gap-2 p-5 rounded-2xl shadow-md active:shadow-lg transition-shadow"
+                      style={{ backgroundColor: subject.color }}
+                      whileHover={{ y: -4, rotate: -2 }}
+                      whileTap={{ scale: 0.92 }}
+                    >
+                      <subject.icon className="w-7 h-7 text-white" />
+                      <span className="font-semibold text-white text-sm">{subject.label}</span>
+                    </motion.button>
+                  ))}
+                </div>
+
+                {/* Drop zone */}
+                <div
+                  className="min-h-[100px] rounded-2xl border-2 border-dashed p-5 transition-all"
+                  style={{
+                    borderColor: selected.length > 0 ? PETAL_COLORS.lavender : '#d1d5db',
+                    backgroundColor: selected.length > 0 ? `${PETAL_COLORS.lavender}08` : '#fafafa',
+                  }}
+                >
+                  {selected.length === 0 ? (
+                    <div className="text-center py-6">
+                      <GripVertical className="w-6 h-6 text-slate-300 mx-auto mb-2" />
+                      <p className="text-slate-400 text-sm">{displayName}&apos;s subjects will appear here</p>
+                    </div>
+                  ) : (
+                    <div className="flex flex-wrap gap-3">
+                      <AnimatePresence>
+                        {selected.map((subject) => (
+                          <motion.div
+                            key={subject.id}
+                            layout
+                            initial={{ opacity: 0, scale: 0.7, rotate: -5 }}
+                            animate={{ opacity: 1, scale: 1, rotate: 0 }}
+                            exit={{ opacity: 0, scale: 0.7 }}
+                            className="flex items-center gap-2 px-4 py-3 rounded-xl shadow-md"
+                            style={{ backgroundColor: subject.color }}
+                          >
+                            <subject.icon className="w-4 h-4 text-white" />
+                            <span className="font-semibold text-white text-sm">{subject.label}</span>
+                            <button onClick={() => removeSubject(subject.id)} className="ml-1 p-0.5 rounded-full bg-white/20 hover:bg-white/40 transition-colors">
+                              <X className="w-3.5 h-3.5 text-white" />
+                            </button>
+                          </motion.div>
+                        ))}
+                      </AnimatePresence>
+                    </div>
+                  )}
+                </div>
+
+                {/* Submit */}
+                <AnimatePresence>
+                  {selected.length > 0 && (
+                    <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="mt-8 text-center">
+                      <button
+                        onClick={handleSubmit}
+                        className="inline-flex items-center gap-2 text-white font-semibold px-8 py-4 rounded-2xl text-lg hover:opacity-90 transition-all hover:scale-105 active:scale-95 shadow-lg"
+                        style={{ backgroundColor: PETAL_COLORS.lavender }}
+                      >
+                        <Send className="w-5 h-5" />
+                        Let&apos;s grow, {displayName}!
+                      </button>
+                      <p className="text-slate-400 text-xs mt-3">Free intro call — no commitment</p>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </motion.div>
+            ) : (
+              <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="text-center py-16">
+                <div className="w-20 h-20 rounded-full mx-auto mb-6 flex items-center justify-center" style={{ backgroundColor: `${PETAL_COLORS.teal}20` }}>
+                  <CheckCircle2 className="w-10 h-10" style={{ color: PETAL_COLORS.teal }} />
+                </div>
+                <h3 className="text-2xl md:text-3xl font-bold text-slate-800 mb-3" style={{ fontFamily: "'Georgia', serif" }}>
+                  Can&apos;t wait to meet {displayName}!
+                </h3>
+                <p className="text-slate-500 text-lg max-w-md mx-auto">
+                  I&apos;ll reach out soon to schedule a free intro call. This is going to be great.
+                </p>
+              </motion.div>
+            )}
+          </div>
+        </section>
+      )}
+
+      {/* ─── WHY PARENTS CHOOSE + STATS ─── */}
+      <section className="py-24 px-6">
+        <div className="max-w-5xl mx-auto">
+          <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeIn} className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold text-slate-800 mb-3" style={{ fontFamily: "'Georgia', serif" }}>
               Why parents choose{' '}
               <span style={{ color: PETAL_COLORS.lavender }}>Grow With Gia</span>
             </h2>
-            <div className="space-y-4">
-              {[
-                { icon: Target, text: 'Customized lesson plans for each student', color: PETAL_COLORS.pink },
-                { icon: Clock, text: 'Flexible scheduling — in-person or virtual', color: PETAL_COLORS.teal },
-                { icon: Users, text: 'Regular progress updates for parents', color: PETAL_COLORS.yellow },
-                { icon: CheckCircle2, text: 'Proven results — most students improve within weeks', color: PETAL_COLORS.lavender },
-              ].map((item, i) => (
-                <div key={i} className="flex items-start gap-3">
-                  <div className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0 mt-0.5" style={{ backgroundColor: `${item.color}25` }}>
-                    <item.icon className="w-4 h-4" style={{ color: item.color }} />
-                  </div>
-                  <p className="text-slate-700">{item.text}</p>
+          </motion.div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 mb-12">
+            {[
+              { icon: Target, text: 'Customized lesson plans for each student', color: '#F2A1B3' },
+              { icon: Clock, text: 'Flexible scheduling — in-person or virtual', color: '#8DD3D6' },
+              { icon: Users, text: 'Regular progress updates for parents', color: '#F0D264' },
+              { icon: CheckCircle2, text: 'Proven results — most students improve within weeks', color: '#C6B4E2' },
+            ].map((item, i) => (
+              <motion.div key={i} initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeIn} transition={{ delay: i * 0.08 }} className="flex items-start gap-4 bg-white rounded-2xl p-5 shadow-sm border border-slate-100">
+                <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0" style={{ backgroundColor: `${item.color}20` }}>
+                  <item.icon className="w-5 h-5" style={{ color: item.color }} />
                 </div>
+                <p className="text-slate-700 font-medium">{item.text}</p>
+              </motion.div>
+            ))}
+          </div>
+
+          {/* Stats bar */}
+          <div className="py-10 px-6 rounded-3xl" style={{ backgroundColor: PETAL_COLORS.teal }}>
+            <div className="max-w-4xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-8 text-center text-white">
+              {[
+                { value: '150+', label: 'Students Tutored' },
+                { value: '4.9', label: 'Average Rating' },
+                { value: '8+', label: 'Subjects Offered' },
+                { value: '95%', label: 'See Grade Improvement' },
+              ].map((s, i) => (
+                <motion.div key={i} initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeIn} transition={{ delay: i * 0.1 }}>
+                  <p className="text-3xl md:text-4xl font-bold">{s.value}</p>
+                  <p className="text-white/80 text-sm mt-1">{s.label}</p>
+                </motion.div>
               ))}
             </div>
-          </motion.div>
+          </div>
         </div>
       </section>
 
