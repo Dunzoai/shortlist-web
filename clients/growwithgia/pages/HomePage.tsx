@@ -90,27 +90,38 @@ function PetalSplashHero() {
       <div className="absolute inset-0 flex items-center justify-center z-20">
         <AnimatePresence>
           {showText && (
-            <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight select-none" style={{ fontFamily: "'Georgia', 'Times New Roman', serif" }}>
-              {title.split('').map((char, i) => (
-                <motion.span
-                  key={i}
-                  initial={{ opacity: 0, y: 20, scale: 0.5 }}
-                  animate={{ opacity: 1, y: 0, scale: 1 }}
-                  transition={{
-                    duration: 0.4,
-                    delay: i * 0.1,
-                    ease: [0.34, 1.56, 0.64, 1],
-                  }}
-                  style={{
-                    color: char === ' ' ? 'transparent' : TEXT_COLORS[i % TEXT_COLORS.length],
-                    display: 'inline-block',
-                    whiteSpace: 'pre',
-                  }}
-                >
-                  {char}
-                </motion.span>
-              ))}
-            </h1>
+            <div className="text-center">
+              <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight select-none" style={{ fontFamily: "'Georgia', 'Times New Roman', serif" }}>
+                {title.split('').map((char, i) => (
+                  <motion.span
+                    key={i}
+                    initial={{ opacity: 0, y: 20, scale: 0.5 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    transition={{
+                      duration: 0.4,
+                      delay: i * 0.1,
+                      ease: [0.34, 1.56, 0.64, 1],
+                    }}
+                    style={{
+                      color: char === ' ' ? 'transparent' : TEXT_COLORS[i % TEXT_COLORS.length],
+                      display: 'inline-block',
+                      whiteSpace: 'pre',
+                    }}
+                  >
+                    {char}
+                  </motion.span>
+                ))}
+              </h1>
+              <motion.p
+                className="text-sm sm:text-base md:text-lg text-slate-400 mt-2 tracking-wide"
+                style={{ fontFamily: "'Georgia', serif" }}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 2.2 }}
+              >
+                Personalized Tutoring
+              </motion.p>
+            </div>
           )}
         </AnimatePresence>
       </div>
@@ -128,9 +139,14 @@ function PetalSplashHero() {
             ease: 'linear',
           } : {}}
         >
-          {/* Petals */}
+          {/* Petals — each slides in from its own outward direction */}
           {Array.from({ length: petalCount }).map((_, i) => {
             const angle = (360 / petalCount) * i;
+            const rad = (angle * Math.PI) / 180;
+            // Slide in from far away along each petal's own angle
+            const slideDist = 800;
+            const startTx = Math.sin(rad) * slideDist;
+            const startTy = -Math.cos(rad) * slideDist;
             return (
               <motion.ellipse
                 key={i}
@@ -139,16 +155,22 @@ function PetalSplashHero() {
                 rx={petalRx}
                 ry={petalRy}
                 fill={petalColors[i]}
-                opacity={0.88}
                 transform={`rotate(${angle}, ${cx}, ${cy})`}
-                initial={{ scale: 0, opacity: 0 }}
-                animate={{ scale: 1, opacity: 0.88 }}
-                transition={{
-                  duration: 1.4,
-                  delay: i * 0.12,
-                  ease: [0.34, 1.4, 0.64, 1],
+                initial={{
+                  opacity: 0,
+                  translateX: startTx,
+                  translateY: startTy,
                 }}
-                style={{ transformOrigin: `${cx}px ${cy}px` }}
+                animate={{
+                  opacity: 0.88,
+                  translateX: 0,
+                  translateY: 0,
+                }}
+                transition={{
+                  duration: 1.6,
+                  delay: i * 0.1,
+                  ease: [0.25, 0.46, 0.45, 0.94],
+                }}
               />
             );
           })}
