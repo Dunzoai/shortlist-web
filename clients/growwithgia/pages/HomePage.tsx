@@ -26,11 +26,12 @@ import Footer from '@/clients/growwithgia/components/Footer';
 const PETAL_COLORS = {
   pink: '#F2A1B3',
   teal: '#8DD3D6',
-  lime: '#A8C744',
+  yellow: '#F0D264',
   lavender: '#C6B4E2',
 };
 const BG_CREAM = '#FAF5EF';
-const TEXT_COLORS = ['#E88BA0', '#6BBFC4', '#D4A843', '#A08EC8', '#8DB83A', '#E88BA0', '#6BBFC4', '#D4A843', '#A08EC8', '#8DB83A', '#E88BA0', '#6BBFC4'];
+// Text colors match petal order: pink, teal, yellow, lavender — cycling
+const TEXT_COLORS = ['#E88BA0', '#6BBFC4', '#D4A843', '#A08EC8', '#E88BA0', '#6BBFC4', '#D4A843', '#A08EC8', '#E88BA0', '#6BBFC4', '#D4A843', '#A08EC8'];
 
 const fadeIn = {
   hidden: { opacity: 0, y: 20 },
@@ -64,16 +65,14 @@ function PetalSplashHero() {
 
   // SVG flower: 8 petals radiating from center. Sized so the flower
   // fills the viewport with petal tips just bleeding off the edges.
-  const petalCount = 8;
+  const petalCount = 6;
   const petalColors = [
     PETAL_COLORS.pink,
     PETAL_COLORS.teal,
-    PETAL_COLORS.lime,
+    PETAL_COLORS.yellow,
     PETAL_COLORS.lavender,
     PETAL_COLORS.pink,
     PETAL_COLORS.teal,
-    PETAL_COLORS.lime,
-    PETAL_COLORS.lavender,
   ];
   // SVG viewBox 1000x1000, center 500,500
   const cx = 500, cy = 500;
@@ -112,7 +111,7 @@ function PetalSplashHero() {
                 ))}
               </h1>
               <motion.p
-                className="text-sm sm:text-base md:text-lg text-slate-400 mt-2 tracking-wide"
+                className="text-sm sm:text-base md:text-lg mt-2 tracking-wide text-slate-500"
                 style={{ fontFamily: "'Georgia', serif" }}
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -129,7 +128,7 @@ function PetalSplashHero() {
       <div className="absolute inset-0 flex items-center justify-center z-10 pointer-events-none">
         <motion.svg
           viewBox="0 0 1000 1000"
-          className="w-[130vmin] h-[130vmin] md:w-[110vmin] md:h-[110vmin]"
+          className="w-[145vmin] h-[145vmin] md:w-[125vmin] md:h-[125vmin]"
           style={{ overflow: 'visible' }}
           animate={petalsReady ? { rotate: 360 } : { rotate: 0 }}
           transition={petalsReady ? {
@@ -222,7 +221,7 @@ export function HomePage() {
             </span>
             <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-slate-800 leading-tight mb-6" style={{ fontFamily: "'Georgia', serif" }}>
               Every student can{' '}
-              <span style={{ color: PETAL_COLORS.lime }}>grow.</span>
+              <span style={{ color: PETAL_COLORS.yellow }}>grow.</span>
             </h2>
             <p className="text-lg text-slate-500 leading-relaxed max-w-xl mx-auto">
               Personalized, one-on-one tutoring tailored to your child&apos;s learning style. From math to writing, we meet students where they are and help them build confidence.
@@ -266,7 +265,7 @@ export function HomePage() {
             transition={{ duration: 0.5 }}
           >
             <div className="rounded-3xl p-8 relative" style={{ backgroundColor: `${PETAL_COLORS.pink}20` }}>
-              <div className="absolute -top-3 -right-3 w-16 h-16 rounded-xl flex items-center justify-center shadow-lg" style={{ backgroundColor: PETAL_COLORS.lime }}>
+              <div className="absolute -top-3 -right-3 w-16 h-16 rounded-xl flex items-center justify-center shadow-lg" style={{ backgroundColor: PETAL_COLORS.yellow }}>
                 <GraduationCap className="w-8 h-8 text-white" />
               </div>
               <h3 className="text-2xl font-bold text-slate-800 mb-4" style={{ fontFamily: "'Georgia', serif" }}>Meet Gia</h3>
@@ -294,7 +293,7 @@ export function HomePage() {
               {[
                 { icon: Target, text: 'Customized lesson plans for each student', color: PETAL_COLORS.pink },
                 { icon: Clock, text: 'Flexible scheduling — in-person or virtual', color: PETAL_COLORS.teal },
-                { icon: Users, text: 'Regular progress updates for parents', color: PETAL_COLORS.lime },
+                { icon: Users, text: 'Regular progress updates for parents', color: PETAL_COLORS.yellow },
                 { icon: CheckCircle2, text: 'Proven results — most students improve within weeks', color: PETAL_COLORS.lavender },
               ].map((item, i) => (
                 <div key={i} className="flex items-start gap-3">
@@ -326,11 +325,11 @@ export function HomePage() {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
             {[
               { icon: Calculator, name: 'Math', desc: 'Algebra, Geometry, Pre-Calc, and more', color: PETAL_COLORS.pink },
-              { icon: FlaskConical, name: 'Science', desc: 'Biology, Chemistry, Earth Science', color: PETAL_COLORS.lime },
+              { icon: FlaskConical, name: 'Science', desc: 'Biology, Chemistry, Earth Science', color: PETAL_COLORS.yellow },
               { icon: Pen, name: 'Writing & ELA', desc: 'Essays, reading comprehension, grammar', color: PETAL_COLORS.teal },
               { icon: Globe2, name: 'Social Studies', desc: 'History, geography, civics', color: PETAL_COLORS.lavender },
               { icon: BookOpen, name: 'Reading', desc: 'Phonics, fluency, and comprehension', color: PETAL_COLORS.pink },
-              { icon: Star, name: 'Test Prep', desc: 'SAT, ACT, state assessments', color: PETAL_COLORS.lime },
+              { icon: Star, name: 'Test Prep', desc: 'SAT, ACT, state assessments', color: PETAL_COLORS.yellow },
             ].map((subject, i) => (
               <motion.div
                 key={i}
@@ -371,7 +370,7 @@ export function HomePage() {
             {[
               { step: '1', title: 'Free Intro Call', desc: 'We chat about your student\'s goals, challenges, and learning style.', color: PETAL_COLORS.pink },
               { step: '2', title: 'Custom Plan', desc: 'Gia builds a personalized lesson plan tailored to your child.', color: PETAL_COLORS.teal },
-              { step: '3', title: 'Watch Them Grow', desc: 'Regular sessions, progress tracking, and parent updates.', color: PETAL_COLORS.lime },
+              { step: '3', title: 'Watch Them Grow', desc: 'Regular sessions, progress tracking, and parent updates.', color: PETAL_COLORS.yellow },
             ].map((item, i) => (
               <motion.div
                 key={i}
@@ -472,7 +471,7 @@ export function HomePage() {
                   'Flexible scheduling — evenings and weekends available',
                 ].map((text, i) => (
                   <div key={i} className="flex items-center gap-3">
-                    <CheckCircle2 className="w-5 h-5 shrink-0" style={{ color: PETAL_COLORS.lime }} />
+                    <CheckCircle2 className="w-5 h-5 shrink-0" style={{ color: PETAL_COLORS.yellow }} />
                     <span className="text-slate-700">{text}</span>
                   </div>
                 ))}
