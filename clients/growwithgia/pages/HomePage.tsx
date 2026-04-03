@@ -201,28 +201,76 @@ export function HomePage() {
       <PetalSplashHero />
       <Nav />
 
-      {/* ─── INTRO / TAGLINE ─── */}
-      <section className="py-24 px-6">
-        <div className="max-w-3xl mx-auto text-center">
-          <motion.div
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true }}
-            variants={fadeIn}
-            transition={{ duration: 0.6 }}
-          >
-            <span className="inline-flex items-center gap-1.5 text-sm font-semibold uppercase tracking-wider mb-4" style={{ color: PETAL_COLORS.lavender }}>
-              <Sparkles className="w-4 h-4" />
-              Private Tutoring
-            </span>
-            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-slate-800 leading-tight mb-6" style={{ fontFamily: "'Georgia', serif" }}>
-              Every student can{' '}
-              <span style={{ color: PETAL_COLORS.yellow }}>grow.</span>
-            </h2>
-            <p className="text-lg text-slate-500 leading-relaxed max-w-xl mx-auto">
-              Personalized, one-on-one tutoring tailored to your child&apos;s learning style. From math to writing, we meet students where they are and help them build confidence.
-            </p>
-          </motion.div>
+      {/* ─── HI, I'M GIA ─── */}
+      <section className="py-20 md:py-28 px-6">
+        <div className="max-w-5xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-16 items-center">
+            {/* Placeholder image */}
+            <motion.div
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true }}
+              variants={fadeIn}
+              transition={{ duration: 0.6 }}
+              className="relative mx-auto md:mx-0"
+            >
+              <div className="w-72 h-80 sm:w-80 sm:h-96 rounded-3xl overflow-hidden relative" style={{ backgroundColor: PETAL_COLORS.teal }}>
+                {/* Decorative circles */}
+                <div className="absolute -top-8 -right-8 w-32 h-32 rounded-full opacity-30" style={{ backgroundColor: PETAL_COLORS.pink }} />
+                <div className="absolute -bottom-6 -left-6 w-28 h-28 rounded-full opacity-30" style={{ backgroundColor: PETAL_COLORS.yellow }} />
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <div className="text-center text-white/80">
+                    <GraduationCap className="w-16 h-16 mx-auto mb-3 text-white/60" />
+                    <p className="text-sm font-medium tracking-wider uppercase">Photo coming soon</p>
+                  </div>
+                </div>
+              </div>
+              {/* Fun accent blob behind the image */}
+              <div className="absolute -z-10 -bottom-4 -right-4 w-72 h-80 sm:w-80 sm:h-96 rounded-3xl" style={{ backgroundColor: `${PETAL_COLORS.lavender}30` }} />
+            </motion.div>
+
+            {/* Text */}
+            <motion.div
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true }}
+              variants={fadeIn}
+              transition={{ duration: 0.6, delay: 0.15 }}
+            >
+              <h2 className="text-4xl sm:text-5xl md:text-6xl font-bold mb-4" style={{ fontFamily: "'Georgia', serif", color: PETAL_COLORS.pink }}>
+                Hi, I&apos;m Gia
+                <span className="inline-block ml-2 text-3xl" role="img">
+                  <Sparkles className="w-7 h-7 inline" style={{ color: PETAL_COLORS.yellow }} />
+                </span>
+              </h2>
+              <p className="text-lg md:text-xl text-slate-600 leading-relaxed mb-4" style={{ fontFamily: "'Georgia', serif" }}>
+                I&apos;m the kind of tutor who thinks learning should feel like a superpower, not a punishment.
+              </p>
+              <p className="text-base text-slate-500 leading-relaxed mb-4">
+                Whether your kid is blanking on fractions at 9pm or needs someone to finally make essay writing click — that&apos;s where I come in. I work one-on-one with students from elementary through high school, and I build every single lesson around <em>them</em> — how they think, what they&apos;re into, what makes it stick.
+              </p>
+              <p className="text-base text-slate-500 leading-relaxed mb-6">
+                I&apos;m not here to lecture. I&apos;m here to make your kid say <span className="font-semibold" style={{ color: PETAL_COLORS.teal }}>&ldquo;oh wait, I actually get it.&rdquo;</span> That&apos;s the whole gig.
+              </p>
+              <div className="flex flex-wrap gap-3">
+                {['Math whiz', 'Science nerd', 'Writing coach', 'Test prep pro', 'Patient human'].map((tag, i) => {
+                  const tagColors = [PETAL_COLORS.pink, PETAL_COLORS.teal, PETAL_COLORS.yellow, PETAL_COLORS.lavender, PETAL_COLORS.pink];
+                  return (
+                    <span
+                      key={i}
+                      className="px-4 py-1.5 rounded-full text-sm font-medium"
+                      style={{
+                        backgroundColor: `${tagColors[i]}20`,
+                        color: tagColors[i],
+                      }}
+                    >
+                      {tag}
+                    </span>
+                  );
+                })}
+              </div>
+            </motion.div>
+          </div>
         </div>
       </section>
 
