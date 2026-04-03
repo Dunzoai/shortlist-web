@@ -111,7 +111,7 @@ function PetalSplashHero() {
                 ))}
               </h1>
               <motion.p
-                className="text-sm sm:text-base md:text-lg mt-2 tracking-wide text-slate-500"
+                className="text-sm sm:text-base md:text-lg mt-0.5 tracking-wide text-slate-500"
                 style={{ fontFamily: "'Georgia', serif" }}
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
