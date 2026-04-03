@@ -138,14 +138,9 @@ function PetalSplashHero() {
             ease: 'linear',
           } : {}}
         >
-          {/* Petals — each slides in from its own outward direction */}
+          {/* Petals — fade in one by one, already positioned by SVG rotate */}
           {Array.from({ length: petalCount }).map((_, i) => {
             const angle = (360 / petalCount) * i;
-            const rad = (angle * Math.PI) / 180;
-            // Slide in from far away along each petal's own angle
-            const slideDist = 500;
-            const startTx = Math.sin(rad) * slideDist;
-            const startTy = -Math.cos(rad) * slideDist;
             return (
               <motion.ellipse
                 key={i}
@@ -155,20 +150,12 @@ function PetalSplashHero() {
                 ry={petalRy}
                 fill={petalColors[i]}
                 transform={`rotate(${angle}, ${cx}, ${cy})`}
-                initial={{
-                  opacity: 0,
-                  translateX: startTx,
-                  translateY: startTy,
-                }}
-                animate={{
-                  opacity: 0.88,
-                  translateX: 0,
-                  translateY: 0,
-                }}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 0.88 }}
                 transition={{
-                  duration: 1.6,
-                  delay: i * 0.1,
-                  ease: [0.25, 0.46, 0.45, 0.94],
+                  duration: 0.8,
+                  delay: 0.2 + i * 0.15,
+                  ease: 'easeOut',
                 }}
               />
             );
