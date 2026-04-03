@@ -74,8 +74,51 @@ function PetalSplashHero() {
 
   return (
     <section className="relative h-screen w-full overflow-hidden" style={{ backgroundColor: BG_CREAM }}>
-      {/* Rotating flower — massive, bleeds off screen */}
-      <div className="absolute inset-0 flex items-center justify-center">
+
+      {/* LAYER 1: White center circle — always visible, no animation */}
+      <div className="absolute inset-0 flex items-center justify-center z-0">
+        <div
+          className="rounded-full"
+          style={{
+            width: '50vmin',
+            height: '50vmin',
+            backgroundColor: '#FFFFFF',
+            boxShadow: '0 0 80px rgba(0,0,0,0.03)',
+          }}
+        />
+      </div>
+
+      {/* LAYER 2: Text "Grow with Gia" — inside the white circle */}
+      <div className="absolute inset-0 flex items-center justify-center z-10">
+        <AnimatePresence>
+          {showText && (
+            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight select-none" style={{ fontFamily: "'Georgia', 'Times New Roman', serif" }}>
+              {title.split('').map((char, i) => (
+                <motion.span
+                  key={i}
+                  initial={{ opacity: 0, y: 30, scale: 0.5 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  transition={{
+                    duration: 0.4,
+                    delay: i * 0.1,
+                    ease: [0.34, 1.56, 0.64, 1],
+                  }}
+                  style={{
+                    color: char === ' ' ? 'transparent' : TEXT_COLORS[i % TEXT_COLORS.length],
+                    display: 'inline-block',
+                    whiteSpace: 'pre',
+                  }}
+                >
+                  {char}
+                </motion.span>
+              ))}
+            </h1>
+          )}
+        </AnimatePresence>
+      </div>
+
+      {/* LAYER 3: Petals — on top, overlap circle edges and each other */}
+      <div className="absolute inset-0 flex items-center justify-center z-20 pointer-events-none">
         <motion.div
           className="relative"
           style={{ width: '200vmax', height: '200vmax' }}
@@ -87,8 +130,6 @@ function PetalSplashHero() {
           } : {}}
         >
           {petals.map((petal, i) => {
-            const rad = (petal.angle * Math.PI) / 180;
-            // Petal tip sits far from center (bleeds off screen)
             const petalLength = '45%';
             const petalWidth = '28%';
 
@@ -134,40 +175,11 @@ function PetalSplashHero() {
         </motion.div>
       </div>
 
-      {/* Title text — letter by letter */}
-      <div className="absolute inset-0 flex items-center justify-center z-10">
-        <AnimatePresence>
-          {showText && (
-            <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-bold tracking-tight select-none" style={{ fontFamily: "'Georgia', 'Times New Roman', serif" }}>
-              {title.split('').map((char, i) => (
-                <motion.span
-                  key={i}
-                  initial={{ opacity: 0, y: 30, scale: 0.5 }}
-                  animate={{ opacity: 1, y: 0, scale: 1 }}
-                  transition={{
-                    duration: 0.4,
-                    delay: i * 0.1,
-                    ease: [0.34, 1.56, 0.64, 1],
-                  }}
-                  style={{
-                    color: char === ' ' ? 'transparent' : TEXT_COLORS[i % TEXT_COLORS.length],
-                    display: 'inline-block',
-                    whiteSpace: 'pre',
-                  }}
-                >
-                  {char}
-                </motion.span>
-              ))}
-            </h1>
-          )}
-        </AnimatePresence>
-      </div>
-
-      {/* Scroll hint */}
+      {/* Scroll hint — topmost */}
       <AnimatePresence>
         {showScrollHint && (
           <motion.div
-            className="absolute bottom-10 left-1/2 -translate-x-1/2 z-20 flex flex-col items-center gap-2"
+            className="absolute bottom-10 left-1/2 -translate-x-1/2 z-30 flex flex-col items-center gap-2"
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0 }}
