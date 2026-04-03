@@ -5,6 +5,7 @@ import SuspendedPage from '@/clients/danidiaz/pages/SuspendedPage';
 import { HomePage as NitosHomePage } from '@/clients/nitos/pages/HomePage';
 import HomePage from '@/clients/palmetto_taps/pages/HomePage';
 import Layout from '@/clients/palmetto_taps/components/Layout';
+import { HomePage as GrowWithGiaHomePage } from '@/clients/growwithgia/pages/HomePage';
 
 // Coming Soon placeholder for clients without a HomePage yet
 function ComingSoonPage() {
@@ -30,6 +31,10 @@ export default async function Page() {
 
   if (client?.slug === 'palmetto_taps') {
     return <Layout><HomePage /></Layout>;
+  }
+
+  if (client?.slug === 'growwithgia') {
+    return <GrowWithGiaHomePage />;
   }
 
   // Default to danidiaz
