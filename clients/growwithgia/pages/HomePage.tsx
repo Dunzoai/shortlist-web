@@ -535,50 +535,6 @@ export function HomePage() {
         </div>
       </section>
 
-      {/* ─── SUBJECTS ─── */}
-      <section id="subjects" className="py-24 px-6" style={{ backgroundColor: `${PETAL_COLORS.teal}10` }}>
-        <div className="max-w-5xl mx-auto">
-          <motion.div
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true }}
-            variants={fadeIn}
-            className="text-center mb-12"
-          >
-            <h2 className="text-3xl md:text-4xl font-bold text-slate-800 mb-3" style={{ fontFamily: "'Georgia', serif" }}>Subjects We Cover</h2>
-            <p className="text-slate-500 text-lg">From elementary through high school</p>
-          </motion.div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-            {[
-              { icon: Calculator, name: 'Math', desc: 'Algebra, Geometry, Pre-Calc, and more', color: PETAL_COLORS.pink },
-              { icon: FlaskConical, name: 'Science', desc: 'Biology, Chemistry, Earth Science', color: PETAL_COLORS.yellow },
-              { icon: Pen, name: 'Writing & ELA', desc: 'Essays, reading comprehension, grammar', color: PETAL_COLORS.teal },
-              { icon: Globe2, name: 'Social Studies', desc: 'History, geography, civics', color: PETAL_COLORS.lavender },
-              { icon: BookOpen, name: 'Reading', desc: 'Phonics, fluency, and comprehension', color: PETAL_COLORS.pink },
-              { icon: Star, name: 'Test Prep', desc: 'SAT, ACT, state assessments', color: PETAL_COLORS.yellow },
-            ].map((subject, i) => (
-              <motion.div
-                key={i}
-                initial="hidden"
-                whileInView="visible"
-                viewport={{ once: true }}
-                variants={fadeIn}
-                transition={{ delay: i * 0.08 }}
-                className="bg-white rounded-2xl p-6 border border-slate-100 hover:shadow-lg transition-all"
-                style={{ borderColor: `${subject.color}20` }}
-              >
-                <div className="w-12 h-12 rounded-xl flex items-center justify-center mb-4" style={{ backgroundColor: `${subject.color}20` }}>
-                  <subject.icon className="w-6 h-6" style={{ color: subject.color }} />
-                </div>
-                <h3 className="text-lg font-semibold text-slate-800 mb-1">{subject.name}</h3>
-                <p className="text-slate-500 text-sm">{subject.desc}</p>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
-
       {/* ─── HOW IT WORKS ─── */}
       <section className="py-24 px-6">
         <div className="max-w-4xl mx-auto">
