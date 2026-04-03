@@ -229,6 +229,7 @@ export function HomePage() {
   const [childName, setChildName] = useState('');
   const [selectedGrade, setSelectedGrade] = useState('');
   const [selected, setSelected] = useState<SubjectCard[]>([]);
+  const [notes, setNotes] = useState('');
   const [submitted, setSubmitted] = useState(false);
 
   const available = ALL_SUBJECTS.filter(s => !selected.find(sel => sel.id === s.id));
@@ -247,7 +248,7 @@ export function HomePage() {
 
   const handleSubmit = () => {
     if (!childName.trim() || selected.length === 0) return;
-    console.log('Intake:', { childName, grade: selectedGrade, subjects: selected.map(s => s.id) });
+    console.log('Intake:', { childName, grade: selectedGrade, subjects: selected.map(s => s.id), notes });
     setSubmitted(true);
   };
 
@@ -391,16 +392,16 @@ export function HomePage() {
                   style={{ fontFamily: "'Georgia', serif", color: '#6B7280' }}
                 >
                   I&apos;m so excited to help{' '}
-                  <span className="font-bold" style={{ color: PETAL_COLORS.pink }}>{displayName}</span>{' '}
+                  <span className="font-bold" style={{ color: PETAL_COLORS.teal }}>{displayName}</span>{' '}
                   discover what they&apos;re truly capable of. Every kid has a moment where it all clicks — let&apos;s find {displayName}&apos;s.
                 </motion.p>
 
                 <label className="block text-lg font-semibold text-slate-700 mb-2" style={{ fontFamily: "'Georgia', serif" }}>
                   What areas does {displayName} need help with?
                 </label>
-                <p className="text-slate-400 text-sm mb-6">Tap to add — or press and hold to drag</p>
+                <p className="text-slate-400 text-sm mb-6">Tap to add</p>
 
-                {/* Colorful subject cards — all unique colors */}
+                {/* Colorful subject cards — tap to add */}
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-8">
                   {available.map((subject) => (
                     <motion.button
@@ -409,7 +410,7 @@ export function HomePage() {
                       onClick={() => addSubject(subject)}
                       className="flex flex-col items-center gap-2 p-5 rounded-2xl shadow-md active:shadow-lg transition-shadow"
                       style={{ backgroundColor: subject.color }}
-                      whileHover={{ y: -4, rotate: -2 }}
+                      whileHover={{ y: -4 }}
                       whileTap={{ scale: 0.92 }}
                     >
                       <subject.icon className="w-7 h-7 text-white" />
@@ -455,6 +456,25 @@ export function HomePage() {
                     </div>
                   )}
                 </div>
+
+                {/* Notes input */}
+                <AnimatePresence>
+                  {selected.length > 0 && (
+                    <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="mt-6">
+                      <label className="block text-sm font-medium text-slate-500 mb-2" style={{ fontFamily: "'Georgia', serif" }}>
+                        Anything else you&apos;d like to share about {displayName}?
+                      </label>
+                      <textarea
+                        value={notes}
+                        onChange={(e) => setNotes(e.target.value)}
+                        placeholder={`e.g. ${displayName} loves art but struggles with word problems...`}
+                        rows={3}
+                        className="w-full px-5 py-4 rounded-2xl border-2 text-base focus:outline-none transition-colors resize-none"
+                        style={{ borderColor: notes ? PETAL_COLORS.lavender : '#e2e8f0', backgroundColor: 'white' }}
+                      />
+                    </motion.div>
+                  )}
+                </AnimatePresence>
 
                 {/* Submit */}
                 <AnimatePresence>
