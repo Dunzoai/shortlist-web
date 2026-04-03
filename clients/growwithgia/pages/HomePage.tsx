@@ -77,10 +77,10 @@ function PetalSplashHero() {
   ];
   // SVG viewBox 1000x1000, center 500,500
   const cx = 500, cy = 500;
-  const circleR = 90;   // center circle — ~18% of viewBox
-  const petalRx = 120;  // petal half-width
-  const petalRy = 340;  // petal length
-  const petalOffset = circleR + petalRy - 20; // slight overlap at base
+  const circleR = 155;  // center circle — big enough for text
+  const petalRx = 175;  // petal half-width — wider, rounder petals
+  const petalRy = 320;  // petal length
+  const petalOffset = circleR + petalRy - 40; // overlap at base so no gap
 
   return (
     <section className="relative h-screen w-full overflow-hidden" style={{ backgroundColor: BG_CREAM }}>
