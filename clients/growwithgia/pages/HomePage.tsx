@@ -62,15 +62,15 @@ function PetalSplashHero() {
     };
   }, []);
 
-  const petals = [
-    { color: PETAL_COLORS.pink, startX: -300, startY: -300, endX: -160, endY: -160, size: 380, },
-    { color: PETAL_COLORS.teal, startX: 300, startY: -300, endX: 120, endY: -180, size: 420, },
-    { color: PETAL_COLORS.lavender, startX: 400, startY: 200, endX: 180, endY: 140, size: 340, },
-    { color: PETAL_COLORS.lavender, startX: 300, startY: 400, endX: 140, endY: 200, size: 300, },
-    { color: PETAL_COLORS.lime, startX: -100, startY: 500, endX: -60, endY: 200, size: 440, },
-    { color: PETAL_COLORS.lime, startX: -400, startY: 300, endX: -200, endY: 160, size: 380, },
-    { color: PETAL_COLORS.pink, startX: -400, startY: -50, endX: -200, endY: -40, size: 320, },
-    { color: PETAL_COLORS.teal, startX: 100, startY: -400, endX: 40, endY: -200, size: 350, },
+  // 6 petals evenly spaced, each is a teardrop/ellipse rotated to point outward
+  const petalCount = 6;
+  const petalColors = [
+    PETAL_COLORS.pink,
+    PETAL_COLORS.teal,
+    PETAL_COLORS.lime,
+    PETAL_COLORS.lavender,
+    PETAL_COLORS.pink,
+    PETAL_COLORS.teal,
   ];
 
   return (
@@ -79,58 +79,80 @@ function PetalSplashHero() {
       <div className="absolute inset-0 flex items-center justify-center">
         <motion.div
           className="relative"
-          style={{ width: '100vmax', height: '100vmax' }}
+          style={{ width: '60vmin', height: '60vmin' }}
           animate={petalsReady ? { rotate: 360 } : { rotate: 0 }}
           transition={petalsReady ? {
-            duration: 120,
+            duration: 90,
             repeat: Infinity,
             ease: 'linear',
           } : {}}
         >
-          {petals.map((petal, i) => (
-            <motion.div
-              key={i}
-              className="absolute rounded-full"
-              style={{
-                width: petal.size,
-                height: petal.size,
-                backgroundColor: petal.color,
-                left: '50%',
-                top: '50%',
-                marginLeft: -petal.size / 2,
-                marginTop: -petal.size / 2,
-              }}
-              initial={{
-                x: petal.startX,
-                y: petal.startY,
-                scale: 0,
-                opacity: 0,
-              }}
-              animate={{
-                x: petal.endX,
-                y: petal.endY,
-                scale: 1,
-                opacity: 0.85,
-              }}
-              transition={{
-                duration: 1.5,
-                delay: i * 0.12,
-                ease: [0.34, 1.56, 0.64, 1],
-              }}
-            />
-          ))}
-        </motion.div>
-      </div>
+          {Array.from({ length: petalCount }).map((_, i) => {
+            const angle = (360 / petalCount) * i;
+            const radians = (angle * Math.PI) / 180;
+            // Each petal flies in from far outside along its angle
+            const farDist = 600;
+            const restDist = 0; // petals anchor at center, shape extends outward via CSS
+            const startX = Math.cos(radians) * farDist;
+            const startY = Math.sin(radians) * farDist;
 
-      {/* Center cream overlay for flower cutout effect */}
-      <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-        <motion.div
-          className="rounded-full"
-          style={{ backgroundColor: BG_CREAM }}
-          initial={{ width: 0, height: 0, opacity: 0 }}
-          animate={{ width: '55vmin', height: '55vmin', opacity: 1 }}
-          transition={{ duration: 1.2, delay: 0.6, ease: 'easeOut' }}
-        />
+            return (
+              <motion.div
+                key={i}
+                className="absolute"
+                style={{
+                  width: '50%',
+                  height: '50%',
+                  left: '25%',
+                  top: '25%',
+                  transformOrigin: '50% 100%',
+                  rotate: `${angle - 90}deg`,
+                }}
+                initial={{
+                  scale: 0,
+                  opacity: 0,
+                  x: startX,
+                  y: startY,
+                }}
+                animate={{
+                  scale: 1,
+                  opacity: 0.8,
+                  x: restDist,
+                  y: restDist,
+                }}
+                transition={{
+                  duration: 1.4,
+                  delay: i * 0.15,
+                  ease: [0.34, 1.4, 0.64, 1],
+                }}
+              >
+                <div
+                  style={{
+                    width: '100%',
+                    height: '100%',
+                    backgroundColor: petalColors[i],
+                    borderRadius: '50% 50% 50% 50% / 70% 70% 30% 30%',
+                  }}
+                />
+              </motion.div>
+            );
+          })}
+
+          {/* Center circle */}
+          <motion.div
+            className="absolute rounded-full"
+            style={{
+              width: '22%',
+              height: '22%',
+              left: '39%',
+              top: '39%',
+              backgroundColor: '#F9E547',
+            }}
+            initial={{ scale: 0, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ duration: 0.6, delay: 1.2, ease: [0.34, 1.56, 0.64, 1] }}
+          />
+        </motion.div>
       </div>
 
       {/* Title text — letter by letter */}
