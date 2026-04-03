@@ -58,6 +58,34 @@ export async function generateMetadata(): Promise<Metadata> {
     };
   }
 
+  if (client?.slug === 'growwithgia') {
+    return {
+      title: "Grow With Gia | Personalized Tutoring",
+      description: "One-on-one tutoring that meets every student where they are. Math, reading, writing, science, and more. Myrtle Beach area & virtual.",
+      keywords: ["tutoring", "personalized tutoring", "Myrtle Beach tutor", "math tutor", "reading tutor", "elementary tutor", "middle school tutor"],
+      authors: [{ name: "Grow With Gia" }],
+      creator: "Grow With Gia",
+      metadataBase: new URL('https://demo.growwithgia.shortlistpass.com'),
+      icons: { icon: '/clients/Gia/favicon.svg', apple: '/clients/Gia/gia_about.jpeg' },
+      openGraph: {
+        type: 'website',
+        locale: 'en_US',
+        url: '/',
+        siteName: "Grow With Gia",
+        title: "Grow With Gia | Personalized Tutoring",
+        description: "One-on-one tutoring that meets every student where they are. Math, reading, writing, science, and more.",
+        images: [{ url: '/clients/Gia/gia_about.jpeg', width: 1200, height: 630, alt: "Grow With Gia - Personalized Tutoring" }],
+      },
+      twitter: {
+        card: 'summary_large_image',
+        title: "Grow With Gia | Personalized Tutoring",
+        description: "One-on-one tutoring that meets every student where they are. Myrtle Beach area & virtual.",
+        images: ['/clients/Gia/gia_about.jpeg'],
+      },
+      robots: { index: true, follow: true },
+    };
+  }
+
   if (client?.slug === 'nitos') {
     return {
       title: "Nito's Empanadas | The Best Empanadas in Town",
