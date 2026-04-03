@@ -62,34 +62,39 @@ function PetalSplashHero() {
     };
   }, []);
 
-  // Petals are massive — they bleed off screen. Positioned by angle from center.
-  const petals = [
-    { color: PETAL_COLORS.pink, angle: 0 },       // top
-    { color: PETAL_COLORS.teal, angle: 60 },       // top-right
-    { color: PETAL_COLORS.lime, angle: 120 },      // bottom-right
-    { color: PETAL_COLORS.lavender, angle: 180 },  // bottom
-    { color: PETAL_COLORS.pink, angle: 240 },      // bottom-left
-    { color: PETAL_COLORS.teal, angle: 300 },      // top-left
+  // Petals: large ellipses whose inner edge touches the white circle.
+  // They're so big their outer halves bleed off screen.
+  // circleR = radius of white center circle in vmin
+  const circleR = 21; // half of 42vmin
+  const petalCount = 5;
+  const petalW = 65; // vmin — wide enough to bleed off screen
+  const petalH = 55; // vmin
+  const petalColors = [
+    PETAL_COLORS.pink,
+    PETAL_COLORS.teal,
+    PETAL_COLORS.lime,
+    PETAL_COLORS.lavender,
+    PETAL_COLORS.teal,
   ];
 
   return (
     <section className="relative h-screen w-full overflow-hidden" style={{ backgroundColor: BG_CREAM }}>
 
-      {/* LAYER 1: White center circle — always visible, no animation */}
-      <div className="absolute inset-0 flex items-center justify-center z-0">
+      {/* LAYER 1: White center circle — always visible */}
+      <div className="absolute inset-0 flex items-center justify-center z-10">
         <div
           className="rounded-full"
           style={{
-            width: '50vmin',
-            height: '50vmin',
+            width: `${circleR * 2}vmin`,
+            height: `${circleR * 2}vmin`,
             backgroundColor: '#FFFFFF',
-            boxShadow: '0 0 80px rgba(0,0,0,0.03)',
+            boxShadow: '0 0 120px rgba(0,0,0,0.04)',
           }}
         />
       </div>
 
       {/* LAYER 2: Text "Grow with Gia" — inside the white circle */}
-      <div className="absolute inset-0 flex items-center justify-center z-10">
+      <div className="absolute inset-0 flex items-center justify-center z-20">
         <AnimatePresence>
           {showText && (
             <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight select-none" style={{ fontFamily: "'Georgia', 'Times New Roman', serif" }}>
@@ -117,11 +122,11 @@ function PetalSplashHero() {
         </AnimatePresence>
       </div>
 
-      {/* LAYER 3: Petals — on top, overlap circle edges and each other */}
-      <div className="absolute inset-0 flex items-center justify-center z-20 pointer-events-none">
+      {/* LAYER 3: Petals — rotate around the circle as a group */}
+      <div className="absolute inset-0 flex items-center justify-center z-[5] pointer-events-none">
         <motion.div
           className="relative"
-          style={{ width: '200vmax', height: '200vmax' }}
+          style={{ width: 0, height: 0 }}
           animate={petalsReady ? { rotate: 360 } : { rotate: 0 }}
           transition={petalsReady ? {
             duration: 90,
@@ -129,53 +134,48 @@ function PetalSplashHero() {
             ease: 'linear',
           } : {}}
         >
-          {petals.map((petal, i) => {
-            const petalLength = '45%';
-            const petalWidth = '28%';
+          {Array.from({ length: petalCount }).map((_, i) => {
+            const angle = (360 / petalCount) * i - 90; // start from top
+            const rad = ((angle) * Math.PI) / 180;
+            // Position: petal center sits at circleR + half petal height out from center
+            const dist = circleR + petalH / 2 - 6; // slight overlap with circle edge
+            const cx = Math.cos(rad) * dist;
+            const cy = Math.sin(rad) * dist;
 
             return (
               <motion.div
                 key={i}
                 className="absolute"
                 style={{
-                  width: petalWidth,
-                  height: petalLength,
-                  left: '50%',
-                  top: '50%',
-                  marginLeft: '-14%',
-                  marginTop: `-${petalLength}`,
-                  transformOrigin: '50% 100%',
-                  rotate: `${petal.angle}deg`,
+                  width: `${petalW}vmin`,
+                  height: `${petalH}vmin`,
+                  left: `${cx}vmin`,
+                  top: `${cy}vmin`,
+                  transform: `translate(-50%, -50%) rotate(${angle + 90}deg)`,
+                  backgroundColor: petalColors[i],
+                  borderRadius: '50% 50% 45% 45% / 60% 60% 40% 40%',
+                  opacity: 0,
                 }}
                 initial={{
-                  y: '-80%',
+                  scale: 0,
                   opacity: 0,
                 }}
                 animate={{
-                  y: '0%',
-                  opacity: 0.85,
+                  scale: 1,
+                  opacity: 0.8,
                 }}
                 transition={{
-                  duration: 1.8,
-                  delay: i * 0.12,
-                  ease: [0.25, 0.46, 0.45, 0.94],
+                  duration: 1.4,
+                  delay: 0.3 + i * 0.18,
+                  ease: [0.34, 1.4, 0.64, 1],
                 }}
-              >
-                <div
-                  style={{
-                    width: '100%',
-                    height: '100%',
-                    backgroundColor: petal.color,
-                    borderRadius: '50% 50% 45% 45% / 65% 65% 35% 35%',
-                  }}
-                />
-              </motion.div>
+              />
             );
           })}
         </motion.div>
       </div>
 
-      {/* Scroll hint — topmost */}
+      {/* Scroll hint */}
       <AnimatePresence>
         {showScrollHint && (
           <motion.div
