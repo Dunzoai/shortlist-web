@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Menu, X, GraduationCap } from 'lucide-react';
 
 const links = [
@@ -12,12 +12,28 @@ const links = [
 
 export default function Nav() {
   const [open, setOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 100);
+    window.addEventListener('scroll', onScroll);
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
+
+  // Only show nav after user scrolls past the hero
+  if (!scrolled) return null;
 
   return (
-    <nav className="sticky top-0 z-50 bg-[#FAF5EF]/90 backdrop-blur-md border-b border-[#C6B4E2]/15">
-      <div className="max-w-6xl mx-auto px-6 flex items-center justify-between h-16">
-        <a href="/" className="flex items-center gap-2 font-bold text-xl" style={{ color: '#A08EC8', fontFamily: "'Georgia', serif" }}>
-          <GraduationCap className="w-6 h-6" />
+    <nav className="fixed top-0 left-0 right-0 z-50 bg-[#FAF5EF]/95 backdrop-blur-md border-b border-[#C6B4E2]/15 animate-[fadeDown_0.3s_ease-out]">
+      <style>{`
+        @keyframes fadeDown {
+          from { opacity: 0; transform: translateY(-100%); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+      `}</style>
+      <div className="max-w-6xl mx-auto px-6 flex items-center justify-between h-14">
+        <a href="#" className="flex items-center gap-2 font-bold text-lg" style={{ color: '#A08EC8', fontFamily: "'Georgia', serif" }}>
+          <GraduationCap className="w-5 h-5" />
           Grow With Gia
         </a>
 
@@ -28,7 +44,7 @@ export default function Nav() {
               {l.label}
             </a>
           ))}
-          <a href="#contact" className="text-white text-sm font-semibold px-5 py-2.5 rounded-lg hover:opacity-90 transition-opacity" style={{ backgroundColor: '#A08EC8' }}>
+          <a href="#contact" className="text-white text-sm font-semibold px-5 py-2 rounded-lg hover:opacity-90 transition-opacity" style={{ backgroundColor: '#A08EC8' }}>
             Book a Session
           </a>
         </div>

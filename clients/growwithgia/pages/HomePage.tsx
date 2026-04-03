@@ -330,41 +330,44 @@ function IntakeSection() {
               <label className="block text-lg font-semibold text-slate-700 mb-2" style={{ fontFamily: "'Georgia', serif" }}>
                 What areas does {displayName} need help with?
               </label>
-              <p className="text-slate-400 text-sm mb-5">Tap to add — pick as many as you like</p>
+              <p className="text-slate-400 text-sm mb-5">Drag cards into the box below — or tap to add</p>
 
-              {/* Available subjects */}
-              <div className="flex flex-wrap gap-3 mb-6">
+              {/* Available subjects — colorful cards */}
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-8">
                 {available.map((subject) => (
                   <motion.button
                     key={subject.id}
                     layout
                     onClick={() => addSubject(subject)}
-                    className="flex items-center gap-2.5 px-5 py-3 rounded-2xl border-2 border-dashed transition-all hover:scale-105 active:scale-95 cursor-pointer"
-                    style={{
-                      borderColor: `${subject.color}40`,
-                      backgroundColor: 'white',
-                    }}
-                    whileHover={{ y: -2 }}
+                    className="flex flex-col items-center gap-2 p-5 rounded-2xl shadow-md cursor-grab active:cursor-grabbing transition-shadow hover:shadow-lg"
+                    style={{ backgroundColor: subject.color }}
+                    whileHover={{ y: -4, rotate: -2 }}
+                    whileTap={{ scale: 0.95 }}
+                    draggable
+                    onDragEnd={() => addSubject(subject)}
                   >
-                    <subject.icon className="w-5 h-5" style={{ color: subject.color }} />
-                    <span className="font-medium text-slate-600">{subject.label}</span>
-                    <Plus className="w-4 h-4 text-slate-300" />
+                    <subject.icon className="w-7 h-7 text-white" />
+                    <span className="font-semibold text-white text-sm">{subject.label}</span>
                   </motion.button>
                 ))}
               </div>
 
               {/* Selected subjects — drop zone */}
               <div
-                className="min-h-[80px] rounded-2xl border-2 border-dashed p-4 transition-colors"
+                className="min-h-[100px] rounded-2xl border-3 border-dashed p-5 transition-all"
                 style={{
-                  borderColor: selected.length > 0 ? `${PETAL_COLORS.teal}50` : '#e2e8f0',
-                  backgroundColor: selected.length > 0 ? `${PETAL_COLORS.teal}05` : 'transparent',
+                  borderColor: selected.length > 0 ? PETAL_COLORS.lavender : '#d1d5db',
+                  backgroundColor: selected.length > 0 ? `${PETAL_COLORS.lavender}08` : '#fafafa',
                 }}
+                onDragOver={(e) => e.preventDefault()}
               >
                 {selected.length === 0 ? (
-                  <p className="text-slate-300 text-center py-4 text-sm">
-                    {displayName}&apos;s subjects will appear here
-                  </p>
+                  <div className="text-center py-6">
+                    <GripVertical className="w-6 h-6 text-slate-300 mx-auto mb-2" />
+                    <p className="text-slate-400 text-sm">
+                      Drop {displayName}&apos;s subjects here
+                    </p>
+                  </div>
                 ) : (
                   <div className="flex flex-wrap gap-3">
                     <AnimatePresence>
@@ -372,19 +375,19 @@ function IntakeSection() {
                         <motion.div
                           key={subject.id}
                           layout
-                          initial={{ opacity: 0, scale: 0.8 }}
-                          animate={{ opacity: 1, scale: 1 }}
-                          exit={{ opacity: 0, scale: 0.8 }}
-                          className="flex items-center gap-2 px-4 py-2.5 rounded-xl shadow-sm"
-                          style={{ backgroundColor: `${subject.color}18` }}
+                          initial={{ opacity: 0, scale: 0.7, rotate: -5 }}
+                          animate={{ opacity: 1, scale: 1, rotate: 0 }}
+                          exit={{ opacity: 0, scale: 0.7 }}
+                          className="flex items-center gap-2 px-4 py-3 rounded-xl shadow-md"
+                          style={{ backgroundColor: subject.color }}
                         >
-                          <subject.icon className="w-4.5 h-4.5" style={{ color: subject.color }} />
-                          <span className="font-medium text-sm" style={{ color: subject.color }}>{subject.label}</span>
+                          <subject.icon className="w-4 h-4 text-white" />
+                          <span className="font-semibold text-white text-sm">{subject.label}</span>
                           <button
                             onClick={() => removeSubject(subject.id)}
-                            className="ml-1 p-0.5 rounded-full hover:bg-white/50 transition-colors"
+                            className="ml-1 p-0.5 rounded-full bg-white/20 hover:bg-white/40 transition-colors"
                           >
-                            <X className="w-3.5 h-3.5 text-slate-400" />
+                            <X className="w-3.5 h-3.5 text-white" />
                           </button>
                         </motion.div>
                       ))}
@@ -427,8 +430,8 @@ function IntakeSection() {
 export function HomePage() {
   return (
     <main className="min-h-screen" style={{ backgroundColor: BG_CREAM }}>
-      <PetalSplashHero />
       <Nav />
+      <PetalSplashHero />
 
       {/* ─── HI, I'M GIA ─── */}
       <section className="py-20 md:py-28 px-6">
