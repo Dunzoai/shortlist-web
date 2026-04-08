@@ -205,31 +205,33 @@ function PetalSplashHero() {
 // ─── DECORATIVE VINE SVG ───
 
 function DecoVine() {
-  // viewBox is wide enough to span from page-center (left) to right edge.
-  // The SVG is right-aligned. x:0 = page center, x:500 = right edge.
-  // Stem starts at bottom-right (~x:480) and wanders left+up to center (~x:40) at top.
+  // Positioned in <main>. Top at 50vh (center of hero where white circle is).
+  // SVG spans from there down through about + form sections.
+  // Stem starts at top-center (behind flower petals) and wanders to bottom-right.
+  // z-[5] puts it behind the flower's z-10 petals layer.
   return (
     <svg
-      className="absolute top-0 right-0 pointer-events-none z-0"
-      width="50%"
-      height="1600"
-      viewBox="0 0 500 1600"
+      className="absolute pointer-events-none z-[5]"
+      width="55%"
+      height="2200px"
+      viewBox="0 0 550 2200"
       fill="none"
       preserveAspectRatio="none"
-      style={{ opacity: 0.18 }}
+      style={{ opacity: 0.18, top: '50vh', right: 0 }}
     >
-      {/* Stem: bottom-right to top-center, winding S-curves */}
+      {/* Stem: top-center (~x:50) winding down to bottom-right (~x:520) */}
       <path
         d={[
-          'M480 1600',
-          'C470 1520 420 1480 400 1400',
-          'C380 1320 430 1260 390 1180',
-          'C350 1100 300 1060 320 980',
-          'C340 900 280 840 260 760',
-          'C240 680 300 620 250 540',
-          'C200 460 170 420 180 340',
-          'C190 260 120 210 130 140',
-          'C140 80 60 40 40 0',
+          'M50 0',
+          'C60 80 120 140 100 240',
+          'C80 340 160 400 180 500',
+          'C200 600 140 660 190 760',
+          'C240 860 310 920 290 1020',
+          'C270 1120 350 1180 370 1280',
+          'C390 1380 330 1440 380 1540',
+          'C430 1640 470 1700 460 1800',
+          'C450 1900 500 1960 510 2060',
+          'C515 2130 520 2170 520 2200',
         ].join(' ')}
         stroke="#86efac"
         strokeWidth="4"
@@ -237,36 +239,36 @@ function DecoVine() {
         fill="none"
       />
 
-      {/* Leaf 1 — right, near base (~y:1440) */}
-      <g transform="translate(415, 1440) rotate(30)">
+      {/* Leaf 1 — right (~y:180) */}
+      <g transform="translate(110, 180) rotate(30)">
         <path d="M0 0 C7 -12 20 -16 26 -9 C32 -2 19 7 0 0Z" fill="#86efac" />
       </g>
-      {/* Leaf 2 — left (~y:1260) */}
-      <g transform="translate(385, 1220) rotate(-35)">
+      {/* Leaf 2 — left (~y:400) */}
+      <g transform="translate(155, 420) rotate(-35)">
         <path d="M0 0 C-8 -14 -24 -18 -30 -10 C-36 -2 -22 8 0 0Z" fill="#86efac" />
       </g>
-      {/* Leaf 3 — right (~y:1040) */}
-      <g transform="translate(330, 1020) rotate(32)">
+      {/* Leaf 3 — right (~y:640) */}
+      <g transform="translate(195, 660) rotate(32)">
         <path d="M0 0 C8 -14 24 -18 30 -10 C36 -2 22 8 0 0Z" fill="#86efac" />
       </g>
-      {/* Leaf 4 — left (~y:820) */}
-      <g transform="translate(255, 800) rotate(-30)">
+      {/* Leaf 4 — left (~y:880) */}
+      <g transform="translate(280, 880) rotate(-30)">
         <path d="M0 0 C-7 -12 -20 -16 -25 -9 C-30 -2 -18 7 0 0Z" fill="#86efac" />
       </g>
-      {/* Leaf 5 — right (~y:600) */}
-      <g transform="translate(265, 580) rotate(35)">
+      {/* Leaf 5 — right (~y:1120) */}
+      <g transform="translate(365, 1140) rotate(35)">
         <path d="M0 0 C7 -12 20 -16 26 -9 C32 -2 19 7 0 0Z" fill="#86efac" />
       </g>
-      {/* Leaf 6 — left (~y:400) */}
-      <g transform="translate(175, 380) rotate(-38)">
+      {/* Leaf 6 — left (~y:1380) */}
+      <g transform="translate(350, 1360) rotate(-38)">
         <path d="M0 0 C-8 -13 -22 -17 -28 -10 C-34 -3 -20 8 0 0Z" fill="#86efac" />
       </g>
-      {/* Leaf 7 — right (~y:200) */}
-      <g transform="translate(145, 180) rotate(28)">
+      {/* Leaf 7 — right (~y:1620) */}
+      <g transform="translate(445, 1640) rotate(28)">
         <path d="M0 0 C6 -11 18 -14 22 -8 C26 -2 16 6 0 0Z" fill="#86efac" />
       </g>
-      {/* Leaf 8 — left near top (~y:80) */}
-      <g transform="translate(80, 80) rotate(-30)">
+      {/* Leaf 8 — left (~y:1860) */}
+      <g transform="translate(450, 1860) rotate(-30)">
         <path d="M0 0 C-6 -10 -16 -13 -20 -7 C-24 -1 -14 5 0 0Z" fill="#86efac" />
       </g>
     </svg>
@@ -326,13 +328,13 @@ export function HomePage() {
   };
 
   return (
-    <main className="min-h-screen" style={{ backgroundColor: BG_CREAM }}>
+    <main className="relative min-h-screen overflow-x-hidden" style={{ backgroundColor: BG_CREAM }}>
+      <DecoVine />
       <Nav />
       <PetalSplashHero />
 
       {/* ─── HI, I'M GIA ─── */}
       <section id="about" className="relative py-20 md:py-28 px-6">
-        <DecoVine />
         <div className="max-w-5xl mx-auto">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-16 items-center">
             <motion.div
