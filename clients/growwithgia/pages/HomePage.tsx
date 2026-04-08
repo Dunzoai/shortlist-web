@@ -227,6 +227,7 @@ export function HomePage() {
   const [selected, setSelected] = useState<SubjectCard[]>([]);
   const [notes, setNotes] = useState('');
   const [submitted, setSubmitted] = useState(false);
+  const [ogModalOpen, setOgModalOpen] = useState(false);
 
   const available = ALL_SUBJECTS.filter(s => !selected.find(sel => sel.id === s.id));
   const trimmed = childName.trim();
@@ -520,7 +521,15 @@ export function HomePage() {
               <span style={{ color: PETAL_COLORS.lavender }}>A method.</span>
             </h2>
             <p className="text-base md:text-lg text-slate-500 leading-relaxed max-w-3xl mx-auto">
-              Gia works with students in grades K&ndash;6 across ELA, Writing, Math, Science, and Social Studies. Every new student starts with a 40&ndash;45 minute assessment — so sessions are never guesswork. For reading, she uses the Orton-Gillingham method to pinpoint exactly where to begin. She brings her own materials, uses IXL resources, and builds every plan around your child. Sessions run 50&ndash;60 minutes. Pricing depends on subjects and how often you meet — reach out and she&apos;ll build a plan that works.
+              Gia works with students in grades K&ndash;6 across ELA, Writing, Math, Science, and Social Studies. Every new student starts with a 40&ndash;45 minute assessment — so sessions are never guesswork. For reading, she uses the{' '}
+              <button
+                onClick={() => setOgModalOpen(true)}
+                className="underline underline-offset-2 font-medium hover:opacity-80 transition-opacity"
+                style={{ color: PETAL_COLORS.lavender }}
+              >
+                Orton-Gillingham method
+              </button>
+              {' '}to pinpoint exactly where to begin. She brings her own materials, uses IXL resources, and builds every plan around your child. Sessions run 50&ndash;60 minutes. Pricing depends on subjects and how often you meet — reach out and she&apos;ll build a plan that works.
             </p>
           </motion.div>
 
@@ -587,8 +596,8 @@ export function HomePage() {
       <section id="childcare" className="py-24 px-6" style={{ backgroundColor: '#f0fdfa' }}>
         <div className="max-w-4xl mx-auto">
           <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeIn} className="text-center">
-            <p className="uppercase tracking-widest font-semibold mb-3" style={{ fontSize: '13px', color: PETAL_COLORS.teal }}>
-              Childcare &amp; Babysitting
+            <p className="uppercase mb-4" style={{ fontSize: '14px', fontWeight: 600, letterSpacing: '0.12em', color: PETAL_COLORS.teal }}>
+              ✦ Childcare &amp; Babysitting ✦
             </p>
             <h2 className="text-3xl md:text-4xl font-bold text-slate-800 mb-6" style={{ fontFamily: "'Georgia', serif" }}>
               Need someone you can{' '}
@@ -752,6 +761,66 @@ export function HomePage() {
       </section>
 
       <Footer />
+
+      {/* ─── ORTON-GILLINGHAM MODAL ─── */}
+      <AnimatePresence>
+        {ogModalOpen && (
+          <motion.div
+            className="fixed inset-0 z-50 flex items-center justify-center px-4"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+          >
+            {/* Backdrop */}
+            <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={() => setOgModalOpen(false)} />
+
+            {/* Card */}
+            <motion.div
+              className="relative w-full max-w-lg rounded-3xl overflow-hidden shadow-2xl"
+              style={{ backgroundColor: BG_CREAM }}
+              initial={{ opacity: 0, scale: 0.92 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.92 }}
+              transition={{ duration: 0.25, ease: 'easeOut' }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Header */}
+              <div className="px-8 pt-8 pb-6 text-center" style={{ backgroundColor: PETAL_COLORS.lavender }}>
+                <p className="uppercase text-white/70 text-xs font-semibold tracking-widest mb-2">Teaching Method</p>
+                <h3 className="text-2xl md:text-3xl font-bold text-white mb-1" style={{ fontFamily: "'Georgia', serif" }}>
+                  Orton-Gillingham
+                </h3>
+                <p className="text-white/90 text-sm">The gold standard for reading support.</p>
+              </div>
+
+              {/* Close button */}
+              <button
+                onClick={() => setOgModalOpen(false)}
+                className="absolute top-4 right-4 w-8 h-8 rounded-full bg-white/20 hover:bg-white/40 transition-colors flex items-center justify-center"
+              >
+                <X className="w-4 h-4 text-white" />
+              </button>
+
+              {/* Body */}
+              <div className="px-8 py-8">
+                <p className="text-slate-600 leading-relaxed mb-4">
+                  Orton-Gillingham (OG) is a structured, research-backed approach to teaching reading and writing. Instead of hoping things click, it breaks language down into small, manageable pieces — sounds, letters, patterns — and builds from there.
+                </p>
+                <p className="text-slate-600 leading-relaxed mb-4">
+                  It&apos;s especially powerful for kids who struggle with reading, including those with dyslexia. Gia uses an OG assessment at the start to figure out exactly where your child is, then builds from that point.
+                </p>
+                <p className="text-slate-600 leading-relaxed mb-6">
+                  No guessing. No busy work. Just real progress.
+                </p>
+                <p className="text-sm font-medium text-center" style={{ color: PETAL_COLORS.lavender }}>
+                  Used by Gia for all K–6 reading support
+                </p>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </main>
   );
 }
