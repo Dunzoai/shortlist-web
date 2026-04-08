@@ -207,59 +207,97 @@ function PetalSplashHero() {
 function DecoVine() {
   return (
     <svg
-      className="absolute top-0 right-[-15px] pointer-events-none z-0"
-      width="100"
-      height="800"
-      viewBox="0 0 100 800"
+      className="absolute right-[-15px] pointer-events-none z-0"
+      width="200"
+      height="1800"
+      viewBox="0 0 200 1800"
       fill="none"
-      style={{ opacity: 0.18 }}
+      style={{ opacity: 0.18, top: '-1000px' }}
     >
-      {/* Main stem — winding cubic bezier, sways left-right */}
+      {/*
+        Extended stem: starts at top-center (~100,0) under the hero flower,
+        winds downward drifting rightward, then continues into the original
+        section path. The SVG top is pulled 1000px above the section.
+        y:0-1000 = hero + about area, y:1000-1800 = original form section
+      */}
+
+      {/* Full winding stem — top (centered) down to bottom (right side) */}
       <path
-        d="M50 0 C55 40 78 80 75 160 C72 240 22 280 25 360 C28 440 80 480 72 560 C64 640 20 680 28 740 C32 760 45 780 50 800"
+        d={[
+          // Top: centered under flower, clean stem end
+          'M100 0',
+          // Curve 1: drift slightly right
+          'C105 60 130 100 125 170',
+          // Curve 2: swing left
+          'C120 240 70 290 75 360',
+          // Curve 3: swing right
+          'C80 430 140 470 135 540',
+          // Curve 4: swing left, drifting rightward overall
+          'C130 610 80 660 90 730',
+          // Curve 5: swing right toward the right edge
+          'C100 800 155 840 150 910',
+          // — below here is the original section zone (y:1000+) —
+          // Curve 6: continue winding
+          'C145 980 115 1020 120 1090',
+          // Curve 7: swing right
+          'C125 1160 175 1200 170 1280',
+          // Curve 8: swing left
+          'C165 1360 120 1400 125 1480',
+          // Curve 9: swing right
+          'C130 1560 175 1600 168 1680',
+          // Curve 10: settle toward bottom
+          'C160 1730 148 1770 150 1800',
+        ].join(' ')}
         stroke="#86efac"
         strokeWidth="2"
         strokeLinecap="round"
         fill="none"
       />
-      {/* Leaf 1 — right at first rightward peak (~y:120) */}
-      <g transform="translate(77, 120) rotate(35)">
+
+      {/* === UPPER LEAVES (hero/about zone, y:0–1000) === */}
+
+      {/* Leaf U1 — right, first rightward peak (~y:130) */}
+      <g transform="translate(128, 130) rotate(30)">
+        <path d="M0 0 C7 -12 20 -16 26 -9 C32 -2 19 7 0 0Z" fill="#86efac" />
+      </g>
+      {/* Leaf U2 — left, leftward valley (~y:290) */}
+      <g transform="translate(72, 290) rotate(-35)">
+        <path d="M0 0 C-8 -13 -22 -17 -28 -10 C-34 -3 -20 8 0 0Z" fill="#86efac" />
+      </g>
+      {/* Leaf U3 — right (~y:470) */}
+      <g transform="translate(140, 470) rotate(35)">
         <path d="M0 0 C8 -14 24 -18 30 -10 C36 -2 22 8 0 0Z" fill="#86efac" />
       </g>
-      {/* Leaf 2 — left as stem crosses left (~y:220) */}
-      <g transform="translate(40, 220) rotate(-40)">
-        <path d="M0 0 C-9 -15 -26 -19 -32 -11 C-38 -3 -24 9 0 0Z" fill="#86efac" />
-      </g>
-      {/* Leaf 3 — left at leftward valley (~y:320) */}
-      <g transform="translate(24, 320) rotate(-30)">
+      {/* Leaf U4 — left (~y:660) */}
+      <g transform="translate(80, 660) rotate(-30)">
         <path d="M0 0 C-7 -12 -20 -16 -25 -9 C-30 -2 -18 7 0 0Z" fill="#86efac" />
       </g>
-      {/* Leaf 4 — right as stem swings right (~y:420) */}
-      <g transform="translate(65, 420) rotate(25)">
-        <path d="M0 0 C7 -13 22 -17 28 -10 C34 -3 20 8 0 0Z" fill="#86efac" />
+      {/* Leaf U5 — right (~y:840) */}
+      <g transform="translate(155, 840) rotate(25)">
+        <path d="M0 0 C6 -11 18 -14 22 -8 C26 -2 16 6 0 0Z" fill="#86efac" />
       </g>
-      {/* Leaf 5 — right at second rightward peak (~y:520) */}
-      <g transform="translate(76, 520) rotate(40)">
+
+      {/* === LOWER LEAVES (form section zone, y:1000–1800) === */}
+
+      {/* Leaf L1 — left (~y:1020) */}
+      <g transform="translate(115, 1020) rotate(-40)">
+        <path d="M0 0 C-9 -15 -26 -19 -32 -11 C-38 -3 -24 9 0 0Z" fill="#86efac" />
+      </g>
+      {/* Leaf L2 — right (~y:1200) */}
+      <g transform="translate(175, 1200) rotate(35)">
+        <path d="M0 0 C8 -14 24 -18 30 -10 C36 -2 22 8 0 0Z" fill="#86efac" />
+      </g>
+      {/* Leaf L3 — left (~y:1400) */}
+      <g transform="translate(120, 1400) rotate(-30)">
+        <path d="M0 0 C-7 -12 -20 -16 -25 -9 C-30 -2 -18 7 0 0Z" fill="#86efac" />
+      </g>
+      {/* Leaf L4 — right (~y:1560) */}
+      <g transform="translate(170, 1580) rotate(40)">
         <path d="M0 0 C9 -15 26 -20 32 -12 C38 -4 24 9 0 0Z" fill="#86efac" />
       </g>
-      {/* Leaf 6 — left at deep leftward valley (~y:630) */}
-      <g transform="translate(30, 640) rotate(-35)">
-        <path d="M0 0 C-8 -14 -24 -18 -30 -10 C-36 -2 -22 8 0 0Z" fill="#86efac" />
-      </g>
-      {/* Leaf 7 — small right leaf (~y:700) */}
-      <g transform="translate(24, 720) rotate(20)">
-        <path d="M0 0 C6 -10 16 -14 20 -8 C24 -2 14 6 0 0Z" fill="#86efac" />
-      </g>
-      {/* Leaf 8 — small left near bottom (~y:770) */}
-      <g transform="translate(40, 770) rotate(-25)">
-        <path d="M0 0 C-5 -9 -14 -12 -18 -7 C-22 -2 -12 5 0 0Z" fill="#86efac" />
-      </g>
-      {/* 3-petal flower cluster at top */}
-      <g transform="translate(50, 8)">
-        <ellipse cx="-7" cy="-5" rx="5" ry="9" transform="rotate(-25)" fill="#86efac" />
-        <ellipse cx="7" cy="-5" rx="5" ry="9" transform="rotate(25)" fill="#86efac" />
-        <ellipse cx="0" cy="-9" rx="4.5" ry="8" fill="#86efac" />
-        <circle cx="0" cy="0" r="3.5" fill="#86efac" />
+      {/* Leaf L5 — left near bottom (~y:1700) */}
+      <g transform="translate(155, 1700) rotate(-25)">
+        <path d="M0 0 C-6 -10 -16 -13 -20 -7 C-24 -1 -14 5 0 0Z" fill="#86efac" />
       </g>
     </svg>
   );
