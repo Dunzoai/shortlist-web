@@ -315,8 +315,42 @@ export function HomePage() {
       </section>
 
       {/* ─── SECTION 1: NAME + GRADE (sneaky intake start) ─── */}
-      <section className="py-20 md:py-28 px-6">
-        <div className="max-w-3xl mx-auto text-center">
+      <section className="relative py-20 md:py-28 px-6 overflow-hidden">
+        {/* Decorative vine */}
+        <svg
+          className="absolute bottom-0 right-0 pointer-events-none"
+          width="280"
+          height="360"
+          viewBox="0 0 280 360"
+          fill="none"
+          style={{ opacity: 0.1 }}
+        >
+          {/* Main stem */}
+          <path d="M240 360 C240 300 220 260 200 220 C180 180 190 140 170 100 C155 70 160 40 150 10" stroke="#4ade80" strokeWidth="3" strokeLinecap="round" fill="none" />
+          {/* Branch 1 */}
+          <path d="M200 220 C180 210 160 215 145 200" stroke="#4ade80" strokeWidth="2" strokeLinecap="round" fill="none" />
+          {/* Branch 2 */}
+          <path d="M185 170 C200 155 220 158 235 145" stroke="#4ade80" strokeWidth="2" strokeLinecap="round" fill="none" />
+          {/* Branch 3 */}
+          <path d="M170 100 C150 95 135 105 120 95" stroke="#4ade80" strokeWidth="2" strokeLinecap="round" fill="none" />
+          {/* Leaf 1 — bottom left */}
+          <ellipse cx="135" cy="195" rx="18" ry="10" transform="rotate(-30 135 195)" fill="#4ade80" />
+          <ellipse cx="140" cy="205" rx="16" ry="9" transform="rotate(15 140 205)" fill="#4ade80" />
+          {/* Leaf 2 — right side */}
+          <ellipse cx="240" cy="140" rx="18" ry="10" transform="rotate(25 240 140)" fill="#4ade80" />
+          <ellipse cx="235" cy="150" rx="16" ry="9" transform="rotate(-20 235 150)" fill="#4ade80" />
+          {/* Leaf 3 — top */}
+          <ellipse cx="115" cy="90" rx="16" ry="9" transform="rotate(-40 115 90)" fill="#4ade80" />
+          <ellipse cx="120" cy="100" rx="14" ry="8" transform="rotate(10 120 100)" fill="#4ade80" />
+          {/* Leaf 4 — along stem */}
+          <ellipse cx="210" cy="255" rx="14" ry="8" transform="rotate(35 210 255)" fill="#4ade80" />
+          <ellipse cx="215" cy="265" rx="12" ry="7" transform="rotate(-15 215 265)" fill="#4ade80" />
+          {/* Small accent dots */}
+          <circle cx="148" cy="10" r="4" fill="#4ade80" />
+          <circle cx="130" cy="185" r="3" fill="#4ade80" />
+          <circle cx="245" cy="135" r="3" fill="#4ade80" />
+        </svg>
+        <div className="relative z-10 max-w-3xl mx-auto text-center">
           <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeIn}>
             <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-slate-800 mb-3" style={{ fontFamily: "'Georgia', serif" }}>
               Let&apos;s get{' '}
@@ -574,11 +608,10 @@ export function HomePage() {
             ].map((item, i) => (
               <motion.div
                 key={i}
-                initial="hidden"
-                whileInView="visible"
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                variants={fadeIn}
-                transition={{ delay: i * 0.12 }}
+                transition={{ duration: 0.5, delay: i * 0.2 }}
                 className="text-center"
               >
                 <div className="w-14 h-14 rounded-full text-white text-xl font-bold flex items-center justify-center mx-auto mb-4" style={{ backgroundColor: item.color }}>
@@ -596,7 +629,7 @@ export function HomePage() {
       <section id="childcare" className="py-24 px-6" style={{ backgroundColor: '#f0fdfa' }}>
         <div className="max-w-4xl mx-auto">
           <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeIn} className="text-center">
-            <p className="uppercase mb-4" style={{ fontSize: '14px', fontWeight: 600, letterSpacing: '0.12em', color: PETAL_COLORS.teal }}>
+            <p className="uppercase mb-5" style={{ fontSize: '16px', fontWeight: 700, letterSpacing: '0.12em', color: PETAL_COLORS.teal }}>
               ✦ Childcare &amp; Babysitting ✦
             </p>
             <h2 className="text-3xl md:text-4xl font-bold text-slate-800 mb-6" style={{ fontFamily: "'Georgia', serif" }}>
