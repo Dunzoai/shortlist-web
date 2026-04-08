@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence, Reorder } from 'framer-motion';
 import Image from 'next/image';
 import {
@@ -202,86 +202,62 @@ function PetalSplashHero() {
   );
 }
 
-// ─── VINE SECTION (scroll-drawing vine) ───
+// ─── DECORATIVE VINE SVG ───
 
-function VineSection({ children }: { children: React.ReactNode }) {
-  const ref = useRef<HTMLElement>(null);
-  const [visible, setVisible] = useState(false);
-
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    const obs = new IntersectionObserver(
-      ([entry]) => { if (entry.isIntersecting) { setVisible(true); obs.disconnect(); } },
-      { threshold: 0.15 }
-    );
-    obs.observe(el);
-    return () => obs.disconnect();
-  }, []);
-
-  // Total path length (measured) for stroke-dasharray drawing effect
-  const stemLength = 820;
-
+function DecoVine() {
   return (
-    <section ref={ref} className="relative py-20 md:py-28 px-6 overflow-hidden">
-      <svg
-        className="absolute bottom-0 right-0 pointer-events-none"
-        width="420"
-        height="620"
-        viewBox="0 0 420 620"
+    <svg
+      className="absolute top-0 right-[-20px] pointer-events-none z-0"
+      width="90"
+      height="780"
+      viewBox="0 0 90 780"
+      fill="none"
+      style={{ opacity: 0.15 }}
+    >
+      {/* Main stem — organic vertical curve */}
+      <path
+        d="M52 780 C54 720 48 680 50 630 C52 580 46 540 48 490 C50 440 44 400 46 350 C48 300 42 260 44 210 C46 160 40 120 42 70 C43 40 40 20 38 0"
+        stroke="#86efac"
+        strokeWidth="2.5"
+        strokeLinecap="round"
         fill="none"
-        style={{ opacity: 0.2 }}
-      >
-        {/* Main stem — draws upward on scroll */}
-        <path
-          d="M350 620 C350 530 330 470 310 400 C290 330 300 280 280 210 C265 155 270 110 255 60 C245 25 240 10 230 0"
-          stroke="#4ade80"
-          strokeWidth="3.5"
-          strokeLinecap="round"
-          fill="none"
-          strokeDasharray={stemLength}
-          strokeDashoffset={visible ? 0 : stemLength}
-          style={{ transition: 'stroke-dashoffset 2.5s ease-out' }}
-        />
-        {/* Branch & leaf pair 1 — low right */}
-        <g style={{ opacity: visible ? 1 : 0, transition: 'opacity 0.6s ease 0.6s' }}>
-          <path d="M320 420 C345 405 365 410 385 395" stroke="#4ade80" strokeWidth="2.5" strokeLinecap="round" fill="none" />
-          <ellipse cx="390" cy="390" rx="24" ry="13" transform="rotate(20 390 390)" fill="#4ade80" />
-          <ellipse cx="385" cy="402" rx="22" ry="12" transform="rotate(-25 385 402)" fill="#4ade80" />
-        </g>
-        {/* Branch & leaf pair 2 — mid left */}
-        <g style={{ opacity: visible ? 1 : 0, transition: 'opacity 0.6s ease 1s' }}>
-          <path d="M295 340 C270 325 245 330 225 315" stroke="#4ade80" strokeWidth="2.5" strokeLinecap="round" fill="none" />
-          <ellipse cx="218" cy="310" rx="24" ry="13" transform="rotate(-35 218 310)" fill="#4ade80" />
-          <ellipse cx="223" cy="322" rx="22" ry="12" transform="rotate(15 223 322)" fill="#4ade80" />
-        </g>
-        {/* Branch & leaf pair 3 — right */}
-        <g style={{ opacity: visible ? 1 : 0, transition: 'opacity 0.6s ease 1.3s' }}>
-          <path d="M285 260 C310 245 330 250 350 235" stroke="#4ade80" strokeWidth="2.5" strokeLinecap="round" fill="none" />
-          <ellipse cx="356" cy="230" rx="22" ry="12" transform="rotate(25 356 230)" fill="#4ade80" />
-          <ellipse cx="350" cy="242" rx="20" ry="11" transform="rotate(-20 350 242)" fill="#4ade80" />
-        </g>
-        {/* Branch & leaf pair 4 — upper left */}
-        <g style={{ opacity: visible ? 1 : 0, transition: 'opacity 0.6s ease 1.6s' }}>
-          <path d="M270 170 C245 158 225 166 205 153" stroke="#4ade80" strokeWidth="2.5" strokeLinecap="round" fill="none" />
-          <ellipse cx="198" cy="148" rx="22" ry="12" transform="rotate(-40 198 148)" fill="#4ade80" />
-          <ellipse cx="203" cy="160" rx="20" ry="11" transform="rotate(10 203 160)" fill="#4ade80" />
-        </g>
-        {/* Branch & leaf pair 5 — top right */}
-        <g style={{ opacity: visible ? 1 : 0, transition: 'opacity 0.6s ease 1.9s' }}>
-          <path d="M250 90 C275 75 295 80 315 65" stroke="#4ade80" strokeWidth="2.5" strokeLinecap="round" fill="none" />
-          <ellipse cx="320" cy="60" rx="20" ry="11" transform="rotate(30 320 60)" fill="#4ade80" />
-          <ellipse cx="315" cy="72" rx="18" ry="10" transform="rotate(-15 315 72)" fill="#4ade80" />
-        </g>
-        {/* Small buds at tip */}
-        <g style={{ opacity: visible ? 1 : 0, transition: 'opacity 0.6s ease 2.2s' }}>
-          <circle cx="230" cy="5" r="6" fill="#4ade80" />
-          <ellipse cx="224" cy="18" rx="12" ry="7" transform="rotate(-30 224 18)" fill="#4ade80" />
-          <ellipse cx="240" cy="14" rx="12" ry="7" transform="rotate(25 240 14)" fill="#4ade80" />
-        </g>
-      </svg>
-      {children}
-    </section>
+      />
+      {/* Leaf 1 — right, low */}
+      <g transform="translate(50, 670) rotate(25)">
+        <path d="M0 0 C8 -14 22 -18 28 -10 C34 -2 20 8 0 0Z" fill="#86efac" />
+      </g>
+      {/* Leaf 2 — left */}
+      <g transform="translate(48, 570) rotate(-30)">
+        <path d="M0 0 C-7 -12 -20 -16 -26 -9 C-32 -2 -18 7 0 0Z" fill="#86efac" />
+      </g>
+      {/* Leaf 3 — right, small */}
+      <g transform="translate(47, 480) rotate(20)">
+        <path d="M0 0 C6 -11 18 -14 22 -8 C26 -2 16 6 0 0Z" fill="#86efac" />
+      </g>
+      {/* Leaf 4 — left, larger */}
+      <g transform="translate(46, 380) rotate(-35)">
+        <path d="M0 0 C-9 -15 -24 -20 -30 -12 C-36 -4 -22 9 0 0Z" fill="#86efac" />
+      </g>
+      {/* Leaf 5 — right */}
+      <g transform="translate(45, 270) rotate(30)">
+        <path d="M0 0 C7 -13 20 -17 26 -10 C32 -3 19 7 0 0Z" fill="#86efac" />
+      </g>
+      {/* Leaf 6 — left, small */}
+      <g transform="translate(43, 170) rotate(-25)">
+        <path d="M0 0 C-6 -10 -16 -13 -20 -7 C-24 -1 -14 5 0 0Z" fill="#86efac" />
+      </g>
+      {/* Leaf 7 — right, near top */}
+      <g transform="translate(41, 90) rotate(22)">
+        <path d="M0 0 C5 -10 15 -13 19 -7 C23 -1 13 5 0 0Z" fill="#86efac" />
+      </g>
+      {/* Flower bud at top */}
+      <g transform="translate(38, 12)">
+        <ellipse cx="-6" cy="-4" rx="5" ry="8" transform="rotate(-20)" fill="#86efac" />
+        <ellipse cx="6" cy="-4" rx="5" ry="8" transform="rotate(20)" fill="#86efac" />
+        <ellipse cx="0" cy="-7" rx="4" ry="7" fill="#86efac" />
+        <circle cx="0" cy="0" r="3.5" fill="#86efac" />
+      </g>
+    </svg>
   );
 }
 
@@ -401,7 +377,8 @@ export function HomePage() {
       </section>
 
       {/* ─── SECTION 1: NAME + GRADE (sneaky intake start) ─── */}
-      <VineSection>
+      <section className="relative py-20 md:py-28 px-6 overflow-hidden">
+        <DecoVine />
         <div className="relative z-10 max-w-3xl mx-auto text-center">
           <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeIn}>
             <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-slate-800 mb-3" style={{ fontFamily: "'Georgia', serif" }}>
@@ -465,7 +442,7 @@ export function HomePage() {
             </AnimatePresence>
           </motion.div>
         </div>
-      </VineSection>
+      </section>
 
       {/* ─── SECTION 2: SUBJECT PICKER (auto-populates with name) ─── */}
       {childName.trim() && (
