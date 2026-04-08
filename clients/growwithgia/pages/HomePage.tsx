@@ -211,7 +211,7 @@ function DecoVine() {
   // z-[5] puts it behind the flower's z-10 petals layer.
   return (
     <svg
-      className="absolute pointer-events-none z-0"
+      className="absolute pointer-events-none z-[5]"
       width="55%"
       height="2200px"
       viewBox="0 0 550 2200"
@@ -343,7 +343,7 @@ export function HomePage() {
               viewport={{ once: true }}
               variants={fadeIn}
               transition={{ duration: 0.6 }}
-              className="relative mx-auto md:mx-0"
+              className="relative z-10 mx-auto md:mx-0"
             >
               <div className="w-72 h-80 sm:w-80 sm:h-96 rounded-3xl overflow-hidden relative">
                 <Image
