@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { motion, AnimatePresence, Reorder } from 'framer-motion';
 import Image from 'next/image';
 import {
@@ -24,6 +24,9 @@ import {
   Sun,
   BookOpen,
   Telescope,
+  ShieldCheck,
+  Baby,
+  Clock,
 } from 'lucide-react';
 import Nav from '@/clients/growwithgia/components/Nav';
 import Footer from '@/clients/growwithgia/components/Footer';
@@ -199,6 +202,89 @@ function PetalSplashHero() {
   );
 }
 
+// ─── VINE SECTION (scroll-drawing vine) ───
+
+function VineSection({ children }: { children: React.ReactNode }) {
+  const ref = useRef<HTMLElement>(null);
+  const [visible, setVisible] = useState(false);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const obs = new IntersectionObserver(
+      ([entry]) => { if (entry.isIntersecting) { setVisible(true); obs.disconnect(); } },
+      { threshold: 0.15 }
+    );
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, []);
+
+  // Total path length (measured) for stroke-dasharray drawing effect
+  const stemLength = 820;
+
+  return (
+    <section ref={ref} className="relative py-20 md:py-28 px-6 overflow-hidden">
+      <svg
+        className="absolute bottom-0 right-0 pointer-events-none"
+        width="420"
+        height="620"
+        viewBox="0 0 420 620"
+        fill="none"
+        style={{ opacity: 0.2 }}
+      >
+        {/* Main stem — draws upward on scroll */}
+        <path
+          d="M350 620 C350 530 330 470 310 400 C290 330 300 280 280 210 C265 155 270 110 255 60 C245 25 240 10 230 0"
+          stroke="#4ade80"
+          strokeWidth="3.5"
+          strokeLinecap="round"
+          fill="none"
+          strokeDasharray={stemLength}
+          strokeDashoffset={visible ? 0 : stemLength}
+          style={{ transition: 'stroke-dashoffset 2.5s ease-out' }}
+        />
+        {/* Branch & leaf pair 1 — low right */}
+        <g style={{ opacity: visible ? 1 : 0, transition: 'opacity 0.6s ease 0.6s' }}>
+          <path d="M320 420 C345 405 365 410 385 395" stroke="#4ade80" strokeWidth="2.5" strokeLinecap="round" fill="none" />
+          <ellipse cx="390" cy="390" rx="24" ry="13" transform="rotate(20 390 390)" fill="#4ade80" />
+          <ellipse cx="385" cy="402" rx="22" ry="12" transform="rotate(-25 385 402)" fill="#4ade80" />
+        </g>
+        {/* Branch & leaf pair 2 — mid left */}
+        <g style={{ opacity: visible ? 1 : 0, transition: 'opacity 0.6s ease 1s' }}>
+          <path d="M295 340 C270 325 245 330 225 315" stroke="#4ade80" strokeWidth="2.5" strokeLinecap="round" fill="none" />
+          <ellipse cx="218" cy="310" rx="24" ry="13" transform="rotate(-35 218 310)" fill="#4ade80" />
+          <ellipse cx="223" cy="322" rx="22" ry="12" transform="rotate(15 223 322)" fill="#4ade80" />
+        </g>
+        {/* Branch & leaf pair 3 — right */}
+        <g style={{ opacity: visible ? 1 : 0, transition: 'opacity 0.6s ease 1.3s' }}>
+          <path d="M285 260 C310 245 330 250 350 235" stroke="#4ade80" strokeWidth="2.5" strokeLinecap="round" fill="none" />
+          <ellipse cx="356" cy="230" rx="22" ry="12" transform="rotate(25 356 230)" fill="#4ade80" />
+          <ellipse cx="350" cy="242" rx="20" ry="11" transform="rotate(-20 350 242)" fill="#4ade80" />
+        </g>
+        {/* Branch & leaf pair 4 — upper left */}
+        <g style={{ opacity: visible ? 1 : 0, transition: 'opacity 0.6s ease 1.6s' }}>
+          <path d="M270 170 C245 158 225 166 205 153" stroke="#4ade80" strokeWidth="2.5" strokeLinecap="round" fill="none" />
+          <ellipse cx="198" cy="148" rx="22" ry="12" transform="rotate(-40 198 148)" fill="#4ade80" />
+          <ellipse cx="203" cy="160" rx="20" ry="11" transform="rotate(10 203 160)" fill="#4ade80" />
+        </g>
+        {/* Branch & leaf pair 5 — top right */}
+        <g style={{ opacity: visible ? 1 : 0, transition: 'opacity 0.6s ease 1.9s' }}>
+          <path d="M250 90 C275 75 295 80 315 65" stroke="#4ade80" strokeWidth="2.5" strokeLinecap="round" fill="none" />
+          <ellipse cx="320" cy="60" rx="20" ry="11" transform="rotate(30 320 60)" fill="#4ade80" />
+          <ellipse cx="315" cy="72" rx="18" ry="10" transform="rotate(-15 315 72)" fill="#4ade80" />
+        </g>
+        {/* Small buds at tip */}
+        <g style={{ opacity: visible ? 1 : 0, transition: 'opacity 0.6s ease 2.2s' }}>
+          <circle cx="230" cy="5" r="6" fill="#4ade80" />
+          <ellipse cx="224" cy="18" rx="12" ry="7" transform="rotate(-30 224 18)" fill="#4ade80" />
+          <ellipse cx="240" cy="14" rx="12" ry="7" transform="rotate(25 240 14)" fill="#4ade80" />
+        </g>
+      </svg>
+      {children}
+    </section>
+  );
+}
+
 // ─── INTAKE DATA ───
 
 interface SubjectCard {
@@ -315,41 +401,7 @@ export function HomePage() {
       </section>
 
       {/* ─── SECTION 1: NAME + GRADE (sneaky intake start) ─── */}
-      <section className="relative py-20 md:py-28 px-6 overflow-hidden">
-        {/* Decorative vine */}
-        <svg
-          className="absolute bottom-0 right-0 pointer-events-none"
-          width="280"
-          height="360"
-          viewBox="0 0 280 360"
-          fill="none"
-          style={{ opacity: 0.1 }}
-        >
-          {/* Main stem */}
-          <path d="M240 360 C240 300 220 260 200 220 C180 180 190 140 170 100 C155 70 160 40 150 10" stroke="#4ade80" strokeWidth="3" strokeLinecap="round" fill="none" />
-          {/* Branch 1 */}
-          <path d="M200 220 C180 210 160 215 145 200" stroke="#4ade80" strokeWidth="2" strokeLinecap="round" fill="none" />
-          {/* Branch 2 */}
-          <path d="M185 170 C200 155 220 158 235 145" stroke="#4ade80" strokeWidth="2" strokeLinecap="round" fill="none" />
-          {/* Branch 3 */}
-          <path d="M170 100 C150 95 135 105 120 95" stroke="#4ade80" strokeWidth="2" strokeLinecap="round" fill="none" />
-          {/* Leaf 1 — bottom left */}
-          <ellipse cx="135" cy="195" rx="18" ry="10" transform="rotate(-30 135 195)" fill="#4ade80" />
-          <ellipse cx="140" cy="205" rx="16" ry="9" transform="rotate(15 140 205)" fill="#4ade80" />
-          {/* Leaf 2 — right side */}
-          <ellipse cx="240" cy="140" rx="18" ry="10" transform="rotate(25 240 140)" fill="#4ade80" />
-          <ellipse cx="235" cy="150" rx="16" ry="9" transform="rotate(-20 235 150)" fill="#4ade80" />
-          {/* Leaf 3 — top */}
-          <ellipse cx="115" cy="90" rx="16" ry="9" transform="rotate(-40 115 90)" fill="#4ade80" />
-          <ellipse cx="120" cy="100" rx="14" ry="8" transform="rotate(10 120 100)" fill="#4ade80" />
-          {/* Leaf 4 — along stem */}
-          <ellipse cx="210" cy="255" rx="14" ry="8" transform="rotate(35 210 255)" fill="#4ade80" />
-          <ellipse cx="215" cy="265" rx="12" ry="7" transform="rotate(-15 215 265)" fill="#4ade80" />
-          {/* Small accent dots */}
-          <circle cx="148" cy="10" r="4" fill="#4ade80" />
-          <circle cx="130" cy="185" r="3" fill="#4ade80" />
-          <circle cx="245" cy="135" r="3" fill="#4ade80" />
-        </svg>
+      <VineSection>
         <div className="relative z-10 max-w-3xl mx-auto text-center">
           <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeIn}>
             <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-slate-800 mb-3" style={{ fontFamily: "'Georgia', serif" }}>
@@ -413,7 +465,7 @@ export function HomePage() {
             </AnimatePresence>
           </motion.div>
         </div>
-      </section>
+      </VineSection>
 
       {/* ─── SECTION 2: SUBJECT PICKER (auto-populates with name) ─── */}
       {childName.trim() && (
@@ -626,19 +678,49 @@ export function HomePage() {
       </section>
 
       {/* ─── BABYSITTING / CHILDCARE ─── */}
-      <section id="childcare" className="py-24 px-6" style={{ backgroundColor: '#f0fdfa' }}>
+      <section id="childcare" className="relative py-28 md:py-36 px-6 overflow-hidden" style={{ backgroundColor: '#f0fdfa' }}>
         <div className="max-w-4xl mx-auto">
           <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeIn} className="text-center">
-            <p className="uppercase mb-5" style={{ fontSize: '16px', fontWeight: 700, letterSpacing: '0.12em', color: PETAL_COLORS.teal }}>
+            <p className="uppercase mb-6" style={{ fontSize: '18px', fontWeight: 800, letterSpacing: '0.14em', color: PETAL_COLORS.teal }}>
               ✦ Childcare &amp; Babysitting ✦
             </p>
-            <h2 className="text-3xl md:text-4xl font-bold text-slate-800 mb-6" style={{ fontFamily: "'Georgia', serif" }}>
+            <h2 className="text-4xl sm:text-5xl md:text-6xl font-bold text-slate-800 mb-8" style={{ fontFamily: "'Georgia', serif" }}>
               Need someone you can{' '}
               <span style={{ color: PETAL_COLORS.teal }}>actually trust?</span>
             </h2>
-            <p className="text-base md:text-lg text-slate-500 leading-relaxed max-w-3xl mx-auto mb-10">
+            <p className="text-lg md:text-xl text-slate-500 leading-relaxed max-w-3xl mx-auto mb-12">
               Gia has worked with kids from newborn through teens — including 3 years in a daycare setting with infants and pre-K. She&apos;s CPR certified, flexible to your family&apos;s routine, and can handle light household duties if needed. She&apos;s a K&ndash;12 certified educator who genuinely loves kids. Not just a warm body. The real deal.
             </p>
+
+            {/* Feature cards */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-2xl mx-auto mb-12">
+              {[
+                { icon: ShieldCheck, title: 'CPR Certified', desc: 'Trained and ready for any situation', color: PETAL_COLORS.pink },
+                { icon: Baby, title: 'Infant to Teen', desc: 'Newborns through high schoolers', color: PETAL_COLORS.teal },
+                { icon: Clock, title: '3 Yrs Daycare', desc: 'Infants and pre-K classroom experience', color: PETAL_COLORS.yellow },
+                { icon: GraduationCap, title: 'K–12 Certified', desc: 'Licensed educator, not just a sitter', color: PETAL_COLORS.lavender },
+              ].map((card, i) => (
+                <motion.div
+                  key={i}
+                  initial={{ opacity: 0, y: 15 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.4, delay: i * 0.1 }}
+                  className="flex items-start gap-4 bg-white rounded-2xl p-5 shadow-sm border text-left"
+                  style={{ borderColor: `${card.color}30` }}
+                >
+                  <div className="w-11 h-11 rounded-xl flex items-center justify-center shrink-0" style={{ backgroundColor: `${card.color}20` }}>
+                    <card.icon className="w-5 h-5" style={{ color: card.color }} />
+                  </div>
+                  <div>
+                    <p className="font-semibold text-slate-800 text-sm">{card.title}</p>
+                    <p className="text-slate-400 text-xs mt-0.5">{card.desc}</p>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+
+            {/* Credential pills */}
             <div className="flex flex-wrap gap-3 justify-center">
               {[
                 { label: 'CPR Certified', color: PETAL_COLORS.pink, icon: Heart },
