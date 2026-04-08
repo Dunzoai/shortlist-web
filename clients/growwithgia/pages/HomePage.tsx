@@ -594,7 +594,7 @@ export function HomePage() {
         <div className="max-w-4xl mx-auto">
           <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeIn} className="text-center mb-10">
             <h2 className="text-3xl md:text-4xl font-bold text-slate-800 mb-6" style={{ fontFamily: "'Georgia', serif" }}>
-              More than a tutor.{' '}
+              More than a tutor.<br />
               <span style={{ color: PETAL_COLORS.lavender }}>A method.</span>
             </h2>
             <p className="text-base md:text-lg text-slate-500 leading-relaxed max-w-3xl mx-auto">
@@ -672,6 +672,21 @@ export function HomePage() {
       <section id="childcare" className="relative py-28 md:py-36 px-6 overflow-hidden" style={{ backgroundColor: '#f0fdfa' }}>
         <div className="max-w-4xl mx-auto">
           <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeIn} className="text-center">
+            {/* Floating heart — rises upward as section scrolls in */}
+            <motion.div
+              initial={{ opacity: 0, y: 60 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.8, ease: 'easeOut' }}
+              className="flex justify-center mb-4"
+            >
+              <motion.div
+                animate={{ y: [0, -6, 0] }}
+                transition={{ duration: 2.5, repeat: Infinity, ease: 'easeInOut' }}
+              >
+                <Heart className="w-8 h-8" style={{ color: PETAL_COLORS.pink, fill: `${PETAL_COLORS.pink}40` }} />
+              </motion.div>
+            </motion.div>
             <p className="uppercase mb-6" style={{ fontSize: '18px', fontWeight: 800, letterSpacing: '0.14em', color: PETAL_COLORS.teal }}>
               ✦ Childcare &amp; Babysitting ✦
             </p>
@@ -711,29 +726,6 @@ export function HomePage() {
               ))}
             </div>
 
-            {/* Credential pills */}
-            <div className="flex flex-wrap gap-3 justify-center">
-              {[
-                { label: 'CPR Certified', color: PETAL_COLORS.pink, icon: Heart },
-                { label: 'Infant to Teen', color: PETAL_COLORS.teal, icon: Users },
-                { label: '3 Yrs Daycare Experience', color: PETAL_COLORS.yellow, icon: Star },
-                { label: 'K–12 Certified', color: PETAL_COLORS.lavender, icon: GraduationCap },
-              ].map((badge, i) => (
-                <motion.span
-                  key={i}
-                  initial="hidden"
-                  whileInView="visible"
-                  viewport={{ once: true }}
-                  variants={fadeIn}
-                  transition={{ delay: i * 0.08 }}
-                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-semibold text-white shadow-sm"
-                  style={{ backgroundColor: badge.color }}
-                >
-                  <badge.icon className="w-4 h-4" />
-                  {badge.label}
-                </motion.span>
-              ))}
-            </div>
           </motion.div>
         </div>
       </section>
