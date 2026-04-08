@@ -1,0 +1,122 @@
+"use client";
+
+import { useState } from "react";
+import Link from "next/link";
+import { motion, AnimatePresence } from "framer-motion";
+import { business } from "@/clients/palmetto_taps/content/business";
+
+const navLinks = [
+  { href: "/", label: "Home" },
+  { href: "/events", label: "Events" },
+  // { href: "/how-it-works", label: "How It Works" }, // Temporarily hidden
+  { href: "/food", label: "Food" },
+  { href: "/contact", label: "Contact" },
+];
+
+export default function Header() {
+  const [isOpen, setIsOpen] = useState(false);
+
+  return (
+    <header className="fixed top-0 left-0 right-0 z-50 bg-neutral-900 backdrop-blur-sm border-b border-white/10">
+      <div className="max-w-6xl mx-auto px-6 py-2 flex items-center justify-between">
+        <Link href="/" className="block">
+          <img
+            src="/clients/palmetto_taps/palmetto-taps-logo.webp"
+            alt="Palmetto Taps"
+            className="h-12 w-auto"
+          />
+        </Link>
+
+        {/* Desktop Nav */}
+        <nav className="hidden md:flex gap-6 items-center">
+          {navLinks.map((link) => (
+            <Link
+              key={link.href}
+              href={link.href}
+              className="text-white/70 hover:text-teal-400 transition-colors duration-200 text-sm uppercase tracking-wide font-heading"
+            >
+              {link.label}
+            </Link>
+          ))}
+          <a
+            href="https://palmettotaps.shortlistpass.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="bg-[#8B6A4F] hover:bg-[#6F5536] text-white px-5 py-2 rounded-md text-sm uppercase tracking-wide font-semibold transition-all duration-200 hover:scale-105"
+          >
+            Ask Us
+          </a>
+        </nav>
+
+        {/* Mobile Menu Button */}
+        <button
+          onClick={() => setIsOpen(!isOpen)}
+          className="md:hidden text-white p-2"
+          aria-label="Toggle menu"
+        >
+          <div className="w-6 h-5 relative flex flex-col justify-between">
+            <motion.span
+              animate={isOpen ? { rotate: 45, y: 8 } : { rotate: 0, y: 0 }}
+              className="w-full h-0.5 bg-white block"
+            />
+            <motion.span
+              animate={isOpen ? { opacity: 0 } : { opacity: 1 }}
+              className="w-full h-0.5 bg-white block"
+            />
+            <motion.span
+              animate={isOpen ? { rotate: -45, y: -8 } : { rotate: 0, y: 0 }}
+              className="w-full h-0.5 bg-white block"
+            />
+          </div>
+        </button>
+      </div>
+
+      {/* Mobile Menu */}
+      <AnimatePresence>
+        {isOpen && (
+          <motion.nav
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.3 }}
+            className="md:hidden bg-black border-t border-white/10 overflow-hidden"
+          >
+            <div className="px-6 py-4 flex flex-col gap-4">
+              {navLinks.map((link, index) => (
+                <motion.div
+                  key={link.href}
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: index * 0.1 }}
+                >
+                  <Link
+                    href={link.href}
+                    onClick={() => setIsOpen(false)}
+                    className="text-white/70 hover:text-teal-400 transition-colors duration-200 text-lg uppercase tracking-wide block py-2 font-heading"
+                  >
+                    {link.label}
+                  </Link>
+                </motion.div>
+              ))}
+              <motion.div
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: navLinks.length * 0.1 }}
+              >
+                <a
+                  href="https://palmettotaps.shortlistpass.com"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={() => setIsOpen(false)}
+                  className="bg-[#8B6A4F] hover:bg-[#6F5536] text-white px-6 py-3 rounded-md text-lg uppercase tracking-wide font-semibold transition-colors duration-200 block text-center"
+                >
+                  Ask Us a Question
+                </a>
+              </motion.div>
+            </div>
+          </motion.nav>
+        )}
+      </AnimatePresence>
+    </header>
+  );
+}

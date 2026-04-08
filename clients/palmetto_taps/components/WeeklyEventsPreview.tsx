@@ -1,0 +1,369 @@
+"use client";
+
+import { useEffect, useState, useRef } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+
+interface Event {
+  id: string;
+  title: string;
+  description: string | null;
+  event_date: string;
+  start_time: string | null;
+  end_time: string | null;
+}
+
+interface DayData {
+  day: string;
+  fullDay: string;
+  date: string;
+  title: string;
+  details: string;
+  isPlaceholder: boolean;
+}
+
+// Placeholder messages for days without events
+const PLACEHOLDER_MESSAGES = [
+  { title: "How does a flight sound?", details: "Stop in for a bite and a pint" },
+  { title: "40 taps waiting", details: "Pour your own perfect beer" },
+  { title: "Happy Hour", details: "Daily 4pm – 7pm" },
+  { title: "Open today", details: "Self-serve beer & good vibes" },
+  { title: "Something special", details: "Check out today's taps" },
+  { title: "Thirsty?", details: "We've got 40 beers on tap" },
+  { title: "Pour your own", details: "Try as many as you want" },
+  { title: "Taproom vibes", details: "Games, patio, cold beer" },
+  { title: "Cold beer calling", details: "Self-serve taps ready for you" },
+  { title: "Craft your perfect pour", details: "40+ options on tap" },
+  { title: "Unwind with us", details: "Great drinks, better vibes" },
+  { title: "Drop by today", details: "Your favorite seat is waiting" },
+  { title: "Fresh taps flowing", details: "Discover something new" },
+  { title: "Good times on tap", details: "Pull up and pour your own" },
+];
+
+// Get consistent placeholder for a date
+function getPlaceholderForDate(dateStr: string) {
+  const hash = dateStr.split("").reduce((acc, char) => acc + char.charCodeAt(0), 0);
+  const index = hash % PLACEHOLDER_MESSAGES.length;
+  return PLACEHOLDER_MESSAGES[index];
+}
+
+// Get day abbreviation (Sat, Sun, Mon, etc.)
+function getDayAbbrev(date: Date): string {
+  return date.toLocaleDateString("en-US", { weekday: "short" }).toUpperCase();
+}
+
+// Get full day name
+function getFullDay(date: Date): string {
+  return date.toLocaleDateString("en-US", { weekday: "long" });
+}
+
+// Get date string YYYY-MM-DD in local timezone
+function getDateString(date: Date): string {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
+
+// Get current week (7 days starting from today)
+function getCurrentWeek(): Date[] {
+  const today = new Date();
+  const week = [];
+  for (let i = 0; i < 7; i++) {
+    const date = new Date(today);
+    date.setDate(today.getDate() + i);
+    week.push(date);
+  }
+  return week;
+}
+
+// Build the week schedule, merging real events with placeholders
+function buildWeekSchedule(events: Event[]): DayData[] {
+  const week = getCurrentWeek();
+
+  // Create a map of events by date
+  const eventsByDate: Record<string, Event> = {};
+  events.forEach((event) => {
+    eventsByDate[event.event_date] = event;
+  });
+
+  return week.map((date) => {
+    const dateStr = getDateString(date);
+    const event = eventsByDate[dateStr];
+    const dayName = getFullDay(date);
+
+    // Check if it's Wednesday - always show closed message
+    if (dayName === "Wednesday") {
+      return {
+        day: getDayAbbrev(date),
+        fullDay: dayName,
+        date: dateStr,
+        title: "Closed Wednesdays",
+        details: "Letting the beers get ice cold for the weekend",
+        isPlaceholder: true,
+      };
+    }
+
+    if (event) {
+      // Real event
+      return {
+        day: getDayAbbrev(date),
+        fullDay: dayName,
+        date: dateStr,
+        title: event.title,
+        details: event.description || "See you there!",
+        isPlaceholder: false,
+      };
+    } else {
+      // Placeholder
+      const placeholder = getPlaceholderForDate(dateStr);
+      return {
+        day: getDayAbbrev(date),
+        fullDay: dayName,
+        date: dateStr,
+        title: placeholder.title,
+        details: placeholder.details,
+        isPlaceholder: true,
+      };
+    }
+  });
+}
+
+export function WeeklyEventsPreview() {
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const [activeIndex, setActiveIndex] = useState(0);
+  const [selectedEvent, setSelectedEvent] = useState<DayData | null>(null);
+
+  const cardRefs = useRef<(HTMLDivElement | null)[]>([]);
+
+  const [scheduleData, setScheduleData] = useState<DayData[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  // Check if text would be truncated (rough estimate)
+  const isTextLong = (text: string) => text.length > 80;
+
+  // Fetch events from SmartPage API
+  useEffect(() => {
+    async function fetchEvents() {
+      try {
+        const response = await fetch("https://app.shortlistpass.com/api/smartpage/palmettotaps/events");
+        const data = await response.json();
+        const events: Event[] = data.events || [];
+
+        const weekSchedule = buildWeekSchedule(events);
+        setScheduleData(weekSchedule);
+      } catch (error) {
+        console.error("Error fetching events:", error);
+        // Even on error, show the week with all placeholders
+        const weekSchedule = buildWeekSchedule([]);
+        setScheduleData(weekSchedule);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+
+    fetchEvents();
+  }, []);
+
+  // Scroll handling for tap/glass animation
+  useEffect(() => {
+    const container = scrollContainerRef.current;
+    if (!container || scheduleData.length === 0) return;
+
+    const handleScroll = () => {
+      const containerRect = container.getBoundingClientRect();
+      const containerCenter = containerRect.left + containerRect.width / 2;
+
+      let closestIndex = 0;
+      let closestDistance = Infinity;
+
+      cardRefs.current.forEach((card, index) => {
+        if (card) {
+          const cardRect = card.getBoundingClientRect();
+          const cardCenter = cardRect.left + cardRect.width / 2;
+          const distance = Math.abs(cardCenter - containerCenter);
+
+          if (distance < closestDistance) {
+            closestDistance = distance;
+            closestIndex = index;
+          }
+        }
+      });
+
+      setActiveIndex(closestIndex);
+
+    };
+
+    container.addEventListener("scroll", handleScroll);
+    handleScroll(); // Initial position
+
+    return () => container.removeEventListener("scroll", handleScroll);
+  }, [scheduleData]);
+
+  const scrollToCard = (index: number) => {
+    const card = cardRefs.current[index];
+    if (card && scrollContainerRef.current) {
+      const container = scrollContainerRef.current;
+      const cardRect = card.getBoundingClientRect();
+      const containerRect = container.getBoundingClientRect();
+      const scrollLeft =
+        container.scrollLeft +
+        cardRect.left -
+        containerRect.left -
+        containerRect.width / 2 +
+        cardRect.width / 2;
+
+      container.scrollTo({
+        left: scrollLeft,
+        behavior: "smooth",
+      });
+    }
+  };
+
+  const handleCardClick = (index: number, day: DayData) => {
+    if (index === activeIndex && !day.isPlaceholder) {
+      // If already centered and it's a real event, open modal
+      setSelectedEvent(day);
+    } else {
+      // Otherwise just scroll to center it
+      scrollToCard(index);
+    }
+  };
+
+  if (isLoading) {
+    return (
+      <div className="text-center py-8">
+        <div className="animate-pulse text-[#1F1F1E]">Loading weekly schedule...</div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="relative">
+      {/* Horizontal scrolling calendar */}
+      <div
+        ref={scrollContainerRef}
+        className="flex gap-4 overflow-x-auto pb-4 snap-x snap-mandatory"
+        style={{
+          scrollbarWidth: "none",
+          msOverflowStyle: "none",
+        }}
+      >
+        {/* Left padding for centering first card */}
+        <div className="shrink-0 w-[calc(50%-160px)]" />
+
+        {scheduleData.map((day, index) => (
+          <div
+            key={day.date}
+            ref={(el) => {
+              cardRefs.current[index] = el;
+            }}
+            onClick={() => handleCardClick(index, day)}
+            className="shrink-0 w-[320px] snap-center cursor-pointer"
+          >
+            <motion.div
+              className="rounded-xl p-6 h-[180px] flex flex-col justify-between transition-colors duration-300 overflow-hidden relative"
+              animate={{
+                scale: index === activeIndex ? 1 : 0.92,
+                opacity: index === activeIndex ? 1 : 0.5,
+              }}
+              transition={{ duration: 0.3 }}
+              style={{
+                background:
+                  index === activeIndex
+                    ? day.isPlaceholder
+                      ? "rgba(255, 255, 255, 0.7)"
+                      : "rgba(255, 255, 255, 0.95)"
+                    : "rgba(255, 255, 255, 0.4)",
+                border:
+                  index === activeIndex
+                    ? day.isPlaceholder
+                      ? "1px dashed rgba(139, 106, 79, 0.4)"
+                      : "2px solid rgba(139, 106, 79, 0.6)"
+                    : "1px solid rgba(139, 106, 79, 0.2)",
+              }}
+            >
+              <div>
+                <div className="text-xs uppercase tracking-wider text-neutral-500 mb-1">
+                  {day.day}
+                </div>
+                <div className={`text-xl font-bold mb-2 line-clamp-2 ${day.isPlaceholder ? "italic" : ""}`}>
+                  {day.title}
+                </div>
+              </div>
+              <div className={`text-sm line-clamp-3 ${day.isPlaceholder ? "italic text-neutral-500" : "text-neutral-700"}`}>
+                {day.details}
+              </div>
+              {/* Tap for more indicator - only show for real events with long text when active */}
+              {index === activeIndex && !day.isPlaceholder && isTextLong(day.details) && (
+                <div className="absolute bottom-2 right-3 text-xs text-[#8B6A4F] opacity-60">
+                  tap to expand
+                </div>
+              )}
+            </motion.div>
+          </div>
+        ))}
+
+        {/* Right padding for centering last card */}
+        <div className="shrink-0 w-[calc(50%-160px)]" />
+      </div>
+
+      {/* CSS to hide scrollbar */}
+      <style jsx>{`
+        div::-webkit-scrollbar {
+          display: none;
+        }
+      `}</style>
+
+      {/* Event Detail Modal */}
+      <AnimatePresence>
+        {selectedEvent && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            className="fixed inset-0 z-50 flex items-center justify-center p-6"
+            onClick={() => setSelectedEvent(null)}
+          >
+            {/* Blurred backdrop */}
+            <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" />
+
+            {/* Modal card */}
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              onClick={(e) => e.stopPropagation()}
+              className="relative w-full max-w-md rounded-xl p-8 bg-white shadow-2xl"
+              style={{
+                border: "2px solid rgba(139, 106, 79, 0.6)",
+              }}
+            >
+              {/* Close button */}
+              <button
+                onClick={() => setSelectedEvent(null)}
+                className="absolute top-4 right-4 text-neutral-400 hover:text-neutral-600 transition-colors"
+              >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+
+              {/* Event content */}
+              <div className="text-xs uppercase tracking-wider text-neutral-500 mb-2">
+                {selectedEvent.fullDay}
+              </div>
+              <h3 className="text-2xl font-bold mb-4 text-[#1F1F1E]">
+                {selectedEvent.title}
+              </h3>
+              <p className="text-neutral-700 leading-relaxed">
+                {selectedEvent.details}
+              </p>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}
