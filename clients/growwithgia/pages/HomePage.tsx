@@ -18,6 +18,12 @@ import {
   Send,
   GripVertical,
   X,
+  Heart,
+  Users,
+  GraduationCap,
+  Sun,
+  BookOpen,
+  Telescope,
 } from 'lucide-react';
 import Nav from '@/clients/growwithgia/components/Nav';
 import Footer from '@/clients/growwithgia/components/Footer';
@@ -344,12 +350,14 @@ export function HomePage() {
                   <div className="flex gap-3 overflow-x-auto pb-2 justify-center snap-x snap-mandatory">
                     {GRADES.map((grade, i) => {
                       const gradeColors = ['#F2A1B3', '#8DD3D6', '#C6B4E2', '#F0D264', '#7BC8A4', '#F4976C', '#89B4E8'];
+                      const gradeIcons = [Sparkles, Star, Sun, Pen, BookOpen, Telescope, FlaskConical];
+                      const GradeIcon = gradeIcons[i];
                       const isSelected = selectedGrade === grade;
                       return (
                         <motion.button
                           key={grade}
                           onClick={() => setSelectedGrade(grade)}
-                          className="snap-center shrink-0 w-20 h-20 rounded-2xl flex flex-col items-center justify-center font-bold text-lg transition-all shadow-md"
+                          className="snap-center shrink-0 w-24 h-28 rounded-2xl flex flex-col items-center justify-center font-bold text-xl transition-all shadow-md"
                           style={{
                             backgroundColor: isSelected ? gradeColors[i] : 'white',
                             color: isSelected ? 'white' : gradeColors[i],
@@ -358,8 +366,9 @@ export function HomePage() {
                           whileHover={{ scale: 1.05 }}
                           whileTap={{ scale: 0.95 }}
                         >
+                          <GradeIcon className="w-8 h-8 mb-1" style={{ opacity: 0.35 }} />
                           {grade}
-                          <span className="text-xs font-normal mt-0.5" style={{ opacity: 0.8 }}>{grade === 'K' ? 'Kindergarten' : 'grade'}</span>
+                          <span className="font-normal mt-0.5" style={{ opacity: 0.8, fontSize: grade === 'K' ? '10px' : '12px' }}>{grade === 'K' ? 'Kindergarten' : 'grade'}</span>
                         </motion.button>
                       );
                     })}
@@ -574,8 +583,8 @@ export function HomePage() {
         </div>
       </section>
 
-      {/* ─── BABYSITTING ─── */}
-      <section className="py-24 px-6" style={{ backgroundColor: '#f0fdfa' }}>
+      {/* ─── BABYSITTING / CHILDCARE ─── */}
+      <section id="childcare" className="py-24 px-6" style={{ backgroundColor: '#f0fdfa' }}>
         <div className="max-w-4xl mx-auto">
           <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeIn} className="text-center">
             <h2 className="text-3xl md:text-4xl font-bold text-slate-800 mb-6" style={{ fontFamily: "'Georgia', serif" }}>
@@ -587,10 +596,10 @@ export function HomePage() {
             </p>
             <div className="flex flex-wrap gap-3 justify-center">
               {[
-                { label: 'CPR Certified', color: PETAL_COLORS.pink },
-                { label: 'Infant to Teen', color: PETAL_COLORS.teal },
-                { label: '3 Yrs Daycare Experience', color: PETAL_COLORS.yellow },
-                { label: 'K–12 Certified', color: PETAL_COLORS.lavender },
+                { label: 'CPR Certified', color: PETAL_COLORS.pink, icon: Heart },
+                { label: 'Infant to Teen', color: PETAL_COLORS.teal, icon: Users },
+                { label: '3 Yrs Daycare Experience', color: PETAL_COLORS.yellow, icon: Star },
+                { label: 'K–12 Certified', color: PETAL_COLORS.lavender, icon: GraduationCap },
               ].map((badge, i) => (
                 <motion.span
                   key={i}
@@ -599,9 +608,10 @@ export function HomePage() {
                   viewport={{ once: true }}
                   variants={fadeIn}
                   transition={{ delay: i * 0.08 }}
-                  className="px-5 py-2 rounded-full text-sm font-medium"
-                  style={{ backgroundColor: `${badge.color}20`, color: badge.color }}
+                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-semibold text-white shadow-sm"
+                  style={{ backgroundColor: badge.color }}
                 >
+                  <badge.icon className="w-4 h-4" />
                   {badge.label}
                 </motion.span>
               ))}
