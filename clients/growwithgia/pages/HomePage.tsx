@@ -11,17 +11,12 @@ import {
   Star,
   ArrowRight,
   CheckCircle2,
-  Clock,
-  Users,
-  Target,
   Sparkles,
-  GraduationCap,
   Quote,
   ChevronDown,
   Languages,
   Send,
   GripVertical,
-  Plus,
   X,
 } from 'lucide-react';
 import Nav from '@/clients/growwithgia/components/Nav';
@@ -228,7 +223,8 @@ export function HomePage() {
   const [submitted, setSubmitted] = useState(false);
 
   const available = ALL_SUBJECTS.filter(s => !selected.find(sel => sel.id === s.id));
-  const displayName = childName.trim();
+  const trimmed = childName.trim();
+  const displayName = trimmed.charAt(0).toUpperCase() + trimmed.slice(1);
   const displayGrade = selectedGrade === 'K' ? 'Kindergarten' : selectedGrade;
 
   const addSubject = useCallback((subject: SubjectCard) => {
@@ -363,7 +359,7 @@ export function HomePage() {
                           whileTap={{ scale: 0.95 }}
                         >
                           {grade}
-                          <span className="text-xs font-normal mt-0.5" style={{ opacity: 0.8 }}>grade</span>
+                          <span className="text-xs font-normal mt-0.5" style={{ opacity: 0.8 }}>{grade === 'K' ? 'Kindergarten' : 'grade'}</span>
                         </motion.button>
                       );
                     })}
@@ -398,7 +394,7 @@ export function HomePage() {
                 <p className="text-slate-400 text-sm mb-6">Tap to add</p>
 
                 {/* Colorful subject cards — tap to add */}
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-8">
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-8">
                   {available.map((subject) => (
                     <motion.button
                       key={subject.id}
@@ -506,31 +502,18 @@ export function HomePage() {
         </section>
       )}
 
-      {/* ─── WHY PARENTS CHOOSE + STATS ─── */}
-      <section className="py-24 px-6">
-        <div className="max-w-5xl mx-auto">
-          <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeIn} className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold text-slate-800 mb-3" style={{ fontFamily: "'Georgia', serif" }}>
-              Why parents choose{' '}
-              <span style={{ color: PETAL_COLORS.lavender }}>Grow With Gia</span>
+      {/* ─── TUTORING ─── */}
+      <section className="py-24 px-6" style={{ backgroundColor: 'white' }}>
+        <div className="max-w-4xl mx-auto">
+          <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeIn} className="text-center mb-10">
+            <h2 className="text-3xl md:text-4xl font-bold text-slate-800 mb-6" style={{ fontFamily: "'Georgia', serif" }}>
+              More than a tutor.{' '}
+              <span style={{ color: PETAL_COLORS.lavender }}>A method.</span>
             </h2>
+            <p className="text-base md:text-lg text-slate-500 leading-relaxed max-w-3xl mx-auto">
+              Gia works with students in grades K&ndash;6 across ELA, Writing, Math, Science, and Social Studies. Every new student starts with a 40&ndash;45 minute assessment — so sessions are never guesswork. For reading, she uses the Orton-Gillingham method to pinpoint exactly where to begin. She brings her own materials, uses IXL resources, and builds every plan around your child. Sessions run 50&ndash;60 minutes. Pricing depends on subjects and how often you meet — reach out and she&apos;ll build a plan that works.
+            </p>
           </motion.div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 mb-12">
-            {[
-              { icon: Target, text: 'Customized lesson plans for each student', color: '#F2A1B3' },
-              { icon: Clock, text: 'Flexible scheduling — in-person or virtual', color: '#8DD3D6' },
-              { icon: Users, text: 'Regular progress updates for parents', color: '#F0D264' },
-              { icon: CheckCircle2, text: 'Proven results — most students improve within weeks', color: '#C6B4E2' },
-            ].map((item, i) => (
-              <motion.div key={i} initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeIn} transition={{ delay: i * 0.08 }} className="flex items-start gap-4 bg-white rounded-2xl p-5 shadow-sm border border-slate-100">
-                <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0" style={{ backgroundColor: `${item.color}20` }}>
-                  <item.icon className="w-5 h-5" style={{ color: item.color }} />
-                </div>
-                <p className="text-slate-700 font-medium">{item.text}</p>
-              </motion.div>
-            ))}
-          </div>
 
           {/* Stats bar */}
           <div className="py-10 px-6 rounded-3xl" style={{ backgroundColor: PETAL_COLORS.teal }}>
@@ -552,7 +535,7 @@ export function HomePage() {
       </section>
 
       {/* ─── HOW IT WORKS ─── */}
-      <section className="py-24 px-6">
+      <section className="py-24 px-6" style={{ backgroundColor: '#f5f3ff' }}>
         <div className="max-w-4xl mx-auto">
           <motion.div
             initial="hidden"
@@ -588,6 +571,65 @@ export function HomePage() {
               </motion.div>
             ))}
           </div>
+        </div>
+      </section>
+
+      {/* ─── BABYSITTING ─── */}
+      <section className="py-24 px-6" style={{ backgroundColor: '#f0fdfa' }}>
+        <div className="max-w-4xl mx-auto">
+          <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeIn} className="text-center">
+            <h2 className="text-3xl md:text-4xl font-bold text-slate-800 mb-6" style={{ fontFamily: "'Georgia', serif" }}>
+              Need someone you can{' '}
+              <span style={{ color: PETAL_COLORS.teal }}>actually trust?</span>
+            </h2>
+            <p className="text-base md:text-lg text-slate-500 leading-relaxed max-w-3xl mx-auto mb-10">
+              Gia has worked with kids from newborn through teens — including 3 years in a daycare setting with infants and pre-K. She&apos;s CPR certified, flexible to your family&apos;s routine, and can handle light household duties if needed. She&apos;s a K&ndash;12 certified educator who genuinely loves kids. Not just a warm body. The real deal.
+            </p>
+            <div className="flex flex-wrap gap-3 justify-center">
+              {[
+                { label: 'CPR Certified', color: PETAL_COLORS.pink },
+                { label: 'Infant to Teen', color: PETAL_COLORS.teal },
+                { label: '3 Yrs Daycare Experience', color: PETAL_COLORS.yellow },
+                { label: 'K–12 Certified', color: PETAL_COLORS.lavender },
+              ].map((badge, i) => (
+                <motion.span
+                  key={i}
+                  initial="hidden"
+                  whileInView="visible"
+                  viewport={{ once: true }}
+                  variants={fadeIn}
+                  transition={{ delay: i * 0.08 }}
+                  className="px-5 py-2 rounded-full text-sm font-medium"
+                  style={{ backgroundColor: `${badge.color}20`, color: badge.color }}
+                >
+                  {badge.label}
+                </motion.span>
+              ))}
+            </div>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* ─── PRICING ─── */}
+      <section className="py-24 px-6" style={{ backgroundColor: '#fffbeb' }}>
+        <div className="max-w-4xl mx-auto">
+          <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeIn} className="text-center">
+            <h2 className="text-3xl md:text-4xl font-bold text-slate-800 mb-6" style={{ fontFamily: "'Georgia', serif" }}>
+              What does it{' '}
+              <span style={{ color: PETAL_COLORS.pink }}>cost?</span>
+            </h2>
+            <p className="text-base md:text-lg text-slate-500 leading-relaxed max-w-2xl mx-auto mb-10">
+              Pricing depends on subjects and how many days a week. No packages, no guessing — reach out and Gia will put together a plan that fits your family.
+            </p>
+            <a
+              href="#contact"
+              className="inline-flex items-center gap-2 text-white font-semibold px-8 py-4 rounded-2xl text-lg hover:opacity-90 transition-all hover:scale-105 active:scale-95 shadow-lg"
+              style={{ backgroundColor: PETAL_COLORS.lavender }}
+            >
+              Get a Custom Plan
+              <ArrowRight className="w-5 h-5" />
+            </a>
+          </motion.div>
         </div>
       </section>
 
