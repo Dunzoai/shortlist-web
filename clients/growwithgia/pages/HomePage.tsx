@@ -4,7 +4,6 @@ import { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence, Reorder } from 'framer-motion';
 import Image from 'next/image';
 import {
-  BookOpen,
   Calculator,
   FlaskConical,
   Pen,
@@ -19,8 +18,6 @@ import {
   GraduationCap,
   Quote,
   ChevronDown,
-  Brain,
-  Microscope,
   Languages,
   Send,
   GripVertical,
@@ -212,16 +209,14 @@ interface SubjectCard {
 
 const ALL_SUBJECTS: SubjectCard[] = [
   { id: 'math', icon: Calculator, label: 'Math', color: '#F2A1B3' },
-  { id: 'reading', icon: BookOpen, label: 'Reading', color: '#8DD3D6' },
+  { id: 'ela', icon: Languages, label: 'ELA', color: '#E8A0BF' },
   { id: 'writing', icon: Pen, label: 'Writing', color: '#C6B4E2' },
   { id: 'science', icon: FlaskConical, label: 'Science', color: '#F0D264' },
   { id: 'social-studies', icon: Globe2, label: 'Social Studies', color: '#7BC8A4' },
   { id: 'test-prep', icon: Star, label: 'Test Prep', color: '#F4976C' },
-  { id: 'study-skills', icon: Brain, label: 'Study Skills', color: '#89B4E8' },
-  { id: 'language', icon: Languages, label: 'Language Arts', color: '#E8A0BF' },
 ];
 
-const GRADES = ['3rd', '4th', '5th', '6th', '7th', '8th'];
+const GRADES = ['K', '1st', '2nd', '3rd', '4th', '5th', '6th'];
 
 // ─── MAIN PAGE ───
 
@@ -234,6 +229,7 @@ export function HomePage() {
 
   const available = ALL_SUBJECTS.filter(s => !selected.find(sel => sel.id === s.id));
   const displayName = childName.trim();
+  const displayGrade = selectedGrade === 'K' ? 'Kindergarten' : selectedGrade;
 
   const addSubject = useCallback((subject: SubjectCard) => {
     setSelected(prev => {
@@ -248,7 +244,7 @@ export function HomePage() {
 
   const handleSubmit = () => {
     if (!childName.trim() || selected.length === 0) return;
-    console.log('Intake:', { childName, grade: selectedGrade, subjects: selected.map(s => s.id), notes });
+    console.log('Intake:', { childName, grade: displayGrade, subjects: selected.map(s => s.id), notes });
     setSubmitted(true);
   };
 
@@ -351,7 +347,7 @@ export function HomePage() {
                   </label>
                   <div className="flex gap-3 overflow-x-auto pb-2 justify-center snap-x snap-mandatory">
                     {GRADES.map((grade, i) => {
-                      const gradeColors = ['#F2A1B3', '#8DD3D6', '#C6B4E2', '#F0D264', '#7BC8A4', '#F4976C'];
+                      const gradeColors = ['#F2A1B3', '#8DD3D6', '#C6B4E2', '#F0D264', '#7BC8A4', '#F4976C', '#89B4E8'];
                       const isSelected = selectedGrade === grade;
                       return (
                         <motion.button
