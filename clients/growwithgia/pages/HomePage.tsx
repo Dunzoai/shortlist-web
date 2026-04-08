@@ -687,7 +687,7 @@ export function HomePage() {
                 <Heart className="w-8 h-8" style={{ color: PETAL_COLORS.pink, fill: `${PETAL_COLORS.pink}40` }} />
               </motion.div>
             </motion.div>
-            <p className="uppercase mb-6" style={{ fontSize: '18px', fontWeight: 800, letterSpacing: '0.14em', color: PETAL_COLORS.teal }}>
+            <p className="uppercase mb-6 whitespace-nowrap" style={{ fontSize: 'clamp(13px, 3.8vw, 18px)', fontWeight: 800, letterSpacing: '0.14em', color: PETAL_COLORS.teal }}>
               ✦ Childcare &amp; Babysitting ✦
             </p>
             <h2 className="text-4xl sm:text-5xl md:text-6xl font-bold text-slate-800 mb-8" style={{ fontFamily: "'Georgia', serif" }}>
