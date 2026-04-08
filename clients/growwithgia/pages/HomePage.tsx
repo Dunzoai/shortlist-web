@@ -587,6 +587,9 @@ export function HomePage() {
       <section id="childcare" className="py-24 px-6" style={{ backgroundColor: '#f0fdfa' }}>
         <div className="max-w-4xl mx-auto">
           <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeIn} className="text-center">
+            <p className="uppercase tracking-widest font-semibold mb-3" style={{ fontSize: '13px', color: PETAL_COLORS.teal }}>
+              Childcare &amp; Babysitting
+            </p>
             <h2 className="text-3xl md:text-4xl font-bold text-slate-800 mb-6" style={{ fontFamily: "'Georgia', serif" }}>
               Need someone you can{' '}
               <span style={{ color: PETAL_COLORS.teal }}>actually trust?</span>
