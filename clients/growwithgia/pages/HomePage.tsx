@@ -211,7 +211,7 @@ function DecoVine() {
   // z-[5] puts it behind the flower's z-10 petals layer.
   return (
     <svg
-      className="absolute pointer-events-none z-[5]"
+      className="absolute pointer-events-none z-0"
       width="55%"
       height="2200px"
       viewBox="0 0 550 2200"
