@@ -207,54 +207,58 @@ function PetalSplashHero() {
 function DecoVine() {
   return (
     <svg
-      className="absolute top-0 right-[-20px] pointer-events-none z-0"
-      width="90"
-      height="780"
-      viewBox="0 0 90 780"
+      className="absolute top-0 right-[-15px] pointer-events-none z-0"
+      width="100"
+      height="800"
+      viewBox="0 0 100 800"
       fill="none"
-      style={{ opacity: 0.15 }}
+      style={{ opacity: 0.18 }}
     >
-      {/* Main stem — organic vertical curve */}
+      {/* Main stem — winding cubic bezier, sways left-right */}
       <path
-        d="M52 780 C54 720 48 680 50 630 C52 580 46 540 48 490 C50 440 44 400 46 350 C48 300 42 260 44 210 C46 160 40 120 42 70 C43 40 40 20 38 0"
+        d="M50 0 C55 40 78 80 75 160 C72 240 22 280 25 360 C28 440 80 480 72 560 C64 640 20 680 28 740 C32 760 45 780 50 800"
         stroke="#86efac"
-        strokeWidth="2.5"
+        strokeWidth="2"
         strokeLinecap="round"
         fill="none"
       />
-      {/* Leaf 1 — right, low */}
-      <g transform="translate(50, 670) rotate(25)">
-        <path d="M0 0 C8 -14 22 -18 28 -10 C34 -2 20 8 0 0Z" fill="#86efac" />
+      {/* Leaf 1 — right at first rightward peak (~y:120) */}
+      <g transform="translate(77, 120) rotate(35)">
+        <path d="M0 0 C8 -14 24 -18 30 -10 C36 -2 22 8 0 0Z" fill="#86efac" />
       </g>
-      {/* Leaf 2 — left */}
-      <g transform="translate(48, 570) rotate(-30)">
-        <path d="M0 0 C-7 -12 -20 -16 -26 -9 C-32 -2 -18 7 0 0Z" fill="#86efac" />
+      {/* Leaf 2 — left as stem crosses left (~y:220) */}
+      <g transform="translate(40, 220) rotate(-40)">
+        <path d="M0 0 C-9 -15 -26 -19 -32 -11 C-38 -3 -24 9 0 0Z" fill="#86efac" />
       </g>
-      {/* Leaf 3 — right, small */}
-      <g transform="translate(47, 480) rotate(20)">
-        <path d="M0 0 C6 -11 18 -14 22 -8 C26 -2 16 6 0 0Z" fill="#86efac" />
+      {/* Leaf 3 — left at leftward valley (~y:320) */}
+      <g transform="translate(24, 320) rotate(-30)">
+        <path d="M0 0 C-7 -12 -20 -16 -25 -9 C-30 -2 -18 7 0 0Z" fill="#86efac" />
       </g>
-      {/* Leaf 4 — left, larger */}
-      <g transform="translate(46, 380) rotate(-35)">
-        <path d="M0 0 C-9 -15 -24 -20 -30 -12 C-36 -4 -22 9 0 0Z" fill="#86efac" />
+      {/* Leaf 4 — right as stem swings right (~y:420) */}
+      <g transform="translate(65, 420) rotate(25)">
+        <path d="M0 0 C7 -13 22 -17 28 -10 C34 -3 20 8 0 0Z" fill="#86efac" />
       </g>
-      {/* Leaf 5 — right */}
-      <g transform="translate(45, 270) rotate(30)">
-        <path d="M0 0 C7 -13 20 -17 26 -10 C32 -3 19 7 0 0Z" fill="#86efac" />
+      {/* Leaf 5 — right at second rightward peak (~y:520) */}
+      <g transform="translate(76, 520) rotate(40)">
+        <path d="M0 0 C9 -15 26 -20 32 -12 C38 -4 24 9 0 0Z" fill="#86efac" />
       </g>
-      {/* Leaf 6 — left, small */}
-      <g transform="translate(43, 170) rotate(-25)">
-        <path d="M0 0 C-6 -10 -16 -13 -20 -7 C-24 -1 -14 5 0 0Z" fill="#86efac" />
+      {/* Leaf 6 — left at deep leftward valley (~y:630) */}
+      <g transform="translate(30, 640) rotate(-35)">
+        <path d="M0 0 C-8 -14 -24 -18 -30 -10 C-36 -2 -22 8 0 0Z" fill="#86efac" />
       </g>
-      {/* Leaf 7 — right, near top */}
-      <g transform="translate(41, 90) rotate(22)">
-        <path d="M0 0 C5 -10 15 -13 19 -7 C23 -1 13 5 0 0Z" fill="#86efac" />
+      {/* Leaf 7 — small right leaf (~y:700) */}
+      <g transform="translate(24, 720) rotate(20)">
+        <path d="M0 0 C6 -10 16 -14 20 -8 C24 -2 14 6 0 0Z" fill="#86efac" />
       </g>
-      {/* Flower bud at top */}
-      <g transform="translate(38, 12)">
-        <ellipse cx="-6" cy="-4" rx="5" ry="8" transform="rotate(-20)" fill="#86efac" />
-        <ellipse cx="6" cy="-4" rx="5" ry="8" transform="rotate(20)" fill="#86efac" />
-        <ellipse cx="0" cy="-7" rx="4" ry="7" fill="#86efac" />
+      {/* Leaf 8 — small left near bottom (~y:770) */}
+      <g transform="translate(40, 770) rotate(-25)">
+        <path d="M0 0 C-5 -9 -14 -12 -18 -7 C-22 -2 -12 5 0 0Z" fill="#86efac" />
+      </g>
+      {/* 3-petal flower cluster at top */}
+      <g transform="translate(50, 8)">
+        <ellipse cx="-7" cy="-5" rx="5" ry="9" transform="rotate(-25)" fill="#86efac" />
+        <ellipse cx="7" cy="-5" rx="5" ry="9" transform="rotate(25)" fill="#86efac" />
+        <ellipse cx="0" cy="-9" rx="4.5" ry="8" fill="#86efac" />
         <circle cx="0" cy="0" r="3.5" fill="#86efac" />
       </g>
     </svg>
