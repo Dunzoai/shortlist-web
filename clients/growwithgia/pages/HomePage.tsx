@@ -207,35 +207,32 @@ function PetalSplashHero() {
 function DecoVine() {
   return (
     <svg
-      className="absolute top-0 right-0 pointer-events-none z-[1]"
-      width="200"
-      height="2400"
-      viewBox="0 0 200 2400"
+      className="absolute top-0 left-1/2 -translate-x-1/2 pointer-events-none z-0"
+      width="120"
+      height="1600"
+      viewBox="0 0 120 1600"
       fill="none"
       style={{ opacity: 0.18 }}
     >
       {/*
-        Vine spans from hero (y:0) through about section and into
-        the form section (~y:2400). Stem starts centered (x:100)
-        and drifts toward right edge (x:160+) as it descends.
+        Centered stem growing downward from under the spinning flower.
+        Starts at top of the about section, winds behind Gia's photo,
+        continues through the form section below.
+        x:60 is center, sways ±30px left/right.
       */}
 
-      {/* Full winding stem */}
+      {/* Winding stem */}
       <path
         d={[
-          'M100 0',
-          'C95 70 130 130 120 200',
-          'C110 270 65 320 75 400',
-          'C85 480 140 530 130 610',
-          'C120 690 70 740 80 820',
-          'C90 900 150 950 140 1030',
-          'C130 1110 90 1160 100 1240',
-          'C110 1320 165 1370 155 1450',
-          'C145 1530 100 1580 110 1660',
-          'C120 1740 170 1790 160 1870',
-          'C150 1950 120 2000 130 2080',
-          'C140 2160 165 2220 155 2300',
-          'C150 2350 145 2380 150 2400',
+          'M60 0',
+          'C58 50 85 100 80 180',
+          'C75 260 30 310 35 400',
+          'C40 490 90 540 85 620',
+          'C80 700 35 750 40 840',
+          'C45 920 88 970 82 1050',
+          'C76 1130 38 1180 44 1260',
+          'C50 1340 85 1390 78 1460',
+          'C72 1520 60 1560 60 1600',
         ].join(' ')}
         stroke="#86efac"
         strokeWidth="2"
@@ -243,46 +240,36 @@ function DecoVine() {
         fill="none"
       />
 
-      {/* === LEAVES — alternating left/right along the stem === */}
-
-      {/* Leaf 1 — right (~y:160, stem swings right) */}
-      <g transform="translate(125, 160) rotate(30)">
+      {/* Leaf 1 — right (~y:140) */}
+      <g transform="translate(83, 140) rotate(30)">
         <path d="M0 0 C7 -12 20 -16 26 -9 C32 -2 19 7 0 0Z" fill="#86efac" />
       </g>
-      {/* Leaf 2 — left (~y:320, stem swings left) */}
-      <g transform="translate(68, 330) rotate(-35)">
+      {/* Leaf 2 — left (~y:310) */}
+      <g transform="translate(32, 320) rotate(-35)">
         <path d="M0 0 C-8 -14 -24 -18 -30 -10 C-36 -2 -22 8 0 0Z" fill="#86efac" />
       </g>
-      {/* Leaf 3 — right (~y:530, stem swings right) */}
-      <g transform="translate(138, 530) rotate(35)">
+      {/* Leaf 3 — right (~y:500) */}
+      <g transform="translate(88, 500) rotate(35)">
         <path d="M0 0 C8 -14 24 -18 30 -10 C36 -2 22 8 0 0Z" fill="#86efac" />
       </g>
-      {/* Leaf 4 — left (~y:740, stem swings left) */}
-      <g transform="translate(72, 740) rotate(-30)">
+      {/* Leaf 4 — left (~y:700) */}
+      <g transform="translate(36, 710) rotate(-30)">
         <path d="M0 0 C-7 -12 -20 -16 -25 -9 C-30 -2 -18 7 0 0Z" fill="#86efac" />
       </g>
-      {/* Leaf 5 — right (~y:950, rightward peak) */}
-      <g transform="translate(148, 950) rotate(28)">
+      {/* Leaf 5 — right (~y:920) */}
+      <g transform="translate(86, 920) rotate(28)">
         <path d="M0 0 C6 -11 18 -14 22 -8 C26 -2 16 6 0 0Z" fill="#86efac" />
       </g>
-      {/* Leaf 6 — left (~y:1160) */}
-      <g transform="translate(92, 1160) rotate(-38)">
-        <path d="M0 0 C-9 -15 -26 -19 -32 -11 C-38 -3 -24 9 0 0Z" fill="#86efac" />
+      {/* Leaf 6 — left (~y:1130) */}
+      <g transform="translate(40, 1140) rotate(-38)">
+        <path d="M0 0 C-8 -13 -22 -17 -28 -10 C-34 -3 -20 8 0 0Z" fill="#86efac" />
       </g>
-      {/* Leaf 7 — right (~y:1370) */}
-      <g transform="translate(163, 1370) rotate(32)">
-        <path d="M0 0 C7 -13 22 -17 28 -10 C34 -3 20 8 0 0Z" fill="#86efac" />
+      {/* Leaf 7 — right (~y:1340) */}
+      <g transform="translate(82, 1340) rotate(32)">
+        <path d="M0 0 C7 -12 20 -16 26 -9 C32 -2 19 7 0 0Z" fill="#86efac" />
       </g>
-      {/* Leaf 8 — left (~y:1580) */}
-      <g transform="translate(102, 1580) rotate(-28)">
-        <path d="M0 0 C-7 -12 -20 -16 -25 -9 C-30 -2 -18 7 0 0Z" fill="#86efac" />
-      </g>
-      {/* Leaf 9 — right (~y:1790) */}
-      <g transform="translate(168, 1790) rotate(36)">
-        <path d="M0 0 C8 -14 24 -18 30 -10 C36 -2 22 8 0 0Z" fill="#86efac" />
-      </g>
-      {/* Leaf 10 — left (~y:2000) */}
-      <g transform="translate(118, 2000) rotate(-32)">
+      {/* Leaf 8 — left (~y:1500) */}
+      <g transform="translate(50, 1510) rotate(-25)">
         <path d="M0 0 C-6 -10 -16 -13 -20 -7 C-24 -1 -14 5 0 0Z" fill="#86efac" />
       </g>
     </svg>
@@ -342,13 +329,13 @@ export function HomePage() {
   };
 
   return (
-    <main className="relative min-h-screen overflow-x-hidden" style={{ backgroundColor: BG_CREAM }}>
-      <DecoVine />
+    <main className="min-h-screen" style={{ backgroundColor: BG_CREAM }}>
       <Nav />
       <PetalSplashHero />
 
       {/* ─── HI, I'M GIA ─── */}
-      <section id="about" className="py-20 md:py-28 px-6">
+      <section id="about" className="relative py-20 md:py-28 px-6">
+        <DecoVine />
         <div className="max-w-5xl mx-auto">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-16 items-center">
             <motion.div
