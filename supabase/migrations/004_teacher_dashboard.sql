@@ -67,7 +67,7 @@ create table if not exists children (
 -- Leads
 create table if not exists leads (
   id               uuid primary key default gen_random_uuid(),
-  owner_id         uuid not null,
+  owner_id         uuid not null default '00000000-0000-0000-0000-000000000000',
   contact_id       uuid references contacts(id) on delete set null,
   source           lead_source not null default 'website_form',
   source_ref       text,

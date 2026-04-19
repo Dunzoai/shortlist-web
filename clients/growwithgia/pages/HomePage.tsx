@@ -1,7 +1,7 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
-import { motion, AnimatePresence, Reorder } from 'framer-motion';
+import { useState, useEffect, useCallback, useRef } from 'react';
+import { motion, AnimatePresence, Reorder, useInView } from 'framer-motion';
 import Image from 'next/image';
 import {
   Calculator,
@@ -313,6 +313,8 @@ export function HomePage() {
   const [sessionMode, setSessionMode] = useState('');
   const [planSubmitting, setPlanSubmitting] = useState(false);
   const [planSubmitted, setPlanSubmitted] = useState(false);
+  const mobilePlantRef = useRef(null);
+  const mobilePlantInView = useInView(mobilePlantRef, { once: true });
 
   const available = ALL_SUBJECTS.filter(s => !selected.find(sel => sel.id === s.id));
   const trimmed = childName.trim();
@@ -1038,37 +1040,33 @@ export function HomePage() {
           </motion.div>
 
           {/* Mobile-only animated plant with watering can — centered below cards */}
-          <div className="flex justify-center mt-6 md:hidden">
+          <div ref={mobilePlantRef} className="flex justify-center mt-6 md:hidden">
             <svg width="100" height="160" viewBox="0 0 240 380" fill="none" style={{ opacity: 0.25 }}>
               {/* Pot */}
               <motion.path
                 d="M80 320 L86 350 L154 350 L160 320 Z"
                 fill={PETAL_COLORS.teal}
                 initial={{ opacity: 0 }}
-                whileInView={{ opacity: 1 }}
-                viewport={{ once: true }}
+                animate={mobilePlantInView ? { opacity: 1 } : {}}
                 transition={{ duration: 0.4, delay: 0.3 }}
               />
               <motion.rect
                 x="72" y="310" width="96" height="12" rx="4"
                 fill={PETAL_COLORS.teal}
                 initial={{ opacity: 0 }}
-                whileInView={{ opacity: 1 }}
-                viewport={{ once: true }}
+                animate={mobilePlantInView ? { opacity: 1 } : {}}
                 transition={{ duration: 0.4, delay: 0.3 }}
               />
 
               {/* Watering can */}
               <motion.g
                 initial={{ opacity: 0, x: 40 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true }}
+                animate={mobilePlantInView ? { opacity: 1, x: 0 } : {}}
                 transition={{ duration: 0.6, delay: 0.5 }}
               >
                 <motion.g
                   initial={{ rotate: 0 }}
-                  whileInView={{ rotate: -28 }}
-                  viewport={{ once: true }}
+                  animate={mobilePlantInView ? { rotate: -28 } : {}}
                   transition={{ duration: 0.8, delay: 0.9, ease: 'easeInOut' }}
                   style={{ transformOrigin: '190px 262px' }}
                 >
@@ -1080,7 +1078,7 @@ export function HomePage() {
               </motion.g>
 
               {/* Continuous water drips */}
-              {[0, 1, 2].map((i) => (
+              {mobilePlantInView && [0, 1, 2].map((i) => (
                 <motion.circle
                   key={`m-drop-${i}`}
                   cx={128 + i * 2}
@@ -1109,8 +1107,7 @@ export function HomePage() {
                 strokeLinecap="round"
                 fill="none"
                 initial={{ pathLength: 0 }}
-                whileInView={{ pathLength: 1 }}
-                viewport={{ once: true }}
+                animate={mobilePlantInView ? { pathLength: 1 } : {}}
                 transition={{ duration: 1.8, delay: 1.5, ease: 'easeOut' }}
               />
 
@@ -1119,8 +1116,7 @@ export function HomePage() {
                 d="M120 240 C100 225 75 230 72 244 C69 258 88 256 120 240Z"
                 fill="#6dbb8a"
                 initial={{ scale: 0, opacity: 0 }}
-                whileInView={{ scale: 1, opacity: 1 }}
-                viewport={{ once: true }}
+                animate={mobilePlantInView ? { scale: 1, opacity: 1 } : {}}
                 transition={{ duration: 0.5, delay: 2.2 }}
                 style={{ transformOrigin: '120px 240px' }}
               />
@@ -1128,8 +1124,7 @@ export function HomePage() {
                 d="M120 230 C140 215 162 220 165 234 C168 248 148 246 120 230Z"
                 fill="#6dbb8a"
                 initial={{ scale: 0, opacity: 0 }}
-                whileInView={{ scale: 1, opacity: 1 }}
-                viewport={{ once: true }}
+                animate={mobilePlantInView ? { scale: 1, opacity: 1 } : {}}
                 transition={{ duration: 0.5, delay: 2.4 }}
                 style={{ transformOrigin: '120px 230px' }}
               />
@@ -1137,8 +1132,7 @@ export function HomePage() {
                 d="M120 180 C102 168 80 172 78 183 C76 194 92 192 120 180Z"
                 fill="#6dbb8a"
                 initial={{ scale: 0, opacity: 0 }}
-                whileInView={{ scale: 1, opacity: 1 }}
-                viewport={{ once: true }}
+                animate={mobilePlantInView ? { scale: 1, opacity: 1 } : {}}
                 transition={{ duration: 0.5, delay: 2.7 }}
                 style={{ transformOrigin: '120px 180px' }}
               />
@@ -1146,8 +1140,7 @@ export function HomePage() {
                 d="M120 170 C138 158 158 162 160 173 C162 184 144 182 120 170Z"
                 fill="#6dbb8a"
                 initial={{ scale: 0, opacity: 0 }}
-                whileInView={{ scale: 1, opacity: 1 }}
-                viewport={{ once: true }}
+                animate={mobilePlantInView ? { scale: 1, opacity: 1 } : {}}
                 transition={{ duration: 0.5, delay: 2.9 }}
                 style={{ transformOrigin: '120px 170px' }}
               />
@@ -1155,8 +1148,7 @@ export function HomePage() {
                 d="M120 130 C106 120 90 123 88 132 C86 141 100 139 120 130Z"
                 fill="#6dbb8a"
                 initial={{ scale: 0, opacity: 0 }}
-                whileInView={{ scale: 1, opacity: 1 }}
-                viewport={{ once: true }}
+                animate={mobilePlantInView ? { scale: 1, opacity: 1 } : {}}
                 transition={{ duration: 0.4, delay: 3.1 }}
                 style={{ transformOrigin: '120px 130px' }}
               />
@@ -1178,8 +1170,7 @@ export function HomePage() {
                     fill={colors[i]}
                     transform={`rotate(${angle}, ${px}, ${py})`}
                     initial={{ scale: 0, opacity: 0 }}
-                    whileInView={{ scale: 1, opacity: 0.85 }}
-                    viewport={{ once: true }}
+                    animate={mobilePlantInView ? { scale: 1, opacity: 0.85 } : {}}
                     transition={{ type: 'spring', stiffness: 300, damping: 12, delay: 3.4 + i * 0.1 }}
                     style={{ transformOrigin: `${px}px ${py}px` }}
                   />
@@ -1189,8 +1180,7 @@ export function HomePage() {
                 cx={120} cy={78} r={7}
                 fill={PETAL_COLORS.yellow}
                 initial={{ scale: 0 }}
-                whileInView={{ scale: 1 }}
-                viewport={{ once: true }}
+                animate={mobilePlantInView ? { scale: 1 } : {}}
                 transition={{ type: 'spring', stiffness: 400, damping: 10, delay: 3.9 }}
                 style={{ transformOrigin: '120px 78px' }}
               />
