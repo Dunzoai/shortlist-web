@@ -1153,37 +1153,33 @@ export function HomePage() {
                 style={{ transformOrigin: '120px 130px' }}
               />
 
-              {/* Flower petals */}
-              {[0, 1, 2, 3, 4].map((i) => {
+              {/* Flower petals — plain SVG, rendered once plant is in view */}
+              {mobilePlantInView && [0, 1, 2, 3, 4].map((i) => {
                 const angle = (360 / 5) * i - 90;
                 const rad = (angle * Math.PI) / 180;
                 const px = 120 + Math.cos(rad) * 16;
                 const py = 78 + Math.sin(rad) * 16;
                 const colors = [PETAL_COLORS.pink, PETAL_COLORS.teal, PETAL_COLORS.yellow, PETAL_COLORS.lavender, PETAL_COLORS.pink];
                 return (
-                  <motion.ellipse
+                  <ellipse
                     key={`m-petal-${i}`}
                     cx={px}
                     cy={py}
                     rx={9}
                     ry={12}
                     fill={colors[i]}
+                    opacity={0.85}
                     transform={`rotate(${angle}, ${px}, ${py})`}
-                    initial={false}
-                    animate={{ scale: mobilePlantInView ? 1 : 0, opacity: mobilePlantInView ? 0.85 : 0 }}
-                    transition={mobilePlantInView ? { type: 'spring', stiffness: 300, damping: 15, delay: 3.4 + i * 0.1 } : { duration: 0 }}
-                    style={{ transformOrigin: `${px}px ${py}px` }}
-                  />
+                  >
+                    <animate attributeName="opacity" from="0" to="0.85" dur="0.5s" begin={`${3.4 + i * 0.12}s`} fill="freeze" />
+                  </ellipse>
                 );
               })}
-              <motion.circle
-                cx={120} cy={78} r={7}
-                fill={PETAL_COLORS.yellow}
-                initial={false}
-                animate={{ scale: mobilePlantInView ? 1 : 0 }}
-                transition={mobilePlantInView ? { type: 'spring', stiffness: 400, damping: 15, delay: 3.9 } : { duration: 0 }}
-                style={{ transformOrigin: '120px 78px' }}
-              />
+              {mobilePlantInView && (
+                <circle cx={120} cy={78} r={7} fill={PETAL_COLORS.yellow}>
+                  <animate attributeName="opacity" from="0" to="1" dur="0.4s" begin="3.9s" fill="freeze" />
+                </circle>
+              )}
             </svg>
           </div>
 
