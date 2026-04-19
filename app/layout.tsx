@@ -60,29 +60,32 @@ export async function generateMetadata(): Promise<Metadata> {
 
   if (client?.slug === 'growwithgia') {
     return {
-      title: "Grow With Gia | Personalized Tutoring",
-      description: "One-on-one tutoring that meets every student where they are. Math, reading, writing, science, and more. Myrtle Beach area & virtual.",
-      keywords: ["tutoring", "personalized tutoring", "Myrtle Beach tutor", "math tutor", "reading tutor", "elementary tutor", "middle school tutor"],
-      authors: [{ name: "Grow With Gia" }],
-      creator: "Grow With Gia",
-      metadataBase: new URL('https://demo.growwithgia.shortlistpass.com'),
+      title: "Growing With Gia | Personalized Tutoring & Childcare in Myrtle Beach",
+      description: "Personalized tutoring and childcare in the Myrtle Beach area. Math, reading, writing, science, test prep, and babysitting for kids K–6. Every student can grow.",
+      keywords: ["tutoring", "personalized tutoring", "Myrtle Beach tutor", "math tutor", "reading tutor", "writing tutor", "science tutor", "babysitter Myrtle Beach", "childcare Myrtle Beach", "elementary tutor", "test prep", "K-6 tutor", "growing with gia", "growingwithgia"],
+      authors: [{ name: "Growing With Gia" }],
+      creator: "Growing With Gia",
+      metadataBase: new URL('https://growingwithgia.com'),
       icons: { icon: '/clients/Gia/favicon.svg', apple: '/clients/Gia/gia_about.jpeg' },
       openGraph: {
         type: 'website',
         locale: 'en_US',
-        url: '/',
-        siteName: "Grow With Gia",
-        title: "Grow With Gia | Personalized Tutoring",
-        description: "One-on-one tutoring that meets every student where they are. Math, reading, writing, science, and more.",
-        images: [{ url: '/og', width: 1200, height: 630, alt: "Grow With Gia - Personalized Tutoring" }],
+        url: 'https://growingwithgia.com',
+        siteName: "Growing With Gia",
+        title: "Growing With Gia | Personalized Tutoring & Childcare in Myrtle Beach",
+        description: "Personalized tutoring and childcare in the Myrtle Beach area. Math, reading, writing, science, and more for kids K–6.",
+        images: [{ url: '/og', width: 1200, height: 630, alt: "Growing With Gia - Personalized Tutoring & Childcare" }],
       },
       twitter: {
         card: 'summary_large_image',
-        title: "Grow With Gia | Personalized Tutoring",
-        description: "One-on-one tutoring that meets every student where they are. Myrtle Beach area & virtual.",
+        title: "Growing With Gia | Tutoring & Childcare",
+        description: "Personalized tutoring and childcare in the Myrtle Beach area. Every student can grow.",
         images: ['/og'],
       },
       robots: { index: true, follow: true },
+      alternates: {
+        canonical: 'https://growingwithgia.com',
+      },
     };
   }
 

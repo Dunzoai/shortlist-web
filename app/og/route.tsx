@@ -152,13 +152,16 @@ export async function GET() {
               <span style={{ color: '#6BBFC4' }}>r</span>
               <span style={{ color: '#D4A843' }}>o</span>
               <span style={{ color: '#A08EC8' }}>w</span>
-              <span style={{ color: '#E88BA0', marginLeft: 16 }}>w</span>
-              <span style={{ color: '#6BBFC4' }}>i</span>
-              <span style={{ color: '#D4A843' }}>t</span>
-              <span style={{ color: '#A08EC8' }}>h</span>
-              <span style={{ color: '#E88BA0', marginLeft: 16 }}>G</span>
-              <span style={{ color: '#6BBFC4' }}>i</span>
-              <span style={{ color: '#D4A843' }}>a</span>
+              <span style={{ color: '#E88BA0' }}>i</span>
+              <span style={{ color: '#6BBFC4' }}>n</span>
+              <span style={{ color: '#D4A843' }}>g</span>
+              <span style={{ color: '#A08EC8', marginLeft: 16 }}>W</span>
+              <span style={{ color: '#E88BA0' }}>i</span>
+              <span style={{ color: '#6BBFC4' }}>t</span>
+              <span style={{ color: '#D4A843' }}>h</span>
+              <span style={{ color: '#A08EC8', marginLeft: 16 }}>G</span>
+              <span style={{ color: '#E88BA0' }}>i</span>
+              <span style={{ color: '#6BBFC4' }}>a</span>
             </div>
 
             <div
