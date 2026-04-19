@@ -39,8 +39,19 @@ export default function Footer() {
         </div>
       </div>
 
-      <div className="max-w-6xl mx-auto mt-10 pt-6 border-t border-slate-700 text-center">
-        <p className="text-xs text-slate-500">2026 Grow With Gia. All rights reserved.</p>
+      <div className="max-w-6xl mx-auto mt-10 pt-6 border-t border-slate-700 text-center space-y-2">
+        <p className="text-xs text-slate-500">&copy; 2026 Growing With Gia. All rights reserved.</p>
+        <a
+          href="https://shortlistpass.com"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center gap-1.5 text-xs transition-colors"
+          style={{ color: '#C6B4E240' }}
+          onMouseEnter={(e) => (e.currentTarget.style.color = '#C6B4E2')}
+          onMouseLeave={(e) => (e.currentTarget.style.color = '#C6B4E240')}
+        >
+          <span style={{ fontSize: '10px' }}>✿</span> Built by The Shortlist Co.
+        </a>
       </div>
     </footer>
   );
