@@ -747,39 +747,48 @@ export function HomePage() {
               transition={{ duration: 0.4, delay: 1.2 }}
             />
 
-            {/* Watering can — tilting and pouring, appears on section enter */}
+            {/* Watering can — slides in, tilts, and pours */}
             <motion.g
-              initial={{ opacity: 0, x: 30, rotate: 0 }}
-              whileInView={{ opacity: 1, x: 0, rotate: -25 }}
+              initial={{ opacity: 0, x: 60 }}
+              whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true, amount: 0.5 }}
-              transition={{ duration: 1.2, delay: 1.5, ease: 'easeOut' }}
-              style={{ transformOrigin: '185px 260px' }}
+              transition={{ duration: 0.8, delay: 1.3, ease: 'easeOut' }}
             >
-              {/* Can body */}
-              <rect x="155" y="245" width="50" height="35" rx="5" fill={PETAL_COLORS.lavender} />
-              {/* Handle */}
-              <path d="M175 245 C175 225 195 225 195 245" stroke={PETAL_COLORS.lavender} strokeWidth="5" fill="none" strokeLinecap="round" />
-              {/* Spout */}
-              <path d="M155 255 L125 240 L128 245 L155 260" fill={PETAL_COLORS.lavender} />
+              <motion.g
+                initial={{ rotate: 0 }}
+                whileInView={{ rotate: -30 }}
+                viewport={{ once: true, amount: 0.5 }}
+                transition={{ duration: 1.0, delay: 1.8, ease: 'easeInOut' }}
+                style={{ transformOrigin: '180px 262px' }}
+              >
+                {/* Can body */}
+                <rect x="155" y="245" width="50" height="35" rx="5" fill={PETAL_COLORS.lavender} />
+                {/* Handle */}
+                <path d="M175 245 C175 225 195 225 195 245" stroke={PETAL_COLORS.lavender} strokeWidth="5" fill="none" strokeLinecap="round" />
+                {/* Spout */}
+                <path d="M155 255 L120 238 L124 244 L155 260" fill={PETAL_COLORS.lavender} />
+                {/* Spout tip */}
+                <circle cx="120" cy="240" r="3" fill={PETAL_COLORS.lavender} />
+              </motion.g>
             </motion.g>
 
-            {/* Water droplets falling from spout */}
-            {[0, 1, 2, 3, 4].map((i) => (
+            {/* Water droplets — continuous drip from spout */}
+            {[0, 1, 2].map((i) => (
               <motion.circle
                 key={`drop-${i}`}
-                cx={120 - i * 3}
-                cy={250}
-                r={3 - i * 0.3}
+                cx={113 + i * 2}
+                cy={240}
+                r={2.5}
                 fill={PETAL_COLORS.teal}
-                initial={{ opacity: 0, y: 0 }}
-                whileInView={{
+                animate={{
                   opacity: [0, 0.7, 0.5, 0],
-                  y: [0, 30 + i * 12, 60 + i * 8],
+                  y: [0, 25, 55, 75],
                 }}
-                viewport={{ once: true, amount: 0.5 }}
                 transition={{
                   duration: 1.2,
-                  delay: 2.2 + i * 0.25,
+                  delay: 2.8 + i * 0.4,
+                  repeat: Infinity,
+                  repeatDelay: 1.0,
                   ease: 'easeIn',
                 }}
               />
