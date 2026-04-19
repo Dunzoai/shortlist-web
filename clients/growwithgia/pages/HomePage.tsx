@@ -393,10 +393,10 @@ export function HomePage() {
       </section>
 
       {/* ─── SECTION 1: NAME + GRADE (sneaky intake start) ─── */}
-      <section className="relative py-20 md:py-28 px-6">
-        <div className="relative z-10 max-w-3xl mx-auto text-center rounded-3xl p-8 md:p-12" style={{ backgroundColor: `${PETAL_COLORS.teal}12`, border: `1px solid ${PETAL_COLORS.teal}20` }}>
+      <section className="relative py-20 md:py-28 px-6" style={{ backgroundColor: 'white' }}>
+        <div className="relative z-10 max-w-3xl mx-auto text-center rounded-3xl p-8 md:p-12" style={{ backgroundColor: `${PETAL_COLORS.lavender}10`, border: `1px solid ${PETAL_COLORS.lavender}20` }}>
           {/* Accent rectangle behind — like the lavender box behind Gia's photo */}
-          <div className="absolute -z-10 -bottom-3 -right-3 inset-0 rounded-3xl" style={{ backgroundColor: `${PETAL_COLORS.teal}18` }} />
+          <div className="absolute -z-10 -bottom-3 -right-3 inset-0 rounded-3xl" style={{ backgroundColor: `${PETAL_COLORS.lavender}15` }} />
           <motion.div initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.4 }} variants={fadeIn}>
             <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-slate-800 mb-3" style={{ fontFamily: "'Georgia', serif" }}>
               {["Let's", 'get'].map((word, i) => (
