@@ -29,11 +29,8 @@ export default function Footer() {
         <div>
           <h4 className="font-semibold text-sm uppercase tracking-wider text-slate-400 mb-4">Get in Touch</h4>
           <div className="space-y-3">
-            <a href="mailto:hello@growwithgia.com" className="flex items-center gap-2 text-sm text-slate-300 hover:text-white transition-colors">
-              <Mail className="w-4 h-4" style={{ color: '#C6B4E2' }} /> hello@growwithgia.com
-            </a>
-            <a href="tel:8432221234" className="flex items-center gap-2 text-sm text-slate-300 hover:text-white transition-colors">
-              <Phone className="w-4 h-4" style={{ color: '#C6B4E2' }} /> (843) 222-1234
+            <a href="mailto:grow.withgia26@gmail.com" className="flex items-center gap-2 text-sm text-slate-300 hover:text-white transition-colors">
+              <Mail className="w-4 h-4" style={{ color: '#C6B4E2' }} /> grow.withgia26@gmail.com
             </a>
             <a href="#" className="flex items-center gap-2 text-sm text-slate-300 hover:text-white transition-colors">
               <Instagram className="w-4 h-4" style={{ color: '#C6B4E2' }} /> @growwithgia

@@ -1297,20 +1297,14 @@ export function HomePage() {
                   </div>
                 ))}
               </div>
-              <div className="mt-6 flex flex-col sm:flex-row gap-3">
+              <div className="mt-6">
                 <a
-                  href="mailto:hello@growwithgia.com"
+                  href="mailto:grow.withgia26@gmail.com"
                   className="inline-flex items-center justify-center gap-2 text-white font-semibold px-6 py-3 rounded-xl hover:opacity-90 transition-opacity"
                   style={{ backgroundColor: PETAL_COLORS.lavender }}
                 >
                   Email Gia
                   <ArrowRight className="w-4 h-4" />
-                </a>
-                <a
-                  href="tel:8432221234"
-                  className="inline-flex items-center justify-center gap-2 bg-white text-slate-700 font-semibold px-6 py-3 rounded-xl border border-slate-200 hover:border-slate-300 transition-colors"
-                >
-                  Call (843) 222-1234
                 </a>
               </div>
             </div>
