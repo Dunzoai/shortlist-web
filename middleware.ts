@@ -40,8 +40,19 @@ export async function middleware(request: NextRequest) {
     effectivePathname === '/client-portal/request-access' ||
     effectivePathname.startsWith('/client-portal/auth/')
 
-  // Only protect portal/client/dashboard routes (but not login/public pages or API routes)
-  if ((!isPortalRoute && !isClientRoute && !isDashboardRoute) || isLoginPage || isPublicClientPage || isDashboardLogin || isApiRoute) {
+  // Dashboard auth — simple cookie check, handled before Supabase auth
+  if (isDashboardRoute && !isDashboardLogin) {
+    const authCookie = request.cookies.get('dashboard_auth')
+    if (authCookie?.value !== 'authenticated') {
+      const url = request.nextUrl.clone()
+      url.pathname = '/dashboard/login'
+      return NextResponse.redirect(url)
+    }
+    return NextResponse.next()
+  }
+
+  // Only protect portal/client routes (but not login/public pages or API routes)
+  if ((!isPortalRoute && !isClientRoute) || isLoginPage || isPublicClientPage || isDashboardLogin || isApiRoute) {
     if (needsRewrite) {
       const url = request.nextUrl.clone()
       url.pathname = effectivePathname
@@ -89,29 +100,8 @@ export async function middleware(request: NextRequest) {
 
   if (!user) {
     const url = request.nextUrl.clone()
-    url.pathname = isDashboardRoute ? '/dashboard/login' : isPortalSubdomain ? '/login' : isClientRoute ? '/client-portal/login' : '/portal/login'
+    url.pathname = isPortalSubdomain ? '/login' : isClientRoute ? '/client-portal/login' : '/portal/login'
     return NextResponse.redirect(url)
-  }
-
-  // For dashboard routes, check if user email is in allowed list
-  if (isDashboardRoute) {
-    const dashboardEmails = ['grow.withgia26@gmail.com', 'hello@shortlistpass.com']
-    if (!dashboardEmails.includes(user.email?.toLowerCase() ?? '')) {
-      const url = request.nextUrl.clone()
-      url.pathname = '/dashboard/login'
-      url.searchParams.set('error', 'not_authorized')
-      return NextResponse.redirect(url)
-    }
-    if (needsRewrite) {
-      const url = request.nextUrl.clone()
-      url.pathname = effectivePathname
-      const rewriteResponse = NextResponse.rewrite(url)
-      supabaseResponse.cookies.getAll().forEach(cookie => {
-        rewriteResponse.cookies.set(cookie.name, cookie.value)
-      })
-      return rewriteResponse
-    }
-    return supabaseResponse
   }
 
   // For client routes, check if user is linked to a client OR is a super admin (Owner)

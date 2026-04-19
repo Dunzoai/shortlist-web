@@ -14,7 +14,6 @@ import {
   GraduationCap,
   LogOut,
 } from 'lucide-react';
-import { createBrowserSupabase } from '@/lib/dashboard/supabase-browser';
 
 const NAV_ITEMS = [
   { label: 'Inbox', href: '/dashboard/inbox', icon: Inbox },
@@ -72,8 +71,7 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
         <div className="px-3 pb-4">
           <button
             onClick={async () => {
-              const supabase = createBrowserSupabase();
-              await supabase.auth.signOut();
+              await fetch('/api/dashboard/logout', { method: 'POST' });
               window.location.href = '/dashboard/login';
             }}
             className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium w-full transition-colors hover:bg-red-50"
