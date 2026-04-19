@@ -305,6 +305,14 @@ export function HomePage() {
   const [notes, setNotes] = useState('');
   const [submitted, setSubmitted] = useState(false);
   const [ogModalOpen, setOgModalOpen] = useState(false);
+  const [planModalOpen, setPlanModalOpen] = useState(false);
+  const [parentName, setParentName] = useState('');
+  const [parentEmail, setParentEmail] = useState('');
+  const [parentPhone, setParentPhone] = useState('');
+  const [daysPerWeek, setDaysPerWeek] = useState('');
+  const [sessionMode, setSessionMode] = useState('');
+  const [planSubmitting, setPlanSubmitting] = useState(false);
+  const [planSubmitted, setPlanSubmitted] = useState(false);
 
   const available = ALL_SUBJECTS.filter(s => !selected.find(sel => sel.id === s.id));
   const trimmed = childName.trim();
@@ -324,8 +332,38 @@ export function HomePage() {
 
   const handleSubmit = () => {
     if (!childName.trim() || selected.length === 0) return;
-    console.log('Intake:', { childName, grade: displayGrade, subjects: selected.map(s => s.id), notes });
     setSubmitted(true);
+    setPlanModalOpen(true);
+  };
+
+  const handlePlanSubmit = async () => {
+    if (!parentName.trim() || (!parentEmail.trim() && !parentPhone.trim())) return;
+    setPlanSubmitting(true);
+    try {
+      const res = await fetch('/api/leads/inbound', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          source: 'website_form',
+          parent_name: parentName.trim(),
+          email: parentEmail.trim() || undefined,
+          phone: parentPhone.trim() || undefined,
+          child_name: childName.trim() || undefined,
+          child_grade: displayGrade || undefined,
+          subjects: selected.map(s => s.label),
+          notes: notes.trim() || undefined,
+          preferred_schedule: daysPerWeek || undefined,
+          location: sessionMode || undefined,
+        }),
+      });
+      if (res.ok) {
+        setPlanSubmitted(true);
+      }
+    } catch (err) {
+      console.error('Submit error:', err);
+    } finally {
+      setPlanSubmitting(false);
+    }
   };
 
   return (
@@ -1173,14 +1211,14 @@ export function HomePage() {
             <p className="text-base md:text-lg text-slate-500 leading-relaxed max-w-2xl mx-auto mb-10">
               Pricing depends on subjects and how many days a week. No packages, no guessing — reach out and Gia will put together a plan that fits your family.
             </p>
-            <a
-              href="#contact"
+            <button
+              onClick={() => setPlanModalOpen(true)}
               className="inline-flex items-center gap-2 text-white font-semibold px-8 py-4 rounded-2xl text-lg hover:opacity-90 transition-all hover:scale-105 active:scale-95 shadow-lg"
               style={{ backgroundColor: PETAL_COLORS.lavender }}
             >
               Get a Custom Plan
               <ArrowRight className="w-5 h-5" />
-            </a>
+            </button>
           </motion.div>
         </div>
       </section>
@@ -1347,6 +1385,196 @@ export function HomePage() {
                   Used by Gia for all K–6 reading support
                 </p>
               </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* ─── GET CUSTOM PLAN MODAL ─── */}
+      <AnimatePresence>
+        {planModalOpen && (
+          <motion.div
+            className="fixed inset-0 z-50 flex items-center justify-center px-4"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+          >
+            <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={() => { setPlanModalOpen(false); setPlanSubmitted(false); }} />
+
+            <motion.div
+              className="relative w-full max-w-lg max-h-[90vh] overflow-y-auto rounded-3xl shadow-2xl"
+              style={{ backgroundColor: BG_CREAM }}
+              initial={{ opacity: 0, scale: 0.92, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.92, y: 20 }}
+              transition={{ duration: 0.25, ease: 'easeOut' }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Header */}
+              <div className="px-8 pt-8 pb-5 text-center" style={{ backgroundColor: PETAL_COLORS.lavender }}>
+                <p className="uppercase text-white/70 text-xs font-semibold tracking-widest mb-2">Custom Plan</p>
+                <h3 className="text-2xl md:text-3xl font-bold text-white mb-1" style={{ fontFamily: "'Georgia', serif" }}>
+                  Let&apos;s build a plan
+                  {childName.trim() ? ` for ${displayName}` : ''}
+                </h3>
+                <p className="text-white/90 text-sm">Fill in a few details and Gia will reach out.</p>
+              </div>
+
+              <button
+                onClick={() => { setPlanModalOpen(false); setPlanSubmitted(false); }}
+                className="absolute top-4 right-4 w-8 h-8 rounded-full bg-white/20 hover:bg-white/40 transition-colors flex items-center justify-center"
+              >
+                <X className="w-4 h-4 text-white" />
+              </button>
+
+              {!planSubmitted ? (
+                <div className="px-8 py-6 space-y-5">
+                  {/* Pre-filled student info */}
+                  {(childName.trim() || selectedGrade || selected.length > 0) && (
+                    <div className="rounded-2xl p-4 space-y-2" style={{ backgroundColor: `${PETAL_COLORS.teal}12` }}>
+                      <p className="text-xs font-semibold uppercase tracking-wider text-slate-400">Student Info</p>
+                      {childName.trim() && (
+                        <p className="text-sm text-slate-600"><span className="font-medium text-slate-700">Name:</span> {displayName}</p>
+                      )}
+                      {selectedGrade && (
+                        <p className="text-sm text-slate-600"><span className="font-medium text-slate-700">Grade:</span> {displayGrade}</p>
+                      )}
+                      {selected.length > 0 && (
+                        <div className="flex flex-wrap gap-1.5 mt-1">
+                          {selected.map(s => (
+                            <span key={s.id} className="text-xs px-2.5 py-1 rounded-full text-white font-medium" style={{ backgroundColor: s.color }}>
+                              {s.label}
+                            </span>
+                          ))}
+                        </div>
+                      )}
+                      {notes && (
+                        <p className="text-sm text-slate-500 italic">&ldquo;{notes}&rdquo;</p>
+                      )}
+                    </div>
+                  )}
+
+                  {/* Parent info — required */}
+                  <div>
+                    <label className="block text-sm font-semibold text-slate-700 mb-1.5">Your name <span className="text-red-400">*</span></label>
+                    <input
+                      type="text"
+                      value={parentName}
+                      onChange={(e) => setParentName(e.target.value)}
+                      placeholder="e.g. Jessica"
+                      className="w-full px-4 py-3 rounded-xl border-2 text-sm focus:outline-none transition-colors"
+                      style={{ borderColor: parentName ? PETAL_COLORS.lavender : '#e2e8f0', backgroundColor: 'white' }}
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-semibold text-slate-700 mb-1.5">Email <span className="text-red-400">*</span></label>
+                    <input
+                      type="email"
+                      value={parentEmail}
+                      onChange={(e) => setParentEmail(e.target.value)}
+                      placeholder="you@email.com"
+                      className="w-full px-4 py-3 rounded-xl border-2 text-sm focus:outline-none transition-colors"
+                      style={{ borderColor: parentEmail ? PETAL_COLORS.lavender : '#e2e8f0', backgroundColor: 'white' }}
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-semibold text-slate-700 mb-1.5">Phone <span className="text-slate-400 font-normal">(optional)</span></label>
+                    <input
+                      type="tel"
+                      value={parentPhone}
+                      onChange={(e) => setParentPhone(e.target.value)}
+                      placeholder="(843) 555-1234"
+                      className="w-full px-4 py-3 rounded-xl border-2 text-sm focus:outline-none transition-colors"
+                      style={{ borderColor: parentPhone ? PETAL_COLORS.lavender : '#e2e8f0', backgroundColor: 'white' }}
+                    />
+                  </div>
+
+                  {/* Optional fields */}
+                  <div>
+                    <label className="block text-sm font-semibold text-slate-700 mb-1.5">Days per week <span className="text-slate-400 font-normal">(optional)</span></label>
+                    <div className="flex gap-2 flex-wrap">
+                      {['1', '2', '3', '4', '5'].map((d) => (
+                        <button
+                          key={d}
+                          onClick={() => setDaysPerWeek(daysPerWeek === d ? '' : d)}
+                          className="w-11 h-11 rounded-xl font-semibold text-sm transition-all"
+                          style={{
+                            backgroundColor: daysPerWeek === d ? PETAL_COLORS.teal : 'white',
+                            color: daysPerWeek === d ? 'white' : PETAL_COLORS.teal,
+                            border: `2px solid ${PETAL_COLORS.teal}`,
+                          }}
+                        >
+                          {d}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-semibold text-slate-700 mb-1.5">Session format <span className="text-slate-400 font-normal">(optional)</span></label>
+                    <div className="flex gap-2">
+                      {[
+                        { value: 'in_person', label: 'In Person' },
+                        { value: 'virtual', label: 'Virtual' },
+                        { value: 'either', label: 'Either' },
+                      ].map((opt) => (
+                        <button
+                          key={opt.value}
+                          onClick={() => setSessionMode(sessionMode === opt.value ? '' : opt.value)}
+                          className="flex-1 py-2.5 rounded-xl font-medium text-sm transition-all"
+                          style={{
+                            backgroundColor: sessionMode === opt.value ? PETAL_COLORS.pink : 'white',
+                            color: sessionMode === opt.value ? 'white' : PETAL_COLORS.pink,
+                            border: `2px solid ${PETAL_COLORS.pink}`,
+                          }}
+                        >
+                          {opt.label}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Submit */}
+                  <button
+                    onClick={handlePlanSubmit}
+                    disabled={planSubmitting || !parentName.trim() || (!parentEmail.trim() && !parentPhone.trim())}
+                    className="w-full flex items-center justify-center gap-2 text-white font-semibold py-4 rounded-2xl text-base hover:opacity-90 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg mt-2"
+                    style={{ backgroundColor: PETAL_COLORS.lavender }}
+                  >
+                    {planSubmitting ? (
+                      <span>Sending...</span>
+                    ) : (
+                      <>
+                        <Send className="w-5 h-5" />
+                        Send to Gia
+                      </>
+                    )}
+                  </button>
+                  <p className="text-xs text-slate-400 text-center">Gia will reach out within 24 hours</p>
+                </div>
+              ) : (
+                <div className="px-8 py-12 text-center">
+                  <div className="w-16 h-16 rounded-full mx-auto mb-5 flex items-center justify-center" style={{ backgroundColor: `${PETAL_COLORS.teal}20` }}>
+                    <CheckCircle2 className="w-8 h-8" style={{ color: PETAL_COLORS.teal }} />
+                  </div>
+                  <h3 className="text-xl font-bold text-slate-800 mb-2" style={{ fontFamily: "'Georgia', serif" }}>
+                    You&apos;re all set!
+                  </h3>
+                  <p className="text-slate-500 text-sm max-w-sm mx-auto mb-6">
+                    Gia has your info and will reach out soon to build{childName.trim() ? ` ${displayName}'s` : ' a'} custom plan.
+                  </p>
+                  <button
+                    onClick={() => { setPlanModalOpen(false); setPlanSubmitted(false); }}
+                    className="text-sm font-medium px-6 py-2.5 rounded-xl transition-colors"
+                    style={{ color: PETAL_COLORS.lavender, backgroundColor: `${PETAL_COLORS.lavender}15` }}
+                  >
+                    Close
+                  </button>
+                </div>
+              )}
             </motion.div>
           </motion.div>
         )}
