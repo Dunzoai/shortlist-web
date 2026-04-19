@@ -156,7 +156,7 @@ export default function PlansPage() {
   };
 
   return (
-    <div className="p-6 md:p-8 max-w-5xl mx-auto">
+    <div className="p-6 md:p-8 max-w-5xl mx-auto overflow-x-hidden pb-20">
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-3xl font-bold" style={{ fontFamily: 'var(--font-caveat), cursive', color: '#2b2722', transform: 'rotate(-1deg)', display: 'inline-block' }}>
           Lesson Plans

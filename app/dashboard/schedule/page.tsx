@@ -265,7 +265,7 @@ export default function SchedulePage() {
                   style={inputStyle}
                 />
               </div>
-              {(leadSearch || !form.lead_id) && (
+              {leadSearch.length >= 3 && (
                 <div className="max-h-32 overflow-y-auto mt-1 rounded-lg border" style={{ borderColor: '#d9cfbf', background: 'white' }}>
                   {filteredLeads.length === 0 ? (
                     <p className="text-xs p-2" style={{ color: '#b8ad9f' }}>No clients found</p>

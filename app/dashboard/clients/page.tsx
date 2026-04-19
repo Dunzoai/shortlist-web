@@ -280,7 +280,7 @@ export default function ClientsPage() {
   };
 
   return (
-    <div className="p-6 md:p-8 max-w-4xl mx-auto">
+    <div className="p-6 md:p-8 max-w-4xl mx-auto overflow-x-hidden pb-20">
       <div className="flex items-center gap-4 mb-6 flex-wrap">
         <h1 className="text-3xl font-bold" style={{ fontFamily: 'var(--font-caveat), cursive', color: '#2b2722', transform: 'rotate(-1deg)', display: 'inline-block' }}>
           Clients

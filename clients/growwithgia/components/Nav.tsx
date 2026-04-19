@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { Menu, X, GraduationCap } from 'lucide-react';
+import { Menu, X, Sprout } from 'lucide-react';
 
 const links = [
   { label: 'About', href: '#about' },
@@ -51,7 +51,7 @@ export default function Nav() {
           className="flex items-center gap-2 font-bold text-lg"
           style={{ color: '#A08EC8', fontFamily: "'Georgia', serif" }}
         >
-          <GraduationCap className="w-5 h-5" />
+          <Sprout className="w-5 h-5" />
           Grow With Gia
         </a>
 

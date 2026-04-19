@@ -135,7 +135,7 @@ export default function TodayPage() {
   }
 
   return (
-    <div className="p-6 md:p-8 max-w-4xl mx-auto">
+    <div className="p-6 md:p-8 max-w-4xl mx-auto overflow-x-hidden pb-20">
       <h1 className="text-3xl font-bold mb-1" style={{ fontFamily: 'var(--font-caveat), cursive', color: '#2b2722', transform: 'rotate(-1deg)', display: 'inline-block' }}>
         Today
       </h1>

@@ -155,7 +155,7 @@ export default function InboxPage() {
   const selected = leads.find(l => l.id === selectedId);
 
   return (
-    <div className="h-[calc(100vh-56px)] md:h-screen flex flex-col md:flex-row">
+    <div className="h-[calc(100vh-56px)] md:h-screen flex flex-col md:flex-row overflow-x-hidden pb-20 md:pb-0">
       {/* Lead list */}
       <div className={`${selectedId ? 'hidden md:flex' : 'flex'} flex-col w-full md:w-96 border-r`} style={{ borderColor: '#d9cfbf' }}>
         {/* Search + filter */}

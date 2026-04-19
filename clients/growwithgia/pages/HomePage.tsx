@@ -1169,9 +1169,9 @@ export function HomePage() {
                     ry={12}
                     fill={colors[i]}
                     transform={`rotate(${angle}, ${px}, ${py})`}
-                    initial={{ scale: 0, opacity: 0 }}
-                    animate={mobilePlantInView ? { scale: 1, opacity: 0.85 } : {}}
-                    transition={{ type: 'spring', stiffness: 300, damping: 12, delay: 3.4 + i * 0.1 }}
+                    initial={false}
+                    animate={{ scale: mobilePlantInView ? 1 : 0, opacity: mobilePlantInView ? 0.85 : 0 }}
+                    transition={mobilePlantInView ? { type: 'spring', stiffness: 300, damping: 15, delay: 3.4 + i * 0.1 } : { duration: 0 }}
                     style={{ transformOrigin: `${px}px ${py}px` }}
                   />
                 );
@@ -1179,9 +1179,9 @@ export function HomePage() {
               <motion.circle
                 cx={120} cy={78} r={7}
                 fill={PETAL_COLORS.yellow}
-                initial={{ scale: 0 }}
-                animate={mobilePlantInView ? { scale: 1 } : {}}
-                transition={{ type: 'spring', stiffness: 400, damping: 10, delay: 3.9 }}
+                initial={false}
+                animate={{ scale: mobilePlantInView ? 1 : 0 }}
+                transition={mobilePlantInView ? { type: 'spring', stiffness: 400, damping: 15, delay: 3.9 } : { duration: 0 }}
                 style={{ transformOrigin: '120px 78px' }}
               />
             </svg>
