@@ -15,8 +15,8 @@ const SERVICE_COLORS: Record<string, string> = {
 const SERVICE_LABELS: Record<string, string> = {
   tutoring: 'Tutoring',
   babysitting: 'Babysitting',
-  test_prep: 'Test Prep',
-  homework_help: 'Homework Help',
+  test_prep: 'Virtual Tutoring',
+  homework_help: 'Pet Sitting',
   other: 'Other',
 };
 
@@ -53,6 +53,9 @@ export default function ClientsPage() {
   const [sessionFormId, setSessionFormId] = useState<string | null>(null);
   const [sessionForm, setSessionForm] = useState({ date: '', time: '15:00', duration: 60, service: 'tutoring', notes: '' });
   const [clientSessions, setClientSessions] = useState<Record<string, Session[]>>({});
+  const [showAddClient, setShowAddClient] = useState(false);
+  const [addClientForm, setAddClientForm] = useState({ parent_name: '', child_name: '', child_grade: '', email: '', phone: '', subjects: '' });
+  const [addingClient, setAddingClient] = useState(false);
   const supabase = createBrowserSupabase();
 
   const fetchClients = useCallback(async () => {
@@ -153,6 +156,27 @@ export default function ClientsPage() {
     await fetchSessions(leadId);
   }
 
+  async function saveNewClient() {
+    if (!addClientForm.parent_name.trim()) return;
+    setAddingClient(true);
+    await supabase.from('leads').insert({
+      parent_name: addClientForm.parent_name.trim(),
+      child_name: addClientForm.child_name.trim() || null,
+      child_grade: addClientForm.child_grade.trim() || null,
+      email: addClientForm.email.trim() || null,
+      phone: addClientForm.phone.trim() || null,
+      subjects: addClientForm.subjects ? addClientForm.subjects.split(',').map(s => s.trim()).filter(Boolean) : [],
+      status: 'booked',
+      source: 'manual',
+      client_slug: 'growwithgia',
+      unread: false,
+    });
+    setShowAddClient(false);
+    setAddClientForm({ parent_name: '', child_name: '', child_grade: '', email: '', phone: '', subjects: '' });
+    setAddingClient(false);
+    await fetchClients();
+  }
+
   const inputStyle = {
     borderColor: '#d9cfbf',
     fontFamily: 'var(--font-shippori), serif',
@@ -162,9 +186,62 @@ export default function ClientsPage() {
 
   return (
     <div className="p-6 md:p-8 max-w-4xl mx-auto">
-      <h1 className="text-3xl font-bold mb-6" style={{ fontFamily: 'var(--font-caveat), cursive', color: '#2b2722', transform: 'rotate(-1deg)', display: 'inline-block' }}>
-        Clients
-      </h1>
+      <div className="flex items-center gap-4 mb-6 flex-wrap">
+        <h1 className="text-3xl font-bold" style={{ fontFamily: 'var(--font-caveat), cursive', color: '#2b2722', transform: 'rotate(-1deg)', display: 'inline-block' }}>
+          Clients
+        </h1>
+        <button
+          onClick={() => setShowAddClient(!showAddClient)}
+          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-transform hover:-translate-y-0.5"
+          style={{ background: '#C9DBC0', color: '#2b2722', border: '1.5px solid #2b2722', boxShadow: '2px 2px 0 #2b2722', fontFamily: 'var(--font-kalam), cursive' }}
+        >
+          <Plus className="w-3 h-3" /> Add Client
+        </button>
+      </div>
+
+      {/* Add Client Form */}
+      {showAddClient && (
+        <div className="rounded-lg border p-4 mb-6 space-y-3" style={{ borderColor: '#d9cfbf', background: 'white' }}>
+          <div className="flex items-center justify-between">
+            <h4 className="text-sm font-bold" style={{ fontFamily: 'var(--font-caveat), cursive', color: '#2b2722' }}>New Client</h4>
+            <button onClick={() => setShowAddClient(false)} className="p-1"><X className="w-3.5 h-3.5" style={{ color: '#8a8078' }} /></button>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+              <label className="text-[10px] uppercase tracking-wider mb-1 block" style={{ color: '#8a8078', fontFamily: 'monospace' }}>Parent Name *</label>
+              <input type="text" value={addClientForm.parent_name} onChange={e => setAddClientForm(f => ({ ...f, parent_name: e.target.value }))} placeholder="Parent name" className="w-full px-3 py-2 rounded-lg border text-sm focus:outline-none" style={inputStyle} />
+            </div>
+            <div>
+              <label className="text-[10px] uppercase tracking-wider mb-1 block" style={{ color: '#8a8078', fontFamily: 'monospace' }}>Child Name</label>
+              <input type="text" value={addClientForm.child_name} onChange={e => setAddClientForm(f => ({ ...f, child_name: e.target.value }))} placeholder="Child name" className="w-full px-3 py-2 rounded-lg border text-sm focus:outline-none" style={inputStyle} />
+            </div>
+            <div>
+              <label className="text-[10px] uppercase tracking-wider mb-1 block" style={{ color: '#8a8078', fontFamily: 'monospace' }}>Child Grade</label>
+              <input type="text" value={addClientForm.child_grade} onChange={e => setAddClientForm(f => ({ ...f, child_grade: e.target.value }))} placeholder="e.g. 3rd" className="w-full px-3 py-2 rounded-lg border text-sm focus:outline-none" style={inputStyle} />
+            </div>
+            <div>
+              <label className="text-[10px] uppercase tracking-wider mb-1 block" style={{ color: '#8a8078', fontFamily: 'monospace' }}>Email</label>
+              <input type="email" value={addClientForm.email} onChange={e => setAddClientForm(f => ({ ...f, email: e.target.value }))} placeholder="email@example.com" className="w-full px-3 py-2 rounded-lg border text-sm focus:outline-none" style={inputStyle} />
+            </div>
+            <div>
+              <label className="text-[10px] uppercase tracking-wider mb-1 block" style={{ color: '#8a8078', fontFamily: 'monospace' }}>Phone</label>
+              <input type="tel" value={addClientForm.phone} onChange={e => setAddClientForm(f => ({ ...f, phone: e.target.value }))} placeholder="(555) 123-4567" className="w-full px-3 py-2 rounded-lg border text-sm focus:outline-none" style={inputStyle} />
+            </div>
+            <div>
+              <label className="text-[10px] uppercase tracking-wider mb-1 block" style={{ color: '#8a8078', fontFamily: 'monospace' }}>Subjects (comma-separated)</label>
+              <input type="text" value={addClientForm.subjects} onChange={e => setAddClientForm(f => ({ ...f, subjects: e.target.value }))} placeholder="Math, Reading" className="w-full px-3 py-2 rounded-lg border text-sm focus:outline-none" style={inputStyle} />
+            </div>
+          </div>
+          <button
+            onClick={saveNewClient}
+            disabled={!addClientForm.parent_name.trim() || addingClient}
+            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-medium transition-transform hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed"
+            style={{ background: '#C9DBC0', color: '#2b2722', border: '1.5px solid #2b2722', boxShadow: '2px 2px 0 #2b2722', fontFamily: 'var(--font-kalam), cursive' }}
+          >
+            {addingClient ? 'Saving...' : 'Save Client'}
+          </button>
+        </div>
+      )}
 
       {loading ? (
         <p style={{ color: '#8a8078', fontFamily: 'var(--font-kalam), cursive' }}>Loading...</p>
@@ -361,8 +438,8 @@ export default function ClientsPage() {
                             <select value={sessionForm.service} onChange={e => setSessionForm(f => ({ ...f, service: e.target.value }))} className="w-full px-3 py-2 rounded-lg border text-sm focus:outline-none" style={inputStyle}>
                               <option value="tutoring">Tutoring</option>
                               <option value="babysitting">Babysitting</option>
-                              <option value="test_prep">Test Prep</option>
-                              <option value="homework_help">Homework Help</option>
+                              <option value="test_prep">Virtual Tutoring</option>
+                              <option value="homework_help">Pet Sitting</option>
                               <option value="other">Other</option>
                             </select>
                           </div>

@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { createBrowserSupabase } from '@/lib/dashboard/supabase-browser';
+import Link from 'next/link';
 import { Sun, Calendar, Clock, CheckCircle2, MapPin, Inbox } from 'lucide-react';
 
 const SERVICE_COLORS: Record<string, string> = {
@@ -15,8 +16,8 @@ const SERVICE_COLORS: Record<string, string> = {
 const SERVICE_LABELS: Record<string, string> = {
   tutoring: 'Tutoring',
   babysitting: 'Babysitting',
-  test_prep: 'Test Prep',
-  homework_help: 'Homework Help',
+  test_prep: 'Virtual Tutoring',
+  homework_help: 'Pet Sitting',
   other: 'Other',
 };
 
@@ -231,26 +232,28 @@ export default function TodayPage() {
             ) : (
               <div className="space-y-2">
                 {newLeads.map(lead => (
-                  <div key={lead.id} className="flex items-center justify-between rounded-lg border px-4 py-3" style={{ borderColor: '#d9cfbf', background: 'white' }}>
-                    <div>
-                      <p className="text-sm font-medium" style={{ color: '#2b2722', fontFamily: 'var(--font-shippori), serif' }}>
-                        {lead.parent_name || 'Unnamed'}
+                  <Link key={lead.id} href="/dashboard/inbox" className="block">
+                    <div className="flex items-center justify-between rounded-lg border px-4 py-3 transition-colors hover:bg-gray-50" style={{ borderColor: '#d9cfbf', background: 'white' }}>
+                      <div>
+                        <p className="text-sm font-medium" style={{ color: '#2b2722', fontFamily: 'var(--font-shippori), serif' }}>
+                          {lead.parent_name || 'Unnamed'}
+                        </p>
+                        {lead.child_name && (
+                          <p className="text-xs" style={{ color: '#5b544c' }}>{lead.child_name}</p>
+                        )}
+                        {lead.subjects?.length > 0 && (
+                          <div className="flex gap-1 mt-1">
+                            {lead.subjects.map((s, i) => (
+                              <span key={i} className="text-[10px] px-2 py-0.5 rounded-full" style={{ background: '#C9DBC030', color: '#5b544c' }}>{s}</span>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                      <p className="text-[10px] shrink-0" style={{ color: '#b8ad9f', fontFamily: 'monospace' }}>
+                        {new Date(lead.received_at).toLocaleDateString()}
                       </p>
-                      {lead.child_name && (
-                        <p className="text-xs" style={{ color: '#5b544c' }}>{lead.child_name}</p>
-                      )}
-                      {lead.subjects?.length > 0 && (
-                        <div className="flex gap-1 mt-1">
-                          {lead.subjects.map((s, i) => (
-                            <span key={i} className="text-[10px] px-2 py-0.5 rounded-full" style={{ background: '#C9DBC030', color: '#5b544c' }}>{s}</span>
-                          ))}
-                        </div>
-                      )}
                     </div>
-                    <p className="text-[10px] shrink-0" style={{ color: '#b8ad9f', fontFamily: 'monospace' }}>
-                      {new Date(lead.received_at).toLocaleDateString()}
-                    </p>
-                  </div>
+                  </Link>
                 ))}
               </div>
             )}

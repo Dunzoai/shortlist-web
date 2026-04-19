@@ -18,8 +18,8 @@ const SERVICE_COLORS: Record<string, string> = {
 const SERVICE_LABELS: Record<string, string> = {
   tutoring: 'Tutoring',
   babysitting: 'Babysitting',
-  test_prep: 'Test Prep',
-  homework_help: 'Homework Help',
+  test_prep: 'Virtual Tutoring',
+  homework_help: 'Pet Sitting',
   other: 'Other',
 };
 
@@ -301,8 +301,8 @@ export default function SchedulePage() {
                 <select value={form.service} onChange={e => setForm(f => ({ ...f, service: e.target.value }))} className="w-full px-3 py-2 rounded-lg border text-sm focus:outline-none" style={inputStyle}>
                   <option value="tutoring">Tutoring</option>
                   <option value="babysitting">Babysitting</option>
-                  <option value="test_prep">Test Prep</option>
-                  <option value="homework_help">Homework Help</option>
+                  <option value="test_prep">Virtual Tutoring</option>
+                  <option value="homework_help">Pet Sitting</option>
                   <option value="other">Other</option>
                 </select>
               </div>

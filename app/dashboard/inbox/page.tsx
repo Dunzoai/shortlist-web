@@ -72,6 +72,7 @@ export default function InboxPage() {
   const [search, setSearch] = useState('');
   const [noteText, setNoteText] = useState('');
   const [myNotes, setMyNotes] = useState<{ id: string; body: string; created_at: string }[]>([]);
+  const [statusFilter, setStatusFilter] = useState<string>('active');
   const supabase = createBrowserSupabase();
 
   useEffect(() => {
@@ -137,6 +138,12 @@ export default function InboxPage() {
   }
 
   const filtered = leads.filter(l => {
+    // Status filter
+    if (statusFilter === 'active' && l.status !== 'new' && l.status !== 'contacted') return false;
+    if (statusFilter === 'booked' && l.status !== 'booked') return false;
+    if (statusFilter === 'done' && l.status !== 'done') return false;
+    if (statusFilter === 'archived' && l.status !== 'archived') return false;
+    // Source filter
     if (filter !== 'all' && l.source !== filter) return false;
     if (search) {
       const q = search.toLowerCase();
@@ -166,9 +173,31 @@ export default function InboxPage() {
           </div>
           <div className="flex gap-1.5 overflow-x-auto pb-1">
             {[
+              { key: 'active', label: 'Active' },
+              { key: 'booked', label: 'Booked' },
+              { key: 'done', label: 'Done' },
+              { key: 'archived', label: 'Archived' },
+            ].map((t) => (
+              <button
+                key={t.key}
+                onClick={() => setStatusFilter(t.key)}
+                className="shrink-0 px-3 py-1.5 rounded-full text-xs font-medium transition-all"
+                style={{
+                  fontFamily: 'var(--font-kalam), cursive',
+                  background: statusFilter === t.key ? '#2b2722' : '#FFF9F0',
+                  color: statusFilter === t.key ? '#FFF9F0' : '#5b544c',
+                  border: `1.5px solid ${statusFilter === t.key ? '#2b2722' : '#d9cfbf'}`,
+                  boxShadow: statusFilter === t.key ? '2px 2px 0 #8a8078' : 'none',
+                }}
+              >
+                {t.label}
+              </button>
+            ))}
+          </div>
+          <div className="flex gap-1.5 overflow-x-auto pb-1">
+            {[
               { key: 'all', label: 'All' },
               { key: 'website_form', label: 'Website' },
-              { key: 'instagram_dm', label: 'Instagram' },
               { key: 'shortlistpass', label: 'ShortlistPass' },
               { key: 'manual', label: 'Manual' },
             ].map((f) => (
@@ -316,6 +345,23 @@ export default function InboxPage() {
                 </span>
               </div>
 
+              {/* Add to Clients — prominent CTA */}
+              {(selected.status === 'new' || selected.status === 'contacted') && (
+                <button
+                  onClick={() => updateStatus(selected.id, 'booked')}
+                  className="mt-4 inline-flex items-center gap-1.5 px-5 py-2.5 rounded-full text-sm font-medium transition-transform hover:-translate-y-0.5"
+                  style={{
+                    background: '#C9DBC0',
+                    color: '#2b2722',
+                    border: '1.5px solid #2b2722',
+                    boxShadow: '3px 3px 0 #2b2722',
+                    fontFamily: 'var(--font-kalam), cursive',
+                  }}
+                >
+                  Add to Clients
+                </button>
+              )}
+
               {/* Action buttons */}
               <div className="flex flex-wrap gap-2 mt-4">
                 {selected.phone && (
@@ -367,20 +413,94 @@ export default function InboxPage() {
 
               {/* Status actions */}
               <div className="flex flex-wrap gap-2 mt-3">
-                {['new', 'contacted', 'booked', 'done', 'archived'].filter(s => s !== selected.status).map((s) => (
+                {selected.status === 'new' && (
+                  <>
+                    <button
+                      onClick={() => updateStatus(selected.id, 'contacted')}
+                      className="text-xs px-3 py-1.5 rounded-full border font-medium transition-transform hover:-translate-y-0.5"
+                      style={{ borderColor: '#d9cfbf', color: '#5b544c', fontFamily: 'var(--font-kalam), cursive' }}
+                    >
+                      Mark Contacted
+                    </button>
+                    <button
+                      onClick={() => updateStatus(selected.id, 'booked')}
+                      className="text-xs px-3 py-1.5 rounded-full border font-medium transition-transform hover:-translate-y-0.5"
+                      style={{ background: '#C9DBC0', color: '#2b2722', border: '1.5px solid #2b2722', boxShadow: '2px 2px 0 #2b2722', fontFamily: 'var(--font-kalam), cursive' }}
+                    >
+                      Add to Clients
+                    </button>
+                    <button
+                      onClick={() => updateStatus(selected.id, 'archived')}
+                      className="text-xs px-3 py-1.5 rounded-full border font-medium transition-transform hover:-translate-y-0.5"
+                      style={{ borderColor: '#d9cfbf', color: '#8a8078', fontFamily: 'var(--font-kalam), cursive' }}
+                    >
+                      Not a Fit
+                    </button>
+                  </>
+                )}
+                {selected.status === 'contacted' && (
+                  <>
+                    <button
+                      onClick={() => updateStatus(selected.id, 'booked')}
+                      className="text-xs px-3 py-1.5 rounded-full border font-medium transition-transform hover:-translate-y-0.5"
+                      style={{ background: '#C9DBC0', color: '#2b2722', border: '1.5px solid #2b2722', boxShadow: '2px 2px 0 #2b2722', fontFamily: 'var(--font-kalam), cursive' }}
+                    >
+                      Add to Clients
+                    </button>
+                    <button
+                      onClick={() => updateStatus(selected.id, 'archived')}
+                      className="text-xs px-3 py-1.5 rounded-full border font-medium transition-transform hover:-translate-y-0.5"
+                      style={{ borderColor: '#d9cfbf', color: '#8a8078', fontFamily: 'var(--font-kalam), cursive' }}
+                    >
+                      Not a Fit
+                    </button>
+                  </>
+                )}
+                {selected.status === 'booked' && (
+                  <>
+                    <button
+                      onClick={() => updateStatus(selected.id, 'done')}
+                      className="text-xs px-3 py-1.5 rounded-full border font-medium transition-transform hover:-translate-y-0.5"
+                      style={{ borderColor: '#d9cfbf', color: '#5b544c', fontFamily: 'var(--font-kalam), cursive' }}
+                    >
+                      Mark Done
+                    </button>
+                    <button
+                      onClick={() => updateStatus(selected.id, 'contacted')}
+                      className="text-xs px-3 py-1.5 rounded-full border font-medium transition-transform hover:-translate-y-0.5"
+                      style={{ borderColor: '#d9cfbf', color: '#8a8078', fontFamily: 'var(--font-kalam), cursive' }}
+                    >
+                      Remove from Clients
+                    </button>
+                  </>
+                )}
+                {selected.status === 'done' && (
+                  <>
+                    <button
+                      onClick={() => updateStatus(selected.id, 'contacted')}
+                      className="text-xs px-3 py-1.5 rounded-full border font-medium transition-transform hover:-translate-y-0.5"
+                      style={{ borderColor: '#d9cfbf', color: '#5b544c', fontFamily: 'var(--font-kalam), cursive' }}
+                    >
+                      Re-open
+                    </button>
+                    <button
+                      onClick={() => updateStatus(selected.id, 'archived')}
+                      className="text-xs px-3 py-1.5 rounded-full border font-medium transition-transform hover:-translate-y-0.5"
+                      style={{ borderColor: '#d9cfbf', color: '#8a8078', fontFamily: 'var(--font-kalam), cursive' }}
+                    >
+                      Archive
+                    </button>
+                  </>
+                )}
+                {selected.status === 'archived' && (
                   <button
-                    key={s}
-                    onClick={() => updateStatus(selected.id, s)}
-                    className="text-[10px] px-2.5 py-1 rounded-full border transition-colors"
-                    style={{
-                      borderColor: '#d9cfbf',
-                      color: '#5b544c',
-                      fontFamily: 'var(--font-kalam), cursive',
-                    }}
+                    onClick={() => updateStatus(selected.id, 'new')}
+                    className="text-xs px-3 py-1.5 rounded-full border font-medium transition-transform hover:-translate-y-0.5"
+                    style={{ borderColor: '#d9cfbf', color: '#5b544c', fontFamily: 'var(--font-kalam), cursive' }}
                   >
-                    Mark {s}
+                    Re-open
                   </button>
-                ))}
+                )}
               </div>
             </div>
 
