@@ -11,7 +11,7 @@ import {
   FileText,
   Menu,
   X,
-  GraduationCap,
+  Sprout,
   LogOut,
   KeyRound,
   Eye,
@@ -137,7 +137,7 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
       <aside className="fixed top-0 left-0 bottom-0 w-56 hidden md:flex flex-col border-r z-40" style={{ background: '#FFF9F0', borderColor: '#d9cfbf' }}>
         <div className="px-5 py-5 border-b" style={{ borderColor: '#d9cfbf' }}>
           <Link href="/dashboard" className="flex items-center gap-2">
-            <GraduationCap className="w-5 h-5" style={{ color: '#C6B4E2' }} />
+            <Sprout className="w-5 h-5" style={{ color: '#C6B4E2' }} />
             <span className="font-bold text-lg" style={{ fontFamily: 'var(--font-caveat), cursive', color: '#2b2722', transform: 'rotate(-1deg)', display: 'inline-block' }}>
               Grow With Gia
             </span>
@@ -206,7 +206,7 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
       {/* Mobile top bar */}
       <header className="md:hidden sticky top-0 z-40 flex items-center justify-between px-4 py-3 border-b" style={{ background: 'rgba(255,249,240,0.92)', backdropFilter: 'blur(8px)', borderColor: '#d9cfbf' }}>
         <Link href="/dashboard" className="flex items-center gap-2">
-          <GraduationCap className="w-5 h-5" style={{ color: '#C6B4E2' }} />
+          <Sprout className="w-5 h-5" style={{ color: '#C6B4E2' }} />
           <span className="font-bold" style={{ fontFamily: 'var(--font-caveat), cursive', color: '#2b2722' }}>Gia</span>
         </Link>
         <button onClick={() => setMobileOpen(!mobileOpen)} className="p-2" style={{ color: '#5b544c' }}>

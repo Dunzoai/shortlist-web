@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { createBrowserSupabase } from '@/lib/dashboard/supabase-browser';
-import { FileText, Plus, Trash2, Save, X, Pencil, Users } from 'lucide-react';
+import { FileText, Plus, Trash2, Save, X, Pencil, Users, Search } from 'lucide-react';
 
 type LeadRef = {
   parent_name: string | null;
@@ -40,6 +40,7 @@ export default function PlansPage() {
   const [body, setBody] = useState('');
   const [leadId, setLeadId] = useState<string>('');
   const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
+  const [planSearch, setPlanSearch] = useState('');
   const supabase = createBrowserSupabase();
 
   const fetchPlans = useCallback(async () => {
@@ -129,10 +130,19 @@ export default function PlansPage() {
     return parts.join(' / ') || 'Unnamed';
   }
 
+  // Filter plans by search
+  const filteredPlans = planSearch.trim()
+    ? plans.filter(p => {
+        const q = planSearch.toLowerCase();
+        const label = clientLabel(p.lead).toLowerCase();
+        return label.includes(q) || (p.title || '').toLowerCase().includes(q) || (p.subject || '').toLowerCase().includes(q);
+      })
+    : plans;
+
   // Group plans by lead_id
   const grouped: Record<string, Plan[]> = {};
   const unlinked: Plan[] = [];
-  for (const plan of plans) {
+  for (const plan of filteredPlans) {
     if (plan.lead_id) {
       if (!grouped[plan.lead_id]) grouped[plan.lead_id] = [];
       grouped[plan.lead_id].push(plan);
@@ -175,6 +185,21 @@ export default function PlansPage() {
           <Plus className="w-3.5 h-3.5" /> New Plan
         </button>
       </div>
+
+      {/* Search */}
+      {plans.length > 0 && !showEditor && (
+        <div className="relative mb-4">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4" style={{ color: '#8a8078' }} />
+          <input
+            type="text"
+            value={planSearch}
+            onChange={(e) => setPlanSearch(e.target.value)}
+            placeholder="Search by client name, plan title, or subject..."
+            className="w-full pl-9 pr-4 py-2.5 rounded-lg border text-sm focus:outline-none"
+            style={{ borderColor: '#d9cfbf', background: '#FFF9F0', fontFamily: 'var(--font-shippori), serif' }}
+          />
+        </div>
+      )}
 
       {/* Editor */}
       {showEditor && (
