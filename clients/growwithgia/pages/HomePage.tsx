@@ -998,13 +998,7 @@ export function HomePage() {
             </div>
 
             {/* Mobile-only animated plant with watering can — centered below cards */}
-            <motion.div
-              className="flex justify-center mt-4 md:hidden"
-              initial={{ opacity: 0 }}
-              whileInView={{ opacity: 0.2 }}
-              viewport={{ once: true, amount: 0.3 }}
-              transition={{ duration: 0.8, delay: 0.8 }}
-            >
+            <div className="flex justify-center mt-4 md:hidden" style={{ opacity: 0.22 }}>
               <svg width="100" height="160" viewBox="0 0 240 380" fill="none">
                 {/* Pot */}
                 <motion.path
@@ -1012,30 +1006,30 @@ export function HomePage() {
                   fill={PETAL_COLORS.teal}
                   initial={{ opacity: 0 }}
                   whileInView={{ opacity: 1 }}
-                  viewport={{ once: true, amount: 0.3 }}
-                  transition={{ duration: 0.4, delay: 0.8 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.4, delay: 0.3 }}
                 />
                 <motion.rect
                   x="72" y="310" width="96" height="12" rx="4"
                   fill={PETAL_COLORS.teal}
                   initial={{ opacity: 0 }}
                   whileInView={{ opacity: 1 }}
-                  viewport={{ once: true, amount: 0.3 }}
-                  transition={{ duration: 0.4, delay: 0.8 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.4, delay: 0.3 }}
                 />
 
                 {/* Watering can */}
                 <motion.g
                   initial={{ opacity: 0, x: 40 }}
                   whileInView={{ opacity: 1, x: 0 }}
-                  viewport={{ once: true, amount: 0.3 }}
-                  transition={{ duration: 0.6, delay: 1.0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.6, delay: 0.5 }}
                 >
                   <motion.g
                     initial={{ rotate: 0 }}
                     whileInView={{ rotate: -28 }}
-                    viewport={{ once: true, amount: 0.3 }}
-                    transition={{ duration: 0.8, delay: 1.4, ease: 'easeInOut' }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.8, delay: 0.9, ease: 'easeInOut' }}
                     style={{ transformOrigin: '190px 262px' }}
                   >
                     <rect x="165" y="248" width="45" height="30" rx="5" fill={PETAL_COLORS.lavender} />
@@ -1059,7 +1053,7 @@ export function HomePage() {
                     }}
                     transition={{
                       duration: 1.0,
-                      delay: 2.0 + i * 0.35,
+                      delay: 1.5 + i * 0.35,
                       repeat: Infinity,
                       repeatDelay: 1.2,
                       ease: 'easeIn',
@@ -1076,8 +1070,8 @@ export function HomePage() {
                   fill="none"
                   initial={{ pathLength: 0 }}
                   whileInView={{ pathLength: 1 }}
-                  viewport={{ once: true, amount: 0.3 }}
-                  transition={{ duration: 2.0, delay: 2.2, ease: 'easeOut' }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 1.8, delay: 1.5, ease: 'easeOut' }}
                 />
 
                 {/* Leaf pairs */}
@@ -1086,8 +1080,8 @@ export function HomePage() {
                   fill="#6dbb8a"
                   initial={{ scale: 0, opacity: 0 }}
                   whileInView={{ scale: 1, opacity: 1 }}
-                  viewport={{ once: true, amount: 0.3 }}
-                  transition={{ duration: 0.5, delay: 3.0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.5, delay: 2.2 }}
                   style={{ transformOrigin: '120px 240px' }}
                 />
                 <motion.path
@@ -1095,8 +1089,8 @@ export function HomePage() {
                   fill="#6dbb8a"
                   initial={{ scale: 0, opacity: 0 }}
                   whileInView={{ scale: 1, opacity: 1 }}
-                  viewport={{ once: true, amount: 0.3 }}
-                  transition={{ duration: 0.5, delay: 3.2 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.5, delay: 2.4 }}
                   style={{ transformOrigin: '120px 230px' }}
                 />
                 <motion.path
@@ -1104,8 +1098,8 @@ export function HomePage() {
                   fill="#6dbb8a"
                   initial={{ scale: 0, opacity: 0 }}
                   whileInView={{ scale: 1, opacity: 1 }}
-                  viewport={{ once: true, amount: 0.3 }}
-                  transition={{ duration: 0.5, delay: 3.5 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.5, delay: 2.7 }}
                   style={{ transformOrigin: '120px 180px' }}
                 />
                 <motion.path
@@ -1113,8 +1107,8 @@ export function HomePage() {
                   fill="#6dbb8a"
                   initial={{ scale: 0, opacity: 0 }}
                   whileInView={{ scale: 1, opacity: 1 }}
-                  viewport={{ once: true, amount: 0.3 }}
-                  transition={{ duration: 0.5, delay: 3.7 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.5, delay: 2.9 }}
                   style={{ transformOrigin: '120px 170px' }}
                 />
                 <motion.path
@@ -1122,8 +1116,8 @@ export function HomePage() {
                   fill="#6dbb8a"
                   initial={{ scale: 0, opacity: 0 }}
                   whileInView={{ scale: 1, opacity: 1 }}
-                  viewport={{ once: true, amount: 0.3 }}
-                  transition={{ duration: 0.4, delay: 4.0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.4, delay: 3.1 }}
                   style={{ transformOrigin: '120px 130px' }}
                 />
 
@@ -1145,8 +1139,8 @@ export function HomePage() {
                       transform={`rotate(${angle}, ${px}, ${py})`}
                       initial={{ scale: 0, opacity: 0 }}
                       whileInView={{ scale: 1, opacity: 0.85 }}
-                      viewport={{ once: true, amount: 0.3 }}
-                      transition={{ type: 'spring', stiffness: 300, damping: 12, delay: 4.3 + i * 0.1 }}
+                      viewport={{ once: true }}
+                      transition={{ type: 'spring', stiffness: 300, damping: 12, delay: 3.4 + i * 0.1 }}
                       style={{ transformOrigin: `${px}px ${py}px` }}
                     />
                   );
@@ -1156,12 +1150,12 @@ export function HomePage() {
                   fill={PETAL_COLORS.yellow}
                   initial={{ scale: 0 }}
                   whileInView={{ scale: 1 }}
-                  viewport={{ once: true, amount: 0.3 }}
-                  transition={{ type: 'spring', stiffness: 400, damping: 10, delay: 4.8 }}
+                  viewport={{ once: true }}
+                  transition={{ type: 'spring', stiffness: 400, damping: 10, delay: 3.9 }}
                   style={{ transformOrigin: '120px 78px' }}
                 />
               </svg>
-            </motion.div>
+            </div>
 
           </motion.div>
         </div>
