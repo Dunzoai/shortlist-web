@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { createBrowserSupabase } from '@/lib/dashboard/supabase-browser';
-import { Users, Phone, Mail, BookOpen, Trash2, Plus, X, ChevronDown, ChevronUp, Pencil, Calendar, Clock, FileText } from 'lucide-react';
+import { Users, Phone, Mail, BookOpen, Trash2, Plus, X, ChevronDown, ChevronUp, Pencil, Calendar, Clock, FileText, Search, StickyNote, Send } from 'lucide-react';
 
 const SERVICE_COLORS: Record<string, string> = {
   tutoring: '#A5C4D4',
@@ -71,6 +71,9 @@ export default function ClientsPage() {
   const [showAddClient, setShowAddClient] = useState(false);
   const [addClientForm, setAddClientForm] = useState({ parent_name: '', child_name: '', child_grade: '', email: '', phone: '', subjects: '' });
   const [addingClient, setAddingClient] = useState(false);
+  const [clientSearch, setClientSearch] = useState('');
+  const [clientNotes, setClientNotes] = useState<Record<string, { id: string; body: string; created_at: string }[]>>({});
+  const [noteText, setNoteText] = useState('');
   const supabase = createBrowserSupabase();
 
   const fetchClients = useCallback(async () => {
@@ -106,6 +109,31 @@ export default function ClientsPage() {
     setClientPlans(prev => ({ ...prev, [leadId]: data || [] }));
   }
 
+  async function fetchNotes(leadId: string) {
+    const { data } = await supabase
+      .from('lead_notes')
+      .select('id, body, created_at')
+      .eq('lead_id', leadId)
+      .order('created_at', { ascending: true });
+    setClientNotes(prev => ({ ...prev, [leadId]: data || [] }));
+  }
+
+  async function addClientNote(leadId: string) {
+    if (!noteText.trim()) return;
+    const { data } = await supabase
+      .from('lead_notes')
+      .insert({ lead_id: leadId, owner_id: '00000000-0000-0000-0000-000000000000', body: noteText.trim() })
+      .select('id, body, created_at')
+      .single();
+    if (data) setClientNotes(prev => ({ ...prev, [leadId]: [...(prev[leadId] || []), data] }));
+    setNoteText('');
+  }
+
+  async function deleteClientNote(noteId: string, leadId: string) {
+    await supabase.from('lead_notes').delete().eq('id', noteId);
+    setClientNotes(prev => ({ ...prev, [leadId]: (prev[leadId] || []).filter(n => n.id !== noteId) }));
+  }
+
   function toggleExpand(id: string) {
     if (expandedId === id) {
       setExpandedId(null);
@@ -117,8 +145,10 @@ export default function ClientsPage() {
       setSessionFormId(null);
       setPlanFormId(null);
       setEditingPlanId(null);
+      setNoteText('');
       fetchSessions(id);
       fetchPlans(id);
+      fetchNotes(id);
     }
   }
 
@@ -308,6 +338,21 @@ export default function ClientsPage() {
         </div>
       )}
 
+      {/* Search bar */}
+      {clients.length > 0 && (
+        <div className="relative mb-4">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4" style={{ color: '#8a8078' }} />
+          <input
+            type="text"
+            value={clientSearch}
+            onChange={(e) => setClientSearch(e.target.value)}
+            placeholder="Search clients..."
+            className="w-full pl-9 pr-4 py-2.5 rounded-lg border text-sm focus:outline-none"
+            style={{ borderColor: '#d9cfbf', background: '#FFF9F0', fontFamily: 'var(--font-shippori), serif' }}
+          />
+        </div>
+      )}
+
       {loading ? (
         <p style={{ color: '#8a8078', fontFamily: 'var(--font-kalam), cursive' }}>Loading...</p>
       ) : clients.length === 0 ? (
@@ -318,7 +363,11 @@ export default function ClientsPage() {
         </div>
       ) : (
         <div className="space-y-4">
-          {clients.map((client) => {
+          {clients.filter(c => {
+            if (!clientSearch) return true;
+            const q = clientSearch.toLowerCase();
+            return (c.parent_name || '').toLowerCase().includes(q) || (c.child_name || '').toLowerCase().includes(q);
+          }).map((client) => {
             const isExpanded = expandedId === client.id;
             const isEditing = editingId === client.id;
             const sessions = clientSessions[client.id] || [];
@@ -670,6 +719,60 @@ export default function ClientsPage() {
                           ))}
                         </div>
                       )}
+                    </div>
+
+                    {/* Parent Notes — read-only from intake */}
+                    {client.notes && (
+                      <div className="mt-4 p-4 rounded-lg" style={{ background: '#A5C4D420', border: '1px solid #A5C4D440' }}>
+                        <div className="flex items-center gap-1.5 mb-2">
+                          <StickyNote className="w-3.5 h-3.5" style={{ color: '#A5C4D4' }} />
+                          <p className="text-xs uppercase tracking-wider font-semibold" style={{ color: '#8a8078', fontFamily: 'monospace' }}>Parent Notes</p>
+                        </div>
+                        <p className="text-sm italic" style={{ color: '#5b544c' }}>{client.notes}</p>
+                      </div>
+                    )}
+
+                    {/* My Notes — Gia's notes, add/delete */}
+                    <div className="mt-4 p-4 rounded-lg" style={{ background: '#F3DFA230', border: '1px dashed #F3DFA2' }}>
+                      <div className="flex items-center gap-1.5 mb-3">
+                        <StickyNote className="w-3.5 h-3.5" style={{ color: '#F3DFA2' }} />
+                        <p className="text-xs uppercase tracking-wider font-semibold" style={{ color: '#8a8078', fontFamily: 'monospace' }}>My Notes</p>
+                      </div>
+                      {(clientNotes[client.id] || []).length > 0 ? (
+                        <div className="space-y-2 mb-3">
+                          {(clientNotes[client.id] || []).map((note) => (
+                            <div key={note.id} className="flex items-start gap-2 group">
+                              <p className="text-sm flex-1" style={{ color: '#5b544c', fontFamily: 'var(--font-shippori), serif' }}>{note.body}</p>
+                              <button
+                                onClick={() => deleteClientNote(note.id, client.id)}
+                                className="shrink-0 p-1 rounded opacity-0 group-hover:opacity-100 hover:bg-red-50 transition-all"
+                              >
+                                <X className="w-3 h-3" style={{ color: '#D4A5A5' }} />
+                              </button>
+                            </div>
+                          ))}
+                        </div>
+                      ) : (
+                        <p className="text-xs mb-3" style={{ color: '#b8ad9f' }}>No notes yet</p>
+                      )}
+                      <div className="flex gap-2">
+                        <input
+                          type="text"
+                          value={expandedId === client.id ? noteText : ''}
+                          onChange={(e) => setNoteText(e.target.value)}
+                          placeholder="Add a note..."
+                          className="flex-1 px-3 py-2 rounded-lg border text-sm focus:outline-none"
+                          style={{ borderColor: '#d9cfbf', background: 'white', fontFamily: 'var(--font-shippori), serif' }}
+                          onKeyDown={(e) => { if (e.key === 'Enter') addClientNote(client.id); }}
+                        />
+                        <button
+                          onClick={() => addClientNote(client.id)}
+                          className="px-3 py-2 rounded-lg text-xs"
+                          style={{ background: '#F5C6A0', color: '#2b2722', fontFamily: 'var(--font-kalam), cursive', border: '1.5px solid #2b2722', boxShadow: '2px 2px 0 #2b2722' }}
+                        >
+                          <Send className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
                     </div>
                   </div>
                 )}

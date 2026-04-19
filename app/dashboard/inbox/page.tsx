@@ -345,23 +345,6 @@ export default function InboxPage() {
                 </span>
               </div>
 
-              {/* Add to Clients — prominent CTA */}
-              {(selected.status === 'new' || selected.status === 'contacted') && (
-                <button
-                  onClick={() => updateStatus(selected.id, 'booked')}
-                  className="mt-4 inline-flex items-center gap-1.5 px-5 py-2.5 rounded-full text-sm font-medium transition-transform hover:-translate-y-0.5"
-                  style={{
-                    background: '#C9DBC0',
-                    color: '#2b2722',
-                    border: '1.5px solid #2b2722',
-                    boxShadow: '3px 3px 0 #2b2722',
-                    fontFamily: 'var(--font-kalam), cursive',
-                  }}
-                >
-                  Add to Clients
-                </button>
-              )}
-
               {/* Action buttons */}
               <div className="flex flex-wrap gap-2 mt-4">
                 {selected.phone && (
