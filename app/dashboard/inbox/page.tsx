@@ -21,6 +21,7 @@ import {
   MoreHorizontal,
   StickyNote,
   Send,
+  X,
 } from 'lucide-react';
 
 type Lead = {
@@ -70,6 +71,7 @@ export default function InboxPage() {
   const [filter, setFilter] = useState<string>('all');
   const [search, setSearch] = useState('');
   const [noteText, setNoteText] = useState('');
+  const [myNotes, setMyNotes] = useState<{ id: string; body: string; created_at: string }[]>([]);
   const supabase = createBrowserSupabase();
 
   useEffect(() => {
@@ -109,6 +111,29 @@ export default function InboxPage() {
       await supabase.from('leads').update({ unread: false }).eq('id', id);
       setLeads(prev => prev.map(l => l.id === id ? { ...l, unread: false } : l));
     }
+    // Fetch Gia's notes for this lead
+    const { data } = await supabase
+      .from('lead_notes')
+      .select('id, body, created_at')
+      .eq('lead_id', id)
+      .order('created_at', { ascending: true });
+    setMyNotes(data || []);
+  }
+
+  async function addNote(leadId: string) {
+    if (!noteText.trim()) return;
+    const { data } = await supabase
+      .from('lead_notes')
+      .insert({ lead_id: leadId, owner_id: '00000000-0000-0000-0000-000000000000', body: noteText.trim() })
+      .select('id, body, created_at')
+      .single();
+    if (data) setMyNotes(prev => [...prev, data]);
+    setNoteText('');
+  }
+
+  async function deleteNote(noteId: string) {
+    await supabase.from('lead_notes').delete().eq('id', noteId);
+    setMyNotes(prev => prev.filter(n => n.id !== noteId));
   }
 
   const filtered = leads.filter(l => {
@@ -409,19 +434,44 @@ export default function InboxPage() {
               </div>
             )}
 
-            {/* Notes */}
+            {/* Parent Notes — from intake form, read-only */}
             {selected.notes && (
-              <div className="mx-6 p-4 rounded-lg mb-4" style={{ background: '#F3DFA230', border: '1px dashed #F3DFA2' }}>
+              <div className="mx-6 p-4 rounded-lg mb-4" style={{ background: '#A5C4D420', border: '1px solid #A5C4D440' }}>
                 <div className="flex items-center gap-1.5 mb-2">
-                  <StickyNote className="w-3.5 h-3.5" style={{ color: '#8a8078' }} />
-                  <p className="text-xs uppercase tracking-wider font-semibold" style={{ color: '#8a8078', fontFamily: 'monospace' }}>Notes</p>
+                  <StickyNote className="w-3.5 h-3.5" style={{ color: '#A5C4D4' }} />
+                  <p className="text-xs uppercase tracking-wider font-semibold" style={{ color: '#8a8078', fontFamily: 'monospace' }}>Parent Notes</p>
                 </div>
                 <p className="text-sm italic" style={{ color: '#5b544c' }}>{selected.notes}</p>
               </div>
             )}
 
-            {/* Quick note input */}
-            <div className="mx-6 mb-6">
+            {/* My Notes — Gia's own notes, editable */}
+            <div className="mx-6 p-4 rounded-lg mb-4" style={{ background: '#F3DFA230', border: '1px dashed #F3DFA2' }}>
+              <div className="flex items-center gap-1.5 mb-3">
+                <StickyNote className="w-3.5 h-3.5" style={{ color: '#F3DFA2' }} />
+                <p className="text-xs uppercase tracking-wider font-semibold" style={{ color: '#8a8078', fontFamily: 'monospace' }}>My Notes</p>
+              </div>
+
+              {myNotes.length > 0 ? (
+                <div className="space-y-2 mb-3">
+                  {myNotes.map((note) => (
+                    <div key={note.id} className="flex items-start gap-2 group">
+                      <p className="text-sm flex-1" style={{ color: '#5b544c', fontFamily: 'var(--font-shippori), serif' }}>{note.body}</p>
+                      <button
+                        onClick={() => deleteNote(note.id)}
+                        className="shrink-0 p-1 rounded opacity-0 group-hover:opacity-100 hover:bg-red-50 transition-all"
+                        title="Delete note"
+                      >
+                        <X className="w-3 h-3" style={{ color: '#D4A5A5' }} />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-xs mb-3" style={{ color: '#b8ad9f' }}>No notes yet</p>
+              )}
+
+              {/* Add note input */}
               <div className="flex gap-2">
                 <input
                   type="text"
@@ -429,22 +479,11 @@ export default function InboxPage() {
                   onChange={(e) => setNoteText(e.target.value)}
                   placeholder="Add a note..."
                   className="flex-1 px-3 py-2 rounded-lg border text-sm focus:outline-none"
-                  style={{ borderColor: '#d9cfbf', background: '#FFF9F0', fontFamily: 'var(--font-shippori), serif' }}
-                  onKeyDown={async (e) => {
-                    if (e.key === 'Enter' && noteText.trim()) {
-                      await supabase.from('leads').update({ notes: (selected.notes ? selected.notes + '\n' : '') + noteText.trim(), updated_at: new Date().toISOString() }).eq('id', selected.id);
-                      setLeads(prev => prev.map(l => l.id === selected.id ? { ...l, notes: (l.notes ? l.notes + '\n' : '') + noteText.trim() } : l));
-                      setNoteText('');
-                    }
-                  }}
+                  style={{ borderColor: '#d9cfbf', background: 'white', fontFamily: 'var(--font-shippori), serif' }}
+                  onKeyDown={(e) => { if (e.key === 'Enter') addNote(selected.id); }}
                 />
                 <button
-                  onClick={async () => {
-                    if (!noteText.trim()) return;
-                    await supabase.from('leads').update({ notes: (selected.notes ? selected.notes + '\n' : '') + noteText.trim(), updated_at: new Date().toISOString() }).eq('id', selected.id);
-                    setLeads(prev => prev.map(l => l.id === selected.id ? { ...l, notes: (l.notes ? l.notes + '\n' : '') + noteText.trim() } : l));
-                    setNoteText('');
-                  }}
+                  onClick={() => addNote(selected.id)}
                   className="px-3 py-2 rounded-lg text-xs"
                   style={{ background: '#F5C6A0', color: '#2b2722', fontFamily: 'var(--font-kalam), cursive', border: '1.5px solid #2b2722', boxShadow: '2px 2px 0 #2b2722' }}
                 >

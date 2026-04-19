@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { createBrowserSupabase } from '@/lib/dashboard/supabase-browser';
-import { FileText, Plus, Upload, Trash2, Save } from 'lucide-react';
+import { FileText, Plus, Trash2, Save } from 'lucide-react';
 
 type Plan = {
   id: string;
@@ -19,6 +19,7 @@ export default function PlansPage() {
   const [plans, setPlans] = useState<Plan[]>([]);
   const [loading, setLoading] = useState(true);
   const [editing, setEditing] = useState<Plan | null>(null);
+  const [showEditor, setShowEditor] = useState(false);
   const [title, setTitle] = useState('');
   const [subject, setSubject] = useState('');
   const [grade, setGrade] = useState('');
@@ -45,6 +46,7 @@ export default function PlansPage() {
     setSubject('');
     setGrade('');
     setBody('');
+    setShowEditor(true);
   }
 
   function editPlan(plan: Plan) {
@@ -53,6 +55,7 @@ export default function PlansPage() {
     setSubject(plan.subject || '');
     setGrade(plan.grade_level || '');
     setBody(plan.body_markdown || '');
+    setShowEditor(true);
   }
 
   async function savePlan() {
@@ -72,19 +75,22 @@ export default function PlansPage() {
       await supabase.from('lesson_plans').insert(payload);
     }
     await fetchPlans();
+    cancelEditor();
+  }
+
+  function cancelEditor() {
     setEditing(null);
     setTitle('');
     setSubject('');
     setGrade('');
     setBody('');
+    setShowEditor(false);
   }
 
   async function deletePlan(id: string) {
     await supabase.from('lesson_plans').delete().eq('id', id);
     setPlans(prev => prev.filter(p => p.id !== id));
   }
-
-  const isEditorOpen = title || editing;
 
   return (
     <div className="p-6 md:p-8 max-w-5xl mx-auto">
@@ -108,7 +114,7 @@ export default function PlansPage() {
       </div>
 
       {/* Editor */}
-      {isEditorOpen && (
+      {showEditor && (
         <div className="rounded-lg border p-5 mb-6 space-y-4" style={{ borderColor: '#d9cfbf', background: '#FFF9F0' }}>
           <input
             type="text"
@@ -153,7 +159,7 @@ export default function PlansPage() {
               <Save className="w-3.5 h-3.5" /> Save
             </button>
             <button
-              onClick={() => { setEditing(null); setTitle(''); setBody(''); }}
+              onClick={cancelEditor}
               className="px-4 py-2 rounded-full text-xs"
               style={{ color: '#8a8078', fontFamily: 'var(--font-kalam), cursive' }}
             >
@@ -166,7 +172,7 @@ export default function PlansPage() {
       {/* Plans grid */}
       {loading ? (
         <p style={{ color: '#8a8078', fontFamily: 'var(--font-kalam), cursive' }}>Loading...</p>
-      ) : plans.length === 0 && !isEditorOpen ? (
+      ) : plans.length === 0 && !showEditor ? (
         <div className="text-center py-16 rounded-lg border" style={{ borderColor: '#d9cfbf', background: '#FFF9F0' }}>
           <FileText className="w-10 h-10 mx-auto mb-3 opacity-30" style={{ color: '#8a8078' }} />
           <p className="text-lg" style={{ color: '#8a8078', fontFamily: 'var(--font-caveat), cursive' }}>No lesson plans yet</p>
