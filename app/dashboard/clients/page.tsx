@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { createBrowserSupabase } from '@/lib/dashboard/supabase-browser';
-import { Users, Phone, Mail, BookOpen, Trash2, Plus, X, ChevronDown, ChevronUp, Pencil, Calendar, Clock } from 'lucide-react';
+import { Users, Phone, Mail, BookOpen, Trash2, Plus, X, ChevronDown, ChevronUp, Pencil, Calendar, Clock, FileText } from 'lucide-react';
 
 const SERVICE_COLORS: Record<string, string> = {
   tutoring: '#A5C4D4',
@@ -43,6 +43,16 @@ type Session = {
   completed: boolean;
 };
 
+type Plan = {
+  id: string;
+  lead_id: string | null;
+  title: string;
+  subject: string | null;
+  body_markdown: string | null;
+  created_at: string;
+  updated_at: string;
+};
+
 export default function ClientsPage() {
   const [clients, setClients] = useState<Lead[]>([]);
   const [loading, setLoading] = useState(true);
@@ -53,6 +63,11 @@ export default function ClientsPage() {
   const [sessionFormId, setSessionFormId] = useState<string | null>(null);
   const [sessionForm, setSessionForm] = useState({ date: '', time: '15:00', duration: 60, service: 'tutoring', notes: '' });
   const [clientSessions, setClientSessions] = useState<Record<string, Session[]>>({});
+  const [clientPlans, setClientPlans] = useState<Record<string, Plan[]>>({});
+  const [planFormId, setPlanFormId] = useState<string | null>(null);
+  const [planForm, setPlanForm] = useState({ title: '', subject: '', body_markdown: '' });
+  const [editingPlanId, setEditingPlanId] = useState<string | null>(null);
+  const [deletePlanConfirmId, setDeletePlanConfirmId] = useState<string | null>(null);
   const [showAddClient, setShowAddClient] = useState(false);
   const [addClientForm, setAddClientForm] = useState({ parent_name: '', child_name: '', child_grade: '', email: '', phone: '', subjects: '' });
   const [addingClient, setAddingClient] = useState(false);
@@ -82,6 +97,15 @@ export default function ClientsPage() {
     setClientSessions(prev => ({ ...prev, [leadId]: data || [] }));
   }
 
+  async function fetchPlans(leadId: string) {
+    const { data } = await supabase
+      .from('lesson_plans')
+      .select('*')
+      .eq('lead_id', leadId)
+      .order('updated_at', { ascending: false });
+    setClientPlans(prev => ({ ...prev, [leadId]: data || [] }));
+  }
+
   function toggleExpand(id: string) {
     if (expandedId === id) {
       setExpandedId(null);
@@ -91,7 +115,10 @@ export default function ClientsPage() {
       setExpandedId(id);
       setEditingId(null);
       setSessionFormId(null);
+      setPlanFormId(null);
+      setEditingPlanId(null);
       fetchSessions(id);
+      fetchPlans(id);
     }
   }
 
@@ -154,6 +181,44 @@ export default function ClientsPage() {
   async function deleteSession(sessionId: string, leadId: string) {
     await supabase.from('sessions').delete().eq('id', sessionId);
     await fetchSessions(leadId);
+  }
+
+  function openPlanForm(clientId: string) {
+    setPlanFormId(clientId);
+    setEditingPlanId(null);
+    setPlanForm({ title: '', subject: '', body_markdown: '' });
+  }
+
+  function startEditPlan(plan: Plan) {
+    setEditingPlanId(plan.id);
+    setPlanFormId(plan.lead_id);
+    setPlanForm({ title: plan.title, subject: plan.subject || '', body_markdown: plan.body_markdown || '' });
+  }
+
+  async function savePlan(leadId: string) {
+    if (!planForm.title.trim()) return;
+    const payload = {
+      title: planForm.title.trim(),
+      subject: planForm.subject.trim() || null,
+      body_markdown: planForm.body_markdown.trim() || null,
+      lead_id: leadId,
+      owner_id: '00000000-0000-0000-0000-000000000000',
+      updated_at: new Date().toISOString(),
+    };
+    if (editingPlanId) {
+      await supabase.from('lesson_plans').update(payload).eq('id', editingPlanId);
+    } else {
+      await supabase.from('lesson_plans').insert(payload);
+    }
+    setPlanFormId(null);
+    setEditingPlanId(null);
+    await fetchPlans(leadId);
+  }
+
+  async function deletePlan(planId: string, leadId: string) {
+    await supabase.from('lesson_plans').delete().eq('id', planId);
+    setDeletePlanConfirmId(null);
+    await fetchPlans(leadId);
   }
 
   async function saveNewClient() {
@@ -257,6 +322,7 @@ export default function ClientsPage() {
             const isExpanded = expandedId === client.id;
             const isEditing = editingId === client.id;
             const sessions = clientSessions[client.id] || [];
+            const plans = clientPlans[client.id] || [];
 
             return (
               <div
@@ -496,6 +562,112 @@ export default function ClientsPage() {
                               </div>
                             );
                           })}
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Lesson Plans */}
+                    <div className="mt-4">
+                      <div className="flex items-center justify-between mb-2">
+                        <p className="text-[10px] uppercase tracking-wider" style={{ color: '#8a8078', fontFamily: 'monospace' }}>
+                          <FileText className="w-3 h-3 inline mr-1" />
+                          Lesson Plans ({plans.length})
+                        </p>
+                        <button
+                          onClick={() => openPlanForm(client.id)}
+                          className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-[10px] font-medium transition-transform hover:-translate-y-0.5"
+                          style={{ background: '#C9DBC0', color: '#2b2722', border: '1.5px solid #2b2722', boxShadow: '2px 2px 0 #2b2722', fontFamily: 'var(--font-kalam), cursive' }}
+                        >
+                          <Plus className="w-2.5 h-2.5" /> Add Plan
+                        </button>
+                      </div>
+
+                      {/* Add/Edit Plan Form */}
+                      {planFormId === client.id && (
+                        <div className="rounded-lg border p-4 mb-3 space-y-3" style={{ borderColor: '#d9cfbf', background: 'white' }}>
+                          <div className="flex items-center justify-between">
+                            <h4 className="text-sm font-bold" style={{ fontFamily: 'var(--font-caveat), cursive', color: '#2b2722' }}>
+                              {editingPlanId ? 'Edit Plan' : 'New Plan'}
+                            </h4>
+                            <button onClick={() => { setPlanFormId(null); setEditingPlanId(null); }} className="p-1"><X className="w-3.5 h-3.5" style={{ color: '#8a8078' }} /></button>
+                          </div>
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            <div>
+                              <label className="text-[10px] uppercase tracking-wider mb-1 block" style={{ color: '#8a8078', fontFamily: 'monospace' }}>Title *</label>
+                              <input type="text" value={planForm.title} onChange={e => setPlanForm(f => ({ ...f, title: e.target.value }))} placeholder="Plan title" className="w-full px-3 py-2 rounded-lg border text-sm focus:outline-none" style={inputStyle} />
+                            </div>
+                            <div>
+                              <label className="text-[10px] uppercase tracking-wider mb-1 block" style={{ color: '#8a8078', fontFamily: 'monospace' }}>Subject</label>
+                              <input type="text" value={planForm.subject} onChange={e => setPlanForm(f => ({ ...f, subject: e.target.value }))} placeholder="e.g. Math" className="w-full px-3 py-2 rounded-lg border text-sm focus:outline-none" style={inputStyle} />
+                            </div>
+                          </div>
+                          <div>
+                            <label className="text-[10px] uppercase tracking-wider mb-1 block" style={{ color: '#8a8078', fontFamily: 'monospace' }}>Content</label>
+                            <textarea value={planForm.body_markdown} onChange={e => setPlanForm(f => ({ ...f, body_markdown: e.target.value }))} rows={4} placeholder="Lesson plan content..." className="w-full px-3 py-2 rounded-lg border text-sm focus:outline-none resize-none" style={inputStyle} />
+                          </div>
+                          <button
+                            onClick={() => savePlan(client.id)}
+                            disabled={!planForm.title.trim()}
+                            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                            style={{ background: '#A5C4D4', color: '#2b2722', border: '1.5px solid #2b2722', boxShadow: '2px 2px 0 #2b2722', fontFamily: 'var(--font-kalam), cursive' }}
+                          >
+                            {editingPlanId ? 'Update Plan' : 'Save Plan'}
+                          </button>
+                        </div>
+                      )}
+
+                      {plans.length === 0 ? (
+                        <p className="text-xs" style={{ color: '#b8ad9f', fontFamily: 'var(--font-kalam), cursive' }}>No lesson plans yet</p>
+                      ) : (
+                        <div className="space-y-2">
+                          {plans.map(plan => (
+                            <div key={plan.id} className="rounded-lg border px-3 py-2" style={{ borderColor: '#d9cfbf', borderLeft: '4px solid #A5C4D4', background: 'white' }}>
+                              <div className="flex items-start justify-between">
+                                <div className="flex-1 min-w-0">
+                                  <p className="text-xs font-medium" style={{ color: '#2b2722', fontFamily: 'var(--font-shippori), serif' }}>{plan.title}</p>
+                                  {plan.subject && (
+                                    <p className="text-[10px] mt-0.5" style={{ color: '#8a8078' }}>{plan.subject}</p>
+                                  )}
+                                  {plan.body_markdown && (
+                                    <p className="text-[10px] mt-1 line-clamp-2" style={{ color: '#5b544c', fontFamily: 'var(--font-shippori), serif' }}>{plan.body_markdown}</p>
+                                  )}
+                                </div>
+                                <div className="flex items-center gap-1 shrink-0 ml-2">
+                                  <button
+                                    onClick={() => startEditPlan(plan)}
+                                    className="p-1 rounded hover:bg-yellow-50 transition-colors"
+                                  >
+                                    <Pencil className="w-3 h-3" style={{ color: '#F3DFA2' }} />
+                                  </button>
+                                  {deletePlanConfirmId === plan.id ? (
+                                    <div className="flex items-center gap-1">
+                                      <button
+                                        onClick={() => deletePlan(plan.id, client.id)}
+                                        className="text-[10px] px-1.5 py-0.5 rounded"
+                                        style={{ background: '#D4A5A5', color: '#2b2722', fontFamily: 'var(--font-kalam), cursive' }}
+                                      >
+                                        Yes
+                                      </button>
+                                      <button
+                                        onClick={() => setDeletePlanConfirmId(null)}
+                                        className="text-[10px] px-1.5 py-0.5"
+                                        style={{ color: '#8a8078', fontFamily: 'var(--font-kalam), cursive' }}
+                                      >
+                                        No
+                                      </button>
+                                    </div>
+                                  ) : (
+                                    <button
+                                      onClick={() => setDeletePlanConfirmId(plan.id)}
+                                      className="p-1 rounded hover:bg-red-50 transition-colors"
+                                    >
+                                      <Trash2 className="w-3 h-3" style={{ color: '#D4A5A5' }} />
+                                    </button>
+                                  )}
+                                </div>
+                              </div>
+                            </div>
+                          ))}
                         </div>
                       )}
                     </div>
