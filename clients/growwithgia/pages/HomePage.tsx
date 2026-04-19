@@ -394,7 +394,9 @@ export function HomePage() {
 
       {/* ─── SECTION 1: NAME + GRADE (sneaky intake start) ─── */}
       <section className="relative py-20 md:py-28 px-6">
-        <div className="relative z-10 max-w-3xl mx-auto text-center">
+        <div className="relative z-10 max-w-3xl mx-auto text-center rounded-3xl p-8 md:p-12" style={{ backgroundColor: `${PETAL_COLORS.teal}12`, border: `1px solid ${PETAL_COLORS.teal}20` }}>
+          {/* Accent rectangle behind — like the lavender box behind Gia's photo */}
+          <div className="absolute -z-10 -bottom-3 -right-3 inset-0 rounded-3xl" style={{ backgroundColor: `${PETAL_COLORS.teal}18` }} />
           <motion.div initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.4 }} variants={fadeIn}>
             <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-slate-800 mb-3" style={{ fontFamily: "'Georgia', serif" }}>
               {["Let's", 'get'].map((word, i) => (
@@ -708,7 +710,159 @@ export function HomePage() {
 
       {/* ─── BABYSITTING / CHILDCARE ─── */}
       <section id="childcare" className="relative py-28 md:py-36 px-6 overflow-hidden" style={{ backgroundColor: '#f0fdfa' }}>
-        <div className="max-w-4xl mx-auto">
+        {/* Animated growing plant — faded nurturing accent */}
+        <motion.div
+          className="absolute pointer-events-none"
+          style={{ bottom: '5%', left: '6%', opacity: 0.12 }}
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 0.12 }}
+          viewport={{ once: true }}
+          transition={{ duration: 1 }}
+        >
+          <svg width="180" height="320" viewBox="0 0 180 320" fill="none">
+            {/* Pot */}
+            <motion.path
+              d="M50 280 L55 310 L125 310 L130 280 Z"
+              fill={PETAL_COLORS.teal}
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5 }}
+            />
+            <motion.rect
+              x="42" y="270" width="96" height="14" rx="4"
+              fill={PETAL_COLORS.teal}
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5 }}
+            />
+            {/* Stem growing upward */}
+            <motion.path
+              d="M90 270 C90 230 88 190 90 140 C92 100 90 70 90 40"
+              stroke="#6dbb8a"
+              strokeWidth="4"
+              strokeLinecap="round"
+              fill="none"
+              initial={{ pathLength: 0 }}
+              whileInView={{ pathLength: 1 }}
+              viewport={{ once: true }}
+              transition={{ duration: 2, delay: 0.4, ease: 'easeOut' }}
+            />
+            {/* Leaf left */}
+            <motion.path
+              d="M90 180 C70 165 45 170 40 185 C35 200 55 200 90 180Z"
+              fill="#6dbb8a"
+              initial={{ scale: 0, opacity: 0 }}
+              whileInView={{ scale: 1, opacity: 1 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: 1.2 }}
+              style={{ transformOrigin: '90px 180px' }}
+            />
+            {/* Leaf right */}
+            <motion.path
+              d="M90 140 C110 125 135 130 140 145 C145 160 125 160 90 140Z"
+              fill="#6dbb8a"
+              initial={{ scale: 0, opacity: 0 }}
+              whileInView={{ scale: 1, opacity: 1 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: 1.6 }}
+              style={{ transformOrigin: '90px 140px' }}
+            />
+            {/* Small leaf left */}
+            <motion.path
+              d="M90 100 C75 90 58 95 55 105 C52 115 68 112 90 100Z"
+              fill="#6dbb8a"
+              initial={{ scale: 0, opacity: 0 }}
+              whileInView={{ scale: 1, opacity: 1 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: 2.0 }}
+              style={{ transformOrigin: '90px 100px' }}
+            />
+            {/* Bloom / bud at top */}
+            <motion.circle
+              cx="90" cy="38" r="12"
+              fill={PETAL_COLORS.pink}
+              initial={{ scale: 0, opacity: 0 }}
+              whileInView={{ scale: 1, opacity: 1 }}
+              viewport={{ once: true }}
+              transition={{ type: 'spring', stiffness: 300, damping: 10, delay: 2.3 }}
+              style={{ transformOrigin: '90px 38px' }}
+            />
+            {/* Water droplets */}
+            <motion.circle
+              cx="70" cy="260" r="4"
+              fill={PETAL_COLORS.teal}
+              initial={{ opacity: 0, y: -20 }}
+              whileInView={{ opacity: [0, 0.8, 0], y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 1, delay: 0.2 }}
+            />
+            <motion.circle
+              cx="110" cy="255" r="3"
+              fill={PETAL_COLORS.teal}
+              initial={{ opacity: 0, y: -15 }}
+              whileInView={{ opacity: [0, 0.8, 0], y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 1, delay: 0.5 }}
+            />
+          </svg>
+        </motion.div>
+
+        {/* Mirrored plant on right side */}
+        <motion.div
+          className="absolute pointer-events-none hidden md:block"
+          style={{ bottom: '5%', right: '6%', opacity: 0.08, transform: 'scaleX(-1)' }}
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 0.08 }}
+          viewport={{ once: true }}
+          transition={{ duration: 1, delay: 0.3 }}
+        >
+          <svg width="140" height="260" viewBox="0 0 180 320" fill="none">
+            <path d="M50 280 L55 310 L125 310 L130 280 Z" fill={PETAL_COLORS.teal} />
+            <rect x="42" y="270" width="96" height="14" rx="4" fill={PETAL_COLORS.teal} />
+            <motion.path
+              d="M90 270 C90 230 88 200 90 160 C92 130 90 100 90 70"
+              stroke="#6dbb8a"
+              strokeWidth="4"
+              strokeLinecap="round"
+              fill="none"
+              initial={{ pathLength: 0 }}
+              whileInView={{ pathLength: 1 }}
+              viewport={{ once: true }}
+              transition={{ duration: 2, delay: 0.8, ease: 'easeOut' }}
+            />
+            <motion.path
+              d="M90 200 C70 185 45 190 40 205 C35 220 55 220 90 200Z"
+              fill="#6dbb8a"
+              initial={{ scale: 0, opacity: 0 }}
+              whileInView={{ scale: 1, opacity: 1 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: 1.8 }}
+              style={{ transformOrigin: '90px 200px' }}
+            />
+            <motion.path
+              d="M90 150 C110 135 135 140 140 155 C145 170 125 170 90 150Z"
+              fill="#6dbb8a"
+              initial={{ scale: 0, opacity: 0 }}
+              whileInView={{ scale: 1, opacity: 1 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: 2.2 }}
+              style={{ transformOrigin: '90px 150px' }}
+            />
+            <motion.circle
+              cx="90" cy="68" r="10"
+              fill={PETAL_COLORS.pink}
+              initial={{ scale: 0, opacity: 0 }}
+              whileInView={{ scale: 1, opacity: 1 }}
+              viewport={{ once: true }}
+              transition={{ type: 'spring', stiffness: 300, damping: 10, delay: 2.6 }}
+              style={{ transformOrigin: '90px 68px' }}
+            />
+          </svg>
+        </motion.div>
+
+        <div className="max-w-4xl mx-auto relative z-10">
           <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeIn} className="text-center">
             {/* Floating heart — rises upward as section scrolls in */}
             <motion.div
