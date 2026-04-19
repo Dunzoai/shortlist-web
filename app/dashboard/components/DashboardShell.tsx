@@ -28,8 +28,8 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
 
-  // Login page renders without the shell
-  if (pathname === '/dashboard/login') {
+  // Login and auth pages render without the shell
+  if (pathname === '/dashboard/login' || pathname.startsWith('/dashboard/auth')) {
     return <>{children}</>;
   }
 

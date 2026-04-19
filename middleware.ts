@@ -30,7 +30,7 @@ export async function middleware(request: NextRequest) {
   }
 
   const isDashboardRoute = effectivePathname.startsWith('/dashboard')
-  const isDashboardLogin = effectivePathname === '/dashboard/login'
+  const isDashboardLogin = effectivePathname === '/dashboard/login' || effectivePathname.startsWith('/dashboard/auth/')
   const isPortalRoute = effectivePathname.startsWith('/portal')
   const isClientRoute = effectivePathname.startsWith('/client-portal')
   const isLoginPage = effectivePathname === '/portal/login'
