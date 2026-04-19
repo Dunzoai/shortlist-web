@@ -631,7 +631,7 @@ export function HomePage() {
       )}
 
       {/* ─── TUTORING ─── */}
-      <section className="py-24 px-6" style={{ backgroundColor: 'white' }}>
+      <section id="method" className="py-24 px-6" style={{ backgroundColor: 'white' }}>
         <div className="max-w-4xl mx-auto">
           <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeIn} className="text-center mb-10">
             <h2 className="text-3xl md:text-4xl font-bold text-slate-800 mb-6" style={{ fontFamily: "'Georgia', serif" }}>
