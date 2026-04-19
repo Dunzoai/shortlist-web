@@ -98,7 +98,7 @@ function PetalSplashHero() {
         <AnimatePresence>
           {showText && (
             <div className="text-center">
-              <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight select-none" style={{ fontFamily: "'Georgia', 'Times New Roman', serif" }}>
+              <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold tracking-tight select-none" style={{ fontFamily: "'Georgia', 'Times New Roman', serif" }}>
                 {title.split('').map((char, i) => (
                   <motion.span
                     key={i}
@@ -286,11 +286,12 @@ interface SubjectCard {
 
 const ALL_SUBJECTS: SubjectCard[] = [
   { id: 'math', icon: Calculator, label: 'Math', color: '#F2A1B3' },
-  { id: 'ela', icon: Languages, label: 'ELA', color: '#E8A0BF' },
+  { id: 'reading', icon: BookOpen, label: 'Reading', color: '#E8A0BF' },
   { id: 'writing', icon: Pen, label: 'Writing', color: '#C6B4E2' },
   { id: 'science', icon: FlaskConical, label: 'Science', color: '#F0D264' },
   { id: 'social-studies', icon: Globe2, label: 'Social Studies', color: '#7BC8A4' },
-  { id: 'test-prep', icon: Star, label: 'Test Prep', color: '#F4976C' },
+  { id: 'test-prep', icon: Star, label: 'Test Preparation', color: '#F4976C' },
+  { id: 'sel', icon: Heart, label: 'Social Emotional Learning', color: '#8DD3D6' },
 ];
 
 const GRADES = ['K', '1st', '2nd', '3rd', '4th', '5th', '6th'];
@@ -377,8 +378,8 @@ export function HomePage() {
                 I&apos;m here to make your kid say <span className="font-semibold" style={{ color: PETAL_COLORS.teal }}>&ldquo;oh wait, I actually get it.&rdquo;</span>
               </p>
               <div className="flex flex-wrap gap-3">
-                {['Math whiz', 'Science nerd', 'Writing coach', 'Test prep pro', 'Patient human'].map((tag, i) => {
-                  const tagColors = ['#F2A1B3', '#8DD3D6', '#F0D264', '#C6B4E2', '#7BC8A4'];
+                {['Creative', 'Patient', 'Kind', 'Science Nerd', 'Writing Coach', 'Math Support', 'Testing Practice'].map((tag, i) => {
+                  const tagColors = ['#F2A1B3', '#8DD3D6', '#7BC8A4', '#F0D264', '#C6B4E2', '#E8A0BF', '#F4976C'];
                   return (
                     <span key={i} className="px-4 py-1.5 rounded-full text-sm font-medium" style={{ backgroundColor: `${tagColors[i]}20`, color: tagColors[i] }}>
                       {tag}
@@ -394,12 +395,50 @@ export function HomePage() {
       {/* ─── SECTION 1: NAME + GRADE (sneaky intake start) ─── */}
       <section className="relative py-20 md:py-28 px-6">
         <div className="relative z-10 max-w-3xl mx-auto text-center">
-          <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeIn}>
+          <motion.div initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.4 }} variants={fadeIn}>
             <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-slate-800 mb-3" style={{ fontFamily: "'Georgia', serif" }}>
-              Let&apos;s get{' '}
-              <span style={{ color: PETAL_COLORS.pink }}>started</span>
+              {["Let's", 'get'].map((word, i) => (
+                <motion.span
+                  key={word}
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, amount: 0.4 }}
+                  transition={{
+                    type: 'spring',
+                    stiffness: 400,
+                    damping: 12,
+                    delay: i * 0.15,
+                  }}
+                  className="inline-block mr-[0.3em]"
+                >
+                  {word}
+                </motion.span>
+              ))}
+              <motion.span
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, amount: 0.4 }}
+                transition={{
+                  type: 'spring',
+                  stiffness: 400,
+                  damping: 12,
+                  delay: 0.3,
+                }}
+                className="inline-block"
+                style={{ color: PETAL_COLORS.pink }}
+              >
+                started
+              </motion.span>
             </h2>
-            <p className="text-slate-500 text-lg mb-10">It only takes a minute</p>
+            <motion.p
+              className="text-slate-500 text-lg mb-10"
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              viewport={{ once: true, amount: 0.4 }}
+              transition={{ duration: 0.6, delay: 0.55 }}
+            >
+              It only takes a minute
+            </motion.p>
 
             <label className="block text-lg font-semibold text-slate-700 mb-3" style={{ fontFamily: "'Georgia', serif" }}>
               What&apos;s your child&apos;s first name?
@@ -598,7 +637,7 @@ export function HomePage() {
               <span style={{ color: PETAL_COLORS.lavender }}>A method.</span>
             </h2>
             <p className="text-base md:text-lg text-slate-500 leading-relaxed max-w-3xl mx-auto">
-              Gia works with students in grades K&ndash;6 across ELA, Writing, Math, Science, and Social Studies. Every new student starts with a 40&ndash;45 minute assessment — so sessions are never guesswork. For reading, she uses the{' '}
+              Gia works with students in grades K&ndash;6 across Math, Reading, Writing, Science, Social Studies, and Test Preparation. Every new student starts with a 40&ndash;45 minute assessment — so sessions are never guesswork. For reading, she uses the{' '}
               <button
                 onClick={() => setOgModalOpen(true)}
                 className="underline underline-offset-2 font-medium hover:opacity-80 transition-opacity"
@@ -612,11 +651,10 @@ export function HomePage() {
 
           {/* Stats bar */}
           <div className="py-10 px-6 rounded-3xl" style={{ backgroundColor: PETAL_COLORS.teal }}>
-            <div className="max-w-4xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-8 text-center text-white">
+            <div className="max-w-4xl mx-auto grid grid-cols-3 gap-8 text-center text-white">
               {[
-                { value: '150+', label: 'Students Tutored' },
-                { value: '4.9', label: 'Average Rating' },
-                { value: '8+', label: 'Subjects Offered' },
+                { value: '25+', label: 'Students Tutored' },
+                { value: '6+', label: 'Subjects Offered' },
                 { value: '95%', label: 'See Grade Improvement' },
               ].map((s, i) => (
                 <motion.div key={i} initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeIn} transition={{ delay: i * 0.1 }}>

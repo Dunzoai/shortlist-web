@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Menu, X, GraduationCap } from 'lucide-react';
 
 const links = [
@@ -21,6 +21,18 @@ export default function Nav() {
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
+  const scrollTo = useCallback((e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
+    e.preventDefault();
+    const id = href.replace('#', '');
+    const el = document.getElementById(id);
+    if (el) {
+      const navHeight = 56; // h-14 = 3.5rem = 56px
+      const top = el.getBoundingClientRect().top + window.scrollY - navHeight;
+      window.scrollTo({ top, behavior: 'smooth' });
+    }
+    setOpen(false);
+  }, []);
+
   // Only show nav after user scrolls past the hero
   if (!scrolled) return null;
 
@@ -33,7 +45,12 @@ export default function Nav() {
         }
       `}</style>
       <div className="max-w-6xl mx-auto px-6 flex items-center justify-between h-14">
-        <a href="#" className="flex items-center gap-2 font-bold text-lg" style={{ color: '#A08EC8', fontFamily: "'Georgia', serif" }}>
+        <a
+          href="#"
+          onClick={(e) => { e.preventDefault(); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
+          className="flex items-center gap-2 font-bold text-lg"
+          style={{ color: '#A08EC8', fontFamily: "'Georgia', serif" }}
+        >
           <GraduationCap className="w-5 h-5" />
           Grow With Gia
         </a>
@@ -41,11 +58,11 @@ export default function Nav() {
         {/* Desktop */}
         <div className="hidden md:flex items-center gap-8">
           {links.map((l) => (
-            <a key={l.label} href={l.href} className="text-sm text-slate-500 hover:text-slate-800 transition-colors font-medium">
+            <a key={l.label} href={l.href} onClick={(e) => scrollTo(e, l.href)} className="text-sm text-slate-500 hover:text-slate-800 transition-colors font-medium">
               {l.label}
             </a>
           ))}
-          <a href="#contact" className="text-white text-sm font-semibold px-5 py-2 rounded-lg hover:opacity-90 transition-opacity" style={{ backgroundColor: '#A08EC8' }}>
+          <a href="#contact" onClick={(e) => scrollTo(e, '#contact')} className="text-white text-sm font-semibold px-5 py-2 rounded-lg hover:opacity-90 transition-opacity" style={{ backgroundColor: '#A08EC8' }}>
             Book a Session
           </a>
         </div>
@@ -60,11 +77,11 @@ export default function Nav() {
       {open && (
         <div className="md:hidden bg-[#FAF5EF] border-t border-[#C6B4E2]/15 px-6 pb-4">
           {links.map((l) => (
-            <a key={l.label} href={l.href} onClick={() => setOpen(false)} className="block py-3 text-slate-600 hover:text-slate-800 font-medium border-b border-slate-100 last:border-0">
+            <a key={l.label} href={l.href} onClick={(e) => scrollTo(e, l.href)} className="block py-3 text-slate-600 hover:text-slate-800 font-medium border-b border-slate-100 last:border-0">
               {l.label}
             </a>
           ))}
-          <a href="#contact" onClick={() => setOpen(false)} className="block mt-3 text-center text-white font-semibold px-5 py-3 rounded-lg" style={{ backgroundColor: '#A08EC8' }}>
+          <a href="#contact" onClick={(e) => scrollTo(e, '#contact')} className="block mt-3 text-center text-white font-semibold px-5 py-3 rounded-lg" style={{ backgroundColor: '#A08EC8' }}>
             Book a Session
           </a>
         </div>
