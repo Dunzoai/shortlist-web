@@ -74,13 +74,13 @@ export async function generateMetadata(): Promise<Metadata> {
         siteName: "Grow With Gia",
         title: "Grow With Gia | Personalized Tutoring",
         description: "One-on-one tutoring that meets every student where they are. Math, reading, writing, science, and more.",
-        images: [{ url: '/clients/Gia/gia_about.jpeg', width: 1200, height: 630, alt: "Grow With Gia - Personalized Tutoring" }],
+        images: [{ url: '/og', width: 1200, height: 630, alt: "Grow With Gia - Personalized Tutoring" }],
       },
       twitter: {
         card: 'summary_large_image',
         title: "Grow With Gia | Personalized Tutoring",
         description: "One-on-one tutoring that meets every student where they are. Myrtle Beach area & virtual.",
-        images: ['/clients/Gia/gia_about.jpeg'],
+        images: ['/og'],
       },
       robots: { index: true, follow: true },
     };
