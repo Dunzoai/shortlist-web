@@ -43,7 +43,7 @@ export async function middleware(request: NextRequest) {
   // Dashboard auth — simple cookie check, handled before Supabase auth
   if (isDashboardRoute && !isDashboardLogin) {
     const authCookie = request.cookies.get('dashboard_auth')
-    if (authCookie?.value !== 'authenticated') {
+    if (!authCookie?.value || authCookie.value.length < 36) {
       const url = request.nextUrl.clone()
       url.pathname = '/dashboard/login'
       return NextResponse.redirect(url)

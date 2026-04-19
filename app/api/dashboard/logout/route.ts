@@ -9,5 +9,12 @@ export async function POST() {
     path: '/dashboard',
     maxAge: 0,
   });
+  res.cookies.set('dashboard_user', '', {
+    httpOnly: false,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'lax',
+    path: '/dashboard',
+    maxAge: 0,
+  });
   return res;
 }

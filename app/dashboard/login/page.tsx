@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { GraduationCap, ArrowRight, Loader2, Eye, EyeOff } from 'lucide-react';
 
 export default function DashboardLoginPage() {
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [keepLoggedIn, setKeepLoggedIn] = useState(true);
@@ -12,20 +13,20 @@ export default function DashboardLoginPage() {
 
   async function handleLogin() {
     setError('');
-    if (!password.trim()) return;
+    if (!email.trim() || !password.trim()) return;
 
     setLoading(true);
     const res = await fetch('/api/dashboard/login', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ password: password.trim(), keepLoggedIn }),
+      body: JSON.stringify({ email: email.trim(), password: password.trim(), keepLoggedIn }),
     });
     setLoading(false);
 
     if (res.ok) {
       window.location.href = '/dashboard/inbox';
     } else {
-      setError('Incorrect password. Try again.');
+      setError('Invalid email or password. Try again.');
       setPassword('');
     }
   }
@@ -58,6 +59,19 @@ export default function DashboardLoginPage() {
 
         {/* Card */}
         <div className="rounded-2xl border p-8" style={{ background: '#FFF9F0', borderColor: '#d9cfbf', boxShadow: '4px 4px 0 #2b272215' }}>
+          <div className="mb-4">
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="Email address"
+              className="w-full px-4 py-3 rounded-xl border text-sm focus:outline-none"
+              style={{ borderColor: '#d9cfbf', background: 'white', fontFamily: "'Georgia', serif" }}
+              onKeyDown={(e) => { if (e.key === 'Enter') handleLogin(); }}
+              autoFocus
+            />
+          </div>
+
           <div className="relative mb-4">
             <input
               type={showPassword ? 'text' : 'password'}
@@ -67,7 +81,6 @@ export default function DashboardLoginPage() {
               className="w-full px-4 py-3 pr-10 rounded-xl border text-sm focus:outline-none"
               style={{ borderColor: '#d9cfbf', background: 'white', fontFamily: "'Georgia', serif" }}
               onKeyDown={(e) => { if (e.key === 'Enter') handleLogin(); }}
-              autoFocus
             />
             <button
               onClick={() => setShowPassword(!showPassword)}
@@ -92,7 +105,7 @@ export default function DashboardLoginPage() {
 
           <button
             onClick={handleLogin}
-            disabled={loading || !password.trim()}
+            disabled={loading || !email.trim() || !password.trim()}
             className="w-full flex items-center justify-center gap-2 py-3 rounded-xl font-semibold text-sm transition-all disabled:opacity-50"
             style={{ background: '#C6B4E2', color: 'white', border: '1.5px solid #2b2722', boxShadow: '3px 3px 0 #2b2722' }}
           >

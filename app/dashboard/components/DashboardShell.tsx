@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import {
@@ -16,6 +16,7 @@ import {
   KeyRound,
   Eye,
   EyeOff,
+  UserPlus,
 } from 'lucide-react';
 
 const NAV_ITEMS = [
@@ -26,10 +27,27 @@ const NAV_ITEMS = [
   { label: 'Plans', href: '/dashboard/plans', icon: FileText },
 ];
 
+function getCookie(name: string): string | null {
+  if (typeof document === 'undefined') return null;
+  const match = document.cookie.match(new RegExp('(^| )' + name + '=([^;]+)'));
+  return match ? decodeURIComponent(match[2]) : null;
+}
+
+function getDashboardUser(): { id: string; email: string; name: string } | null {
+  try {
+    const raw = getCookie('dashboard_user');
+    if (!raw) return null;
+    return JSON.parse(raw);
+  } catch {
+    return null;
+  }
+}
+
 export function DashboardShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [showPasswordModal, setShowPasswordModal] = useState(false);
+  const [showInviteModal, setShowInviteModal] = useState(false);
   const [currentPw, setCurrentPw] = useState('');
   const [newPw, setNewPw] = useState('');
   const [confirmPw, setConfirmPw] = useState('');
@@ -38,6 +56,22 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
   const [pwLoading, setPwLoading] = useState(false);
   const [pwError, setPwError] = useState('');
   const [pwSuccess, setPwSuccess] = useState(false);
+
+  // Invite modal state
+  const [inviteEmail, setInviteEmail] = useState('');
+  const [inviteName, setInviteName] = useState('');
+  const [invitePassword, setInvitePassword] = useState('');
+  const [inviteLoading, setInviteLoading] = useState(false);
+  const [inviteError, setInviteError] = useState('');
+  const [inviteSuccess, setInviteSuccess] = useState(false);
+
+  // User info
+  const [userName, setUserName] = useState<string | null>(null);
+
+  useEffect(() => {
+    const user = getDashboardUser();
+    if (user?.name) setUserName(user.name);
+  }, []);
 
   // Login and auth pages render without the shell
   if (pathname === '/dashboard/login' || pathname.startsWith('/dashboard/auth')) {
@@ -71,6 +105,32 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
     setPwError(''); setPwSuccess(false);
   }
 
+  async function handleInvite() {
+    setInviteError('');
+    if (!inviteEmail || !invitePassword) return;
+    if (invitePassword.length < 6) { setInviteError('Password must be at least 6 characters.'); return; }
+    setInviteLoading(true);
+    const res = await fetch('/api/dashboard/invite', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: inviteEmail, name: inviteName, password: invitePassword }),
+    });
+    setInviteLoading(false);
+    if (res.ok) {
+      setInviteSuccess(true);
+      setInviteEmail(''); setInviteName(''); setInvitePassword('');
+    } else {
+      const data = await res.json();
+      setInviteError(data.error || 'Failed to invite user.');
+    }
+  }
+
+  function closeInviteModal() {
+    setShowInviteModal(false);
+    setInviteEmail(''); setInviteName(''); setInvitePassword('');
+    setInviteError(''); setInviteSuccess(false);
+  }
+
   return (
     <div className="min-h-screen" style={{ background: '#FFF9F0' }}>
       {/* Desktop sidebar */}
@@ -83,6 +143,11 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
             </span>
           </Link>
           <p className="text-[10px] uppercase tracking-widest mt-1" style={{ color: '#8a8078', fontFamily: 'monospace' }}>Dashboard</p>
+          {userName && (
+            <p className="text-xs mt-2 truncate" style={{ color: '#5b544c', fontFamily: 'var(--font-kalam), cursive' }}>
+              Logged in as <span className="font-semibold">{userName}</span>
+            </p>
+          )}
         </div>
 
         <nav className="flex-1 py-4 px-3 space-y-1">
@@ -115,6 +180,14 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
           >
             <KeyRound className="w-4 h-4" />
             Change Password
+          </button>
+          <button
+            onClick={() => setShowInviteModal(true)}
+            className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium w-full transition-colors hover:bg-purple-50"
+            style={{ fontFamily: 'var(--font-kalam), cursive', color: '#8a8078' }}
+          >
+            <UserPlus className="w-4 h-4" />
+            Invite User
           </button>
           <button
             onClick={async () => {
@@ -279,6 +352,86 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
                 <h3 className="text-lg font-bold mb-2" style={{ fontFamily: 'var(--font-caveat), cursive', color: '#2b2722' }}>Password Updated</h3>
                 <p className="text-xs mb-4" style={{ color: '#8a8078' }}>Your new password is active now.</p>
                 <button onClick={closePasswordModal} className="text-sm px-4 py-2 rounded-lg" style={{ color: '#5b544c', border: '1px solid #d9cfbf' }}>
+                  Done
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Invite User Modal */}
+      {showInviteModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 px-4">
+          <div className="rounded-2xl border p-6 w-full max-w-sm" style={{ background: '#FFF9F0', borderColor: '#d9cfbf' }}>
+            {!inviteSuccess ? (
+              <>
+                <h3 className="text-xl font-bold mb-4" style={{ fontFamily: 'var(--font-caveat), cursive', color: '#2b2722' }}>
+                  Invite User
+                </h3>
+
+                <div className="space-y-3">
+                  <div>
+                    <label className="block text-xs font-medium mb-1" style={{ color: '#5b544c' }}>Email</label>
+                    <input
+                      type="email"
+                      value={inviteEmail}
+                      onChange={(e) => setInviteEmail(e.target.value)}
+                      className="w-full px-3 py-2.5 rounded-lg border text-sm focus:outline-none"
+                      style={{ borderColor: '#d9cfbf', background: 'white' }}
+                      placeholder="user@example.com"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-medium mb-1" style={{ color: '#5b544c' }}>Name (optional)</label>
+                    <input
+                      type="text"
+                      value={inviteName}
+                      onChange={(e) => setInviteName(e.target.value)}
+                      className="w-full px-3 py-2.5 rounded-lg border text-sm focus:outline-none"
+                      style={{ borderColor: '#d9cfbf', background: 'white' }}
+                      placeholder="Display name"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-medium mb-1" style={{ color: '#5b544c' }}>Password</label>
+                    <input
+                      type="text"
+                      value={invitePassword}
+                      onChange={(e) => setInvitePassword(e.target.value)}
+                      className="w-full px-3 py-2.5 rounded-lg border text-sm focus:outline-none"
+                      style={{ borderColor: '#d9cfbf', background: 'white' }}
+                      placeholder="Initial password (min 6 chars)"
+                    />
+                  </div>
+                </div>
+
+                {inviteError && <p className="text-xs mt-3" style={{ color: '#D4A5A5' }}>{inviteError}</p>}
+
+                <div className="flex gap-2 mt-5">
+                  <button
+                    onClick={handleInvite}
+                    disabled={inviteLoading || !inviteEmail || !invitePassword}
+                    className="flex-1 py-2.5 rounded-lg text-sm font-medium disabled:opacity-50"
+                    style={{ background: '#C6B4E2', color: 'white', border: '1.5px solid #2b2722', boxShadow: '2px 2px 0 #2b2722', fontFamily: 'var(--font-kalam), cursive' }}
+                  >
+                    {inviteLoading ? 'Creating...' : 'Create User'}
+                  </button>
+                  <button
+                    onClick={closeInviteModal}
+                    className="px-4 py-2.5 rounded-lg text-sm"
+                    style={{ color: '#8a8078', fontFamily: 'var(--font-kalam), cursive' }}
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </>
+            ) : (
+              <div className="text-center py-4">
+                <UserPlus className="w-8 h-8 mx-auto mb-3" style={{ color: '#C9DBC0' }} />
+                <h3 className="text-lg font-bold mb-2" style={{ fontFamily: 'var(--font-caveat), cursive', color: '#2b2722' }}>User Invited</h3>
+                <p className="text-xs mb-4" style={{ color: '#8a8078' }}>They can now log in with their email and password.</p>
+                <button onClick={closeInviteModal} className="text-sm px-4 py-2 rounded-lg" style={{ color: '#5b544c', border: '1px solid #d9cfbf' }}>
                   Done
                 </button>
               </div>
