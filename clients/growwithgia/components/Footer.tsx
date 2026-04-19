@@ -41,17 +41,29 @@ export default function Footer() {
 
       <div className="max-w-6xl mx-auto mt-10 pt-6 border-t border-slate-700 text-center space-y-2">
         <p className="text-xs text-slate-500">&copy; 2026 Growing With Gia. All rights reserved.</p>
-        <a
-          href="https://shortlistpass.com"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="inline-flex items-center gap-1.5 text-xs transition-colors"
-          style={{ color: '#C6B4E240' }}
-          onMouseEnter={(e) => (e.currentTarget.style.color = '#C6B4E2')}
-          onMouseLeave={(e) => (e.currentTarget.style.color = '#C6B4E240')}
-        >
-          <span style={{ fontSize: '10px' }}>✿</span> Built by The Shortlist Co.
-        </a>
+        <div className="flex items-center justify-center gap-3">
+          <a
+            href="https://shortlistpass.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-1.5 text-xs transition-colors"
+            style={{ color: '#C6B4E240' }}
+            onMouseEnter={(e) => (e.currentTarget.style.color = '#C6B4E2')}
+            onMouseLeave={(e) => (e.currentTarget.style.color = '#C6B4E240')}
+          >
+            <span style={{ fontSize: '10px' }}>✿</span> Built by The Shortlist Co.
+          </a>
+          <span className="text-slate-700">·</span>
+          <a
+            href="/dashboard"
+            className="text-xs transition-colors"
+            style={{ color: '#C6B4E230' }}
+            onMouseEnter={(e) => (e.currentTarget.style.color = '#C6B4E2')}
+            onMouseLeave={(e) => (e.currentTarget.style.color = '#C6B4E230')}
+          >
+            Dashboard
+          </a>
+        </div>
       </div>
     </footer>
   );
