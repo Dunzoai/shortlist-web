@@ -997,32 +997,169 @@ export function HomePage() {
               ))}
             </div>
 
-            {/* Small mobile-only plant accent — centered below cards */}
+            {/* Mobile-only animated plant with watering can — centered below cards */}
             <motion.div
-              className="flex justify-center mt-2 md:hidden"
-              initial={{ opacity: 0, y: 10 }}
-              whileInView={{ opacity: 0.18, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.8, delay: 0.5 }}
+              className="flex justify-center mt-4 md:hidden"
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 0.2 }}
+              viewport={{ once: true, amount: 0.3 }}
+              transition={{ duration: 0.8, delay: 0.8 }}
             >
-              <svg width="70" height="120" viewBox="0 0 180 360" fill="none">
-                <path d="M60 300 L66 335 L134 335 L140 300 Z" fill={PETAL_COLORS.teal} />
-                <rect x="52" y="290" width="96" height="14" rx="4" fill={PETAL_COLORS.teal} />
-                <path d="M110 290 C110 250 108 210 110 160 C112 120 110 85 110 55" stroke="#6dbb8a" strokeWidth="5" strokeLinecap="round" fill="none" />
-                <path d="M110 230 C88 212 60 218 56 232 C52 246 74 244 110 230Z" fill="#6dbb8a" />
-                <path d="M110 220 C132 202 156 208 160 222 C164 236 142 234 110 220Z" fill="#6dbb8a" />
-                <path d="M110 170 C92 158 68 162 65 174 C62 186 80 184 110 170Z" fill="#6dbb8a" />
-                <path d="M110 160 C128 148 150 152 153 164 C156 176 138 174 110 160Z" fill="#6dbb8a" />
-                <path d="M110 115 C96 105 80 108 78 118 C76 128 90 126 110 115Z" fill="#6dbb8a" />
+              <svg width="100" height="160" viewBox="0 0 240 380" fill="none">
+                {/* Pot */}
+                <motion.path
+                  d="M80 320 L86 350 L154 350 L160 320 Z"
+                  fill={PETAL_COLORS.teal}
+                  initial={{ opacity: 0 }}
+                  whileInView={{ opacity: 1 }}
+                  viewport={{ once: true, amount: 0.3 }}
+                  transition={{ duration: 0.4, delay: 0.8 }}
+                />
+                <motion.rect
+                  x="72" y="310" width="96" height="12" rx="4"
+                  fill={PETAL_COLORS.teal}
+                  initial={{ opacity: 0 }}
+                  whileInView={{ opacity: 1 }}
+                  viewport={{ once: true, amount: 0.3 }}
+                  transition={{ duration: 0.4, delay: 0.8 }}
+                />
+
+                {/* Watering can */}
+                <motion.g
+                  initial={{ opacity: 0, x: 40 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  viewport={{ once: true, amount: 0.3 }}
+                  transition={{ duration: 0.6, delay: 1.0 }}
+                >
+                  <motion.g
+                    initial={{ rotate: 0 }}
+                    whileInView={{ rotate: -28 }}
+                    viewport={{ once: true, amount: 0.3 }}
+                    transition={{ duration: 0.8, delay: 1.4, ease: 'easeInOut' }}
+                    style={{ transformOrigin: '190px 262px' }}
+                  >
+                    <rect x="165" y="248" width="45" height="30" rx="5" fill={PETAL_COLORS.lavender} />
+                    <path d="M182 248 C182 230 200 230 200 248" stroke={PETAL_COLORS.lavender} strokeWidth="4.5" fill="none" strokeLinecap="round" />
+                    <path d="M165 256 L132 240 L135 246 L165 262" fill={PETAL_COLORS.lavender} />
+                    <circle cx="132" cy="242" r="2.5" fill={PETAL_COLORS.lavender} />
+                  </motion.g>
+                </motion.g>
+
+                {/* Continuous water drips */}
+                {[0, 1, 2].map((i) => (
+                  <motion.circle
+                    key={`m-drop-${i}`}
+                    cx={128 + i * 2}
+                    cy={242}
+                    r={2}
+                    fill={PETAL_COLORS.teal}
+                    animate={{
+                      opacity: [0, 0.7, 0.4, 0],
+                      y: [0, 20, 45, 65],
+                    }}
+                    transition={{
+                      duration: 1.0,
+                      delay: 2.0 + i * 0.35,
+                      repeat: Infinity,
+                      repeatDelay: 1.2,
+                      ease: 'easeIn',
+                    }}
+                  />
+                ))}
+
+                {/* Stem growing */}
+                <motion.path
+                  d="M120 310 C120 280 118 245 120 200 C122 165 120 130 120 90"
+                  stroke="#6dbb8a"
+                  strokeWidth="4.5"
+                  strokeLinecap="round"
+                  fill="none"
+                  initial={{ pathLength: 0 }}
+                  whileInView={{ pathLength: 1 }}
+                  viewport={{ once: true, amount: 0.3 }}
+                  transition={{ duration: 2.0, delay: 2.2, ease: 'easeOut' }}
+                />
+
+                {/* Leaf pairs */}
+                <motion.path
+                  d="M120 240 C100 225 75 230 72 244 C69 258 88 256 120 240Z"
+                  fill="#6dbb8a"
+                  initial={{ scale: 0, opacity: 0 }}
+                  whileInView={{ scale: 1, opacity: 1 }}
+                  viewport={{ once: true, amount: 0.3 }}
+                  transition={{ duration: 0.5, delay: 3.0 }}
+                  style={{ transformOrigin: '120px 240px' }}
+                />
+                <motion.path
+                  d="M120 230 C140 215 162 220 165 234 C168 248 148 246 120 230Z"
+                  fill="#6dbb8a"
+                  initial={{ scale: 0, opacity: 0 }}
+                  whileInView={{ scale: 1, opacity: 1 }}
+                  viewport={{ once: true, amount: 0.3 }}
+                  transition={{ duration: 0.5, delay: 3.2 }}
+                  style={{ transformOrigin: '120px 230px' }}
+                />
+                <motion.path
+                  d="M120 180 C102 168 80 172 78 183 C76 194 92 192 120 180Z"
+                  fill="#6dbb8a"
+                  initial={{ scale: 0, opacity: 0 }}
+                  whileInView={{ scale: 1, opacity: 1 }}
+                  viewport={{ once: true, amount: 0.3 }}
+                  transition={{ duration: 0.5, delay: 3.5 }}
+                  style={{ transformOrigin: '120px 180px' }}
+                />
+                <motion.path
+                  d="M120 170 C138 158 158 162 160 173 C162 184 144 182 120 170Z"
+                  fill="#6dbb8a"
+                  initial={{ scale: 0, opacity: 0 }}
+                  whileInView={{ scale: 1, opacity: 1 }}
+                  viewport={{ once: true, amount: 0.3 }}
+                  transition={{ duration: 0.5, delay: 3.7 }}
+                  style={{ transformOrigin: '120px 170px' }}
+                />
+                <motion.path
+                  d="M120 130 C106 120 90 123 88 132 C86 141 100 139 120 130Z"
+                  fill="#6dbb8a"
+                  initial={{ scale: 0, opacity: 0 }}
+                  whileInView={{ scale: 1, opacity: 1 }}
+                  viewport={{ once: true, amount: 0.3 }}
+                  transition={{ duration: 0.4, delay: 4.0 }}
+                  style={{ transformOrigin: '120px 130px' }}
+                />
+
+                {/* Flower petals */}
                 {[0, 1, 2, 3, 4].map((i) => {
                   const angle = (360 / 5) * i - 90;
                   const rad = (angle * Math.PI) / 180;
-                  const px = 110 + Math.cos(rad) * 16;
-                  const py = 48 + Math.sin(rad) * 16;
+                  const px = 120 + Math.cos(rad) * 16;
+                  const py = 78 + Math.sin(rad) * 16;
                   const colors = [PETAL_COLORS.pink, PETAL_COLORS.teal, PETAL_COLORS.yellow, PETAL_COLORS.lavender, PETAL_COLORS.pink];
-                  return <ellipse key={i} cx={px} cy={py} rx={9} ry={13} fill={colors[i]} opacity={0.85} transform={`rotate(${angle}, ${px}, ${py})`} />;
+                  return (
+                    <motion.ellipse
+                      key={`m-petal-${i}`}
+                      cx={px}
+                      cy={py}
+                      rx={9}
+                      ry={12}
+                      fill={colors[i]}
+                      transform={`rotate(${angle}, ${px}, ${py})`}
+                      initial={{ scale: 0, opacity: 0 }}
+                      whileInView={{ scale: 1, opacity: 0.85 }}
+                      viewport={{ once: true, amount: 0.3 }}
+                      transition={{ type: 'spring', stiffness: 300, damping: 12, delay: 4.3 + i * 0.1 }}
+                      style={{ transformOrigin: `${px}px ${py}px` }}
+                    />
+                  );
                 })}
-                <circle cx={110} cy={48} r={7} fill={PETAL_COLORS.yellow} />
+                <motion.circle
+                  cx={120} cy={78} r={7}
+                  fill={PETAL_COLORS.yellow}
+                  initial={{ scale: 0 }}
+                  whileInView={{ scale: 1 }}
+                  viewport={{ once: true, amount: 0.3 }}
+                  transition={{ type: 'spring', stiffness: 400, damping: 10, delay: 4.8 }}
+                  style={{ transformOrigin: '120px 78px' }}
+                />
               </svg>
             </motion.div>
 
