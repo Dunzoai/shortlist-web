@@ -38,7 +38,6 @@ export default function DashboardLoginPage() {
       email: trimmed,
       options: {
         shouldCreateUser: true,
-        emailRedirectTo: `${window.location.origin}/dashboard/auth/callback`,
       },
     });
     setLoading(false);
