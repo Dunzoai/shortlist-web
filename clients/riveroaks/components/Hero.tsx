@@ -15,6 +15,7 @@ type HeroProps = {
 export default function Hero({ backdropImage }: HeroProps) {
   const hasCinematic = !!backdropImage;
   const [phase, setPhase] = useState(hasCinematic ? 0 : 3);
+  const [backdropDone, setBackdropDone] = useState(false);
 
   useEffect(() => {
     if (!hasCinematic) return;
@@ -22,11 +23,14 @@ export default function Hero({ backdropImage }: HeroProps) {
     const t1 = setTimeout(() => setPhase(1), 2000);
     const t2 = setTimeout(() => setPhase(2), 3500);
     const t3 = setTimeout(() => setPhase(3), 4300);
+    // Remove blurred backdrop from DOM after animation completes to free GPU on mobile
+    const t4 = setTimeout(() => setBackdropDone(true), 5500);
 
     return () => {
       clearTimeout(t1);
       clearTimeout(t2);
       clearTimeout(t3);
+      clearTimeout(t4);
     };
   }, [hasCinematic]);
 
@@ -36,7 +40,7 @@ export default function Hero({ backdropImage }: HeroProps) {
       style={{ backgroundColor: BG }}
     >
       {/* Backdrop image (cinematic) or warm glow (fallback) */}
-      {hasCinematic ? (
+      {hasCinematic && !backdropDone ? (
         <motion.div
           className="absolute inset-0 z-0"
           style={{
@@ -51,7 +55,7 @@ export default function Hero({ backdropImage }: HeroProps) {
           }}
           transition={{ duration: 1.5, ease: 'easeInOut' }}
         />
-      ) : (
+      ) : !hasCinematic ? (
         <div
           className="absolute inset-0 z-0"
           style={{
@@ -59,7 +63,7 @@ export default function Hero({ backdropImage }: HeroProps) {
               'radial-gradient(circle at center, rgba(201,169,110,0.15) 0%, transparent 60%)',
           }}
         />
-      )}
+      ) : null}
 
       {/* Vignette overlay */}
       <div
