@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Playfair_Display, Lora, Permanent_Marker } from "next/font/google";
+import { Playfair_Display, Lora, Permanent_Marker, Caveat } from "next/font/google";
 import { headers } from "next/headers";
 import "./globals.css";
 import { LanguageProvider } from "@/clients/danidiaz/components/LanguageContext";
@@ -23,6 +23,11 @@ const permanentMarker = Permanent_Marker({
   variable: "--font-permanent-marker",
   subsets: ["latin"],
   weight: "400",
+});
+
+const caveat = Caveat({
+  variable: "--font-caveat",
+  subsets: ["latin"],
 });
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -86,6 +91,33 @@ export async function generateMetadata(): Promise<Metadata> {
       alternates: {
         canonical: 'https://growingwithgia.com',
       },
+    };
+  }
+
+  if (client?.slug === 'riveroaks') {
+    return {
+      title: "River Oaks Pizzeria | Home of the Grandma Pizza | Myrtle Beach",
+      description: "Family-owned Italian pizzeria in Myrtle Beach, SC. Famous for our Grandma Pizza. Two locations: Carolina Forest & Surfside. Pizza, pasta, wine & cocktails.",
+      keywords: ["River Oaks Pizzeria", "Grandma Pizza", "Myrtle Beach pizza", "Italian restaurant Myrtle Beach", "Carolina Forest pizza", "Surfside pizza", "family-owned pizzeria"],
+      authors: [{ name: "River Oaks Pizzeria" }],
+      creator: "River Oaks Pizzeria",
+      metadataBase: new URL('https://riveroaksdemo.shortlistpass.com'),
+      openGraph: {
+        type: 'website',
+        locale: 'en_US',
+        url: '/',
+        siteName: "River Oaks Pizzeria",
+        title: "River Oaks Pizzeria | Home of the Grandma Pizza",
+        description: "Family-owned Italian pizzeria in Myrtle Beach. Famous Grandma Pizza, full bar, two locations.",
+        images: [{ url: '/clients/riveroaks/pizza.png', width: 1200, height: 630, alt: "River Oaks Pizzeria - Home of the Grandma Pizza" }],
+      },
+      twitter: {
+        card: 'summary_large_image',
+        title: "River Oaks Pizzeria | Home of the Grandma Pizza",
+        description: "Family-owned Italian pizzeria in Myrtle Beach. Two locations: Carolina Forest & Surfside.",
+        images: ['/clients/riveroaks/pizza.png'],
+      },
+      robots: { index: false, follow: false },
     };
   }
 
@@ -234,7 +266,7 @@ export default async function RootLayout({
         )}
       </head>
       <body
-        className={`${playfair.variable} ${lora.variable} ${permanentMarker.variable} antialiased bg-[#F7F7F7] text-[#3D3D3D]`}
+        className={`${playfair.variable} ${lora.variable} ${permanentMarker.variable} ${caveat.variable} antialiased bg-[#F7F7F7] text-[#3D3D3D]`}
       >
         <ClientProvider client={client}>
           <LanguageProvider>
