@@ -86,7 +86,7 @@ p, span, a, li, label, input, textarea, button {
 
 /* Parallax Section - River Oaks Bar */
 .parallax-riveroaks-bar {
-  background-image: url('/clients/riveroaks/riveroaks_bar.png');
+  background-image: url('/clients/riveroaks/riveroaks_bar.jpg');
   height: 85vh;
   background-attachment: fixed;
   background-position: center center;

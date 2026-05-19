@@ -10,7 +10,7 @@ export default function HomePage() {
   return (
     <main>
       <Nav />
-      <Hero backdropImage="/clients/riveroaks/riveroaks_bar.png" />
+      <Hero backdropImage="/clients/riveroaks/riveroaks_bar.jpg" />
       <ParallaxBar />
       <OurStory />
       <ParallaxGrandma />

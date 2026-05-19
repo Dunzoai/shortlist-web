@@ -25,7 +25,7 @@ function HeadlineContent() {
 
 export default function ParallaxGrandma() {
   const [isMobile, setIsMobile] = useState(false);
-  const imageRef = useRef<HTMLDivElement>(null);
+  const imageRef = useRef<HTMLImageElement>(null);
   const sectionRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -38,14 +38,22 @@ export default function ParallaxGrandma() {
   useEffect(() => {
     if (!isMobile) return;
 
+    let ticking = false;
     const handleScroll = () => {
-      if (!imageRef.current || !sectionRef.current) return;
-
-      const rect = sectionRef.current.getBoundingClientRect();
-      const scrollProgress = -rect.top;
-
-      if (rect.top < window.innerHeight && rect.bottom > 0) {
-        imageRef.current.style.transform = `translateY(${scrollProgress * 0.5}px)`;
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          if (!imageRef.current || !sectionRef.current) {
+            ticking = false;
+            return;
+          }
+          const rect = sectionRef.current.getBoundingClientRect();
+          const scrollProgress = -rect.top;
+          if (rect.top < window.innerHeight && rect.bottom > 0) {
+            imageRef.current.style.transform = `translate3d(0, ${scrollProgress * 0.3}px, 0)`;
+          }
+          ticking = false;
+        });
+        ticking = true;
       }
     };
 
@@ -59,12 +67,18 @@ export default function ParallaxGrandma() {
         ref={sectionRef}
         className="relative h-[90vh] w-screen left-0 right-0 overflow-hidden flex items-center justify-center"
       >
-        <div
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
           ref={imageRef}
-          className="absolute -top-[40%] left-0 w-full h-[150%] bg-cover bg-no-repeat will-change-transform"
+          src="/clients/riveroaks/grandma-pizza.jpg"
+          alt=""
+          loading="eager"
+          decoding="async"
+          className="absolute -top-[40%] left-0 w-full h-[150%] object-cover"
           style={{
-            backgroundImage: 'url(/clients/riveroaks/grandma-pizza.jpg)',
-            backgroundPosition: 'center center',
+            willChange: 'transform',
+            backfaceVisibility: 'hidden',
+            transform: 'translateZ(0)',
           }}
         />
         <HeadlineContent />
