@@ -2,28 +2,13 @@
 
 import { MapPin, Smartphone, DollarSign } from 'lucide-react';
 import Nav from '../components/Nav';
+import content from '../content';
 
 const BG = '#0a0807';
 const GOLD = '#c9a96e';
 const OFF_WHITE = '#f5ede0';
 
-const features = [
-  {
-    icon: MapPin,
-    heading: 'All your locations',
-    description: 'Customers pick which spot to order from at checkout.',
-  },
-  {
-    icon: Smartphone,
-    heading: 'One unified app',
-    description: 'Replace whatever patchwork you\'re using now. Everything in one place.',
-  },
-  {
-    icon: DollarSign,
-    heading: 'Keep your margin',
-    description: 'No third-party platform fees. The money stays yours.',
-  },
-];
+const featureIcons = [MapPin, Smartphone, DollarSign];
 
 export default function OrderPage() {
   return (
@@ -37,7 +22,7 @@ export default function OrderPage() {
             className="text-sm font-semibold uppercase tracking-[0.3em]"
             style={{ color: GOLD, fontFamily: 'var(--font-lora)' }}
           >
-            Demo Preview
+            {content.order.sectionLabel}
           </p>
           <div className="h-px w-12" style={{ backgroundColor: GOLD }} />
         </div>
@@ -50,7 +35,7 @@ export default function OrderPage() {
             fontSize: 'clamp(36px, 7vw, 56px)',
           }}
         >
-          Online ordering, on the way.
+          {content.order.heading}
         </h1>
 
         <p
@@ -61,35 +46,37 @@ export default function OrderPage() {
             fontSize: '18px',
           }}
         >
-          Online ordering is part of the Shortlist platform — one app, all your
-          locations, no third-party fees eating into your margin.
+          {content.order.description}
         </p>
 
         {/* Features */}
         <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-8">
-          {features.map((f) => (
-            <div key={f.heading} className="text-center">
-              <f.icon
-                className="w-6 h-6 mx-auto mb-3"
-                style={{ color: GOLD }}
-              />
-              <p
-                className="font-bold text-base mb-1"
-                style={{ color: OFF_WHITE, fontFamily: 'var(--font-lora)' }}
-              >
-                {f.heading}
-              </p>
-              <p
-                className="text-sm"
-                style={{
-                  color: 'rgba(245,237,224,0.65)',
-                  fontFamily: 'var(--font-lora)',
-                }}
-              >
-                {f.description}
-              </p>
-            </div>
-          ))}
+          {content.order.features.map((f, i) => {
+            const Icon = featureIcons[i];
+            return (
+              <div key={f.heading} className="text-center">
+                <Icon
+                  className="w-6 h-6 mx-auto mb-3"
+                  style={{ color: GOLD }}
+                />
+                <p
+                  className="font-bold text-base mb-1"
+                  style={{ color: OFF_WHITE, fontFamily: 'var(--font-lora)' }}
+                >
+                  {f.heading}
+                </p>
+                <p
+                  className="text-sm"
+                  style={{
+                    color: 'rgba(245,237,224,0.65)',
+                    fontFamily: 'var(--font-lora)',
+                  }}
+                >
+                  {f.description}
+                </p>
+              </div>
+            );
+          })}
         </div>
 
         {/* See it in action */}
@@ -98,7 +85,7 @@ export default function OrderPage() {
             className="text-sm font-semibold uppercase tracking-[0.3em]"
             style={{ color: GOLD, fontFamily: 'var(--font-lora)' }}
           >
-            See It In Action
+            {content.order.demoLabel}
           </p>
           <h2
             className="mt-4 italic font-bold"
@@ -108,7 +95,7 @@ export default function OrderPage() {
               fontSize: 'clamp(26px, 5vw, 36px)',
             }}
           >
-            Here&apos;s a working demo.
+            {content.order.demoHeading}
           </h2>
           <p
             className="mt-4 max-w-[600px] mx-auto"
@@ -118,13 +105,11 @@ export default function OrderPage() {
               fontSize: '16px',
             }}
           >
-            Yours would be tailored to your business. More than online ordering
-            — you&apos;d get your own app on customers&apos; phones, push
-            notifications, and a direct channel to keep them coming back.
+            {content.order.demoDescription}
           </p>
           <div className="mt-8">
             <a
-              href="https://foodtruckdemo.shortlistpass.com/"
+              href={content.order.demoUrl}
               target="_blank"
               rel="noopener noreferrer"
               className="inline-block px-8 py-3.5 rounded-sm text-xs uppercase tracking-[0.18em] font-normal transition-all duration-200"
@@ -143,7 +128,7 @@ export default function OrderPage() {
                 e.currentTarget.style.color = GOLD;
               }}
             >
-              View Live Demo &rarr;
+              {content.order.demoButtonText}
             </a>
           </div>
         </div>
@@ -168,7 +153,7 @@ export default function OrderPage() {
               e.currentTarget.style.color = GOLD;
             }}
           >
-            Back to Home
+            {content.order.backButtonText}
           </a>
         </div>
 
@@ -181,8 +166,7 @@ export default function OrderPage() {
             fontSize: '13px',
           }}
         >
-          Demo built by Shortlist. This page is a preview of what we&apos;ll
-          build for you.
+          {content.order.softPitch}
         </p>
       </div>
     </main>

@@ -3,37 +3,11 @@
 import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
-import { squarePizzas, roundPizzas } from '../content/menu';
-import type { MenuItem } from '../content/menu';
+import content from '../content';
 
 const BG = '#0a0807';
 const GOLD = '#c9a96e';
 const OFF_WHITE = '#f5ede0';
-
-type PizzaStyle = 'squares' | 'rounds';
-
-const tiles: {
-  key: PizzaStyle;
-  image: string;
-  label: string;
-  teaser: string;
-  items: MenuItem[];
-}[] = [
-  {
-    key: 'squares',
-    image: '/clients/riveroaks/square_pie.png',
-    label: 'The Squares',
-    teaser: 'Sheet-pan style. Bronx-born. Built to share.',
-    items: squarePizzas,
-  },
-  {
-    key: 'rounds',
-    image: '/clients/riveroaks/pizza.png',
-    label: 'The Rounds',
-    teaser: 'Personal or large. Bold combinations.',
-    items: roundPizzas,
-  },
-];
 
 const listVariants = {
   hidden: {},
@@ -58,7 +32,7 @@ const itemVariants = {
 };
 
 export default function PizzaMenu() {
-  const [active, setActive] = useState<PizzaStyle | null>(null);
+  const [active, setActive] = useState<string | null>(null);
   const [isMobile, setIsMobile] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
@@ -69,7 +43,7 @@ export default function PizzaMenu() {
     return () => window.removeEventListener('resize', check);
   }, []);
 
-  const handleSelect = (style: PizzaStyle) => {
+  const handleSelect = (style: string) => {
     setActive(style);
     if (isMobile && menuRef.current) {
       setTimeout(() => {
@@ -79,7 +53,7 @@ export default function PizzaMenu() {
   };
 
   const activeItems = active
-    ? tiles.find((t) => t.key === active)!.items
+    ? content.menu.styles.find((t) => t.key === active)!.items
     : [];
 
   return (
@@ -92,7 +66,7 @@ export default function PizzaMenu() {
             className="text-sm font-semibold uppercase tracking-[0.3em]"
             style={{ color: GOLD, fontFamily: 'var(--font-lora)' }}
           >
-            Menu
+            {content.menu.sectionLabel}
           </p>
           <div className="h-px w-12" style={{ backgroundColor: GOLD }} />
         </div>
@@ -104,7 +78,7 @@ export default function PizzaMenu() {
             fontSize: 'clamp(40px, 7vw, 64px)',
           }}
         >
-          The Pizza.
+          {content.menu.heading}
         </h1>
         <p
           className="text-center italic mb-16"
@@ -114,12 +88,12 @@ export default function PizzaMenu() {
             fontSize: '18px',
           }}
         >
-          Two styles. One family recipe.
+          {content.menu.subtitle}
         </p>
 
         {/* Tiles */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12">
-          {tiles.map((tile) => {
+          {content.menu.styles.map((tile) => {
             const isActive = active === tile.key;
             const isInactive = active !== null && !isActive;
 

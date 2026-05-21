@@ -1,5 +1,7 @@
 'use client';
 
+import content from '../content';
+
 const BG = '#f5ede0';
 const TEXT = '#1a1410';
 const GOLD = '#c9a96e';
@@ -15,7 +17,7 @@ export default function OurStory() {
             className="text-sm font-semibold uppercase tracking-[0.3em]"
             style={{ color: GOLD, fontFamily: 'var(--font-lora)' }}
           >
-            Our Story
+            {content.story.sectionLabel}
           </p>
           <div className="h-px w-12" style={{ backgroundColor: GOLD }} />
         </div>
@@ -25,12 +27,7 @@ export default function OurStory() {
           className="text-lg leading-relaxed"
           style={{ color: TEXT, fontFamily: 'var(--font-lora)' }}
         >
-          We at River Oaks Pizzeria are proud to be family-owned and operated. In the
-          1980&apos;s our father, Kole, started as a baker in the Little Italy section of
-          the Bronx, NY. His passion for the art of dough and bread baking was what
-          sparked his interest in the pizza business. In 1998 he bought his first pizzeria
-          in Bronx, NY; and since then we have expanded to the NY metro area and beautiful
-          Myrtle Beach as a family.
+          {content.story.body}
         </p>
 
         {/* Pull-quote */}
@@ -42,7 +39,7 @@ export default function OurStory() {
             fontSize: 'clamp(18px, 3vw, 22px)',
           }}
         >
-          We don&apos;t do things the easy way — we do things the right way.
+          {content.story.pullQuote}
         </p>
 
         {/* Final line */}
@@ -50,8 +47,7 @@ export default function OurStory() {
           className="mt-4 text-lg font-bold text-center"
           style={{ color: TEXT, fontFamily: 'var(--font-lora)' }}
         >
-          We put a lot of love into everything we do, and hope to bring you joy in every
-          bite.
+          {content.story.closingLine}
         </p>
 
         {/* Signature */}
@@ -63,7 +59,7 @@ export default function OurStory() {
             fontSize: 'clamp(28px, 5vw, 36px)',
           }}
         >
-          — Andrew, Albert, George &amp; Frank
+          {content.story.signature}
         </p>
 
         {/* Attribution */}
@@ -71,7 +67,7 @@ export default function OurStory() {
           className="mt-2 text-sm text-center uppercase tracking-[0.25em]"
           style={{ color: GOLD, fontFamily: 'var(--font-lora)' }}
         >
-          The Next Generation
+          {content.story.attribution}
         </p>
       </div>
     </section>

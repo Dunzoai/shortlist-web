@@ -3,6 +3,7 @@
 import { useState, useMemo } from 'react';
 import { usePathname } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
+import content from '../content';
 
 const BG = '#0a0807';
 const GOLD = '#c9a96e';
@@ -19,12 +20,11 @@ export default function Nav() {
   const base = isPreview ? PREVIEW_PREFIX : '';
 
   const navLinks = useMemo(
-    () => [
-      { label: 'Home', href: `${base}/` },
-      { label: 'Menu', href: `${base}/menu` },
-      { label: 'Our Story', href: `${base}/#our-story` },
-      { label: 'Locations', href: `${base}/#locations` },
-    ],
+    () =>
+      content.nav.links.map((link) => ({
+        label: link.label,
+        href: `${base}${link.anchor ?? link.path ?? '/'}`,
+      })),
     [base]
   );
 
@@ -46,7 +46,7 @@ export default function Nav() {
           className="uppercase tracking-[0.2em] text-sm font-semibold"
           style={{ color: GOLD, fontFamily: 'var(--font-lora)' }}
         >
-          River Oaks
+          {content.brandLabel}
         </a>
 
         {/* Desktop links */}
@@ -88,7 +88,7 @@ export default function Nav() {
               e.currentTarget.style.color = GOLD;
             }}
           >
-            Order Now
+            {content.nav.orderButtonText}
           </a>
         </div>
 
@@ -170,7 +170,7 @@ export default function Nav() {
                   border: `1px solid ${GOLD}`,
                 }}
               >
-                Order Now
+                {content.nav.orderButtonText}
               </a>
             </div>
           </motion.div>

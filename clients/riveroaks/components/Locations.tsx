@@ -2,49 +2,12 @@
 
 import { motion, useReducedMotion } from 'framer-motion';
 import { Phone } from 'lucide-react';
+import content from '../content';
 
 const BG = '#0a0807';
 const GOLD = '#c9a96e';
 const OFF_WHITE = '#f5ede0';
 const OFF_WHITE_80 = 'rgba(245,237,224,0.8)';
-
-const locations = [
-  {
-    name: 'Carolina Forest',
-    street: '154 Sapwood Rd, Unit 107',
-    city: 'Myrtle Beach, SC 29579',
-    hours: 'Open 7 Days \u00B7 12pm \u2013 9pm',
-    phone: '843-796-1350',
-    tel: '+18437961350',
-    directions:
-      'https://www.google.com/maps/search/?api=1&query=154+Sapwood+Rd+Unit+107+Myrtle+Beach+SC+29579',
-  },
-  {
-    name: 'Surfside',
-    street: '1399 S. Commons Dr, Unit A5',
-    city: 'Myrtle Beach, SC 29588',
-    hours: 'Open 7 Days \u00B7 12pm \u2013 9pm',
-    phone: '843-750-0056',
-    tel: '+18437500056',
-    directions:
-      'https://www.google.com/maps/search/?api=1&query=1399+S+Commons+Dr+Unit+A5+Myrtle+Beach+SC+29588',
-  },
-];
-
-const faqs = [
-  {
-    q: 'Where is River Oaks Pizzeria located?',
-    a: 'River Oaks Pizzeria has two locations in the Myrtle Beach, SC area: 154 Sapwood Rd, Unit 107 in Carolina Forest (Myrtle Beach, SC 29579) and 1399 S. Commons Dr, Unit A5 in Surfside (Myrtle Beach, SC 29588).',
-  },
-  {
-    q: "What are River Oaks Pizzeria's hours?",
-    a: 'Both River Oaks Pizzeria locations are open 7 days a week from 12pm to 9pm.',
-  },
-  {
-    q: 'Does River Oaks Pizzeria have a full bar?',
-    a: 'Yes. River Oaks Pizzeria offers a full bar with cocktails, wine, and a rotating draft beer list at both Myrtle Beach locations.',
-  },
-];
 
 function GoldButton({
   href,
@@ -81,19 +44,18 @@ function GoldButton({
 
 // JSON-LD structured data
 // NOTE: latitude and longitude are placeholders — replace with real coordinates from Google Maps
-const restaurantSchemas = [
-  {
+function buildRestaurantSchemas() {
+  return content.locations.items.map((loc) => ({
     '@context': 'https://schema.org',
     '@type': 'Restaurant',
-    name: 'River Oaks Pizzeria - Carolina Forest',
-    image:
-      'https://riveroakspizzeria.com/wp-content/uploads/2023/02/main_logo-1.png',
+    name: `${content.businessName} - ${loc.name}`,
+    image: content.seo.logoUrl,
     address: {
       '@type': 'PostalAddress',
-      streetAddress: '154 Sapwood Rd, Unit 107',
-      addressLocality: 'Myrtle Beach',
+      streetAddress: loc.street,
+      addressLocality: loc.city.split(',')[0]?.trim(),
       addressRegion: 'SC',
-      postalCode: '29579',
+      postalCode: loc.city.match(/\d{5}/)?.[0] ?? '',
       addressCountry: 'US',
     },
     geo: {
@@ -101,82 +63,39 @@ const restaurantSchemas = [
       latitude: '0.0', // TODO: replace with real latitude from Google Maps
       longitude: '0.0', // TODO: replace with real longitude from Google Maps
     },
-    telephone: '+1-843-796-1350',
-    servesCuisine: ['Italian', 'Pizza'],
-    priceRange: '$$',
+    telephone: loc.tel.replace(/(\d{1})(\d{3})(\d{3})(\d{4})/, '+$1-$2-$3-$4'),
+    servesCuisine: content.seo.cuisine,
+    priceRange: content.seo.priceRange,
     openingHoursSpecification: [
       {
         '@type': 'OpeningHoursSpecification',
-        dayOfWeek: [
-          'Monday',
-          'Tuesday',
-          'Wednesday',
-          'Thursday',
-          'Friday',
-          'Saturday',
-          'Sunday',
-        ],
-        opens: '12:00',
-        closes: '21:00',
+        dayOfWeek: content.seo.openDays,
+        opens: content.seo.opens,
+        closes: content.seo.closes,
       },
     ],
-  },
-  {
-    '@context': 'https://schema.org',
-    '@type': 'Restaurant',
-    name: 'River Oaks Pizzeria - Surfside',
-    image:
-      'https://riveroakspizzeria.com/wp-content/uploads/2023/02/main_logo-1.png',
-    address: {
-      '@type': 'PostalAddress',
-      streetAddress: '1399 S. Commons Dr, Unit A5',
-      addressLocality: 'Myrtle Beach',
-      addressRegion: 'SC',
-      postalCode: '29588',
-      addressCountry: 'US',
-    },
-    geo: {
-      '@type': 'GeoCoordinates',
-      latitude: '0.0', // TODO: replace with real latitude from Google Maps
-      longitude: '0.0', // TODO: replace with real longitude from Google Maps
-    },
-    telephone: '+1-843-750-0056',
-    servesCuisine: ['Italian', 'Pizza'],
-    priceRange: '$$',
-    openingHoursSpecification: [
-      {
-        '@type': 'OpeningHoursSpecification',
-        dayOfWeek: [
-          'Monday',
-          'Tuesday',
-          'Wednesday',
-          'Thursday',
-          'Friday',
-          'Saturday',
-          'Sunday',
-        ],
-        opens: '12:00',
-        closes: '21:00',
-      },
-    ],
-  },
-];
+  }));
+}
 
-const faqSchema = {
-  '@context': 'https://schema.org',
-  '@type': 'FAQPage',
-  mainEntity: faqs.map((f) => ({
-    '@type': 'Question',
-    name: f.q,
-    acceptedAnswer: {
-      '@type': 'Answer',
-      text: f.a,
-    },
-  })),
-};
+function buildFaqSchema() {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: content.locations.faqs.map((f) => ({
+      '@type': 'Question',
+      name: f.q,
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: f.a,
+      },
+    })),
+  };
+}
 
 export default function Locations() {
   const prefersReducedMotion = useReducedMotion();
+  const restaurantSchemas = buildRestaurantSchemas();
+  const faqSchema = buildFaqSchema();
 
   return (
     <section
@@ -193,7 +112,7 @@ export default function Locations() {
             className="text-sm font-semibold uppercase tracking-[0.3em]"
             style={{ color: GOLD, fontFamily: 'var(--font-lora)' }}
           >
-            Visit Us
+            {content.locations.sectionLabel}
           </p>
           <div className="h-px w-12" style={{ backgroundColor: GOLD }} />
         </div>
@@ -206,12 +125,12 @@ export default function Locations() {
             fontSize: 'clamp(32px, 5vw, 48px)',
           }}
         >
-          Two locations.
+          {content.locations.heading}
         </h2>
 
         {/* Location cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          {locations.map((loc, i) => (
+          {content.locations.items.map((loc, i) => (
             <motion.article
               key={loc.name}
               className="p-10 rounded-sm"
@@ -250,7 +169,7 @@ export default function Locations() {
                 className="mt-1 text-xs uppercase tracking-[0.25em]"
                 style={{ color: GOLD, fontFamily: 'var(--font-lora)' }}
               >
-                Myrtle Beach, SC
+                {loc.region}
               </p>
 
               <address
@@ -279,7 +198,7 @@ export default function Locations() {
               </a>
 
               <div className="mt-8">
-                <GoldButton href={loc.directions}>Get Directions</GoldButton>
+                <GoldButton href={loc.directionsUrl}>{content.locations.buttonText}</GoldButton>
               </div>
             </motion.article>
           ))}
@@ -293,13 +212,13 @@ export default function Locations() {
               className="text-sm font-semibold uppercase tracking-[0.3em]"
               style={{ color: GOLD, fontFamily: 'var(--font-lora)' }}
             >
-              Frequently Asked
+              {content.locations.faqLabel}
             </p>
             <div className="h-px w-12" style={{ backgroundColor: GOLD }} />
           </div>
 
           <dl className="max-w-[700px] mx-auto">
-            {faqs.map((faq, i) => (
+            {content.locations.faqs.map((faq, i) => (
               <div key={i} className={i > 0 ? 'mt-8' : ''}>
                 <dt
                   className="text-lg font-bold"

@@ -15,6 +15,7 @@ export interface WebClient {
   logo_url?: string;
   tagline?: string;
   bio?: string;
+  content?: Record<string, any>;
   created_at: string;
   updated_at: string;
 }

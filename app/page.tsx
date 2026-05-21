@@ -39,7 +39,7 @@ export default async function Page() {
   }
 
   if (client?.slug === 'riveroaks') {
-    return <RiverOaksHomePage />;
+    return <RiverOaksHomePage dbContent={client.content} />;
   }
 
   // Default to danidiaz

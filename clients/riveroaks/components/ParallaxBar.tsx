@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+import content from '../content';
 
 export default function ParallaxBar() {
   const [isMobile, setIsMobile] = useState(false);
@@ -49,7 +50,7 @@ export default function ParallaxBar() {
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           ref={imageRef}
-          src="/clients/riveroaks/riveroaks_bar.jpg"
+          src={content.parallaxBar.image}
           alt=""
           loading="eager"
           decoding="async"

@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+import content from '../content';
 
 const OFF_WHITE = '#f5ede0';
 
@@ -17,7 +18,7 @@ function HeadlineContent() {
           textShadow: '0 4px 24px rgba(0,0,0,0.7)',
         }}
       >
-        Home of the Grandma Pizza
+        {content.parallaxGrandma.headline}
       </h2>
     </>
   );
@@ -70,7 +71,7 @@ export default function ParallaxGrandma() {
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           ref={imageRef}
-          src="/clients/riveroaks/grandma-pizza.jpg"
+          src={content.parallaxGrandma.image}
           alt=""
           loading="eager"
           decoding="async"

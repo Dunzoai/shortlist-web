@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import Image from 'next/image';
+import contentFallback from '../content';
 
 const BG = '#0a0807';
 const GOLD = '#c9a96e';
@@ -10,9 +11,20 @@ const OFF_WHITE = '#f5ede0';
 
 type HeroProps = {
   backdropImage?: string;
+  hero?: {
+    pizzaImage: string;
+    pizzaAlt: string;
+    subtitle: string;
+    headline: string;
+    categories: string;
+    ctaText: string;
+    ctaHref: string;
+    backdropImage?: string;
+  };
 };
 
-export default function Hero({ backdropImage }: HeroProps) {
+export default function Hero({ backdropImage, hero }: HeroProps) {
+  const h = hero ?? contentFallback.hero;
   const hasCinematic = !!backdropImage;
   const [phase, setPhase] = useState(hasCinematic ? 0 : 3);
   const [backdropDone, setBackdropDone] = useState(false);
@@ -108,8 +120,8 @@ export default function Hero({ backdropImage }: HeroProps) {
             }}
           >
             <Image
-              src="/clients/riveroaks/pizza.png"
-              alt="Wood-fired grandma pizza"
+              src={h.pizzaImage}
+              alt={h.pizzaAlt}
               fill
               className="object-cover"
               priority
@@ -132,7 +144,7 @@ export default function Hero({ backdropImage }: HeroProps) {
             className="font-serif italic text-xs md:text-base tracking-wide mb-1"
             style={{ color: OFF_WHITE, fontFamily: 'var(--font-lora)' }}
           >
-            Family-owned since 1998
+            {h.subtitle}
           </p>
           <h1
             className="font-black italic text-center leading-[0.9] tracking-tight"
@@ -142,13 +154,13 @@ export default function Hero({ backdropImage }: HeroProps) {
               fontSize: 'clamp(36px, 8vw, 56px)',
             }}
           >
-            REAL PIZZA
+            {h.headline}
           </h1>
           <p
             className="mt-3 text-xs md:text-sm uppercase tracking-[0.25em] font-normal"
             style={{ color: GOLD, fontFamily: 'var(--font-lora)' }}
           >
-            Pizza &middot; Pasta &middot; Wine &middot; Cocktails
+            {h.categories}
           </p>
         </motion.div>
 
@@ -164,7 +176,7 @@ export default function Hero({ backdropImage }: HeroProps) {
           }
         >
           <a
-            href="/order"
+            href={h.ctaHref}
             className="px-8 py-3.5 rounded-sm text-xs uppercase tracking-[0.18em] font-normal transition-all duration-200"
             style={{
               fontFamily: 'var(--font-lora)',
@@ -181,7 +193,7 @@ export default function Hero({ backdropImage }: HeroProps) {
               e.currentTarget.style.color = GOLD;
             }}
           >
-            Start Your Order
+            {h.ctaText}
           </a>
         </motion.div>
       </div>

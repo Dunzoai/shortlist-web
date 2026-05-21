@@ -3,14 +3,10 @@
 import { useState, useEffect, useCallback } from 'react';
 import Image from 'next/image';
 import { X } from 'lucide-react';
+import content from '../content';
 
 const BG = '#0a0807';
 const GOLD = '#c9a96e';
-
-const ALL_IMAGES = Array.from(
-  { length: 12 },
-  (_, i) => `/clients/riveroaks/${i + 1}.png`
-);
 
 function shuffle(arr: string[]) {
   const a = [...arr];
@@ -28,7 +24,7 @@ export default function Gallery() {
   const [paused, setPaused] = useState(false);
 
   useEffect(() => {
-    const shuffled = shuffle(ALL_IMAGES);
+    const shuffled = shuffle([...content.gallery.images]);
     setTopImages(shuffled.slice(0, 6));
     setBottomImages(shuffled.slice(6, 12));
   }, []);
@@ -67,7 +63,7 @@ export default function Gallery() {
           className="text-sm font-semibold uppercase tracking-[0.3em]"
           style={{ color: GOLD, fontFamily: 'var(--font-lora)' }}
         >
-          Gallery
+          {content.gallery.sectionLabel}
         </p>
         <div className="h-px w-12" style={{ backgroundColor: GOLD }} />
       </div>
@@ -88,7 +84,7 @@ export default function Gallery() {
               >
                 <Image
                   src={src}
-                  alt="River Oaks Pizzeria"
+                  alt={content.gallery.imageAlt}
                   width={320}
                   height={320}
                   loading="lazy"
@@ -113,7 +109,7 @@ export default function Gallery() {
               >
                 <Image
                   src={src}
-                  alt="River Oaks Pizzeria"
+                  alt={content.gallery.imageAlt}
                   width={320}
                   height={320}
                   loading="lazy"
@@ -139,7 +135,7 @@ export default function Gallery() {
           </button>
           <Image
             src={selected}
-            alt="River Oaks Pizzeria"
+            alt={content.gallery.imageAlt}
             width={900}
             height={900}
             className="max-w-[90vw] max-h-[90vh] object-contain rounded-2xl"
