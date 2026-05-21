@@ -3,10 +3,14 @@
 import { useState, useEffect, useCallback } from 'react';
 import Image from 'next/image';
 import { X } from 'lucide-react';
-import content from '../content';
+import contentFallback from '../content';
 
 const BG = '#0a0807';
 const GOLD = '#c9a96e';
+
+type GalleryProps = {
+  gallery?: { sectionLabel: string; imageAlt: string; images: string[] };
+};
 
 function shuffle(arr: string[]) {
   const a = [...arr];
@@ -17,14 +21,15 @@ function shuffle(arr: string[]) {
   return a;
 }
 
-export default function Gallery() {
+export default function Gallery({ gallery }: GalleryProps) {
+  const g = gallery ?? contentFallback.gallery;
   const [topImages, setTopImages] = useState<string[]>([]);
   const [bottomImages, setBottomImages] = useState<string[]>([]);
   const [selected, setSelected] = useState<string | null>(null);
   const [paused, setPaused] = useState(false);
 
   useEffect(() => {
-    const shuffled = shuffle([...content.gallery.images]);
+    const shuffled = shuffle([...g.images]);
     setTopImages(shuffled.slice(0, 6));
     setBottomImages(shuffled.slice(6, 12));
   }, []);
@@ -63,7 +68,7 @@ export default function Gallery() {
           className="text-sm font-semibold uppercase tracking-[0.3em]"
           style={{ color: GOLD, fontFamily: 'var(--font-lora)' }}
         >
-          {content.gallery.sectionLabel}
+          {g.sectionLabel}
         </p>
         <div className="h-px w-12" style={{ backgroundColor: GOLD }} />
       </div>
@@ -84,7 +89,7 @@ export default function Gallery() {
               >
                 <Image
                   src={src}
-                  alt={content.gallery.imageAlt}
+                  alt={g.imageAlt}
                   width={320}
                   height={320}
                   loading="lazy"
@@ -109,7 +114,7 @@ export default function Gallery() {
               >
                 <Image
                   src={src}
-                  alt={content.gallery.imageAlt}
+                  alt={g.imageAlt}
                   width={320}
                   height={320}
                   loading="lazy"
@@ -135,7 +140,7 @@ export default function Gallery() {
           </button>
           <Image
             src={selected}
-            alt={content.gallery.imageAlt}
+            alt={g.imageAlt}
             width={900}
             height={900}
             className="max-w-[90vw] max-h-[90vh] object-contain rounded-2xl"

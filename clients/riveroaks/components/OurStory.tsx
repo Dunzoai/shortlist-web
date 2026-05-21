@@ -1,12 +1,17 @@
 'use client';
 
-import content from '../content';
+import contentFallback from '../content';
 
 const BG = '#f5ede0';
 const TEXT = '#1a1410';
 const GOLD = '#c9a96e';
 
-export default function OurStory() {
+type OurStoryProps = {
+  story?: { sectionLabel: string; body: string; pullQuote: string; closingLine: string; signature: string; attribution: string };
+};
+
+export default function OurStory({ story }: OurStoryProps) {
+  const s = story ?? contentFallback.story;
   return (
     <section id="our-story" className="py-24 md:py-32 px-6" style={{ backgroundColor: BG }}>
       <div className="max-w-[700px] mx-auto">
@@ -17,7 +22,7 @@ export default function OurStory() {
             className="text-sm font-semibold uppercase tracking-[0.3em]"
             style={{ color: GOLD, fontFamily: 'var(--font-lora)' }}
           >
-            {content.story.sectionLabel}
+            {s.sectionLabel}
           </p>
           <div className="h-px w-12" style={{ backgroundColor: GOLD }} />
         </div>
@@ -27,7 +32,7 @@ export default function OurStory() {
           className="text-lg leading-relaxed"
           style={{ color: TEXT, fontFamily: 'var(--font-lora)' }}
         >
-          {content.story.body}
+          {s.body}
         </p>
 
         {/* Pull-quote */}
@@ -39,7 +44,7 @@ export default function OurStory() {
             fontSize: 'clamp(18px, 3vw, 22px)',
           }}
         >
-          {content.story.pullQuote}
+          {s.pullQuote}
         </p>
 
         {/* Final line */}
@@ -47,7 +52,7 @@ export default function OurStory() {
           className="mt-4 text-lg font-bold text-center"
           style={{ color: TEXT, fontFamily: 'var(--font-lora)' }}
         >
-          {content.story.closingLine}
+          {s.closingLine}
         </p>
 
         {/* Signature */}
@@ -59,7 +64,7 @@ export default function OurStory() {
             fontSize: 'clamp(28px, 5vw, 36px)',
           }}
         >
-          {content.story.signature}
+          {s.signature}
         </p>
 
         {/* Attribution */}
@@ -67,7 +72,7 @@ export default function OurStory() {
           className="mt-2 text-sm text-center uppercase tracking-[0.25em]"
           style={{ color: GOLD, fontFamily: 'var(--font-lora)' }}
         >
-          {content.story.attribution}
+          {s.attribution}
         </p>
       </div>
     </section>

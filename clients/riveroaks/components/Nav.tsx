@@ -3,7 +3,7 @@
 import { useState, useMemo } from 'react';
 import { usePathname } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
-import content from '../content';
+import contentFallback from '../content';
 
 const BG = '#0a0807';
 const GOLD = '#c9a96e';
@@ -11,7 +11,14 @@ const OFF_WHITE = '#f5ede0';
 
 const PREVIEW_PREFIX = '/clients/riveroaks/preview';
 
-export default function Nav() {
+type NavProps = {
+  nav?: { links: { label: string; path: string | null; anchor: string | null }[]; orderButtonText: string };
+  brandLabel?: string;
+};
+
+export default function Nav({ nav, brandLabel }: NavProps) {
+  const n = nav ?? contentFallback.nav;
+  const brand = brandLabel ?? contentFallback.brandLabel;
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
 
@@ -21,11 +28,11 @@ export default function Nav() {
 
   const navLinks = useMemo(
     () =>
-      content.nav.links.map((link) => ({
+      n.links.map((link) => ({
         label: link.label,
         href: `${base}${link.anchor ?? link.path ?? '/'}`,
       })),
-    [base]
+    [base, n.links]
   );
 
   const orderHref = `${base}/order`;
@@ -46,7 +53,7 @@ export default function Nav() {
           className="uppercase tracking-[0.2em] text-sm font-semibold"
           style={{ color: GOLD, fontFamily: 'var(--font-lora)' }}
         >
-          {content.brandLabel}
+          {brand}
         </a>
 
         {/* Desktop links */}
@@ -88,7 +95,7 @@ export default function Nav() {
               e.currentTarget.style.color = GOLD;
             }}
           >
-            {content.nav.orderButtonText}
+            {n.orderButtonText}
           </a>
         </div>
 
@@ -170,7 +177,7 @@ export default function Nav() {
                   border: `1px solid ${GOLD}`,
                 }}
               >
-                {content.nav.orderButtonText}
+                {n.orderButtonText}
               </a>
             </div>
           </motion.div>

@@ -2,7 +2,7 @@
 
 import { MapPin, Smartphone, DollarSign } from 'lucide-react';
 import Nav from '../components/Nav';
-import content from '../content';
+import contentFallback from '../content';
 
 const BG = '#0a0807';
 const GOLD = '#c9a96e';
@@ -10,10 +10,16 @@ const OFF_WHITE = '#f5ede0';
 
 const featureIcons = [MapPin, Smartphone, DollarSign];
 
-export default function OrderPage() {
+type OrderPageProps = {
+  dbContent?: Record<string, any>;
+};
+
+export default function OrderPage({ dbContent }: OrderPageProps) {
+  const c = dbContent ?? contentFallback;
+  const o = c.order;
   return (
     <main className="min-h-screen" style={{ backgroundColor: BG }}>
-      <Nav />
+      <Nav nav={c.nav} brandLabel={c.brandLabel} />
       <div className="max-w-[700px] mx-auto px-6 py-32 text-center">
         {/* Header */}
         <div className="flex items-center justify-center gap-4 mb-8">
@@ -22,7 +28,7 @@ export default function OrderPage() {
             className="text-sm font-semibold uppercase tracking-[0.3em]"
             style={{ color: GOLD, fontFamily: 'var(--font-lora)' }}
           >
-            {content.order.sectionLabel}
+            {o.sectionLabel}
           </p>
           <div className="h-px w-12" style={{ backgroundColor: GOLD }} />
         </div>
@@ -35,7 +41,7 @@ export default function OrderPage() {
             fontSize: 'clamp(36px, 7vw, 56px)',
           }}
         >
-          {content.order.heading}
+          {o.heading}
         </h1>
 
         <p
@@ -46,12 +52,12 @@ export default function OrderPage() {
             fontSize: '18px',
           }}
         >
-          {content.order.description}
+          {o.description}
         </p>
 
         {/* Features */}
         <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-8">
-          {content.order.features.map((f, i) => {
+          {o.features.map((f: any, i: number) => {
             const Icon = featureIcons[i];
             return (
               <div key={f.heading} className="text-center">
@@ -85,7 +91,7 @@ export default function OrderPage() {
             className="text-sm font-semibold uppercase tracking-[0.3em]"
             style={{ color: GOLD, fontFamily: 'var(--font-lora)' }}
           >
-            {content.order.demoLabel}
+            {o.demoLabel}
           </p>
           <h2
             className="mt-4 italic font-bold"
@@ -95,7 +101,7 @@ export default function OrderPage() {
               fontSize: 'clamp(26px, 5vw, 36px)',
             }}
           >
-            {content.order.demoHeading}
+            {o.demoHeading}
           </h2>
           <p
             className="mt-4 max-w-[600px] mx-auto"
@@ -105,11 +111,11 @@ export default function OrderPage() {
               fontSize: '16px',
             }}
           >
-            {content.order.demoDescription}
+            {o.demoDescription}
           </p>
           <div className="mt-8">
             <a
-              href={content.order.demoUrl}
+              href={o.demoUrl}
               target="_blank"
               rel="noopener noreferrer"
               className="inline-block px-8 py-3.5 rounded-sm text-xs uppercase tracking-[0.18em] font-normal transition-all duration-200"
@@ -128,7 +134,7 @@ export default function OrderPage() {
                 e.currentTarget.style.color = GOLD;
               }}
             >
-              {content.order.demoButtonText}
+              {o.demoButtonText}
             </a>
           </div>
         </div>
@@ -153,7 +159,7 @@ export default function OrderPage() {
               e.currentTarget.style.color = GOLD;
             }}
           >
-            {content.order.backButtonText}
+            {o.backButtonText}
           </a>
         </div>
 
@@ -166,7 +172,7 @@ export default function OrderPage() {
             fontSize: '13px',
           }}
         >
-          {content.order.softPitch}
+          {o.softPitch}
         </p>
       </div>
     </main>

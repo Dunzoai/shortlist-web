@@ -2,7 +2,13 @@
 
 import { motion, useReducedMotion } from 'framer-motion';
 import { Phone } from 'lucide-react';
-import content from '../content';
+import contentFallback from '../content';
+
+type LocationsProps = {
+  locations?: Record<string, any>;
+  seo?: Record<string, any>;
+  businessName?: string;
+};
 
 const BG = '#0a0807';
 const GOLD = '#c9a96e';
@@ -44,12 +50,12 @@ function GoldButton({
 
 // JSON-LD structured data
 // NOTE: latitude and longitude are placeholders — replace with real coordinates from Google Maps
-function buildRestaurantSchemas() {
-  return content.locations.items.map((loc) => ({
+function buildRestaurantSchemas(loc_data: any, seo_data: any, bName: string) {
+  return loc_data.items.map((loc: any) => ({
     '@context': 'https://schema.org',
     '@type': 'Restaurant',
-    name: `${content.businessName} - ${loc.name}`,
-    image: content.seo.logoUrl,
+    name: `${bName} - ${loc.name}`,
+    image: seo_data.logoUrl,
     address: {
       '@type': 'PostalAddress',
       streetAddress: loc.street,
@@ -64,24 +70,24 @@ function buildRestaurantSchemas() {
       longitude: '0.0', // TODO: replace with real longitude from Google Maps
     },
     telephone: loc.tel.replace(/(\d{1})(\d{3})(\d{3})(\d{4})/, '+$1-$2-$3-$4'),
-    servesCuisine: content.seo.cuisine,
-    priceRange: content.seo.priceRange,
+    servesCuisine: seo_data.cuisine,
+    priceRange: seo_data.priceRange,
     openingHoursSpecification: [
       {
         '@type': 'OpeningHoursSpecification',
-        dayOfWeek: content.seo.openDays,
-        opens: content.seo.opens,
-        closes: content.seo.closes,
+        dayOfWeek: seo_data.openDays,
+        opens: seo_data.opens,
+        closes: seo_data.closes,
       },
     ],
   }));
 }
 
-function buildFaqSchema() {
+function buildFaqSchema(loc_data: any) {
   return {
     '@context': 'https://schema.org',
     '@type': 'FAQPage',
-    mainEntity: content.locations.faqs.map((f) => ({
+    mainEntity: loc_data.faqs.map((f: any) => ({
       '@type': 'Question',
       name: f.q,
       acceptedAnswer: {
@@ -92,10 +98,13 @@ function buildFaqSchema() {
   };
 }
 
-export default function Locations() {
+export default function Locations({ locations, seo, businessName }: LocationsProps) {
+  const loc = locations ?? contentFallback.locations;
+  const seoData = seo ?? contentFallback.seo;
+  const bName = businessName ?? contentFallback.businessName;
   const prefersReducedMotion = useReducedMotion();
-  const restaurantSchemas = buildRestaurantSchemas();
-  const faqSchema = buildFaqSchema();
+  const restaurantSchemas = buildRestaurantSchemas(loc, seoData, bName);
+  const faqSchema = buildFaqSchema(loc);
 
   return (
     <section
@@ -112,7 +121,7 @@ export default function Locations() {
             className="text-sm font-semibold uppercase tracking-[0.3em]"
             style={{ color: GOLD, fontFamily: 'var(--font-lora)' }}
           >
-            {content.locations.sectionLabel}
+            {loc.sectionLabel}
           </p>
           <div className="h-px w-12" style={{ backgroundColor: GOLD }} />
         </div>
@@ -125,14 +134,14 @@ export default function Locations() {
             fontSize: 'clamp(32px, 5vw, 48px)',
           }}
         >
-          {content.locations.heading}
+          {loc.heading}
         </h2>
 
         {/* Location cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          {content.locations.items.map((loc, i) => (
+          {loc.items.map((item: any, i: number) => (
             <motion.article
-              key={loc.name}
+              key={item.name}
               className="p-10 rounded-sm"
               style={{
                 border: '1px solid rgba(201,169,110,0.3)',
@@ -163,42 +172,42 @@ export default function Locations() {
                   fontSize: '36px',
                 }}
               >
-                {loc.name}
+                {item.name}
               </h3>
               <p
                 className="mt-1 text-xs uppercase tracking-[0.25em]"
                 style={{ color: GOLD, fontFamily: 'var(--font-lora)' }}
               >
-                {loc.region}
+                {item.region}
               </p>
 
               <address
                 className="mt-8 not-italic text-base leading-relaxed"
                 style={{ color: OFF_WHITE, fontFamily: 'var(--font-lora)' }}
               >
-                {loc.street}
+                {item.street}
                 <br />
-                {loc.city}
+                {item.city}
               </address>
 
               <p
                 className="mt-6 text-base"
                 style={{ color: OFF_WHITE, fontFamily: 'var(--font-lora)' }}
               >
-                {loc.hours}
+                {item.hours}
               </p>
 
               <a
-                href={`tel:${loc.tel}`}
+                href={`tel:${item.tel}`}
                 className="mt-6 inline-flex items-center gap-2 text-lg hover:underline"
                 style={{ color: GOLD, fontFamily: 'var(--font-lora)' }}
               >
                 <Phone className="w-4 h-4" />
-                {loc.phone}
+                {item.phone}
               </a>
 
               <div className="mt-8">
-                <GoldButton href={loc.directionsUrl}>{content.locations.buttonText}</GoldButton>
+                <GoldButton href={item.directionsUrl}>{loc.buttonText}</GoldButton>
               </div>
             </motion.article>
           ))}
@@ -212,13 +221,13 @@ export default function Locations() {
               className="text-sm font-semibold uppercase tracking-[0.3em]"
               style={{ color: GOLD, fontFamily: 'var(--font-lora)' }}
             >
-              {content.locations.faqLabel}
+              {loc.faqLabel}
             </p>
             <div className="h-px w-12" style={{ backgroundColor: GOLD }} />
           </div>
 
           <dl className="max-w-[700px] mx-auto">
-            {content.locations.faqs.map((faq, i) => (
+            {loc.faqs.map((faq: any, i: number) => (
               <div key={i} className={i > 0 ? 'mt-8' : ''}>
                 <dt
                   className="text-lg font-bold"
@@ -239,7 +248,7 @@ export default function Locations() {
       </div>
 
       {/* JSON-LD structured data for SEO/GEO/AEO */}
-      {restaurantSchemas.map((schema, i) => (
+      {restaurantSchemas.map((schema: any, i: number) => (
         <script
           key={`restaurant-${i}`}
           type="application/ld+json"

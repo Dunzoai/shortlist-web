@@ -1,11 +1,11 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import content from '../content';
+import contentFallback from '../content';
 
 const OFF_WHITE = '#f5ede0';
 
-function HeadlineContent() {
+function HeadlineContent({ headline }: { headline: string }) {
   return (
     <>
       <div className="absolute inset-0 z-10" style={{ backgroundColor: 'rgba(10,8,7,0.45)' }} />
@@ -18,13 +18,18 @@ function HeadlineContent() {
           textShadow: '0 4px 24px rgba(0,0,0,0.7)',
         }}
       >
-        {content.parallaxGrandma.headline}
+        {headline}
       </h2>
     </>
   );
 }
 
-export default function ParallaxGrandma() {
+type ParallaxGrandmaProps = {
+  parallaxGrandma?: { image: string; headline: string };
+};
+
+export default function ParallaxGrandma({ parallaxGrandma }: ParallaxGrandmaProps) {
+  const pg = parallaxGrandma ?? contentFallback.parallaxGrandma;
   const [isMobile, setIsMobile] = useState(false);
   const imageRef = useRef<HTMLImageElement>(null);
   const sectionRef = useRef<HTMLDivElement>(null);
@@ -71,7 +76,7 @@ export default function ParallaxGrandma() {
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           ref={imageRef}
-          src={content.parallaxGrandma.image}
+          src={pg.image}
           alt=""
           loading="eager"
           decoding="async"
@@ -82,14 +87,14 @@ export default function ParallaxGrandma() {
             transform: 'translateZ(0)',
           }}
         />
-        <HeadlineContent />
+        <HeadlineContent headline={pg.headline} />
       </section>
     );
   }
 
   return (
     <div className="parallax-riveroaks-grandma">
-      <HeadlineContent />
+      <HeadlineContent headline={pg.headline} />
     </div>
   );
 }

@@ -8,7 +8,7 @@ export default async function MenuPage() {
   const client = await getClient(hostname);
 
   if (client?.slug === 'riveroaks') {
-    return <RiverOaksMenuPage />;
+    return <RiverOaksMenuPage dbContent={client.content} />;
   }
 
   // No other clients use /menu yet — redirect or show nothing

@@ -3,7 +3,11 @@
 import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
-import content from '../content';
+import contentFallback from '../content';
+
+type PizzaMenuProps = {
+  menu?: Record<string, any>;
+};
 
 const BG = '#0a0807';
 const GOLD = '#c9a96e';
@@ -31,7 +35,8 @@ const itemVariants = {
   },
 };
 
-export default function PizzaMenu() {
+export default function PizzaMenu({ menu }: PizzaMenuProps) {
+  const m = menu ?? contentFallback.menu;
   const [active, setActive] = useState<string | null>(null);
   const [isMobile, setIsMobile] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
@@ -53,7 +58,7 @@ export default function PizzaMenu() {
   };
 
   const activeItems = active
-    ? content.menu.styles.find((t) => t.key === active)!.items
+    ? m.styles.find((t: any) => t.key === active)!.items
     : [];
 
   return (
@@ -66,7 +71,7 @@ export default function PizzaMenu() {
             className="text-sm font-semibold uppercase tracking-[0.3em]"
             style={{ color: GOLD, fontFamily: 'var(--font-lora)' }}
           >
-            {content.menu.sectionLabel}
+            {m.sectionLabel}
           </p>
           <div className="h-px w-12" style={{ backgroundColor: GOLD }} />
         </div>
@@ -78,7 +83,7 @@ export default function PizzaMenu() {
             fontSize: 'clamp(40px, 7vw, 64px)',
           }}
         >
-          {content.menu.heading}
+          {m.heading}
         </h1>
         <p
           className="text-center italic mb-16"
@@ -88,12 +93,12 @@ export default function PizzaMenu() {
             fontSize: '18px',
           }}
         >
-          {content.menu.subtitle}
+          {m.subtitle}
         </p>
 
         {/* Tiles */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12">
-          {content.menu.styles.map((tile) => {
+          {m.styles.map((tile: any) => {
             const isActive = active === tile.key;
             const isInactive = active !== null && !isActive;
 
@@ -187,7 +192,7 @@ export default function PizzaMenu() {
                 animate="visible"
                 exit="exit"
               >
-                {activeItems.map((item, i) => (
+                {activeItems.map((item: any, i: number) => (
                   <motion.div
                     key={item.name}
                     variants={itemVariants}

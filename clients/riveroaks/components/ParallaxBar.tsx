@@ -1,9 +1,14 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import content from '../content';
+import contentFallback from '../content';
 
-export default function ParallaxBar() {
+type ParallaxBarProps = {
+  parallaxBar?: { image: string };
+};
+
+export default function ParallaxBar({ parallaxBar }: ParallaxBarProps) {
+  const p = parallaxBar ?? contentFallback.parallaxBar;
   const [isMobile, setIsMobile] = useState(false);
   const imageRef = useRef<HTMLImageElement>(null);
   const sectionRef = useRef<HTMLDivElement>(null);
@@ -50,7 +55,7 @@ export default function ParallaxBar() {
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           ref={imageRef}
-          src={content.parallaxBar.image}
+          src={p.image}
           alt=""
           loading="eager"
           decoding="async"

@@ -8,7 +8,7 @@ export default async function OrderPage() {
   const client = await getClient(hostname);
 
   if (client?.slug === 'riveroaks') {
-    return <RiverOaksOrderPage />;
+    return <RiverOaksOrderPage dbContent={client.content} />;
   }
 
   // No other clients use /order yet
