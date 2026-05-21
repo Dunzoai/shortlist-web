@@ -1,0 +1,50 @@
+{
+  "name": "shortlist-web",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint",
+    "remotion:studio": "remotion studio src/remotion/index.ts",
+    "remotion:render": "remotion render src/remotion/index.ts SmartPageFoodTruck out/smartpage-foodtruck.mp4",
+    "remotion:render:receipt": "remotion render src/remotion/index.ts SmartAssistantReceipt out/smartassistant-receipt.mp4",
+    "remotion:render:sb-teaser": "remotion render src/remotion/index.ts NitosSuperBowlTeaser out/nitos-superbowl-teaser.mp4",
+    "remotion:preview": "remotion preview src/remotion/index.ts"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.71.2",
+    "@hookform/resolvers": "^5.2.2",
+    "@remotion/player": "^4.0.409",
+    "@supabase/ssr": "^0.8.0",
+    "@supabase/supabase-js": "^2.90.1",
+    "@tiptap/extension-link": "^2.10.5",
+    "@tiptap/extension-placeholder": "^2.10.5",
+    "@tiptap/react": "^2.10.5",
+    "@tiptap/starter-kit": "^2.10.5",
+    "date-fns": "^4.1.0",
+    "framer-motion": "^12.25.0",
+    "lucide-react": "^0.562.0",
+    "next": "16.1.1",
+    "qrcode.react": "^4.2.0",
+    "react": "19.2.3",
+    "react-dom": "19.2.3",
+    "react-hook-form": "^7.71.1",
+    "stripe": "^20.2.0",
+    "zod": "^4.3.5"
+  },
+  "devDependencies": {
+    "@remotion/bundler": "^4.0.409",
+    "@remotion/cli": "^4.0.409",
+    "@tailwindcss/postcss": "^4",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "eslint": "^9",
+    "eslint-config-next": "16.1.1",
+    "remotion": "^4.0.409",
+    "tailwindcss": "^4",
+    "typescript": "^5"
+  }
+}

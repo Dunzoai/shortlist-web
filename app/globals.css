@@ -1,0 +1,183 @@
+@import "tailwindcss";
+
+html {
+  overflow-x: hidden;
+  width: 100%;
+  scroll-behavior: smooth;
+}
+
+:root {
+  --background: #F7F7F7;
+  --foreground: #3D3D3D;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-playfair: var(--font-playfair);
+  --font-lora: var(--font-lora);
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-lora), Georgia, serif;
+  overflow-x: hidden;
+  width: 100%;
+  position: relative;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-playfair), Georgia, serif;
+}
+
+p, span, a, li, label, input, textarea, button {
+  font-family: var(--font-lora), Georgia, serif;
+}
+
+/* Parallax Section */
+.parallax-section {
+  background-image: url('/dani-phone-laptop.jpg');
+  height: 70vh;
+  background-attachment: fixed;
+  background-position: center 35%;
+  background-repeat: no-repeat;
+  background-size: cover;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+/* Disable fixed attachment on mobile - it doesn't work well */
+@media only screen and (max-device-width: 1366px) {
+  .parallax-section {
+    background-attachment: scroll;
+  }
+}
+
+/* Desktop positioning adjustment */
+@media (min-width: 768px) {
+  .parallax-section {
+    background-position: center 65%;
+  }
+}
+
+/* Parallax Section 2 */
+.parallax-section-2 {
+  background-image: url('/front-door-paralax.png');
+  height: 70vh;
+  background-attachment: fixed;
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+/* Disable fixed attachment on mobile - it doesn't work well */
+@media only screen and (max-device-width: 1366px) {
+  .parallax-section-2 {
+    background-attachment: scroll;
+  }
+}
+
+/* Parallax Section - River Oaks Bar */
+.parallax-riveroaks-bar {
+  background-image: url('/clients/riveroaks/riveroaks_bar.jpg');
+  height: 85vh;
+  background-attachment: fixed;
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+@media only screen and (max-device-width: 1366px) {
+  .parallax-riveroaks-bar {
+    background-attachment: scroll;
+  }
+}
+
+/* Parallax Section - River Oaks Grandma Pizza */
+.parallax-riveroaks-grandma {
+  background-image: url('/clients/riveroaks/grandma-pizza.jpg');
+  height: 85vh;
+  background-attachment: fixed;
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+@media only screen and (max-device-width: 1366px) {
+  .parallax-riveroaks-grandma {
+    background-attachment: scroll;
+  }
+}
+
+/* Hide scrollbar for swipe carousels */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* Rotating CTA fade */
+@keyframes fade-in {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.animate-fade-in {
+  animation: fade-in 0.3s ease-out;
+}
+
+/* Pulsing glow for mobile CTA */
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(196, 160, 82, 0.6); }
+  50% { box-shadow: 0 0 16px 4px rgba(196, 160, 82, 0.4); }
+}
+.animate-pulse-glow {
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+/* Gallery marquee - infinite scroll rows */
+@keyframes marquee-left {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+@keyframes marquee-right {
+  0% { transform: translateX(-50%); }
+  100% { transform: translateX(0); }
+}
+.marquee-left {
+  animation: marquee-left 30s linear infinite;
+  width: max-content;
+}
+.marquee-right {
+  animation: marquee-right 30s linear infinite;
+  width: max-content;
+}
+
+/* Subtle shimmy - gentle nudge every few seconds */
+@keyframes shimmy {
+  0%, 92% { transform: translateX(0); }
+  93% { transform: translateX(-3px) rotate(-1deg); }
+  95% { transform: translateX(3px) rotate(1deg); }
+  97% { transform: translateX(-2px) rotate(0deg); }
+  99% { transform: translateX(1px); }
+  100% { transform: translateX(0); }
+}
+.animate-shimmy {
+  animation: shimmy 4s ease-in-out infinite;
+}
