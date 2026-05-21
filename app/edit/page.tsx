@@ -1,10 +1,10 @@
 import { supabase } from '@/lib/supabase';
-import Editor from './Editor';
+import EditShell from './EditShell';
 
 export default async function EditPage({
   searchParams,
 }: {
-  searchParams: Promise<{ slug?: string }>;
+  searchParams: Promise<{ slug?: string; mode?: string }>;
 }) {
   const params = await searchParams;
   const slug = params.slug || 'riveroaks';
@@ -23,8 +23,20 @@ export default async function EditPage({
     );
   }
 
+  // ?mode=form loads the old form-based editor
+  if (params.mode === 'form') {
+    const Editor = (await import('./Editor')).default;
+    return (
+      <Editor
+        slug={data.slug}
+        businessName={data.business_name || slug}
+        initialContent={data.content}
+      />
+    );
+  }
+
   return (
-    <Editor
+    <EditShell
       slug={data.slug}
       businessName={data.business_name || slug}
       initialContent={data.content}
