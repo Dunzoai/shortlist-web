@@ -77,7 +77,7 @@ export const weeklyEvents = [
   {
     day: "Sunday",
     name: "Sunday Funday",
-    description: "Open at noon. Dog-friendly patio."
+    description: "Open at noon. Relax and unwind."
   }
 ];
 
