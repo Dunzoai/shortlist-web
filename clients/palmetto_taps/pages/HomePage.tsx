@@ -507,7 +507,7 @@ export default function Home() {
               className="flex items-center justify-end md:justify-center -mt-16 md:mt-0 mr-[-5%] md:mr-0 relative z-20"
             >
               <img
-                src="/clients/palmetto_taps/palmetto-taps-coaster.png"
+                src="/palmetto-taps/coaster_drinks.png"
                 alt="Palmetto Taps - Our Tap Wall"
                 className="w-[350px] md:w-[625px]"
                 style={{
@@ -586,8 +586,8 @@ export default function Home() {
               className="flex items-center justify-start md:justify-center -mt-12 md:mt-0 ml-[-8%] md:ml-[3%] relative z-20 order-2 md:order-1"
             >
               <img
-                src="/clients/palmetto_taps/palmetto-taps-menu.png"
-                alt="Palmetto Taps - Our Food"
+                src="/palmetto-taps/coaster_menu.png"
+                alt="Palmetto Taps - Full Menu"
                 className="w-[350px] md:w-[625px]"
                 style={{
                   filter: 'drop-shadow(0 25px 50px rgba(0, 0, 0, 0.4)) drop-shadow(0 10px 25px rgba(139, 106, 79, 0.25))',
