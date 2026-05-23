@@ -854,12 +854,12 @@ export default function Home() {
                 content="Well-behaved children with attentive parents are welcome. We do our best to be a family-friendly space for the community, but with glass and other accessible items throughout the taproom, we want to ensure everyone stays safe. We kindly ask that all children remain well-behaved and supervised at all times."
               />
               <AccordionItem
-                title="Pet Friendly"
-                content="Your four-legged friends are part of the family too. Our outdoor patio is fully pet-friendly, so grab a seat, order a cold one, and let your pup enjoy the fresh air with you."
+                title="Can I Bring My Pet?"
+                content="We love animals, but due to new insurance policies and regulations, we are no longer allowed to have pets inside or outside of the establishment. We're sad we won't get to see those tails wagging too."
               />
               <AccordionItem
-                title="More than Just Beer"
-                content="Yes, we have 40+ taps but we've also got wine, prosecco, seltzers, and shots (jell-o shots, Fireball cinnamon whiskey, and sake). Whatever you're in the mood for, Palmetto Taps has you covered."
+                title="More Than Just Beer"
+                content="We have a liquor license and a full bar stocked, ready, and waiting."
               />
               <AccordionItem
                 title="Free Parking"

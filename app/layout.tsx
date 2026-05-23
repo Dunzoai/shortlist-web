@@ -255,7 +255,7 @@ export default async function RootLayout({
                 "acceptsReservations": false,
                 "amenityFeature": [
                   { "@type": "LocationFeatureSpecification", "name": "Self-Serve Beer Taps", "value": true },
-                  { "@type": "LocationFeatureSpecification", "name": "Pet Friendly Patio", "value": true },
+                  { "@type": "LocationFeatureSpecification", "name": "Pet Friendly Patio", "value": false },
                   { "@type": "LocationFeatureSpecification", "name": "Family Friendly", "value": true },
                   { "@type": "LocationFeatureSpecification", "name": "Free Parking", "value": true },
                   { "@type": "LocationFeatureSpecification", "name": "Outdoor Seating", "value": true }
