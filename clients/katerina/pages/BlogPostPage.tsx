@@ -260,7 +260,7 @@ export function BlogPostPage() {
 
     const title = `${language === 'es' && post.title_es ? post.title_es : post.title} | Katerina Sells Florida`;
     const description = language === 'es' && post.excerpt_es ? post.excerpt_es : post.excerpt;
-    const image = post.featured_image || '/dani-og-image.jpg';
+    const image = post.featured_image || '/placeholder-og.svg';
     const url = typeof window !== 'undefined' ? window.location.href : '';
 
     // Set document title
@@ -487,13 +487,9 @@ export function BlogPostPage() {
 
           {/* Signature */}
           <div className="mt-12 mb-12 flex justify-center">
-            <Image
-              src="/dani-signature.png"
-              alt="Katerina Signature"
-              width={150}
-              height={50}
-              className="opacity-60 max-w-[150px] w-auto h-auto"
-            />
+            <span className="font-[family-name:var(--font-playfair)] text-3xl italic text-[#C4A25A] opacity-60">
+              Katerina
+            </span>
           </div>
 
           {/* Tags */}

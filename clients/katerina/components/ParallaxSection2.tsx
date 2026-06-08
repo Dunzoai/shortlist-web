@@ -40,7 +40,7 @@ export default function ParallaxSection2() {
           ref={imageRef}
           className="absolute -top-[40%] left-0 w-full h-[150%] bg-cover bg-no-repeat will-change-transform"
           style={{
-            backgroundImage: 'url(/dani-paralax-mobile.png)',
+            backgroundImage: 'url(/front-door-paralax.png)',
             backgroundPosition: 'center center'
           }}
         />

@@ -149,6 +149,33 @@ export async function generateMetadata(): Promise<Metadata> {
     };
   }
 
+  if (client?.slug === 'katerina') {
+    return {
+      title: "Katerina Sells Florida | Lake Worth Real Estate",
+      description: "Your trusted real estate partner in Lake Worth, Florida. Helping buyers and sellers find their perfect place in the Sunshine State.",
+      keywords: ["Lake Worth realtor", "South Florida real estate", "Lake Worth homes", "Florida real estate agent"],
+      authors: [{ name: "Katerina" }],
+      creator: "Katerina Sells Florida",
+      metadataBase: new URL('https://katerina-demo.shortlistpass.com'),
+      openGraph: {
+        type: 'website',
+        locale: 'en_US',
+        url: '/',
+        siteName: 'Katerina Sells Florida',
+        title: 'Katerina Sells Florida | Lake Worth Real Estate',
+        description: 'Your trusted real estate partner in Lake Worth, Florida.',
+        images: [{ url: '/placeholder-og.svg', width: 1200, height: 630, alt: 'Katerina Sells Florida' }],
+      },
+      twitter: {
+        card: 'summary_large_image',
+        title: 'Katerina Sells Florida | Lake Worth Real Estate',
+        description: 'Your trusted real estate partner in Lake Worth, Florida.',
+        images: ['/placeholder-og.svg'],
+      },
+      robots: { index: false, follow: false },
+    };
+  }
+
   // Default: Dani Díaz
   return {
     title: "Dani Díaz | Bilingual Realtor Myrtle Beach",

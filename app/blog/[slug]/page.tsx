@@ -5,28 +5,35 @@ import { BlogPostPage as DaniDiazBlogPostPage } from '@/clients/danidiaz/pages/B
 import { BlogPostPage as KaterinaBlogPostPage } from '@/clients/katerina/pages/BlogPostPage';
 import { supabase } from '@/lib/supabase';
 
-const baseUrl = 'https://daniglobalhomes.com';
-
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
+  const headersList = await headers();
+  const hostname = headersList.get('host') || 'localhost:3000';
+  const client = await getClient(hostname);
+
+  const isKaterina = client?.slug === 'katerina';
+  const baseUrl = isKaterina ? 'https://katerina-demo.shortlistpass.com' : 'https://daniglobalhomes.com';
+  const siteName = isKaterina ? 'Katerina Sells Florida' : 'Dani Díaz Real Estate';
+  const clientId = isKaterina ? client?.id : '3c125122-f3d9-4f75-91d9-69cf84d6d20e';
 
   // Fetch blog post data for OG tags
   const { data: post } = await supabase
     .from('blog_posts')
     .select('title, excerpt, featured_image, category')
     .eq('slug', slug)
-    .eq('client_id', '3c125122-f3d9-4f75-91d9-69cf84d6d20e')
+    .eq('client_id', clientId)
     .single();
 
   if (!post) {
     return {
-      title: 'Blog | Dani Díaz',
+      title: `Blog | ${siteName}`,
     };
   }
 
-  const title = `${post.title} | Dani Díaz Real Estate`;
-  const description = post.excerpt || 'Read this article from Dani Díaz, your bilingual real estate expert on the Grand Strand.';
-  const image = post.featured_image || `${baseUrl}/dani-diaz-home-about.JPG`;
+  const title = `${post.title} | ${siteName}`;
+  const description = post.excerpt || `Read this article from ${siteName}.`;
+  const fallbackImage = isKaterina ? `${baseUrl}/placeholder-og.svg` : `${baseUrl}/dani-diaz-home-about.JPG`;
+  const image = post.featured_image || fallbackImage;
 
   return {
     title,
@@ -35,7 +42,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
       title,
       description,
       url: `${baseUrl}/blog/${slug}`,
-      siteName: 'Dani Díaz Real Estate',
+      siteName,
       images: [
         {
           url: image,

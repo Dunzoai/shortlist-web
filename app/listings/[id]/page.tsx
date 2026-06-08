@@ -5,10 +5,16 @@ import { ListingDetailPage as DaniDiazListingDetailPage } from '@/clients/danidi
 import { ListingDetailPage as KaterinaListingDetailPage } from '@/clients/katerina/pages/ListingDetailPage';
 import { supabase } from '@/lib/supabase';
 
-const baseUrl = 'https://daniglobalhomes.com';
-
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
   const { id } = await params;
+  const headersList = await headers();
+  const hostname = headersList.get('host') || 'localhost:3000';
+  const client = await getClient(hostname);
+
+  const isKaterina = client?.slug === 'katerina';
+  const baseUrl = isKaterina ? 'https://katerina-demo.shortlistpass.com' : 'https://daniglobalhomes.com';
+  const siteName = isKaterina ? 'Katerina Sells Florida' : 'Dani Díaz Real Estate';
+  const agentName = isKaterina ? 'Katerina' : 'Dani Díaz';
 
   // Fetch listing data for OG tags
   const { data: listing } = await supabase
@@ -19,13 +25,14 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
 
   if (!listing) {
     return {
-      title: 'Property Listing | Dani Díaz',
+      title: `Property Listing | ${siteName}`,
     };
   }
 
-  const title = `${listing.address} - $${listing.price?.toLocaleString()} | Dani Díaz`;
-  const description = `${listing.beds} bed, ${listing.baths} bath property in ${listing.city}, ${listing.state}. ${listing.sqft?.toLocaleString() || ''} sq ft. Contact Dani Díaz for more info.`;
-  const image = listing.images?.[0] || `${baseUrl}/dani-diaz-home-about.JPG`;
+  const title = `${listing.address} - $${listing.price?.toLocaleString()} | ${agentName}`;
+  const description = `${listing.beds} bed, ${listing.baths} bath property in ${listing.city}, ${listing.state}. ${listing.sqft?.toLocaleString() || ''} sq ft. Contact ${agentName} for more info.`;
+  const fallbackImage = isKaterina ? `${baseUrl}/placeholder-og.svg` : `${baseUrl}/dani-diaz-home-about.JPG`;
+  const image = listing.images?.[0] || fallbackImage;
 
   return {
     title,
@@ -34,7 +41,7 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
       title,
       description,
       url: `${baseUrl}/listings/${id}`,
-      siteName: 'Dani Díaz Real Estate',
+      siteName,
       images: [
         {
           url: image,
