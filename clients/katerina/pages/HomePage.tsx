@@ -160,8 +160,7 @@ export function HomePage() {
             onError={() => setVideoLoaded(true)}
             className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-300 ${videoLoaded ? 'opacity-100' : 'opacity-0'}`}
           >
-            {/* Video source removed - add your own video file */}
-            <source src="" type="video/mp4" />
+            <source src="/dani-diaz-hero-video.m4v" type="video/mp4" />
           </video>
           <div
             className="absolute inset-0 transition-colors duration-500 pointer-events-none"
