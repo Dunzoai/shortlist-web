@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import Nav from '@/clients/katerina/components/Nav';
@@ -78,7 +79,13 @@ export function AboutPage() {
             variants={staggerContainer}
           >
             <motion.div variants={fadeInUp} className="relative">
-              <div className="w-full h-[750px] bg-gradient-to-br from-[#1B365D] to-[#C4A25A] shadow-2xl flex items-center justify-center"><span className="text-white text-2xl font-[family-name:var(--font-playfair)]">Your Photo Here</span></div>
+              <Image
+                src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=600&h=750&fit=crop&crop=top"
+                alt="Katerina - Real Estate Professional"
+                width={600}
+                height={750}
+                className="object-cover shadow-2xl"
+              />
               <div className="absolute -bottom-8 -left-8 bg-[#C4A25A] p-8 shadow-xl hidden md:block">
                 <p className="font-[family-name:var(--font-playfair)] text-white text-4xl font-bold mb-2">
                   100+
