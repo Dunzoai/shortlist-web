@@ -1,4 +1,5 @@
 import { headers } from 'next/headers';
+import { redirect } from 'next/navigation';
 import { getClient } from '@/lib/getClient';
 import { InternationalPage as DaniDiazInternationalPage } from '@/clients/danidiaz/pages/InternationalPage';
 
@@ -20,6 +21,10 @@ export default async function Page() {
 
   if (client?.slug === 'nitos') {
     return <ComingSoonPage />;
+  }
+
+  if (client?.slug === 'katerina') {
+    redirect('/');
   }
 
   return <DaniDiazInternationalPage />;

@@ -2,6 +2,7 @@ import { headers } from 'next/headers';
 import { Metadata } from 'next';
 import { getClient } from '@/lib/getClient';
 import { ListingDetailPage as DaniDiazListingDetailPage } from '@/clients/danidiaz/pages/ListingDetailPage';
+import { ListingDetailPage as KaterinaListingDetailPage } from '@/clients/katerina/pages/ListingDetailPage';
 import { supabase } from '@/lib/supabase';
 
 const baseUrl = 'https://daniglobalhomes.com';
@@ -72,6 +73,10 @@ export default async function Page() {
   if (client?.slug === 'nitos') {
     // TODO: Create /clients/nitos/pages/ListingDetailPage.tsx
     return <ComingSoonPage />;
+  }
+
+  if (client?.slug === 'katerina') {
+    return <KaterinaListingDetailPage />;
   }
 
   return <DaniDiazListingDetailPage />;

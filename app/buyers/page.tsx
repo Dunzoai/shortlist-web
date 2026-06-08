@@ -1,6 +1,7 @@
 import { headers } from 'next/headers';
 import { getClient } from '@/lib/getClient';
 import { BuyersPage as DaniDiazBuyersPage } from '@/clients/danidiaz/pages/BuyersPage';
+import { BuyersPage as KaterinaBuyersPage } from '@/clients/katerina/pages/BuyersPage';
 
 function ComingSoonPage() {
   return (
@@ -21,6 +22,10 @@ export default async function Page() {
   if (client?.slug === 'nitos') {
     // TODO: Create /clients/nitos/pages/BuyersPage.tsx
     return <ComingSoonPage />;
+  }
+
+  if (client?.slug === 'katerina') {
+    return <KaterinaBuyersPage />;
   }
 
   return <DaniDiazBuyersPage />;

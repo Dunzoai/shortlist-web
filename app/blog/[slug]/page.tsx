@@ -2,6 +2,7 @@ import { headers } from 'next/headers';
 import { Metadata } from 'next';
 import { getClient } from '@/lib/getClient';
 import { BlogPostPage as DaniDiazBlogPostPage } from '@/clients/danidiaz/pages/BlogPostPage';
+import { BlogPostPage as KaterinaBlogPostPage } from '@/clients/katerina/pages/BlogPostPage';
 import { supabase } from '@/lib/supabase';
 
 const baseUrl = 'https://daniglobalhomes.com';
@@ -73,6 +74,10 @@ export default async function Page() {
   if (client?.slug === 'nitos') {
     // TODO: Create /clients/nitos/pages/BlogPostPage.tsx
     return <ComingSoonPage />;
+  }
+
+  if (client?.slug === 'katerina') {
+    return <KaterinaBlogPostPage />;
   }
 
   return <DaniDiazBlogPostPage />;

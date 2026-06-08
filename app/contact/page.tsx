@@ -1,6 +1,7 @@
 import { headers } from 'next/headers';
 import { getClient } from '@/lib/getClient';
 import { ContactPage as DaniDiazContactPage } from '@/clients/danidiaz/pages/ContactPage';
+import { ContactPage as KaterinaContactPage } from '@/clients/katerina/pages/ContactPage';
 import ContactPage from '@/clients/palmetto_taps/pages/ContactPage';
 import Layout from '@/clients/palmetto_taps/components/Layout';
 
@@ -22,6 +23,10 @@ export default async function Page() {
 
   if (client?.slug === 'palmetto_taps') {
     return <Layout><ContactPage /></Layout>;
+  }
+
+  if (client?.slug === 'katerina') {
+    return <KaterinaContactPage />;
   }
 
   return <DaniDiazContactPage />;

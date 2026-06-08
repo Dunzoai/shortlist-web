@@ -3,6 +3,7 @@ import { getClient } from '@/lib/getClient';
 import { HomePage as DaniDiazHomePage } from '@/clients/danidiaz/pages/HomePage';
 import SuspendedPage from '@/clients/danidiaz/pages/SuspendedPage';
 import { HomePage as NitosHomePage } from '@/clients/nitos/pages/HomePage';
+import { HomePage as KaterinaHomePage } from '@/clients/katerina/pages/HomePage';
 import HomePage from '@/clients/palmetto_taps/pages/HomePage';
 import Layout from '@/clients/palmetto_taps/components/Layout';
 import { HomePage as GrowWithGiaHomePage } from '@/clients/growwithgia/pages/HomePage';
@@ -40,6 +41,10 @@ export default async function Page() {
 
   if (client?.slug === 'riveroaks') {
     return <RiverOaksHomePage dbContent={client.content} />;
+  }
+
+  if (client?.slug === 'katerina') {
+    return <KaterinaHomePage />;
   }
 
   // Default to danidiaz
