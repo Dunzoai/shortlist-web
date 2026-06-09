@@ -244,7 +244,7 @@ export function HomePage() {
           >
             <motion.div variants={fadeInUp} className="relative">
               <Image
-                src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=500&h=600&fit=crop&crop=top"
+                src="/katerina-portrait.png"
                 alt="Katerina - Real Estate Professional"
                 width={500}
                 height={600}
