@@ -19,11 +19,12 @@ export function HomePage() {
 
   // Parallax state
   const bandRef = useRef<HTMLDivElement>(null);
+  const imageRef = useRef<HTMLDivElement>(null);
   const [y, setY] = useState(0);
-  const [mobile, setMobile] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
-    const onResize = () => setMobile(window.innerWidth < 760);
+    const onResize = () => setIsMobile(window.innerWidth < 1024);
     onResize();
     window.addEventListener('resize', onResize);
 
@@ -36,8 +37,19 @@ export function HomePage() {
         const el = bandRef.current;
         if (el) {
           const r = el.getBoundingClientRect();
-          const progress = (vh - r.top) / (vh + r.height);
-          setY(Math.max(-1, Math.min(1, (progress - 0.5) * 2)));
+          if (isMobile) {
+            // Mobile: JS-based parallax via transform
+            if (r.top < vh && r.bottom > 0) {
+              const scrollProgress = -r.top;
+              if (imageRef.current) {
+                imageRef.current.style.transform = `translateY(${scrollProgress * 0.4}px)`;
+              }
+            }
+          } else {
+            // Desktop: state-driven parallax for cards
+            const progress = (vh - r.top) / (vh + r.height);
+            setY(Math.max(-1, Math.min(1, (progress - 0.5) * 2)));
+          }
         }
       });
     };
@@ -49,9 +61,9 @@ export function HomePage() {
       window.removeEventListener('scroll', onScroll);
       if (raf) cancelAnimationFrame(raf);
     };
-  }, []);
+  }, [isMobile]);
 
-  const t = (f: number) => (mobile ? 'none' : `translateY(${Math.round(y * f)}px)`);
+  const t = (f: number) => (isMobile ? 'none' : `translateY(${Math.round(y * f)}px)`);
 
   return (
     <main style={{ backgroundColor: CREAM, color: DARK, fontFamily: "var(--font-montserrat), 'Montserrat', sans-serif" }}>
@@ -158,7 +170,7 @@ export function HomePage() {
           </div>
         </div>
 
-        {/* Hero image placeholder */}
+        {/* Hero image */}
         <div style={{ marginTop: 'clamp(0px,3vw,44px)', position: 'relative' }}>
           <div
             style={{
@@ -178,9 +190,6 @@ export function HomePage() {
               borderRadius: 16,
               overflow: 'hidden',
               backgroundColor: '#e8ddd0',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
             }}
           >
             <img
@@ -194,18 +203,20 @@ export function HomePage() {
 
       {/* ───── Sky Parallax Region ───── */}
       <div ref={bandRef} style={{ position: 'relative', overflow: 'hidden' }}>
-        {/* Parallax sky background */}
+        {/* Parallax sky background — works on both mobile (JS transform) and desktop (CSS fixed) */}
         <div
+          ref={imageRef}
+          className="will-change-transform"
           style={{
             position: 'absolute',
             left: 0,
             right: 0,
-            top: -140,
-            bottom: -140,
-            transform: mobile ? 'none' : `translateY(${Math.round(y * 90)}px)`,
+            top: isMobile ? '-40%' : -140,
+            bottom: isMobile ? undefined : -140,
+            height: isMobile ? '180%' : undefined,
+            transform: isMobile ? undefined : `translateY(${Math.round(y * 90)}px)`,
             zIndex: 0,
-            willChange: 'transform',
-            backgroundImage: `url(/clients/brandydemo/sky-parallax.jpg)`,
+            backgroundImage: 'url(/clients/brandydemo/sky-parallax.jpg)',
             backgroundSize: 'cover',
             backgroundPosition: 'center',
           }}
@@ -243,14 +254,15 @@ export function HomePage() {
           >
             {c.promisesHeading}
           </p>
+          {/* 2-col grid with 3rd card centered below */}
           <div
             style={{
               display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
+              gridTemplateColumns: 'repeat(2, 1fr)',
               gap: 'clamp(16px,2.6vw,28px)',
             }}
           >
-            {c.promises.map((p) => (
+            {c.promises.map((p, i) => (
               <div
                 key={p.num}
                 style={{
@@ -259,6 +271,10 @@ export function HomePage() {
                   borderRadius: 16,
                   padding: '26px 24px',
                   boxShadow: '0 14px 34px rgba(51,65,77,0.16)',
+                  // 3rd card: span centered
+                  ...(i === 2
+                    ? { gridColumn: '1 / -1', maxWidth: 'calc(50% - 8px)' }
+                    : {}),
                 }}
               >
                 <div
@@ -311,10 +327,11 @@ export function HomePage() {
           >
             {c.whyHeading}
           </p>
+          {/* 2-col grid with 3rd card centered below */}
           <div
             style={{
               display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
+              gridTemplateColumns: 'repeat(2, 1fr)',
               gap: 'clamp(18px,3vw,36px)',
               alignItems: 'start',
             }}
@@ -329,6 +346,10 @@ export function HomePage() {
                   boxShadow: '0 14px 34px rgba(51,65,77,0.2)',
                   transform: t([-45, 48, -22][i]),
                   marginTop: i === 1 ? 'clamp(0px,5vw,64px)' : i === 2 ? 'clamp(0px,2.5vw,28px)' : 0,
+                  // 3rd card: span centered
+                  ...(i === 2
+                    ? { gridColumn: '1 / -1', maxWidth: 'calc(50% - 10px)' }
+                    : {}),
                 }}
               >
                 <div

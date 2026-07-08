@@ -81,7 +81,7 @@ const content = {
     ctaHref: '/get-started',
     secondaryText: 'Browse the shop →',
     secondaryHref: '/shop',
-    heroImage: '/clients/brandydemo/IMG_1171.JPG',
+    heroImage: '/clients/brandydemo/hero-nails.jpg',
   },
 
   // ── Promises (The Sunday Difference) ──
@@ -168,7 +168,7 @@ const content = {
     ],
     ctaText: 'Get Started',
     ctaHref: '/get-started',
-    image: '/clients/brandydemo/IMG_8207.jpeg',
+    image: '/clients/brandydemo/brandy-about.JPEG',
   },
 
   // ── Get Started Page ──
@@ -325,8 +325,8 @@ const content = {
       { label: 'Terms & Conditions', href: '/terms' },
     ],
     sayHiLabel: 'Say Hi',
-    instagram: '@honeb_polished',
-    instagramUrl: 'https://instagram.com/honeb_polished',
+    instagram: '@honeyb_polished',
+    instagramUrl: 'https://instagram.com/honeyb_polished',
     copyright: `\u00A9 Sunday ${new Date().getFullYear()}`,
     adminText: 'Studio admin',
     adminHref: '/studio-admin',
