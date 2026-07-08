@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Playfair_Display, Lora, Permanent_Marker, Caveat } from "next/font/google";
+import { Playfair_Display, Lora, Permanent_Marker, Caveat, Montserrat, Dancing_Script } from "next/font/google";
 import { headers } from "next/headers";
 import "./globals.css";
 import { LanguageProvider } from "@/clients/danidiaz/components/LanguageContext";
@@ -27,6 +27,16 @@ const permanentMarker = Permanent_Marker({
 
 const caveat = Caveat({
   variable: "--font-caveat",
+  subsets: ["latin"],
+});
+
+const montserrat = Montserrat({
+  variable: "--font-montserrat",
+  subsets: ["latin"],
+});
+
+const dancingScript = Dancing_Script({
+  variable: "--font-dancing-script",
   subsets: ["latin"],
 });
 
@@ -176,6 +186,31 @@ export async function generateMetadata(): Promise<Metadata> {
     };
   }
 
+  if (client?.slug === 'brandydemo') {
+    return {
+      title: "Sunday Press-On Nails | Handmade by Brandy",
+      description: "Custom and pre-designed press-on nail sets, handmade to order by a licensed nail tech and shipped straight to your door.",
+      keywords: ["press-on nails", "custom nails", "handmade nails", "nail art", "press on nail sets", "Sunday nails"],
+      authors: [{ name: "Sunday Press-On Nails" }],
+      creator: "Sunday Press-On Nails",
+      metadataBase: new URL('https://brandydemo.shortlistpass.com'),
+      openGraph: {
+        type: 'website',
+        locale: 'en_US',
+        url: '/',
+        siteName: 'Sunday Press-On Nails',
+        title: 'Sunday Press-On Nails | Handmade by Brandy',
+        description: 'Custom and pre-designed press-on nail sets, handmade to order by a licensed nail tech.',
+      },
+      twitter: {
+        card: 'summary_large_image',
+        title: 'Sunday Press-On Nails | Handmade by Brandy',
+        description: 'Custom press-on nail sets, handmade to order and shipped to your door.',
+      },
+      robots: { index: false, follow: false },
+    };
+  }
+
   // Default: Dani Díaz
   return {
     title: "Dani Díaz | Bilingual Realtor Myrtle Beach",
@@ -293,7 +328,7 @@ export default async function RootLayout({
         )}
       </head>
       <body
-        className={`${playfair.variable} ${lora.variable} ${permanentMarker.variable} ${caveat.variable} antialiased bg-[#F7F7F7] text-[#3D3D3D]`}
+        className={`${playfair.variable} ${lora.variable} ${permanentMarker.variable} ${caveat.variable} ${montserrat.variable} ${dancingScript.variable} antialiased bg-[#F7F7F7] text-[#3D3D3D]`}
       >
         <ClientProvider client={client}>
           <LanguageProvider>

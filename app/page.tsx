@@ -8,6 +8,7 @@ import HomePage from '@/clients/palmetto_taps/pages/HomePage';
 import Layout from '@/clients/palmetto_taps/components/Layout';
 import { HomePage as GrowWithGiaHomePage } from '@/clients/growwithgia/pages/HomePage';
 import RiverOaksHomePage from '@/clients/riveroaks/pages/HomePage';
+import { HomePage as BrandyDemoHomePage } from '@/clients/brandydemo/pages/HomePage';
 
 // Coming Soon placeholder for clients without a HomePage yet
 function ComingSoonPage() {
@@ -45,6 +46,10 @@ export default async function Page() {
 
   if (client?.slug === 'katerina') {
     return <KaterinaHomePage />;
+  }
+
+  if (client?.slug === 'brandydemo') {
+    return <BrandyDemoHomePage />;
   }
 
   // Default to danidiaz
