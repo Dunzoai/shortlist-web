@@ -254,54 +254,48 @@ export function HomePage() {
           >
             {c.promisesHeading}
           </p>
-          {/* 2-col grid with 3rd card centered below */}
-          <div
-            style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(2, 1fr)',
-              gap: 'clamp(16px,2.6vw,28px)',
-            }}
-          >
-            {c.promises.map((p, i) => (
+          {/* Left col: cards 1 & 3 stacked. Right col: card 2 centered between them. */}
+          <div style={{ display: 'flex', gap: 'clamp(16px,2.6vw,28px)' }}>
+            {/* Left column */}
+            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 'clamp(16px,2.6vw,28px)' }}>
+              {[c.promises[0], c.promises[2]].map((p) => (
+                <div
+                  key={p.num}
+                  style={{
+                    background: 'rgba(251,244,234,0.92)',
+                    backdropFilter: 'blur(6px)',
+                    borderRadius: 16,
+                    padding: '26px 24px',
+                    boxShadow: '0 14px 34px rgba(51,65,77,0.16)',
+                    transform: t(-30),
+                    transition: 'transform 0.1s ease-out',
+                  }}
+                >
+                  <div style={{ fontFamily: "var(--font-dancing-script), 'Dancing Script', cursive", fontWeight: 600, fontSize: 32, color: p.color, lineHeight: 1 }}>{p.num}</div>
+                  <h3 style={{ margin: '6px 0 10px', fontFamily: "var(--font-playfair), 'Playfair Display', serif", fontWeight: 600, fontSize: 24, color: DARK }}>{p.title}</h3>
+                  <p style={{ margin: 0, fontSize: 16, lineHeight: 1.6, color: BODY }}>{p.text}</p>
+                </div>
+              ))}
+            </div>
+            {/* Right column — single card, vertically centered */}
+            <div style={{ flex: 1, display: 'flex', alignItems: 'center' }}>
               <div
-                key={p.num}
                 style={{
+                  width: '100%',
                   background: 'rgba(251,244,234,0.92)',
                   backdropFilter: 'blur(6px)',
                   borderRadius: 16,
                   padding: '26px 24px',
                   boxShadow: '0 14px 34px rgba(51,65,77,0.16)',
-                  // 3rd card: span centered
-                  ...(i === 2
-                    ? { gridColumn: '1 / -1', maxWidth: 'calc(50% - 8px)' }
-                    : {}),
+                  transform: t(35),
+                  transition: 'transform 0.1s ease-out',
                 }}
               >
-                <div
-                  style={{
-                    fontFamily: "var(--font-dancing-script), 'Dancing Script', cursive",
-                    fontWeight: 600,
-                    fontSize: 32,
-                    color: p.color,
-                    lineHeight: 1,
-                  }}
-                >
-                  {p.num}
-                </div>
-                <h3
-                  style={{
-                    margin: '6px 0 10px',
-                    fontFamily: "var(--font-playfair), 'Playfair Display', serif",
-                    fontWeight: 600,
-                    fontSize: 24,
-                    color: DARK,
-                  }}
-                >
-                  {p.title}
-                </h3>
-                <p style={{ margin: 0, fontSize: 16, lineHeight: 1.6, color: BODY }}>{p.text}</p>
+                <div style={{ fontFamily: "var(--font-dancing-script), 'Dancing Script', cursive", fontWeight: 600, fontSize: 32, color: c.promises[1].color, lineHeight: 1 }}>{c.promises[1].num}</div>
+                <h3 style={{ margin: '6px 0 10px', fontFamily: "var(--font-playfair), 'Playfair Display', serif", fontWeight: 600, fontSize: 24, color: DARK }}>{c.promises[1].title}</h3>
+                <p style={{ margin: 0, fontSize: 16, lineHeight: 1.6, color: BODY }}>{c.promises[1].text}</p>
               </div>
-            ))}
+            </div>
           </div>
         </section>
 
@@ -327,55 +321,44 @@ export function HomePage() {
           >
             {c.whyHeading}
           </p>
-          {/* 2-col grid with 3rd card centered below */}
-          <div
-            style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(2, 1fr)',
-              gap: 'clamp(18px,3vw,36px)',
-              alignItems: 'start',
-            }}
-          >
-            {c.whyCards.map((card, i) => (
+          {/* Left col: cards 1 & 3 stacked. Right col: card 2 centered between them. */}
+          <div style={{ display: 'flex', gap: 'clamp(18px,3vw,36px)' }}>
+            {/* Left column */}
+            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 'clamp(18px,3vw,36px)' }}>
+              {[c.whyCards[0], c.whyCards[2]].map((card) => (
+                <div
+                  key={card.label}
+                  style={{
+                    background: card.bg,
+                    borderRadius: 16,
+                    padding: '26px 24px',
+                    boxShadow: '0 14px 34px rgba(51,65,77,0.2)',
+                    transform: t(-40),
+                    transition: 'transform 0.1s ease-out',
+                  }}
+                >
+                  <div style={{ fontSize: 12, letterSpacing: '0.18em', textTransform: 'uppercase', color: card.labelColor }}>{card.label}</div>
+                  <p style={{ margin: '10px 0 0', fontFamily: "var(--font-playfair), 'Playfair Display', serif", fontSize: 22, lineHeight: 1.35, fontWeight: 500, color: card.textColor }}>{card.text}</p>
+                </div>
+              ))}
+            </div>
+            {/* Right column — single card, vertically centered */}
+            <div style={{ flex: 1, display: 'flex', alignItems: 'center' }}>
               <div
-                key={card.label}
                 style={{
-                  background: card.bg,
+                  width: '100%',
+                  background: c.whyCards[1].bg,
                   borderRadius: 16,
                   padding: '26px 24px',
                   boxShadow: '0 14px 34px rgba(51,65,77,0.2)',
-                  transform: t([-45, 48, -22][i]),
-                  marginTop: i === 1 ? 'clamp(0px,5vw,64px)' : i === 2 ? 'clamp(0px,2.5vw,28px)' : 0,
-                  // 3rd card: span centered
-                  ...(i === 2
-                    ? { gridColumn: '1 / -1', maxWidth: 'calc(50% - 10px)' }
-                    : {}),
+                  transform: t(45),
+                  transition: 'transform 0.1s ease-out',
                 }}
               >
-                <div
-                  style={{
-                    fontSize: 12,
-                    letterSpacing: '0.18em',
-                    textTransform: 'uppercase',
-                    color: card.labelColor,
-                  }}
-                >
-                  {card.label}
-                </div>
-                <p
-                  style={{
-                    margin: '10px 0 0',
-                    fontFamily: "var(--font-playfair), 'Playfair Display', serif",
-                    fontSize: 22,
-                    lineHeight: 1.35,
-                    fontWeight: 500,
-                    color: card.textColor,
-                  }}
-                >
-                  {card.text}
-                </p>
+                <div style={{ fontSize: 12, letterSpacing: '0.18em', textTransform: 'uppercase', color: c.whyCards[1].labelColor }}>{c.whyCards[1].label}</div>
+                <p style={{ margin: '10px 0 0', fontFamily: "var(--font-playfair), 'Playfair Display', serif", fontSize: 22, lineHeight: 1.35, fontWeight: 500, color: c.whyCards[1].textColor }}>{c.whyCards[1].text}</p>
               </div>
-            ))}
+            </div>
           </div>
         </section>
       </div>
