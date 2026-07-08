@@ -1,7 +1,8 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import content, { Product } from '../content';
+import { supabase } from '@/lib/supabase';
+import content from '../content';
 
 const CREAM = '#FBF4EA';
 const BLUE = '#8EB6D9';
@@ -13,49 +14,20 @@ const INFO_BG = '#E7F0FA';
 const BORDER = '#ECDECB';
 const INPUT_BORDER = '#E0D4C4';
 
-const LS_KEY = 'sunday_products_v1';
-const LS_IMAGES_KEY = 'sunday_product_images_v1';
+const STORAGE_BUCKET = 'client-assets';
+const STORAGE_PATH = 'brandydemo/products';
+const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
 
-function loadProducts(): Product[] {
-  if (typeof window === 'undefined') return content.shop.seedProducts;
-  try {
-    const raw = localStorage.getItem(LS_KEY);
-    if (raw) {
-      const parsed = JSON.parse(raw);
-      if (Array.isArray(parsed) && parsed.length > 0) return parsed;
-    }
-  } catch {
-    // ignore
-  }
-  return content.shop.seedProducts;
-}
-
-function saveProducts(products: Product[]) {
-  try {
-    localStorage.setItem(LS_KEY, JSON.stringify(products));
-  } catch {
-    // ignore
-  }
-}
-
-function loadImages(): Record<string, string> {
-  if (typeof window === 'undefined') return {};
-  try {
-    const raw = localStorage.getItem(LS_IMAGES_KEY);
-    if (raw) return JSON.parse(raw);
-  } catch {
-    // ignore
-  }
-  return {};
-}
-
-function saveImages(images: Record<string, string>) {
-  try {
-    localStorage.setItem(LS_IMAGES_KEY, JSON.stringify(images));
-  } catch {
-    // ignore
-  }
-}
+type Product = {
+  id: string;
+  name: string;
+  description: string;
+  level: string;
+  category: string;
+  image_url: string | null;
+  sort_order: number;
+  client_id: string;
+};
 
 const labelStyle: React.CSSProperties = {
   display: 'block',
@@ -81,34 +53,26 @@ const inputStyle: React.CSSProperties = {
 
 function PhotoDropZone({
   productId,
-  images,
-  onImageSet,
+  imageUrl,
+  onUpload,
+  uploading,
 }: {
   productId: string;
-  images: Record<string, string>;
-  onImageSet: (id: string, dataUrl: string) => void;
+  imageUrl: string | null;
+  onUpload: (productId: string, file: File) => void;
+  uploading: boolean;
 }) {
   const [dragging, setDragging] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
-  const src = images[productId];
 
   const handleFile = (file: File) => {
     if (!file.type.startsWith('image/')) return;
-    const reader = new FileReader();
-    reader.onload = () => {
-      if (typeof reader.result === 'string') {
-        onImageSet(productId, reader.result);
-      }
-    };
-    reader.readAsDataURL(file);
+    onUpload(productId, file);
   };
 
   return (
     <div
-      onDragOver={(e) => {
-        e.preventDefault();
-        setDragging(true);
-      }}
+      onDragOver={(e) => { e.preventDefault(); setDragging(true); }}
       onDragLeave={() => setDragging(false)}
       onDrop={(e) => {
         e.preventDefault();
@@ -130,6 +94,7 @@ function PhotoDropZone({
         cursor: 'pointer',
         overflow: 'hidden',
         transition: 'border-color .15s ease, background-color .15s ease',
+        position: 'relative',
       }}
     >
       <input
@@ -142,12 +107,17 @@ function PhotoDropZone({
           if (file) handleFile(file);
         }}
       />
-      {src ? (
-        <img
-          src={src}
-          alt=""
-          style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-        />
+      {uploading && (
+        <div style={{
+          position: 'absolute', inset: 0, backgroundColor: 'rgba(251,244,234,0.8)',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          fontSize: 13, color: BLUE_DARK, fontWeight: 600, zIndex: 2,
+        }}>
+          Uploading...
+        </div>
+      )}
+      {imageUrl ? (
+        <img src={imageUrl} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
       ) : (
         <>
           <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke={MUTED} strokeWidth="1.5">
@@ -167,55 +137,146 @@ function PhotoDropZone({
 
 export function AdminPage() {
   const c = content;
-  const [products, setProducts] = useState<Product[]>(content.shop.seedProducts);
-  const [images, setImages] = useState<Record<string, string>>({});
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [uploadingId, setUploadingId] = useState<string | null>(null);
+  const [clientId, setClientId] = useState<string>('');
+  const saveTimeout = useRef<NodeJS.Timeout | null>(null);
 
+  // Load products from Supabase
   useEffect(() => {
-    setProducts(loadProducts());
-    setImages(loadImages());
+    async function load() {
+      const { data: client } = await supabase
+        .from('web_clients')
+        .select('id')
+        .eq('slug', 'brandydemo')
+        .single();
+
+      if (client) {
+        setClientId(client.id);
+        const { data } = await supabase
+          .from('sunday_products')
+          .select('*')
+          .eq('client_id', client.id)
+          .order('sort_order', { ascending: true });
+
+        if (data) setProducts(data);
+      }
+      setLoading(false);
+    }
+    load();
   }, []);
 
-  const updateAndSave = (next: Product[]) => {
-    setProducts(next);
-    saveProducts(next);
+  // Debounced save to Supabase
+  const saveProduct = (product: Product) => {
+    if (saveTimeout.current) clearTimeout(saveTimeout.current);
+    saveTimeout.current = setTimeout(async () => {
+      setSaving(true);
+      await supabase
+        .from('sunday_products')
+        .update({
+          name: product.name,
+          description: product.description,
+          level: product.level,
+          category: product.category,
+          image_url: product.image_url,
+          updated_at: new Date().toISOString(),
+        })
+        .eq('id', product.id);
+      setSaving(false);
+    }, 500);
   };
 
   const handleChange = (id: string, field: keyof Product, value: string) => {
-    updateAndSave(products.map((p) => (p.id === id ? { ...p, [field]: value } : p)));
+    const next = products.map((p) => {
+      if (p.id !== id) return p;
+      const updated = { ...p, [field]: value };
+      saveProduct(updated);
+      return updated;
+    });
+    setProducts(next);
   };
 
-  const handleImageSet = (id: string, dataUrl: string) => {
-    const next = { ...images, [id]: dataUrl };
-    setImages(next);
-    saveImages(next);
-  };
+  const handleUpload = async (productId: string, file: File) => {
+    setUploadingId(productId);
+    const ext = file.name.split('.').pop() || 'jpg';
+    const filePath = `${STORAGE_PATH}/${productId}-${Date.now()}.${ext}`;
 
-  const handleAdd = () => {
-    updateAndSave([
-      ...products,
-      {
-        id: `p${Date.now()}`,
-        name: 'New set',
-        desc: 'Describe this set\u2026',
-        level: 'Level 1',
-        category: 'Pre-designed',
-      },
-    ]);
-  };
+    const { error } = await supabase.storage
+      .from(STORAGE_BUCKET)
+      .upload(filePath, file, { upsert: true });
 
-  const handleDelete = (id: string, name: string) => {
-    if (window.confirm(`Delete "${name}" from the shop?`)) {
-      updateAndSave(products.filter((p) => p.id !== id));
+    if (!error) {
+      const publicUrl = `${SUPABASE_URL}/storage/v1/object/public/${STORAGE_BUCKET}/${filePath}`;
+
+      // Update product with image URL
+      await supabase
+        .from('sunday_products')
+        .update({ image_url: publicUrl, updated_at: new Date().toISOString() })
+        .eq('id', productId);
+
+      setProducts((prev) =>
+        prev.map((p) => (p.id === productId ? { ...p, image_url: publicUrl } : p))
+      );
     }
+    setUploadingId(null);
   };
 
-  const handleReset = () => {
-    if (window.confirm(c.admin.resetConfirm)) {
-      updateAndSave([...content.shop.seedProducts]);
-    }
+  const handleAdd = async () => {
+    const newId = `p${Date.now()}`;
+    const newProduct: Product = {
+      id: newId,
+      name: 'New set',
+      description: 'Describe this set\u2026',
+      level: 'Level 1',
+      category: 'Pre-designed',
+      image_url: null,
+      sort_order: products.length + 1,
+      client_id: clientId,
+    };
+
+    const { error } = await supabase.from('sunday_products').insert(newProduct);
+    if (!error) setProducts([...products, newProduct]);
+  };
+
+  const handleDelete = async (id: string, name: string) => {
+    if (!window.confirm(`Delete "${name}" from the shop?`)) return;
+    await supabase.from('sunday_products').delete().eq('id', id);
+    setProducts(products.filter((p) => p.id !== id));
+  };
+
+  const handleReset = async () => {
+    if (!window.confirm(c.admin.resetConfirm)) return;
+
+    // Delete all existing
+    await supabase.from('sunday_products').delete().eq('client_id', clientId);
+
+    // Re-insert seeds
+    const seeds = content.shop.seedProducts.map((p, i) => ({
+      id: p.id,
+      client_id: clientId,
+      name: p.name,
+      description: p.desc,
+      level: p.level,
+      category: p.category,
+      image_url: null,
+      sort_order: i + 1,
+    }));
+
+    const { data } = await supabase.from('sunday_products').insert(seeds).select();
+    if (data) setProducts(data);
   };
 
   const categories = ['Custom', 'Pre-designed', 'Solid color', 'Sizing kits'];
+
+  if (loading) {
+    return (
+      <main style={{ backgroundColor: CREAM, minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <p style={{ color: BODY, fontSize: 16 }}>Loading products...</p>
+      </main>
+    );
+  }
 
   return (
     <main
@@ -264,17 +325,17 @@ export function AdminPage() {
               {c.admin.headerSub}
             </span>
           </div>
-          <a
-            href={c.admin.backHref}
-            style={{
-              color: '#FFFFFF',
-              fontSize: 14,
-              textDecoration: 'underline',
-              textUnderlineOffset: 4,
-            }}
-          >
-            {c.admin.backText}
-          </a>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+            {saving && (
+              <span style={{ fontSize: 12, color: '#FFFFFF', opacity: 0.7 }}>Saving...</span>
+            )}
+            <a
+              href={c.admin.backHref}
+              style={{ color: '#FFFFFF', fontSize: 14, textDecoration: 'underline', textUnderlineOffset: 4 }}
+            >
+              {c.admin.backText}
+            </a>
+          </div>
         </div>
       </header>
 
@@ -297,8 +358,7 @@ export function AdminPage() {
             color: DARK,
           }}
         >
-          {c.admin.infoBanner} <strong>Note:</strong> for now everything saves in this browser only
-          — a real online backend is a TODO for when checkout gets connected.
+          {c.admin.infoBanner} Drag a photo onto any card to add it. Changes save automatically to the database and show up on the Shop page.
         </div>
 
         {/* ───── Heading + Actions ───── */}
@@ -358,7 +418,7 @@ export function AdminPage() {
                 cursor: 'pointer',
                 background: 'none',
                 color: BODY,
-                border: `1px solid #C9BCA9`,
+                border: '1px solid #C9BCA9',
                 borderRadius: 999,
                 padding: '12px 20px',
                 fontFamily: "var(--font-montserrat), 'Montserrat', sans-serif",
@@ -391,7 +451,12 @@ export function AdminPage() {
               {/* Photo drop zone */}
               <div>
                 <label style={labelStyle}>Photo — drag & drop</label>
-                <PhotoDropZone productId={p.id} images={images} onImageSet={handleImageSet} />
+                <PhotoDropZone
+                  productId={p.id}
+                  imageUrl={p.image_url}
+                  onUpload={handleUpload}
+                  uploading={uploadingId === p.id}
+                />
               </div>
 
               {/* Name + Description */}
@@ -407,15 +472,10 @@ export function AdminPage() {
                 <div>
                   <label style={labelStyle}>Description</label>
                   <textarea
-                    value={p.desc}
-                    onChange={(e) => handleChange(p.id, 'desc', e.target.value)}
+                    value={p.description}
+                    onChange={(e) => handleChange(p.id, 'description', e.target.value)}
                     rows={3}
-                    style={{
-                      ...inputStyle,
-                      fontSize: 15,
-                      lineHeight: 1.5,
-                      resize: 'vertical' as const,
-                    }}
+                    style={{ ...inputStyle, fontSize: 15, lineHeight: 1.5, resize: 'vertical' as const }}
                   />
                 </div>
               </div>
@@ -439,9 +499,7 @@ export function AdminPage() {
                     style={{ ...inputStyle, cursor: 'pointer' }}
                   >
                     {categories.map((cat) => (
-                      <option key={cat} value={cat}>
-                        {cat}
-                      </option>
+                      <option key={cat} value={cat}>{cat}</option>
                     ))}
                   </select>
                 </div>
@@ -451,7 +509,7 @@ export function AdminPage() {
                     alignSelf: 'flex-start',
                     cursor: 'pointer',
                     background: 'none',
-                    border: `1px solid #C9BCA9`,
+                    border: '1px solid #C9BCA9',
                     color: BODY,
                     borderRadius: 999,
                     padding: '9px 16px',
@@ -461,14 +519,8 @@ export function AdminPage() {
                     textTransform: 'uppercase' as const,
                     transition: 'border-color .15s, color .15s',
                   }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.borderColor = BLUE_DARK;
-                    e.currentTarget.style.color = BLUE_DARK;
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.borderColor = '#C9BCA9';
-                    e.currentTarget.style.color = BODY;
-                  }}
+                  onMouseEnter={(e) => { e.currentTarget.style.borderColor = BLUE_DARK; e.currentTarget.style.color = BLUE_DARK; }}
+                  onMouseLeave={(e) => { e.currentTarget.style.borderColor = '#C9BCA9'; e.currentTarget.style.color = BODY; }}
                 >
                   Delete
                 </button>
