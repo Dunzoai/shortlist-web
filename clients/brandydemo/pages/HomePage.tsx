@@ -413,19 +413,25 @@ export function HomePage() {
         </section>
       </div>
 
-      {/* Cloud splitting parallax and about strip — sits between both */}
-      <div style={{ position: 'relative', height: 0, zIndex: 10, pointerEvents: 'none' }}>
+      {/* Cloud splitting parallax and about strip — full-width, centered on boundary */}
+      <div
+        style={{
+          position: 'relative',
+          height: 0,
+          zIndex: 50,
+          overflow: 'visible',
+        }}
+      >
         <img
           src="/clients/brandydemo/cloud-mascot.png"
           alt="Sunday cloud"
           style={{
             position: 'absolute',
-            bottom: 'clamp(-140px,-16vw,-270px)',
-            right: 'clamp(20px,8vw,120px)',
+            top: 0,
+            right: 'clamp(20px,6vw,100px)',
+            transform: 'translateY(-50%)',
             width: 'clamp(280px,36vw,540px)',
             height: 'auto',
-            objectFit: 'contain',
-            pointerEvents: 'auto',
           }}
         />
       </div>
