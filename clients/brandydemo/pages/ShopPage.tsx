@@ -86,7 +86,7 @@ export function ShopPage() {
             p
           </span>
         </h1>
-        <CloudMascot size={120} behavior="wobble" style={{ position: 'absolute', top: -10, right: 'clamp(20px,8vw,100px)' }} />
+        <CloudMascot size={300} behavior="wobble" style={{ position: 'absolute', top: -10, right: 'clamp(20px,8vw,100px)' }} />
       </header>
 
       {/* ───── Intro Kit Feature Card ───── */}
