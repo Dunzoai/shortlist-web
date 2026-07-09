@@ -200,14 +200,6 @@ export function HomePage() {
               style={{ width: '100%', height: '100%', objectFit: 'cover' }}
             />
           </div>
-          {/* Cloud mascot peeking near hero */}
-          <CloudMascot
-            size={360}
-            mobileSize={160}
-            behavior="follow"
-            style={{ position: 'absolute', bottom: -20, right: 30, zIndex: 2 }}
-            mobileStyle={{ position: 'relative', bottom: 'auto', right: 'auto', margin: '20px auto', display: 'block' }}
-          />
         </div>
       </header>
 
@@ -382,7 +374,7 @@ export function HomePage() {
           textAlign: 'center',
         }}
       >
-        <CloudMascot size={260} mobileSize={160} behavior="float" style={{ marginBottom: 12 }} />
+        <CloudMascot size={780} mobileSize={480} behavior="float" style={{ marginBottom: -40 }} />
         <p
           style={{
             margin: 0,
@@ -506,6 +498,28 @@ export function HomePage() {
           </a>
         </div>
       </section>
+
+      {/* ───── Sky Parallax Break ───── */}
+      <div style={{ position: 'relative', overflow: 'hidden', height: 'clamp(200px,30vw,360px)' }}>
+        <div
+          style={{
+            position: 'absolute',
+            inset: 0,
+            backgroundImage: 'url(/clients/brandydemo/sky-parallax.jpg)',
+            backgroundSize: 'cover',
+            backgroundPosition: 'center 40%',
+            backgroundAttachment: isMobile ? 'scroll' : 'fixed',
+          }}
+        />
+        <div
+          style={{
+            position: 'absolute',
+            inset: 0,
+            background: 'linear-gradient(180deg, rgba(94,134,173,0.2) 0%, rgba(255,255,255,0.05) 50%, rgba(94,134,173,0.25) 100%)',
+            pointerEvents: 'none',
+          }}
+        />
+      </div>
 
       <EmailSubscribe />
       <Footer footer={c.footer} />
