@@ -5,7 +5,6 @@ import Nav from '../components/Nav';
 import Footer from '../components/Footer';
 import { supabase } from '@/lib/supabase';
 import content from '../content';
-import CloudMascot from '../components/CloudMascot';
 import EmailSubscribe from '../components/EmailSubscribe';
 
 const CREAM = '#FBF4EA';
@@ -64,8 +63,9 @@ export function ShopPage() {
         style={{
           maxWidth: 1200,
           margin: '0 auto',
-          padding: 'clamp(44px,7vw,96px) clamp(20px,4vw,40px) clamp(32px,4vw,48px)',
+          padding: 'clamp(44px,7vw,96px) clamp(20px,4vw,40px) clamp(20px,3vw,32px)',
           position: 'relative',
+          overflow: 'visible',
         }}
       >
         <p style={{ margin: '0 0 14px', fontSize: 12, letterSpacing: '0.24em', textTransform: 'uppercase', color: MUTED }}>
@@ -86,8 +86,27 @@ export function ShopPage() {
             p
           </span>
         </h1>
-        <CloudMascot size={300} mobileSize={150} behavior="wobble" style={{ position: 'absolute', top: -10, right: 'clamp(20px,8vw,100px)' }} mobileStyle={{ position: 'relative', top: 'auto', right: 'auto', margin: '0 auto 16px', display: 'block' }} />
+        {/* Cloud — positioned right, gentle idle animation, doesn't affect layout */}
+        <img
+          src="/clients/brandydemo/cloud-mascot.png"
+          alt=""
+          style={{
+            position: 'absolute',
+            top: 'clamp(10px,2vw,30px)',
+            right: 'clamp(-20px,2vw,40px)',
+            width: 'clamp(200px,28vw,400px)',
+            height: 'auto',
+            animation: 'cloud-idle 5s ease-in-out infinite',
+            pointerEvents: 'none',
+          }}
+        />
       </header>
+      <style>{`
+        @keyframes cloud-idle {
+          0%, 100% { transform: translateY(0); }
+          50% { transform: translateY(-6px); }
+        }
+      `}</style>
 
       {/* ───── Intro Kit Feature Card ───── */}
       <section style={{ maxWidth: 1200, margin: '0 auto', padding: '0 clamp(20px,4vw,40px) clamp(40px,5vw,64px)' }}>
