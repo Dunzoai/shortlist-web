@@ -413,6 +413,23 @@ export function HomePage() {
         </section>
       </div>
 
+      {/* Cloud splitting parallax and about strip — sits between both */}
+      <div style={{ position: 'relative', height: 0, zIndex: 10, pointerEvents: 'none' }}>
+        <img
+          src="/clients/brandydemo/cloud-mascot.png"
+          alt="Sunday cloud"
+          style={{
+            position: 'absolute',
+            bottom: 'clamp(-140px,-16vw,-270px)',
+            right: 'clamp(20px,8vw,120px)',
+            width: 'clamp(280px,36vw,540px)',
+            height: 'auto',
+            objectFit: 'contain',
+            pointerEvents: 'auto',
+          }}
+        />
+      </div>
+
       {/* ───── About Strip ───── */}
       <section
         style={{
@@ -420,25 +437,8 @@ export function HomePage() {
           margin: '0 auto',
           padding: 'clamp(64px,9vw,120px) clamp(20px,4vw,40px)',
           textAlign: 'center',
-          position: 'relative',
         }}
       >
-        {/* Cloud straddling the parallax/about boundary — top right, bleeding up */}
-        <div
-          style={{
-            position: 'absolute',
-            top: 'clamp(-220px,-28vw,-400px)',
-            right: 'clamp(-60px,-4vw,-100px)',
-            zIndex: 2,
-            pointerEvents: 'auto',
-          }}
-        >
-          <img
-            src="/clients/brandydemo/cloud-mascot.png"
-            alt="Sunday cloud"
-            style={{ width: 'clamp(280px,36vw,540px)', height: 'auto', objectFit: 'contain' }}
-          />
-        </div>
         <p
           style={{
             margin: 0,
