@@ -69,26 +69,35 @@ export default function EmailSubscribe() {
             </textPath>
           </text>
         </svg>
-        {/* Flower in center */}
+        {/* Spiral sun in center */}
         <div
           style={{
             position: 'absolute',
             top: '50%',
             left: '50%',
             transform: 'translate(-50%, -50%)',
-            fontSize: 22,
           }}
         >
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-            <circle cx="12" cy="12" r="3.5" fill={GOLD} />
-            <ellipse cx="12" cy="5" rx="3" ry="4" fill={GOLD} opacity="0.5" />
-            <ellipse cx="12" cy="19" rx="3" ry="4" fill={GOLD} opacity="0.5" />
-            <ellipse cx="5" cy="12" rx="4" ry="3" fill={GOLD} opacity="0.5" />
-            <ellipse cx="19" cy="12" rx="4" ry="3" fill={GOLD} opacity="0.5" />
-            <ellipse cx="7.5" cy="7.5" rx="3" ry="3.5" fill={GOLD} opacity="0.35" transform="rotate(-45 7.5 7.5)" />
-            <ellipse cx="16.5" cy="16.5" rx="3" ry="3.5" fill={GOLD} opacity="0.35" transform="rotate(-45 16.5 16.5)" />
-            <ellipse cx="16.5" cy="7.5" rx="3" ry="3.5" fill={GOLD} opacity="0.35" transform="rotate(45 16.5 7.5)" />
-            <ellipse cx="7.5" cy="16.5" rx="3" ry="3.5" fill={GOLD} opacity="0.35" transform="rotate(45 7.5 16.5)" />
+          <svg width="36" height="36" viewBox="0 0 60 60" fill="none">
+            {/* Rays */}
+            {Array.from({ length: 12 }).map((_, i) => {
+              const angle = (i * 30) * Math.PI / 180;
+              const x1 = 30 + Math.cos(angle) * 16;
+              const y1 = 30 + Math.sin(angle) * 16;
+              const x2 = 30 + Math.cos(angle) * (i % 2 === 0 ? 27 : 23);
+              const y2 = 30 + Math.sin(angle) * (i % 2 === 0 ? 27 : 23);
+              return (
+                <line key={i} x1={x1} y1={y1} x2={x2} y2={y2}
+                  stroke={GOLD} strokeWidth="2.2" strokeLinecap="round" />
+              );
+            })}
+            {/* Outer circle */}
+            <circle cx="30" cy="30" r="14" stroke={GOLD} strokeWidth="2.2" fill="none" />
+            {/* Spiral */}
+            <path
+              d="M30 30 C30 27, 33 26, 34 28 C35 31, 32 34, 28 33 C24 32, 23 27, 26 24 C29 21, 36 22, 37 27 C38 33, 33 37, 27 36"
+              stroke={GOLD} strokeWidth="2" strokeLinecap="round" fill="none"
+            />
           </svg>
         </div>
       </div>
