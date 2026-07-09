@@ -32,13 +32,29 @@ export function SizingPage() {
         style={{
           maxWidth: 1200,
           margin: '0 auto',
-          padding: 'clamp(100px,10vw,140px) clamp(20px,4vw,40px) clamp(24px,3vw,44px)',
+          padding: 'clamp(44px,7vw,96px) clamp(20px,4vw,40px) clamp(24px,3vw,44px)',
           display: 'grid',
           gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
           gap: 'clamp(28px,5vw,72px)',
           alignItems: 'center',
+          position: 'relative',
+          overflow: 'visible',
         }}
       >
+        <img
+          src="/clients/brandydemo/cloud-mascot.png"
+          alt=""
+          style={{
+            position: 'absolute',
+            top: 'clamp(10px,2vw,30px)',
+            right: 'clamp(-20px,2vw,40px)',
+            width: 'clamp(200px,28vw,400px)',
+            height: 'auto',
+            animation: 'cloud-idle 5s ease-in-out infinite',
+            pointerEvents: 'none',
+            zIndex: 10,
+          }}
+        />
         <div>
           <p
             style={{
@@ -216,19 +232,6 @@ export function SizingPage() {
           overflow: 'visible',
         }}
       >
-        <img
-          src="/clients/brandydemo/cloud-mascot.png"
-          alt=""
-          style={{
-            position: 'absolute',
-            top: 'clamp(10px,2vw,30px)',
-            right: 'clamp(-20px,2vw,40px)',
-            width: 'clamp(200px,28vw,400px)',
-            height: 'auto',
-            animation: 'cloud-idle 5s ease-in-out infinite',
-            pointerEvents: 'none',
-          }}
-        />
         <p
           style={{
             margin: '0 0 28px',
