@@ -203,9 +203,10 @@ export function HomePage() {
           {/* Cloud mascot peeking near hero */}
           <CloudMascot
             size={360}
+            mobileSize={160}
             behavior="follow"
-            hideOnMobile={true}
             style={{ position: 'absolute', bottom: -20, right: 30, zIndex: 2 }}
+            mobileStyle={{ position: 'relative', bottom: 'auto', right: 'auto', margin: '20px auto', display: 'block' }}
           />
         </div>
       </header>
@@ -381,7 +382,7 @@ export function HomePage() {
           textAlign: 'center',
         }}
       >
-        <CloudMascot size={260} mobileSize={100} behavior="float" style={{ marginBottom: 12 }} />
+        <CloudMascot size={260} mobileSize={160} behavior="float" style={{ marginBottom: 12 }} />
         <p
           style={{
             margin: 0,

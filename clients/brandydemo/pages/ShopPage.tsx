@@ -86,7 +86,7 @@ export function ShopPage() {
             p
           </span>
         </h1>
-        <CloudMascot size={300} behavior="wobble" hideOnMobile={true} style={{ position: 'absolute', top: -10, right: 'clamp(20px,8vw,100px)' }} />
+        <CloudMascot size={300} mobileSize={150} behavior="wobble" style={{ position: 'absolute', top: -10, right: 'clamp(20px,8vw,100px)' }} mobileStyle={{ position: 'relative', top: 'auto', right: 'auto', margin: '0 auto 16px', display: 'block' }} />
       </header>
 
       {/* ───── Intro Kit Feature Card ───── */}

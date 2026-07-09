@@ -43,7 +43,7 @@ export function AboutPage() {
       >
         {/* Left — Image with gradient border */}
         <div style={{ position: 'relative' }}>
-          <CloudMascot size={300} behavior="follow" hideOnMobile={true} style={{ position: 'absolute', top: -30, right: -20, zIndex: 2 }} />
+          <CloudMascot size={300} mobileSize={150} behavior="follow" style={{ position: 'absolute', top: -30, right: -20, zIndex: 2 }} mobileStyle={{ position: 'relative', top: 'auto', right: 'auto', bottom: 'auto', margin: '16px auto', display: 'block' }} />
           <div
             style={{
               position: 'absolute',
