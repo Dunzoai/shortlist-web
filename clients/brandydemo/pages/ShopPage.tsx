@@ -5,6 +5,8 @@ import Nav from '../components/Nav';
 import Footer from '../components/Footer';
 import { supabase } from '@/lib/supabase';
 import content from '../content';
+import CloudMascot from '../components/CloudMascot';
+import EmailSubscribe from '../components/EmailSubscribe';
 
 const CREAM = '#FBF4EA';
 const BLUE = '#8EB6D9';
@@ -63,6 +65,7 @@ export function ShopPage() {
           maxWidth: 1200,
           margin: '0 auto',
           padding: 'clamp(44px,7vw,96px) clamp(20px,4vw,40px) clamp(32px,4vw,48px)',
+          position: 'relative',
         }}
       >
         <p style={{ margin: '0 0 14px', fontSize: 12, letterSpacing: '0.24em', textTransform: 'uppercase', color: MUTED }}>
@@ -83,6 +86,7 @@ export function ShopPage() {
             p
           </span>
         </h1>
+        <CloudMascot size={50} behavior="wobble" style={{ position: 'absolute', top: -10, right: 'clamp(20px,8vw,100px)' }} />
       </header>
 
       {/* ───── Intro Kit Feature Card ───── */}
@@ -255,6 +259,7 @@ export function ShopPage() {
         )}
       </section>
 
+      <EmailSubscribe />
       <Footer footer={c.footer} />
     </main>
   );

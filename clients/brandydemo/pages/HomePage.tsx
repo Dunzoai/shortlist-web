@@ -4,6 +4,8 @@ import { useEffect, useRef, useState } from 'react';
 import Nav from '../components/Nav';
 import Footer from '../components/Footer';
 import content from '../content';
+import CloudMascot from '../components/CloudMascot';
+import EmailSubscribe from '../components/EmailSubscribe';
 
 const CREAM = '#FBF4EA';
 const BLUE = '#8EB6D9';
@@ -198,6 +200,12 @@ export function HomePage() {
               style={{ width: '100%', height: '100%', objectFit: 'cover' }}
             />
           </div>
+          {/* Cloud mascot peeking near hero */}
+          <CloudMascot
+            size={60}
+            behavior="follow"
+            style={{ position: 'absolute', bottom: -20, right: 30, zIndex: 2 }}
+          />
         </div>
       </header>
 
@@ -372,6 +380,7 @@ export function HomePage() {
           textAlign: 'center',
         }}
       >
+        <CloudMascot size={44} behavior="float" style={{ marginBottom: 12 }} />
         <p
           style={{
             margin: 0,
@@ -496,6 +505,7 @@ export function HomePage() {
         </div>
       </section>
 
+      <EmailSubscribe />
       <Footer footer={c.footer} />
     </main>
   );

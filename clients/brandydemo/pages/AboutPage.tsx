@@ -4,6 +4,8 @@ import Image from 'next/image';
 import Nav from '../components/Nav';
 import Footer from '../components/Footer';
 import content from '../content';
+import CloudMascot from '../components/CloudMascot';
+import EmailSubscribe from '../components/EmailSubscribe';
 
 const CREAM = '#FBF4EA';
 const BLUE = '#8EB6D9';
@@ -41,6 +43,7 @@ export function AboutPage() {
       >
         {/* Left — Image with gradient border */}
         <div style={{ position: 'relative' }}>
+          <CloudMascot size={55} behavior="follow" style={{ position: 'absolute', top: -30, right: -20, zIndex: 2 }} />
           <div
             style={{
               position: 'absolute',
@@ -165,6 +168,7 @@ export function AboutPage() {
         </div>
       </section>
 
+      <EmailSubscribe />
       <Footer footer={c.footer} />
     </main>
   );

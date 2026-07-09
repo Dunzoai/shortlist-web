@@ -4,6 +4,8 @@ import { useState } from 'react';
 import Nav from '../components/Nav';
 import Footer from '../components/Footer';
 import content from '../content';
+import CloudMascot from '../components/CloudMascot';
+import EmailSubscribe from '../components/EmailSubscribe';
 
 const CREAM = '#FBF4EA';
 const BLUE_DARK = '#5E86AD';
@@ -37,8 +39,10 @@ export function FAQPage() {
           margin: '0 auto',
           padding: 'clamp(100px,10vw,140px) clamp(20px,4vw,40px) clamp(32px,4vw,56px)',
           textAlign: 'center',
+          position: 'relative',
         }}
       >
+        <CloudMascot size={48} behavior="float" style={{ position: 'absolute', top: 'clamp(80px,9vw,120px)', right: 'clamp(10px,4vw,40px)' }} />
         <p
           style={{
             margin: '0 0 14px',
@@ -189,6 +193,7 @@ export function FAQPage() {
         </p>
       </section>
 
+      <EmailSubscribe />
       <Footer footer={content.footer} />
     </main>
   );

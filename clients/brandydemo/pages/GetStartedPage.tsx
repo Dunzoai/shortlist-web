@@ -3,6 +3,8 @@
 import Nav from '../components/Nav';
 import Footer from '../components/Footer';
 import content from '../content';
+import CloudMascot from '../components/CloudMascot';
+import EmailSubscribe from '../components/EmailSubscribe';
 
 const CREAM = '#FBF4EA';
 const BLUE = '#8EB6D9';
@@ -308,6 +310,7 @@ export function GetStartedPage() {
         </a>
       </section>
 
+      <EmailSubscribe />
       <Footer footer={c.footer} />
     </main>
   );

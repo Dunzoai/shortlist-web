@@ -3,6 +3,8 @@
 import Nav from '../components/Nav';
 import Footer from '../components/Footer';
 import content from '../content';
+import CloudMascot from '../components/CloudMascot';
+import EmailSubscribe from '../components/EmailSubscribe';
 
 const CREAM = '#FBF4EA';
 const BLUE = '#8EB6D9';
@@ -224,6 +226,7 @@ export function SizingPage() {
         >
           {c.ctaCursive}
         </p>
+        <CloudMascot size={52} behavior="peek" style={{ marginBottom: 20 }} />
         <a
           href={c.ctaHref}
           style={{
@@ -252,6 +255,7 @@ export function SizingPage() {
         </a>
       </section>
 
+      <EmailSubscribe />
       <Footer footer={content.footer} />
     </main>
   );
