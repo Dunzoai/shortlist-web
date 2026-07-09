@@ -422,7 +422,9 @@ export function HomePage() {
           textAlign: 'center',
         }}
       >
-        <CloudMascot size={120} mobileSize={80} behavior="float" style={{ marginBottom: 16 }} />
+        <div style={{ marginBottom: -100, lineHeight: 0 }}>
+          <CloudMascot size={360} mobileSize={200} behavior="float" style={{ margin: '0 auto' }} />
+        </div>
         <p
           style={{
             margin: 0,

@@ -142,7 +142,10 @@ export function AdminPage() {
   const [saving, setSaving] = useState(false);
   const [uploadingId, setUploadingId] = useState<string | null>(null);
   const [clientId, setClientId] = useState<string>('');
+  const [galleryItems, setGalleryItems] = useState<{ id: string; image_url: string; caption: string }[]>([]);
+  const [galleryUploading, setGalleryUploading] = useState(false);
   const saveTimeout = useRef<NodeJS.Timeout | null>(null);
+  const galleryFileRef = useRef<HTMLInputElement>(null);
 
   // Load products from Supabase
   useEffect(() => {
@@ -162,6 +165,14 @@ export function AdminPage() {
           .order('sort_order', { ascending: true });
 
         if (data) setProducts(data);
+
+        const { data: gallery } = await supabase
+          .from('sunday_gallery')
+          .select('id, image_url, caption')
+          .eq('client_id', client.id)
+          .order('sort_order', { ascending: true });
+
+        if (gallery) setGalleryItems(gallery);
       }
       setLoading(false);
     }
@@ -266,6 +277,42 @@ export function AdminPage() {
 
     const { data } = await supabase.from('sunday_products').insert(seeds).select();
     if (data) setProducts(data);
+  };
+
+  const handleGalleryUpload = async (files: FileList) => {
+    setGalleryUploading(true);
+    for (const file of Array.from(files)) {
+      if (!file.type.startsWith('image/')) continue;
+      const ext = file.name.split('.').pop() || 'jpg';
+      const id = `g${Date.now()}-${Math.random().toString(36).slice(2, 6)}`;
+      const filePath = `brandydemo/gallery/${id}.${ext}`;
+
+      const { error } = await supabase.storage
+        .from(STORAGE_BUCKET)
+        .upload(filePath, file, { upsert: true });
+
+      if (!error) {
+        const publicUrl = `${SUPABASE_URL}/storage/v1/object/public/${STORAGE_BUCKET}/${filePath}`;
+        const newItem = { id, client_id: clientId, image_url: publicUrl, caption: '', sort_order: galleryItems.length + 1 };
+        await supabase.from('sunday_gallery').insert(newItem);
+        setGalleryItems((prev) => [...prev, { id, image_url: publicUrl, caption: '' }]);
+      }
+    }
+    setGalleryUploading(false);
+  };
+
+  const handleGalleryCaption = (id: string, caption: string) => {
+    setGalleryItems((prev) => prev.map((g) => (g.id === id ? { ...g, caption } : g)));
+    if (saveTimeout.current) clearTimeout(saveTimeout.current);
+    saveTimeout.current = setTimeout(async () => {
+      await supabase.from('sunday_gallery').update({ caption }).eq('id', id);
+    }, 500);
+  };
+
+  const handleGalleryDelete = async (id: string) => {
+    if (!window.confirm('Delete this gallery image?')) return;
+    await supabase.from('sunday_gallery').delete().eq('id', id);
+    setGalleryItems((prev) => prev.filter((g) => g.id !== id));
   };
 
   const categories = ['Custom', 'Pre-designed', 'Solid color', 'Sizing kits'];
@@ -527,6 +574,127 @@ export function AdminPage() {
               </div>
             </div>
           ))}
+        </div>
+
+        {/* ───── Gallery Section ───── */}
+        <div style={{ marginTop: 'clamp(48px,6vw,72px)', borderTop: `1px solid ${BORDER}`, paddingTop: 'clamp(32px,4vw,48px)' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 16, flexWrap: 'wrap', marginBottom: 24 }}>
+            <h2
+              style={{
+                margin: 0,
+                fontFamily: "var(--font-playfair), 'Playfair Display', serif",
+                fontWeight: 600,
+                fontSize: 'clamp(26px,3.4vw,38px)',
+                color: DARK,
+              }}
+            >
+              Gallery{' '}
+              <span style={{ fontFamily: "var(--font-dancing-script), 'Dancing Script', cursive", fontSize: '0.7em', color: BLUE_DARK, fontWeight: 600 }}>
+                ({galleryItems.length})
+              </span>
+            </h2>
+            <div style={{ display: 'flex', gap: 10 }}>
+              <input
+                ref={galleryFileRef}
+                type="file"
+                accept="image/*"
+                multiple
+                style={{ display: 'none' }}
+                onChange={(e) => { if (e.target.files?.length) handleGalleryUpload(e.target.files); }}
+              />
+              <button
+                onClick={() => galleryFileRef.current?.click()}
+                disabled={galleryUploading}
+                style={{
+                  cursor: 'pointer',
+                  background: DARK,
+                  color: CREAM,
+                  border: 'none',
+                  borderRadius: 999,
+                  padding: '12px 24px',
+                  fontFamily: "var(--font-montserrat), 'Montserrat', sans-serif",
+                  fontSize: 12,
+                  letterSpacing: '0.1em',
+                  textTransform: 'uppercase' as const,
+                  fontWeight: 600,
+                  opacity: galleryUploading ? 0.6 : 1,
+                }}
+              >
+                {galleryUploading ? 'Uploading...' : '+ Add photos'}
+              </button>
+            </div>
+          </div>
+
+          <p style={{ margin: '0 0 20px', fontSize: 14, color: BODY }}>
+            Upload photos of nail sets you&apos;ve done. They&apos;ll appear on the Gallery page.
+          </p>
+
+          {galleryItems.length === 0 ? (
+            <div
+              style={{
+                border: `2px dashed #C9BCA9`,
+                borderRadius: 16,
+                padding: 'clamp(40px,6vw,80px) 20px',
+                textAlign: 'center',
+                cursor: 'pointer',
+              }}
+              onClick={() => galleryFileRef.current?.click()}
+            >
+              <p style={{ color: MUTED, fontSize: 15 }}>Drop photos here or click to upload</p>
+            </div>
+          ) : (
+            <div
+              style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))',
+                gap: 16,
+              }}
+            >
+              {galleryItems.map((g) => (
+                <div
+                  key={g.id}
+                  style={{
+                    background: '#FFFFFF',
+                    border: `1px solid ${BORDER}`,
+                    borderRadius: 12,
+                    overflow: 'hidden',
+                  }}
+                >
+                  <img
+                    src={g.image_url}
+                    alt={g.caption || 'Gallery photo'}
+                    style={{ width: '100%', height: 160, objectFit: 'cover', display: 'block' }}
+                  />
+                  <div style={{ padding: '10px 12px', display: 'flex', flexDirection: 'column', gap: 8 }}>
+                    <input
+                      value={g.caption}
+                      onChange={(e) => handleGalleryCaption(g.id, e.target.value)}
+                      placeholder="Caption (optional)"
+                      style={{ ...inputStyle, fontSize: 13, padding: '8px 10px' }}
+                    />
+                    <button
+                      onClick={() => handleGalleryDelete(g.id)}
+                      style={{
+                        alignSelf: 'flex-start',
+                        cursor: 'pointer',
+                        background: 'none',
+                        border: '1px solid #C9BCA9',
+                        color: BODY,
+                        borderRadius: 999,
+                        padding: '6px 12px',
+                        fontFamily: "var(--font-montserrat), 'Montserrat', sans-serif",
+                        fontSize: 10,
+                        letterSpacing: '0.08em',
+                        textTransform: 'uppercase' as const,
+                      }}
+                    >
+                      Delete
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </section>
     </main>
