@@ -47,8 +47,8 @@ export function FAQPage() {
           alt=""
           style={{
             position: 'absolute',
-            top: 'clamp(10px,2vw,30px)',
-            right: 'clamp(-20px,2vw,40px)',
+            top: 'clamp(-30px,-3vw,-50px)',
+            right: 'clamp(-40px,-2vw,-60px)',
             width: 'clamp(200px,28vw,400px)',
             height: 'auto',
             animation: 'cloud-idle 5s ease-in-out infinite',

@@ -46,11 +46,11 @@ export function SizingPage() {
           alt=""
           style={{
             position: 'absolute',
-            top: 'clamp(10px,2vw,30px)',
-            right: 'clamp(-20px,2vw,40px)',
+            top: 'clamp(60px,10vw,140px)',
+            right: 'clamp(30px,38vw,480px)',
             width: 'clamp(200px,28vw,400px)',
             height: 'auto',
-            animation: 'cloud-idle 5s ease-in-out infinite',
+            animation: 'cloud-grow 3s ease-out forwards',
             pointerEvents: 'none',
             zIndex: 10,
           }}
@@ -274,6 +274,10 @@ export function SizingPage() {
         @keyframes cloud-idle {
           0%, 100% { transform: translateY(0); }
           50% { transform: translateY(-6px); }
+        }
+        @keyframes cloud-grow {
+          0% { transform: scale(0.6); opacity: 0; }
+          100% { transform: scale(1); opacity: 1; }
         }
       `}</style>
 

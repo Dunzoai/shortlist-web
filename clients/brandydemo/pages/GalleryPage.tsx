@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import Nav from '../components/Nav';
 import Footer from '../components/Footer';
 import EmailSubscribe from '../components/EmailSubscribe';
-import CloudMascot from '../components/CloudMascot';
+
 import { supabase } from '@/lib/supabase';
 import content from '../content';
 
@@ -114,13 +114,7 @@ export function GalleryPage() {
         >
           A look at some of the sets I&apos;ve created for clients. Every set is handmade and one of a kind.
         </p>
-        <CloudMascot
-          size={200}
-          mobileSize={100}
-          behavior="wobble"
-          hideOnMobile={true}
-          style={{ position: 'absolute', top: 10, right: 'clamp(10px,5vw,60px)' }}
-        />
+
       </header>
 
       {/* ───── Gallery Grid ───── */}

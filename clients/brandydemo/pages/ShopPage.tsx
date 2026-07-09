@@ -92,7 +92,7 @@ export function ShopPage() {
           alt=""
           style={{
             position: 'absolute',
-            top: 'clamp(10px,2vw,30px)',
+            top: 'clamp(-20px,-2vw,-40px)',
             right: 'clamp(-20px,2vw,40px)',
             width: 'clamp(200px,28vw,400px)',
             height: 'auto',
