@@ -2,13 +2,13 @@
 
 import { useState } from 'react';
 
-const CREAM = '#FBF4EA';
-const BLUE = '#8EB6D9';
-const BLUE_DARK = '#5E86AD';
-const PEACH = '#FFC6A1';
-const DARK = '#33414D';
+const BLUSH = '#F3E8E2';
+const MAUVE = '#B48B96';
+const SAGE = '#5C6B52';
+const GOLD = '#C9A84C';
 const BODY = '#55606B';
-const MUTED = '#A99E92';
+const DARK = '#33414D';
+const PEACH_WAVE = '#E8A8A0';
 
 export default function EmailSubscribe() {
   const [email, setEmail] = useState('');
@@ -17,64 +17,103 @@ export default function EmailSubscribe() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!email) return;
-    // TODO: wire to email service (Mailchimp, ConvertKit, etc.)
+    // TODO: wire to email service
     setSubmitted(true);
   };
 
   return (
     <section
       style={{
-        background: 'linear-gradient(135deg, #F5EDE0 0%, #EAF2F8 50%, #FDEBDA 100%)',
-        padding: 'clamp(48px,7vw,80px) clamp(20px,4vw,40px)',
+        background: BLUSH,
+        padding: 'clamp(56px,8vw,96px) clamp(20px,4vw,40px)',
         textAlign: 'center',
         position: 'relative',
         overflow: 'hidden',
       }}
     >
-      {/* Decorative elements */}
-      <div style={{ position: 'absolute', top: 20, left: '15%', fontSize: 24, opacity: 0.3, color: PEACH }}>~</div>
-      <div style={{ position: 'absolute', top: 30, right: '20%', fontSize: 18, opacity: 0.4, color: '#D6A93A' }}>✦</div>
-      <div style={{ position: 'absolute', bottom: 24, left: '25%', fontSize: 14, opacity: 0.3, color: BLUE }}>✿</div>
-      <div style={{ position: 'absolute', top: 16, right: '12%', fontSize: 12, opacity: 0.25, color: '#D6A93A' }}>✦</div>
-
-      {/* Subscribe stamp */}
-      <div
-        style={{
-          display: 'inline-block',
-          marginBottom: 12,
-          fontSize: 10,
-          letterSpacing: '0.2em',
-          textTransform: 'uppercase',
-          color: MUTED,
-          border: `1.5px solid ${MUTED}`,
-          borderRadius: '50%',
-          width: 64,
-          height: 64,
-          lineHeight: '64px',
-          fontWeight: 600,
-        }}
+      {/* Decorative waves — top left */}
+      <svg
+        style={{ position: 'absolute', top: 'clamp(24px,4vw,48px)', left: 'clamp(16px,6vw,80px)', opacity: 0.4 }}
+        width="48" height="32" viewBox="0 0 48 32" fill="none"
       >
-        Join
+        <path d="M2 8c6-6 10 2 16 0s10-8 16 0 10 6 14 0" stroke={PEACH_WAVE} strokeWidth="2.5" strokeLinecap="round" fill="none" />
+        <path d="M2 18c6-6 10 2 16 0s10-8 16 0 10 6 14 0" stroke={PEACH_WAVE} strokeWidth="2.5" strokeLinecap="round" fill="none" />
+        <path d="M2 28c6-6 10 2 16 0s10-8 16 0 10 6 14 0" stroke={PEACH_WAVE} strokeWidth="2.5" strokeLinecap="round" fill="none" />
+      </svg>
+
+      {/* Decorative sparkle — top right */}
+      <svg
+        style={{ position: 'absolute', top: 'clamp(20px,3vw,40px)', right: 'clamp(20px,8vw,120px)' }}
+        width="36" height="36" viewBox="0 0 36 36" fill="none"
+      >
+        <path d="M18 2L20.5 14.5L33 18L20.5 21.5L18 34L15.5 21.5L3 18L15.5 14.5Z" fill={GOLD} />
+      </svg>
+
+      {/* Small sparkle */}
+      <svg
+        style={{ position: 'absolute', top: 'clamp(44px,6vw,72px)', right: 'clamp(12px,5vw,80px)' }}
+        width="18" height="18" viewBox="0 0 36 36" fill="none"
+      >
+        <path d="M18 2L20.5 14.5L33 18L20.5 21.5L18 34L15.5 21.5L3 18L15.5 14.5Z" fill={GOLD} opacity="0.6" />
+      </svg>
+
+      {/* Circular "Subscribe Now" badge */}
+      <div style={{ position: 'relative', display: 'inline-block', marginBottom: 8 }}>
+        <svg width="90" height="90" viewBox="0 0 100 100" style={{ animation: 'spin-slow 12s linear infinite' }}>
+          <defs>
+            <path id="circlePath" d="M 50,50 m -35,0 a 35,35 0 1,1 70,0 a 35,35 0 1,1 -70,0" />
+          </defs>
+          <text fontSize="10.5" fontFamily="var(--font-montserrat), Montserrat, sans-serif" fontWeight="600" letterSpacing="0.18em" fill={BODY} style={{ textTransform: 'uppercase' }}>
+            <textPath href="#circlePath" startOffset="0%">
+              SUBSCRIBE NOW · SUBSCRIBE NOW ·{' '}
+            </textPath>
+          </text>
+        </svg>
+        {/* Flower in center */}
+        <div
+          style={{
+            position: 'absolute',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            fontSize: 22,
+          }}
+        >
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+            <circle cx="12" cy="12" r="3.5" fill={GOLD} />
+            <ellipse cx="12" cy="5" rx="3" ry="4" fill={GOLD} opacity="0.5" />
+            <ellipse cx="12" cy="19" rx="3" ry="4" fill={GOLD} opacity="0.5" />
+            <ellipse cx="5" cy="12" rx="4" ry="3" fill={GOLD} opacity="0.5" />
+            <ellipse cx="19" cy="12" rx="4" ry="3" fill={GOLD} opacity="0.5" />
+            <ellipse cx="7.5" cy="7.5" rx="3" ry="3.5" fill={GOLD} opacity="0.35" transform="rotate(-45 7.5 7.5)" />
+            <ellipse cx="16.5" cy="16.5" rx="3" ry="3.5" fill={GOLD} opacity="0.35" transform="rotate(-45 16.5 16.5)" />
+            <ellipse cx="16.5" cy="7.5" rx="3" ry="3.5" fill={GOLD} opacity="0.35" transform="rotate(45 16.5 7.5)" />
+            <ellipse cx="7.5" cy="16.5" rx="3" ry="3.5" fill={GOLD} opacity="0.35" transform="rotate(45 7.5 16.5)" />
+          </svg>
+        </div>
       </div>
 
+      {/* Heading */}
       <h2
         style={{
-          margin: '0 0 4px',
-          fontFamily: "var(--font-dancing-script), 'Dancing Script', cursive",
-          fontWeight: 600,
-          fontSize: 'clamp(36px,5vw,52px)',
-          color: DARK,
+          margin: '0 0 2px',
+          fontFamily: "var(--font-playfair), 'Playfair Display', serif",
+          fontWeight: 700,
+          fontSize: 'clamp(40px,6vw,60px)',
+          color: SAGE,
+          lineHeight: 1.1,
         }}
       >
         Subscribe
       </h2>
       <p
         style={{
-          margin: '0 0 6px',
+          margin: '0 0 20px',
           fontSize: 13,
-          letterSpacing: '0.14em',
+          letterSpacing: '0.22em',
           textTransform: 'uppercase',
-          color: MUTED,
+          color: BODY,
+          fontWeight: 500,
         }}
       >
         to our emails
@@ -82,32 +121,34 @@ export default function EmailSubscribe() {
 
       <p
         style={{
-          margin: '16px auto 28px',
-          maxWidth: '38ch',
+          margin: '0 auto 32px',
+          maxWidth: '34ch',
           fontSize: 15,
-          lineHeight: 1.6,
-          color: BODY,
+          lineHeight: 1.65,
+          color: DARK,
         }}
       >
         We promise not to spam your inbox!
         <br />
-        Sign up for special newsletter discounts and new launches!
+        Sign up for special newsletter discounts
+        <br />
+        and new launches!
       </p>
 
       {submitted ? (
         <div
           style={{
             display: 'inline-block',
-            padding: '14px 32px',
-            borderRadius: 999,
-            backgroundColor: BLUE,
+            padding: '14px 36px',
+            borderRadius: 8,
+            backgroundColor: MAUVE,
             color: '#FFFFFF',
-            fontSize: 14,
+            fontSize: 15,
             fontWeight: 600,
-            letterSpacing: '0.06em',
+            fontFamily: "var(--font-montserrat), 'Montserrat', sans-serif",
           }}
         >
-          You&apos;re on the list! ✨
+          You&apos;re on the list!
         </div>
       ) : (
         <form
@@ -115,12 +156,8 @@ export default function EmailSubscribe() {
           style={{
             display: 'inline-flex',
             gap: 0,
-            maxWidth: 400,
+            maxWidth: 380,
             width: '100%',
-            borderRadius: 8,
-            overflow: 'hidden',
-            border: `1.5px solid #E0D4C4`,
-            backgroundColor: '#FFFFFF',
           }}
         >
           <input
@@ -131,37 +168,46 @@ export default function EmailSubscribe() {
             required
             style={{
               flex: 1,
-              padding: '14px 16px',
-              border: 'none',
+              padding: '15px 18px',
+              border: `1.5px solid #D4C5BE`,
+              borderRight: 'none',
+              borderRadius: '8px 0 0 8px',
               outline: 'none',
               fontSize: 15,
               color: DARK,
               fontFamily: "var(--font-montserrat), 'Montserrat', sans-serif",
-              backgroundColor: 'transparent',
+              backgroundColor: '#FFFFFF',
             }}
           />
           <button
             type="submit"
             style={{
-              padding: '14px 24px',
+              padding: '15px 28px',
               border: 'none',
-              backgroundColor: BLUE_DARK,
+              borderRadius: '0 8px 8px 0',
+              backgroundColor: MAUVE,
               color: '#FFFFFF',
-              fontSize: 13,
+              fontSize: 14,
               fontWeight: 600,
-              letterSpacing: '0.08em',
-              textTransform: 'uppercase',
+              letterSpacing: '0.04em',
               cursor: 'pointer',
               fontFamily: "var(--font-montserrat), 'Montserrat', sans-serif",
               transition: 'background-color .15s ease',
             }}
-            onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = DARK; }}
-            onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = BLUE_DARK; }}
+            onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#9A7580'; }}
+            onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = MAUVE; }}
           >
             Subscribe
           </button>
         </form>
       )}
+
+      <style>{`
+        @keyframes spin-slow {
+          from { transform: rotate(0deg); }
+          to { transform: rotate(360deg); }
+        }
+      `}</style>
     </section>
   );
 }
