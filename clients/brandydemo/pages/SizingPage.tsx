@@ -46,9 +46,9 @@ export function SizingPage() {
           alt=""
           style={{
             position: 'absolute',
-            top: 'clamp(70px,12vw,170px)',
-            left: 'clamp(200px,36vw,520px)',
-            width: 'clamp(100px,12vw,180px)',
+            top: 'clamp(90px,14vw,200px)',
+            left: 'clamp(120px,22vw,310px)',
+            width: 'clamp(120px,14vw,216px)',
             height: 'auto',
             animation: 'cloud-grow 3s ease-out forwards',
             pointerEvents: 'none',
