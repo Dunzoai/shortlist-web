@@ -420,10 +420,24 @@ export function HomePage() {
           margin: '0 auto',
           padding: 'clamp(64px,9vw,120px) clamp(20px,4vw,40px)',
           textAlign: 'center',
+          position: 'relative',
         }}
       >
-        <div style={{ marginBottom: -100, lineHeight: 0 }}>
-          <CloudMascot size={360} mobileSize={200} behavior="float" style={{ margin: '0 auto' }} />
+        {/* Cloud straddling the parallax/about boundary — top right, bleeding up */}
+        <div
+          style={{
+            position: 'absolute',
+            top: 'clamp(-160px,-18vw,-280px)',
+            right: 'clamp(-20px,2vw,40px)',
+            zIndex: 2,
+            pointerEvents: 'auto',
+          }}
+        >
+          <img
+            src="/clients/brandydemo/cloud-mascot.png"
+            alt="Sunday cloud"
+            style={{ width: 'clamp(280px,36vw,540px)', height: 'auto', objectFit: 'contain' }}
+          />
         </div>
         <p
           style={{
