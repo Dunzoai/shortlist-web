@@ -39,7 +39,7 @@ export function AboutPage() {
           display: 'grid',
           gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
           gap: 'clamp(32px,6vw,80px)',
-          alignItems: 'center',
+          alignItems: 'start',
         }}
       >
         <img
@@ -47,12 +47,13 @@ export function AboutPage() {
           alt=""
           style={{
             position: 'absolute',
-            top: 'clamp(10px,2vw,30px)',
-            right: 'clamp(-20px,2vw,40px)',
+            top: 'clamp(-40px,-4vw,-60px)',
+            right: 'clamp(-10px,2vw,40px)',
             width: 'clamp(200px,28vw,400px)',
             height: 'auto',
             animation: 'cloud-idle 5s ease-in-out infinite',
             pointerEvents: 'none',
+            zIndex: 10,
           }}
         />
         {/* Left — Image with gradient border */}
@@ -81,7 +82,7 @@ export function AboutPage() {
               src={c.about.image}
               alt="Brandy"
               fill
-              style={{ objectFit: 'cover' }}
+              style={{ objectFit: 'cover', objectPosition: 'top center' }}
               sizes="(max-width: 700px) 100vw, 50vw"
             />
           </div>
