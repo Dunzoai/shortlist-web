@@ -42,7 +42,7 @@ export function FAQPage() {
           position: 'relative',
         }}
       >
-        <CloudMascot size={48} behavior="float" style={{ position: 'absolute', top: 'clamp(80px,9vw,120px)', right: 'clamp(10px,4vw,40px)' }} />
+        <CloudMascot size={110} behavior="float" style={{ position: 'absolute', top: 'clamp(80px,9vw,120px)', right: 'clamp(10px,4vw,40px)' }} />
         <p
           style={{
             margin: '0 0 14px',

@@ -202,7 +202,7 @@ export function HomePage() {
           </div>
           {/* Cloud mascot peeking near hero */}
           <CloudMascot
-            size={60}
+            size={140}
             behavior="follow"
             style={{ position: 'absolute', bottom: -20, right: 30, zIndex: 2 }}
           />
@@ -380,7 +380,7 @@ export function HomePage() {
           textAlign: 'center',
         }}
       >
-        <CloudMascot size={44} behavior="float" style={{ marginBottom: 12 }} />
+        <CloudMascot size={100} behavior="float" style={{ marginBottom: 12 }} />
         <p
           style={{
             margin: 0,
