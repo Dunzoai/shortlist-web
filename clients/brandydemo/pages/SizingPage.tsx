@@ -226,7 +226,7 @@ export function SizingPage() {
         >
           {c.ctaCursive}
         </p>
-        <CloudMascot size={300} behavior="peek" style={{ marginBottom: 20 }} />
+        <CloudMascot size={300} mobileSize={90} behavior="peek" style={{ marginBottom: 20 }} />
         <a
           href={c.ctaHref}
           style={{
