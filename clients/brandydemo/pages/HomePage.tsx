@@ -427,8 +427,8 @@ export function HomePage() {
         <div
           style={{
             position: 'absolute',
-            top: 'clamp(-160px,-18vw,-280px)',
-            right: 'clamp(-20px,2vw,40px)',
+            top: 'clamp(-220px,-28vw,-400px)',
+            right: 'clamp(-60px,-4vw,-100px)',
             zIndex: 2,
             pointerEvents: 'auto',
           }}
