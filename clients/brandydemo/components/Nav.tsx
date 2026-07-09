@@ -34,7 +34,7 @@ export default function Nav({ nav, brandLabel }: NavProps) {
           <img
             src="/clients/brandydemo/sunday-logo.jpg"
             alt="Sunday Nail Press"
-            style={{ height: 58, width: 'auto', display: 'block', mixBlendMode: 'multiply' }}
+            style={{ height: 72, width: 'auto', display: 'block', mixBlendMode: 'multiply' }}
           />
         </a>
 
