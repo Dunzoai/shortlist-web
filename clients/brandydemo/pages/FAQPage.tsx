@@ -4,7 +4,6 @@ import { useState } from 'react';
 import Nav from '../components/Nav';
 import Footer from '../components/Footer';
 import content from '../content';
-import CloudMascot from '../components/CloudMascot';
 import EmailSubscribe from '../components/EmailSubscribe';
 
 const CREAM = '#FBF4EA';
@@ -37,12 +36,25 @@ export function FAQPage() {
         style={{
           maxWidth: 820,
           margin: '0 auto',
-          padding: 'clamp(100px,10vw,140px) clamp(20px,4vw,40px) clamp(32px,4vw,56px)',
+          padding: 'clamp(100px,10vw,140px) clamp(20px,4vw,40px) clamp(16px,2vw,28px)',
           textAlign: 'center',
           position: 'relative',
+          overflow: 'visible',
         }}
       >
-        <CloudMascot size={280} mobileSize={140} behavior="float" hideOnMobile={false} mobileStyle={{ position: 'static', marginBottom: 8 }} style={{ position: 'absolute', top: 'clamp(80px,9vw,120px)', right: 'clamp(10px,4vw,40px)' }} />
+        <img
+          src="/clients/brandydemo/cloud-mascot.png"
+          alt=""
+          style={{
+            position: 'absolute',
+            top: 'clamp(10px,2vw,30px)',
+            right: 'clamp(-20px,2vw,40px)',
+            width: 'clamp(200px,28vw,400px)',
+            height: 'auto',
+            animation: 'cloud-idle 5s ease-in-out infinite',
+            pointerEvents: 'none',
+          }}
+        />
         <p
           style={{
             margin: '0 0 14px',
@@ -78,6 +90,12 @@ export function FAQPage() {
           </span>
         </h1>
       </header>
+      <style>{`
+        @keyframes cloud-idle {
+          0%, 100% { transform: translateY(0); }
+          50% { transform: translateY(-6px); }
+        }
+      `}</style>
 
       {/* ───── Accordion ───── */}
       <section

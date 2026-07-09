@@ -3,7 +3,6 @@
 import Nav from '../components/Nav';
 import Footer from '../components/Footer';
 import content from '../content';
-import CloudMascot from '../components/CloudMascot';
 import EmailSubscribe from '../components/EmailSubscribe';
 
 const CREAM = '#FBF4EA';
@@ -33,7 +32,7 @@ export function SizingPage() {
         style={{
           maxWidth: 1200,
           margin: '0 auto',
-          padding: 'clamp(100px,10vw,140px) clamp(20px,4vw,40px) clamp(44px,6vw,84px)',
+          padding: 'clamp(100px,10vw,140px) clamp(20px,4vw,40px) clamp(24px,3vw,44px)',
           display: 'grid',
           gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
           gap: 'clamp(28px,5vw,72px)',
@@ -211,10 +210,25 @@ export function SizingPage() {
         style={{
           maxWidth: 820,
           margin: '0 auto',
-          padding: 'clamp(64px,9vw,120px) clamp(20px,4vw,40px)',
+          padding: 'clamp(48px,7vw,90px) clamp(20px,4vw,40px)',
           textAlign: 'center',
+          position: 'relative',
+          overflow: 'visible',
         }}
       >
+        <img
+          src="/clients/brandydemo/cloud-mascot.png"
+          alt=""
+          style={{
+            position: 'absolute',
+            top: 'clamp(10px,2vw,30px)',
+            right: 'clamp(-20px,2vw,40px)',
+            width: 'clamp(200px,28vw,400px)',
+            height: 'auto',
+            animation: 'cloud-idle 5s ease-in-out infinite',
+            pointerEvents: 'none',
+          }}
+        />
         <p
           style={{
             margin: '0 0 28px',
@@ -226,7 +240,6 @@ export function SizingPage() {
         >
           {c.ctaCursive}
         </p>
-        <CloudMascot size={300} mobileSize={150} behavior="peek" style={{ marginBottom: 20 }} />
         <a
           href={c.ctaHref}
           style={{
@@ -254,6 +267,12 @@ export function SizingPage() {
           {c.ctaText}
         </a>
       </section>
+      <style>{`
+        @keyframes cloud-idle {
+          0%, 100% { transform: translateY(0); }
+          50% { transform: translateY(-6px); }
+        }
+      `}</style>
 
       <EmailSubscribe />
       <Footer footer={content.footer} />
