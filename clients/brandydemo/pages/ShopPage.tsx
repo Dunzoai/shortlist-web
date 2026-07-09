@@ -174,22 +174,31 @@ export function ShopPage() {
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10, marginBottom: 'clamp(28px,4vw,40px)' }}>
           {c.shop.categories.map((cat) => {
             const active = filter === cat;
+            const pastelColors: Record<string, string> = {
+              'All': '#D7E6F7',
+              'Custom': '#FFE6CB',
+              'Pre-designed': '#FFF2B6',
+              'Solid color': '#E7F0FA',
+              'Sizing kits': '#FDEBDA',
+            };
+            const bg = active ? (pastelColors[cat] || '#D7E6F7') : 'transparent';
             return (
               <button
                 key={cat}
                 onClick={() => setFilter(cat)}
                 style={{
                   cursor: 'pointer',
-                  border: `1.5px solid ${DARK}`,
+                  border: active ? '1.5px solid transparent' : '1.5px solid #D4C5BE',
                   borderRadius: 999,
                   padding: '9px 20px',
                   fontFamily: "var(--font-montserrat), 'Montserrat', sans-serif",
                   fontSize: 12,
                   letterSpacing: '0.1em',
                   textTransform: 'uppercase',
-                  background: active ? DARK : 'transparent',
-                  color: active ? CREAM : DARK,
-                  transition: 'background .15s ease, color .15s ease',
+                  background: bg,
+                  color: DARK,
+                  fontWeight: active ? 600 : 400,
+                  transition: 'all .15s ease',
                 }}
               >
                 {cat}
