@@ -47,9 +47,9 @@ export function AboutPage() {
           alt=""
           style={{
             position: 'absolute',
-            top: 'clamp(-60px,-6vw,-100px)',
-            right: 'clamp(-50px,-3vw,-80px)',
-            width: 'clamp(200px,28vw,400px)',
+            top: 'clamp(-20px,-2vw,-40px)',
+            right: 'clamp(10px,4vw,60px)',
+            width: 'clamp(140px,18vw,260px)',
             height: 'auto',
             animation: 'cloud-idle 5s ease-in-out infinite',
             pointerEvents: 'none',
