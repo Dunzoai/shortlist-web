@@ -49,13 +49,45 @@ export default function EmailSubscribe() {
         <path d="M18 2L20.5 14.5L33 18L20.5 21.5L18 34L15.5 21.5L3 18L15.5 14.5Z" fill={GOLD} />
       </svg>
 
-      {/* Small sparkle */}
+      {/* Small sparkle top-right */}
       <svg
         style={{ position: 'absolute', top: 'clamp(44px,6vw,72px)', right: 'clamp(12px,5vw,80px)' }}
         width="18" height="18" viewBox="0 0 36 36" fill="none"
       >
         <path d="M18 2L20.5 14.5L33 18L20.5 21.5L18 34L15.5 21.5L3 18L15.5 14.5Z" fill={GOLD} opacity="0.6" />
       </svg>
+
+      {/* ── Sparkle cluster — left side ── */}
+      <div style={{ position: 'absolute', left: 'clamp(10px,4vw,60px)', top: '45%', transform: 'translateY(-50%)' }}>
+        {/* Large 4-point diamond */}
+        <svg width="28" height="28" viewBox="0 0 28 28" fill="none" style={{ display: 'block' }}>
+          <path d="M14 0L16 11L28 14L16 17L14 28L12 17L0 14L12 11Z" fill={SAGE} opacity="0.7" />
+        </svg>
+        {/* Small diamond offset */}
+        <svg width="14" height="14" viewBox="0 0 28 28" fill="none" style={{ display: 'block', marginLeft: 22, marginTop: -6 }}>
+          <path d="M14 0L16 11L28 14L16 17L14 28L12 17L0 14L12 11Z" fill={SAGE} opacity="0.45" />
+        </svg>
+        {/* Tiny dot */}
+        <svg width="6" height="6" viewBox="0 0 6 6" style={{ display: 'block', marginLeft: 8, marginTop: 4 }}>
+          <circle cx="3" cy="3" r="2.5" fill={SAGE} opacity="0.3" />
+        </svg>
+      </div>
+
+      {/* ── Sparkle cluster — right side ── */}
+      <div style={{ position: 'absolute', right: 'clamp(10px,4vw,60px)', bottom: 'clamp(30px,5vw,80px)' }}>
+        {/* Medium 4-point diamond */}
+        <svg width="22" height="22" viewBox="0 0 28 28" fill="none" style={{ display: 'block', marginLeft: 'auto' }}>
+          <path d="M14 0L16 11L28 14L16 17L14 28L12 17L0 14L12 11Z" fill={MAUVE} opacity="0.5" />
+        </svg>
+        {/* Large diamond */}
+        <svg width="32" height="32" viewBox="0 0 28 28" fill="none" style={{ display: 'block', marginRight: 18, marginTop: -4 }}>
+          <path d="M14 0L16 11L28 14L16 17L14 28L12 17L0 14L12 11Z" fill={MAUVE} opacity="0.35" />
+        </svg>
+        {/* Tiny dots */}
+        <svg width="5" height="5" viewBox="0 0 6 6" style={{ display: 'block', marginLeft: 'auto', marginTop: 6 }}>
+          <circle cx="3" cy="3" r="2" fill={MAUVE} opacity="0.4" />
+        </svg>
+      </div>
 
       {/* Circular "Subscribe Now" badge */}
       <div style={{ position: 'relative', display: 'inline-block', marginBottom: 8 }}>

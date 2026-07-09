@@ -16,6 +16,54 @@ const DARK = '#33414D';
 const BODY = '#55606B';
 const MUTED = '#A99E92';
 
+function BottomParallax({ isMobile }: { isMobile: boolean }) {
+  const sectionRef = useRef<HTMLDivElement>(null);
+  const imgRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!sectionRef.current) return;
+    const handleScroll = () => {
+      if (!sectionRef.current || !imgRef.current) return;
+      const rect = sectionRef.current.getBoundingClientRect();
+      const vh = window.innerHeight;
+      if (rect.top < vh && rect.bottom > 0) {
+        const progress = -rect.top;
+        imgRef.current.style.transform = `translateY(${progress * (isMobile ? 0.3 : 0.5)}px)`;
+      }
+    };
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    handleScroll();
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [isMobile]);
+
+  return (
+    <div ref={sectionRef} style={{ position: 'relative', overflow: 'hidden', height: 'clamp(300px,45vw,520px)' }}>
+      <div
+        ref={imgRef}
+        className="will-change-transform"
+        style={{
+          position: 'absolute',
+          top: '-40%',
+          left: 0,
+          right: 0,
+          height: '180%',
+          backgroundImage: 'url(/clients/brandydemo/sky-parallax.jpg)',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center 60%',
+        }}
+      />
+      <div
+        style={{
+          position: 'absolute',
+          inset: 0,
+          background: 'linear-gradient(180deg, rgba(94,134,173,0.2) 0%, rgba(255,255,255,0.05) 50%, rgba(94,134,173,0.25) 100%)',
+          pointerEvents: 'none',
+        }}
+      />
+    </div>
+  );
+}
+
 export function HomePage() {
   const c = content;
 
@@ -374,7 +422,7 @@ export function HomePage() {
           textAlign: 'center',
         }}
       >
-        <CloudMascot size={780} mobileSize={480} behavior="float" style={{ marginBottom: -40 }} />
+        <CloudMascot size={120} mobileSize={80} behavior="float" style={{ marginBottom: 16 }} />
         <p
           style={{
             margin: 0,
@@ -500,26 +548,7 @@ export function HomePage() {
       </section>
 
       {/* ───── Sky Parallax Break ───── */}
-      <div style={{ position: 'relative', overflow: 'hidden', height: 'clamp(200px,30vw,360px)' }}>
-        <div
-          style={{
-            position: 'absolute',
-            inset: 0,
-            backgroundImage: 'url(/clients/brandydemo/sky-parallax.jpg)',
-            backgroundSize: 'cover',
-            backgroundPosition: 'center 40%',
-            backgroundAttachment: isMobile ? 'scroll' : 'fixed',
-          }}
-        />
-        <div
-          style={{
-            position: 'absolute',
-            inset: 0,
-            background: 'linear-gradient(180deg, rgba(94,134,173,0.2) 0%, rgba(255,255,255,0.05) 50%, rgba(94,134,173,0.25) 100%)',
-            pointerEvents: 'none',
-          }}
-        />
-      </div>
+      <BottomParallax isMobile={isMobile} />
 
       <EmailSubscribe />
       <Footer footer={c.footer} />
