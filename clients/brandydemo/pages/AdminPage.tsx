@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { supabase } from '@/lib/supabase';
 import content from '../content';
+import SquareConnect from '../components/SquareConnect';
 import {
   DndContext,
   closestCenter,
@@ -850,6 +851,9 @@ export function AdminPage() {
         >
           {c.admin.infoBanner} Drag the handle on any card to reorder. Changes save automatically to the database and show up on the Shop page.
         </div>
+
+        {/* ───── Square Payments ───── */}
+        <SquareConnect />
 
         {/* ───── Heading + Actions ───── */}
         <div
