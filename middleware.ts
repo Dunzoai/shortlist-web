@@ -31,6 +31,8 @@ export async function middleware(request: NextRequest) {
 
   const isDashboardRoute = effectivePathname.startsWith('/dashboard')
   const isDashboardLogin = effectivePathname === '/dashboard/login' || effectivePathname.startsWith('/dashboard/auth/')
+  const isStudioAdminRoute = effectivePathname.startsWith('/studio-admin')
+  const isStudioAdminLogin = effectivePathname === '/studio-admin/login'
   const isPortalRoute = effectivePathname.startsWith('/portal')
   const isClientRoute = effectivePathname.startsWith('/client-portal')
   const isLoginPage = effectivePathname === '/portal/login'
@@ -46,6 +48,17 @@ export async function middleware(request: NextRequest) {
     if (!authCookie?.value || authCookie.value.length < 36) {
       const url = request.nextUrl.clone()
       url.pathname = '/dashboard/login'
+      return NextResponse.redirect(url)
+    }
+    return NextResponse.next()
+  }
+
+  // Studio Admin auth — simple shared-password cookie check
+  if (isStudioAdminRoute && !isStudioAdminLogin) {
+    const authCookie = request.cookies.get('studio_admin_auth')
+    if (!authCookie?.value || authCookie.value.length < 36) {
+      const url = request.nextUrl.clone()
+      url.pathname = '/studio-admin/login'
       return NextResponse.redirect(url)
     }
     return NextResponse.next()

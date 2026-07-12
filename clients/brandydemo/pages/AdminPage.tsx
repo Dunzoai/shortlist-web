@@ -14,10 +14,6 @@ const INFO_BG = '#E7F0FA';
 const BORDER = '#ECDECB';
 const INPUT_BORDER = '#E0D4C4';
 
-const STORAGE_BUCKET = 'client-assets';
-const STORAGE_PATH = 'brandydemo/products';
-const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
-
 type Product = {
   id: string;
   name: string;
@@ -179,22 +175,25 @@ export function AdminPage() {
     load();
   }, []);
 
-  // Debounced save to Supabase
+  // Debounced save via the service-role API route
   const saveProduct = (product: Product) => {
     if (saveTimeout.current) clearTimeout(saveTimeout.current);
     saveTimeout.current = setTimeout(async () => {
       setSaving(true);
-      await supabase
-        .from('sunday_products')
-        .update({
-          name: product.name,
-          description: product.description,
-          level: product.level,
-          category: product.category,
-          image_url: product.image_url,
-          updated_at: new Date().toISOString(),
-        })
-        .eq('id', product.id);
+      await fetch('/api/studio-admin/products', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          id: product.id,
+          fields: {
+            name: product.name,
+            description: product.description,
+            level: product.level,
+            category: product.category,
+            image_url: product.image_url,
+          },
+        }),
+      });
       setSaving(false);
     }, 500);
   };
@@ -211,24 +210,16 @@ export function AdminPage() {
 
   const handleUpload = async (productId: string, file: File) => {
     setUploadingId(productId);
-    const ext = file.name.split('.').pop() || 'jpg';
-    const filePath = `${STORAGE_PATH}/${productId}-${Date.now()}.${ext}`;
+    const form = new FormData();
+    form.append('file', file);
+    form.append('kind', 'product');
+    form.append('productId', productId);
 
-    const { error } = await supabase.storage
-      .from(STORAGE_BUCKET)
-      .upload(filePath, file, { upsert: true });
-
-    if (!error) {
-      const publicUrl = `${SUPABASE_URL}/storage/v1/object/public/${STORAGE_BUCKET}/${filePath}`;
-
-      // Update product with image URL
-      await supabase
-        .from('sunday_products')
-        .update({ image_url: publicUrl, updated_at: new Date().toISOString() })
-        .eq('id', productId);
-
+    const res = await fetch('/api/studio-admin/upload', { method: 'POST', body: form });
+    if (res.ok) {
+      const { url } = await res.json();
       setProducts((prev) =>
-        prev.map((p) => (p.id === productId ? { ...p, image_url: publicUrl } : p))
+        prev.map((p) => (p.id === productId ? { ...p, image_url: url } : p))
       );
     }
     setUploadingId(null);
@@ -247,23 +238,30 @@ export function AdminPage() {
       client_id: clientId,
     };
 
-    const { error } = await supabase.from('sunday_products').insert(newProduct);
-    if (!error) setProducts([...products, newProduct]);
+    const res = await fetch('/api/studio-admin/products', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ product: newProduct }),
+    });
+    if (res.ok) {
+      const { product } = await res.json();
+      setProducts([...products, product ?? newProduct]);
+    }
   };
 
   const handleDelete = async (id: string, name: string) => {
     if (!window.confirm(`Delete "${name}" from the shop?`)) return;
-    await supabase.from('sunday_products').delete().eq('id', id);
+    await fetch('/api/studio-admin/products', {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id }),
+    });
     setProducts(products.filter((p) => p.id !== id));
   };
 
   const handleReset = async () => {
     if (!window.confirm(c.admin.resetConfirm)) return;
 
-    // Delete all existing
-    await supabase.from('sunday_products').delete().eq('client_id', clientId);
-
-    // Re-insert seeds
     const seeds = content.shop.seedProducts.map((p, i) => ({
       id: p.id,
       client_id: clientId,
@@ -275,27 +273,38 @@ export function AdminPage() {
       sort_order: i + 1,
     }));
 
-    const { data } = await supabase.from('sunday_products').insert(seeds).select();
-    if (data) setProducts(data);
+    const res = await fetch('/api/studio-admin/products/reset', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ clientId, seeds }),
+    });
+    if (res.ok) {
+      const { products: data } = await res.json();
+      if (data) setProducts(data);
+    }
+  };
+
+  const handleLogout = async () => {
+    await fetch('/api/studio-admin/logout', { method: 'POST' });
+    window.location.href = '/studio-admin/login';
   };
 
   const handleGalleryUpload = async (files: FileList) => {
     setGalleryUploading(true);
+    let order = galleryItems.length + 1;
     for (const file of Array.from(files)) {
       if (!file.type.startsWith('image/')) continue;
-      const ext = file.name.split('.').pop() || 'jpg';
-      const id = `g${Date.now()}-${Math.random().toString(36).slice(2, 6)}`;
-      const filePath = `brandydemo/gallery/${id}.${ext}`;
+      const form = new FormData();
+      form.append('file', file);
+      form.append('kind', 'gallery');
+      form.append('clientId', clientId);
+      form.append('sortOrder', String(order));
+      order += 1;
 
-      const { error } = await supabase.storage
-        .from(STORAGE_BUCKET)
-        .upload(filePath, file, { upsert: true });
-
-      if (!error) {
-        const publicUrl = `${SUPABASE_URL}/storage/v1/object/public/${STORAGE_BUCKET}/${filePath}`;
-        const newItem = { id, client_id: clientId, image_url: publicUrl, caption: '', sort_order: galleryItems.length + 1 };
-        await supabase.from('sunday_gallery').insert(newItem);
-        setGalleryItems((prev) => [...prev, { id, image_url: publicUrl, caption: '' }]);
+      const res = await fetch('/api/studio-admin/upload', { method: 'POST', body: form });
+      if (res.ok) {
+        const { item } = await res.json();
+        if (item) setGalleryItems((prev) => [...prev, item]);
       }
     }
     setGalleryUploading(false);
@@ -305,13 +314,21 @@ export function AdminPage() {
     setGalleryItems((prev) => prev.map((g) => (g.id === id ? { ...g, caption } : g)));
     if (saveTimeout.current) clearTimeout(saveTimeout.current);
     saveTimeout.current = setTimeout(async () => {
-      await supabase.from('sunday_gallery').update({ caption }).eq('id', id);
+      await fetch('/api/studio-admin/gallery', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id, caption }),
+      });
     }, 500);
   };
 
   const handleGalleryDelete = async (id: string) => {
     if (!window.confirm('Delete this gallery image?')) return;
-    await supabase.from('sunday_gallery').delete().eq('id', id);
+    await fetch('/api/studio-admin/gallery', {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id }),
+    });
     setGalleryItems((prev) => prev.filter((g) => g.id !== id));
   };
 
@@ -382,6 +399,23 @@ export function AdminPage() {
             >
               {c.admin.backText}
             </a>
+            <button
+              onClick={handleLogout}
+              style={{
+                cursor: 'pointer',
+                background: 'rgba(255,255,255,0.18)',
+                color: '#FFFFFF',
+                border: '1px solid rgba(255,255,255,0.5)',
+                borderRadius: 999,
+                padding: '8px 16px',
+                fontFamily: "var(--font-montserrat), 'Montserrat', sans-serif",
+                fontSize: 11,
+                letterSpacing: '0.08em',
+                textTransform: 'uppercase' as const,
+              }}
+            >
+              {c.admin.logoutText}
+            </button>
           </div>
         </div>
       </header>
