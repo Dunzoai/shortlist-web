@@ -315,6 +315,18 @@ const content = {
     addCategoryOption: '+ Add new category…',
     newCategoryPlaceholder: 'New category name',
     dragHint: 'Drag to reorder',
+    square: {
+      title: 'Payments',
+      subtitle: 'Connect your Square account to take payments on your shop.',
+      connectButton: 'Connect Square',
+      reconnectButton: 'Reconnect',
+      connectedLabel: 'Square connected',
+      notConnectedLabel: 'Not connected',
+      merchantLabel: 'Merchant',
+      locationLabel: 'Location',
+      connectedFlash: 'Square connected successfully.',
+      errorFlash: 'Square connection failed:',
+    },
   },
 
   // ── Studio Admin Login ──
