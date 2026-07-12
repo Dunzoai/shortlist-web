@@ -310,6 +310,18 @@ const content = {
     addButtonText: '+ Add product',
     resetButtonText: 'Reset to examples',
     resetConfirm: 'Replace all products with the starter examples? This cannot be undone.',
+    logoutText: 'Log out',
+  },
+
+  // ── Studio Admin Login ──
+  studioLogin: {
+    brand: 'SUNDAY',
+    sub: 'studio admin',
+    heading: 'Welcome back',
+    prompt: 'Enter the studio password to manage your shop.',
+    placeholder: 'Password',
+    button: 'Enter studio',
+    error: 'Incorrect password. Try again.',
   },
 
   // ── Footer ──
