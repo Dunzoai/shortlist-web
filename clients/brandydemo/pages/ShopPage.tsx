@@ -22,7 +22,17 @@ type Product = {
   level: string;
   category: string;
   image_url: string | null;
+  price: number | null;
 };
+
+function formatPrice(price: number) {
+  return new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD',
+    minimumFractionDigits: Number.isInteger(price) ? 0 : 2,
+    maximumFractionDigits: 2,
+  }).format(price);
+}
 
 export function ShopPage() {
   const c = content;
@@ -41,7 +51,7 @@ export function ShopPage() {
       if (client) {
         const { data } = await supabase
           .from('sunday_products')
-          .select('id, name, description, level, category, image_url')
+          .select('id, name, description, level, category, image_url, price')
           .eq('client_id', client.id)
           .order('sort_order', { ascending: true });
 
@@ -53,6 +63,13 @@ export function ShopPage() {
   }, []);
 
   const filtered = filter === 'All' ? products : products.filter((p) => p.category === filter);
+
+  // Filter buttons reflect the categories that actually exist on products,
+  // ordered by the content list first, then any custom categories after.
+  const productCats = Array.from(new Set(products.map((p) => p.category).filter(Boolean)));
+  const orderedBase = c.shop.categories.filter((cat) => cat === 'All' || productCats.includes(cat));
+  const extraCats = productCats.filter((cat) => !c.shop.categories.includes(cat));
+  const filterCats = [...orderedBase, ...extraCats];
 
   return (
     <main style={{ backgroundColor: CREAM, color: DARK, fontFamily: "var(--font-montserrat), 'Montserrat', sans-serif", minHeight: '100vh' }}>
@@ -172,7 +189,7 @@ export function ShopPage() {
       {/* ───── Filter Buttons ───── */}
       <section style={{ maxWidth: 1200, margin: '0 auto', padding: 'clamp(20px,3vw,36px) clamp(20px,4vw,40px)' }}>
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10, marginBottom: 'clamp(28px,4vw,40px)' }}>
-          {c.shop.categories.map((cat) => {
+          {filterCats.map((cat) => {
             const active = filter === cat;
             const pastelColors: Record<string, string> = {
               'All': '#D7E6F7',
@@ -259,6 +276,11 @@ export function ShopPage() {
                   <h3 style={{ margin: 0, fontFamily: "var(--font-playfair), 'Playfair Display', serif", fontWeight: 600, fontSize: 22, color: DARK }}>
                     {product.name}
                   </h3>
+                  {product.price != null && (
+                    <p style={{ margin: 0, fontFamily: "var(--font-playfair), 'Playfair Display', serif", fontWeight: 600, fontSize: 19, color: BLUE_DARK }}>
+                      {formatPrice(product.price)}
+                    </p>
+                  )}
                   <p style={{ margin: 0, fontSize: 15, lineHeight: 1.6, color: BODY, flex: 1 }}>
                     {product.description}
                   </p>

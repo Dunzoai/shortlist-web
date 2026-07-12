@@ -311,6 +311,10 @@ const content = {
     resetButtonText: 'Reset to examples',
     resetConfirm: 'Replace all products with the starter examples? This cannot be undone.',
     logoutText: 'Log out',
+    priceLabel: 'Price',
+    addCategoryOption: '+ Add new category…',
+    newCategoryPlaceholder: 'New category name',
+    dragHint: 'Drag to reorder',
   },
 
   // ── Studio Admin Login ──

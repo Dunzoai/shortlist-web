@@ -3,6 +3,24 @@
 import { useState, useEffect, useRef } from 'react';
 import { supabase } from '@/lib/supabase';
 import content from '../content';
+import {
+  DndContext,
+  closestCenter,
+  PointerSensor,
+  TouchSensor,
+  useSensor,
+  useSensors,
+  type DragEndEvent,
+} from '@dnd-kit/core';
+import {
+  SortableContext,
+  arrayMove,
+  useSortable,
+  verticalListSortingStrategy,
+  rectSortingStrategy,
+} from '@dnd-kit/sortable';
+import { restrictToVerticalAxis, restrictToParentElement } from '@dnd-kit/modifiers';
+import { CSS } from '@dnd-kit/utilities';
 
 const CREAM = '#FBF4EA';
 const BLUE = '#8EB6D9';
@@ -14,6 +32,8 @@ const INFO_BG = '#E7F0FA';
 const BORDER = '#ECDECB';
 const INPUT_BORDER = '#E0D4C4';
 
+const ADD_CATEGORY = '__add_new_category__';
+
 type Product = {
   id: string;
   name: string;
@@ -21,9 +41,12 @@ type Product = {
   level: string;
   category: string;
   image_url: string | null;
+  price: number | null;
   sort_order: number;
   client_id: string;
 };
+
+type GalleryItem = { id: string; image_url: string; caption: string };
 
 const labelStyle: React.CSSProperties = {
   display: 'block',
@@ -46,6 +69,17 @@ const inputStyle: React.CSSProperties = {
   backgroundColor: CREAM,
   outline: 'none',
 };
+
+function GripIcon({ light = false }: { light?: boolean }) {
+  const color = light ? '#FFFFFF' : MUTED;
+  return (
+    <svg width="12" height="16" viewBox="0 0 12 16" fill={color} aria-hidden="true">
+      {[2, 8].map((cx) =>
+        [3, 8, 13].map((cy) => <circle key={`${cx}-${cy}`} cx={cx} cy={cy} r="1.4" />)
+      )}
+    </svg>
+  );
+}
 
 function PhotoDropZone({
   productId,
@@ -131,6 +165,297 @@ function PhotoDropZone({
   );
 }
 
+function SortableProductCard({
+  product,
+  categories,
+  uploadingId,
+  onField,
+  onPrice,
+  onUpload,
+  onDelete,
+  onAddCategory,
+}: {
+  product: Product;
+  categories: string[];
+  uploadingId: string | null;
+  onField: (id: string, field: 'name' | 'description' | 'level' | 'category', value: string) => void;
+  onPrice: (id: string, raw: string) => void;
+  onUpload: (productId: string, file: File) => void;
+  onDelete: (id: string, name: string) => void;
+  onAddCategory: (id: string, name: string) => void;
+}) {
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: product.id });
+  const [addingCat, setAddingCat] = useState(false);
+  const [newCat, setNewCat] = useState('');
+
+  const commitCategory = () => {
+    const trimmed = newCat.trim();
+    if (trimmed) onAddCategory(product.id, trimmed);
+    setAddingCat(false);
+    setNewCat('');
+  };
+
+  const style: React.CSSProperties = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.6 : 1,
+    zIndex: isDragging ? 5 : undefined,
+    background: '#FFFFFF',
+    border: `1px solid ${BORDER}`,
+    borderRadius: 16,
+    boxShadow: isDragging ? '0 18px 40px rgba(51,65,77,0.18)' : undefined,
+  };
+
+  return (
+    <div ref={setNodeRef} style={style}>
+      {/* Drag handle bar */}
+      <div
+        {...attributes}
+        {...listeners}
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: 8,
+          padding: '10px 16px',
+          borderBottom: `1px solid ${BORDER}`,
+          cursor: 'grab',
+          touchAction: 'none',
+          color: MUTED,
+        }}
+      >
+        <GripIcon />
+        <span style={{ fontSize: 11, letterSpacing: '0.12em', textTransform: 'uppercase' }}>
+          {content.admin.dragHint}
+        </span>
+      </div>
+
+      <div
+        style={{
+          padding: 20,
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
+          gap: 20,
+          alignItems: 'start',
+        }}
+      >
+        {/* Photo drop zone */}
+        <div>
+          <label style={labelStyle}>Photo — drag & drop</label>
+          <PhotoDropZone
+            productId={product.id}
+            imageUrl={product.image_url}
+            onUpload={onUpload}
+            uploading={uploadingId === product.id}
+          />
+        </div>
+
+        {/* Name + Description + Price */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+          <div>
+            <label style={labelStyle}>Name</label>
+            <input
+              value={product.name}
+              onChange={(e) => onField(product.id, 'name', e.target.value)}
+              style={inputStyle}
+            />
+          </div>
+          <div>
+            <label style={labelStyle}>Description</label>
+            <textarea
+              value={product.description}
+              onChange={(e) => onField(product.id, 'description', e.target.value)}
+              rows={3}
+              style={{ ...inputStyle, fontSize: 15, lineHeight: 1.5, resize: 'vertical' as const }}
+            />
+          </div>
+          <div>
+            <label style={labelStyle}>{content.admin.priceLabel}</label>
+            <div style={{ position: 'relative' }}>
+              <span style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', color: MUTED, fontSize: 16 }}>
+                $
+              </span>
+              <input
+                value={product.price ?? ''}
+                onChange={(e) => onPrice(product.id, e.target.value)}
+                inputMode="decimal"
+                placeholder="0"
+                style={{ ...inputStyle, paddingLeft: 24 }}
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* Level + Category + Delete */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+          <div>
+            <label style={labelStyle}>Level label</label>
+            <input
+              value={product.level}
+              onChange={(e) => onField(product.id, 'level', e.target.value)}
+              placeholder="e.g. Level 1, Any level"
+              style={inputStyle}
+            />
+          </div>
+          <div>
+            <label style={labelStyle}>Category</label>
+            {addingCat ? (
+              <div style={{ display: 'flex', gap: 6 }}>
+                <input
+                  autoFocus
+                  value={newCat}
+                  onChange={(e) => setNewCat(e.target.value)}
+                  placeholder={content.admin.newCategoryPlaceholder}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') commitCategory();
+                    if (e.key === 'Escape') { setAddingCat(false); setNewCat(''); }
+                  }}
+                  style={inputStyle}
+                />
+                <button
+                  onClick={commitCategory}
+                  style={{
+                    cursor: 'pointer',
+                    background: DARK,
+                    color: CREAM,
+                    border: 'none',
+                    borderRadius: 8,
+                    padding: '0 16px',
+                    fontFamily: "var(--font-montserrat), 'Montserrat', sans-serif",
+                    fontSize: 12,
+                    letterSpacing: '0.06em',
+                    textTransform: 'uppercase' as const,
+                  }}
+                >
+                  Add
+                </button>
+              </div>
+            ) : (
+              <select
+                value={product.category}
+                onChange={(e) => {
+                  if (e.target.value === ADD_CATEGORY) setAddingCat(true);
+                  else onField(product.id, 'category', e.target.value);
+                }}
+                style={{ ...inputStyle, cursor: 'pointer' }}
+              >
+                {categories.map((cat) => (
+                  <option key={cat} value={cat}>{cat}</option>
+                ))}
+                <option value={ADD_CATEGORY}>{content.admin.addCategoryOption}</option>
+              </select>
+            )}
+          </div>
+          <button
+            onClick={() => onDelete(product.id, product.name)}
+            style={{
+              alignSelf: 'flex-start',
+              cursor: 'pointer',
+              background: 'none',
+              border: '1px solid #C9BCA9',
+              color: BODY,
+              borderRadius: 999,
+              padding: '9px 16px',
+              fontFamily: "var(--font-montserrat), 'Montserrat', sans-serif",
+              fontSize: 11,
+              letterSpacing: '0.08em',
+              textTransform: 'uppercase' as const,
+              transition: 'border-color .15s, color .15s',
+            }}
+            onMouseEnter={(e) => { e.currentTarget.style.borderColor = BLUE_DARK; e.currentTarget.style.color = BLUE_DARK; }}
+            onMouseLeave={(e) => { e.currentTarget.style.borderColor = '#C9BCA9'; e.currentTarget.style.color = BODY; }}
+          >
+            Delete
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function SortableGalleryTile({
+  item,
+  onCaption,
+  onDelete,
+}: {
+  item: GalleryItem;
+  onCaption: (id: string, caption: string) => void;
+  onDelete: (id: string) => void;
+}) {
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: item.id });
+  const style: React.CSSProperties = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.6 : 1,
+    zIndex: isDragging ? 5 : undefined,
+    background: '#FFFFFF',
+    border: `1px solid ${BORDER}`,
+    borderRadius: 12,
+    overflow: 'hidden',
+  };
+
+  return (
+    <div ref={setNodeRef} style={style}>
+      <div style={{ position: 'relative' }}>
+        <img
+          src={item.image_url}
+          alt={item.caption || 'Gallery photo'}
+          style={{ width: '100%', height: 160, objectFit: 'cover', display: 'block' }}
+        />
+        <div
+          {...attributes}
+          {...listeners}
+          style={{
+            position: 'absolute',
+            top: 8,
+            left: 8,
+            background: 'rgba(51,65,77,0.6)',
+            color: '#FFFFFF',
+            borderRadius: 8,
+            padding: '5px 9px',
+            cursor: 'grab',
+            touchAction: 'none',
+            display: 'flex',
+            alignItems: 'center',
+            gap: 6,
+            fontSize: 10,
+            letterSpacing: '0.08em',
+            textTransform: 'uppercase',
+          }}
+        >
+          <GripIcon light />
+          {content.admin.dragHint}
+        </div>
+      </div>
+      <div style={{ padding: '10px 12px', display: 'flex', flexDirection: 'column', gap: 8 }}>
+        <input
+          value={item.caption}
+          onChange={(e) => onCaption(item.id, e.target.value)}
+          placeholder="Caption (optional)"
+          style={{ ...inputStyle, fontSize: 13, padding: '8px 10px' }}
+        />
+        <button
+          onClick={() => onDelete(item.id)}
+          style={{
+            alignSelf: 'flex-start',
+            cursor: 'pointer',
+            background: 'none',
+            border: '1px solid #C9BCA9',
+            color: BODY,
+            borderRadius: 999,
+            padding: '6px 12px',
+            fontFamily: "var(--font-montserrat), 'Montserrat', sans-serif",
+            fontSize: 10,
+            letterSpacing: '0.08em',
+            textTransform: 'uppercase' as const,
+          }}
+        >
+          Delete
+        </button>
+      </div>
+    </div>
+  );
+}
+
 export function AdminPage() {
   const c = content;
   const [products, setProducts] = useState<Product[]>([]);
@@ -138,12 +463,18 @@ export function AdminPage() {
   const [saving, setSaving] = useState(false);
   const [uploadingId, setUploadingId] = useState<string | null>(null);
   const [clientId, setClientId] = useState<string>('');
-  const [galleryItems, setGalleryItems] = useState<{ id: string; image_url: string; caption: string }[]>([]);
+  const [galleryItems, setGalleryItems] = useState<GalleryItem[]>([]);
   const [galleryUploading, setGalleryUploading] = useState(false);
+  const [customCategories, setCustomCategories] = useState<string[]>([]);
   const saveTimeout = useRef<NodeJS.Timeout | null>(null);
   const galleryFileRef = useRef<HTMLInputElement>(null);
 
-  // Load products from Supabase
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
+    useSensor(TouchSensor, { activationConstraint: { delay: 200, tolerance: 8 } }),
+  );
+
+  // Load products from Supabase (public read via anon)
   useEffect(() => {
     async function load() {
       const { data: client } = await supabase
@@ -191,6 +522,7 @@ export function AdminPage() {
             level: product.level,
             category: product.category,
             image_url: product.image_url,
+            price: product.price,
           },
         }),
       });
@@ -198,14 +530,84 @@ export function AdminPage() {
     }, 500);
   };
 
-  const handleChange = (id: string, field: keyof Product, value: string) => {
-    const next = products.map((p) => {
-      if (p.id !== id) return p;
-      const updated = { ...p, [field]: value };
-      saveProduct(updated);
-      return updated;
+  const handleField = (
+    id: string,
+    field: 'name' | 'description' | 'level' | 'category',
+    value: string,
+  ) => {
+    setProducts((prev) =>
+      prev.map((p) => {
+        if (p.id !== id) return p;
+        const updated = { ...p, [field]: value };
+        saveProduct(updated);
+        return updated;
+      })
+    );
+  };
+
+  const handlePrice = (id: string, raw: string) => {
+    const cleaned = raw.replace(/[^0-9.]/g, '');
+    const parsed = cleaned === '' ? null : Number(cleaned);
+    const price = parsed !== null && Number.isNaN(parsed) ? null : parsed;
+    setProducts((prev) =>
+      prev.map((p) => {
+        if (p.id !== id) return p;
+        const updated = { ...p, price };
+        saveProduct(updated);
+        return updated;
+      })
+    );
+  };
+
+  const handleAddCategory = (id: string, name: string) => {
+    setCustomCategories((prev) => (prev.includes(name) ? prev : [...prev, name]));
+    handleField(id, 'category', name);
+  };
+
+  const persistProductOrder = (list: Product[]) => {
+    const order = list.map((p, i) => ({ id: p.id, sort_order: i + 1 }));
+    setSaving(true);
+    fetch('/api/studio-admin/products', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ order }),
+    }).finally(() => setSaving(false));
+  };
+
+  const handleProductDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+    if (!over || active.id === over.id) return;
+    setProducts((prev) => {
+      const oldIndex = prev.findIndex((p) => p.id === active.id);
+      const newIndex = prev.findIndex((p) => p.id === over.id);
+      if (oldIndex < 0 || newIndex < 0) return prev;
+      const next = arrayMove(prev, oldIndex, newIndex);
+      persistProductOrder(next);
+      return next;
     });
-    setProducts(next);
+  };
+
+  const persistGalleryOrder = (list: GalleryItem[]) => {
+    const order = list.map((g, i) => ({ id: g.id, sort_order: i + 1 }));
+    setSaving(true);
+    fetch('/api/studio-admin/gallery', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ order }),
+    }).finally(() => setSaving(false));
+  };
+
+  const handleGalleryDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+    if (!over || active.id === over.id) return;
+    setGalleryItems((prev) => {
+      const oldIndex = prev.findIndex((g) => g.id === active.id);
+      const newIndex = prev.findIndex((g) => g.id === over.id);
+      if (oldIndex < 0 || newIndex < 0) return prev;
+      const next = arrayMove(prev, oldIndex, newIndex);
+      persistGalleryOrder(next);
+      return next;
+    });
   };
 
   const handleUpload = async (productId: string, file: File) => {
@@ -230,10 +632,11 @@ export function AdminPage() {
     const newProduct: Product = {
       id: newId,
       name: 'New set',
-      description: 'Describe this set\u2026',
+      description: 'Describe this set…',
       level: 'Level 1',
       category: 'Pre-designed',
       image_url: null,
+      price: null,
       sort_order: products.length + 1,
       client_id: clientId,
     };
@@ -270,6 +673,7 @@ export function AdminPage() {
       level: p.level,
       category: p.category,
       image_url: null,
+      price: null,
       sort_order: i + 1,
     }));
 
@@ -332,7 +736,12 @@ export function AdminPage() {
     setGalleryItems((prev) => prev.filter((g) => g.id !== id));
   };
 
-  const categories = ['Custom', 'Pre-designed', 'Solid color', 'Sizing kits'];
+  // Base categories from content, plus any already on products, plus session-added ones
+  const baseCategories = c.shop.categories.filter((cat) => cat !== 'All');
+  const productCategories = products.map((p) => p.category).filter(Boolean);
+  const allCategories = Array.from(
+    new Set([...baseCategories, ...productCategories, ...customCategories])
+  );
 
   if (loading) {
     return (
@@ -439,7 +848,7 @@ export function AdminPage() {
             color: DARK,
           }}
         >
-          {c.admin.infoBanner} Drag a photo onto any card to add it. Changes save automatically to the database and show up on the Shop page.
+          {c.admin.infoBanner} Drag the handle on any card to reorder. Changes save automatically to the database and show up on the Shop page.
         </div>
 
         {/* ───── Heading + Actions ───── */}
@@ -513,102 +922,31 @@ export function AdminPage() {
           </div>
         </div>
 
-        {/* ───── Product Cards ───── */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
-          {products.map((p) => (
-            <div
-              key={p.id}
-              style={{
-                background: '#FFFFFF',
-                border: `1px solid ${BORDER}`,
-                borderRadius: 16,
-                padding: 20,
-                display: 'grid',
-                gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
-                gap: 20,
-                alignItems: 'start',
-              }}
-            >
-              {/* Photo drop zone */}
-              <div>
-                <label style={labelStyle}>Photo — drag & drop</label>
-                <PhotoDropZone
-                  productId={p.id}
-                  imageUrl={p.image_url}
+        {/* ───── Product Cards (drag to reorder) ───── */}
+        <DndContext
+          sensors={sensors}
+          collisionDetection={closestCenter}
+          modifiers={[restrictToVerticalAxis]}
+          onDragEnd={handleProductDragEnd}
+        >
+          <SortableContext items={products.map((p) => p.id)} strategy={verticalListSortingStrategy}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+              {products.map((p) => (
+                <SortableProductCard
+                  key={p.id}
+                  product={p}
+                  categories={allCategories}
+                  uploadingId={uploadingId}
+                  onField={handleField}
+                  onPrice={handlePrice}
                   onUpload={handleUpload}
-                  uploading={uploadingId === p.id}
+                  onDelete={handleDelete}
+                  onAddCategory={handleAddCategory}
                 />
-              </div>
-
-              {/* Name + Description */}
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-                <div>
-                  <label style={labelStyle}>Name</label>
-                  <input
-                    value={p.name}
-                    onChange={(e) => handleChange(p.id, 'name', e.target.value)}
-                    style={inputStyle}
-                  />
-                </div>
-                <div>
-                  <label style={labelStyle}>Description</label>
-                  <textarea
-                    value={p.description}
-                    onChange={(e) => handleChange(p.id, 'description', e.target.value)}
-                    rows={3}
-                    style={{ ...inputStyle, fontSize: 15, lineHeight: 1.5, resize: 'vertical' as const }}
-                  />
-                </div>
-              </div>
-
-              {/* Level + Category + Delete */}
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-                <div>
-                  <label style={labelStyle}>Level label</label>
-                  <input
-                    value={p.level}
-                    onChange={(e) => handleChange(p.id, 'level', e.target.value)}
-                    placeholder="e.g. Level 1, Any level"
-                    style={inputStyle}
-                  />
-                </div>
-                <div>
-                  <label style={labelStyle}>Category</label>
-                  <select
-                    value={p.category}
-                    onChange={(e) => handleChange(p.id, 'category', e.target.value)}
-                    style={{ ...inputStyle, cursor: 'pointer' }}
-                  >
-                    {categories.map((cat) => (
-                      <option key={cat} value={cat}>{cat}</option>
-                    ))}
-                  </select>
-                </div>
-                <button
-                  onClick={() => handleDelete(p.id, p.name)}
-                  style={{
-                    alignSelf: 'flex-start',
-                    cursor: 'pointer',
-                    background: 'none',
-                    border: '1px solid #C9BCA9',
-                    color: BODY,
-                    borderRadius: 999,
-                    padding: '9px 16px',
-                    fontFamily: "var(--font-montserrat), 'Montserrat', sans-serif",
-                    fontSize: 11,
-                    letterSpacing: '0.08em',
-                    textTransform: 'uppercase' as const,
-                    transition: 'border-color .15s, color .15s',
-                  }}
-                  onMouseEnter={(e) => { e.currentTarget.style.borderColor = BLUE_DARK; e.currentTarget.style.color = BLUE_DARK; }}
-                  onMouseLeave={(e) => { e.currentTarget.style.borderColor = '#C9BCA9'; e.currentTarget.style.color = BODY; }}
-                >
-                  Delete
-                </button>
-              </div>
+              ))}
             </div>
-          ))}
-        </div>
+          </SortableContext>
+        </DndContext>
 
         {/* ───── Gallery Section ───── */}
         <div style={{ marginTop: 'clamp(48px,6vw,72px)', borderTop: `1px solid ${BORDER}`, paddingTop: 'clamp(32px,4vw,48px)' }}>
@@ -660,7 +998,7 @@ export function AdminPage() {
           </div>
 
           <p style={{ margin: '0 0 20px', fontSize: 14, color: BODY }}>
-            Upload photos of nail sets you&apos;ve done. They&apos;ll appear on the Gallery page.
+            Upload photos of nail sets you&apos;ve done. Drag to reorder — they&apos;ll appear on the Gallery page in this order.
           </p>
 
           {galleryItems.length === 0 ? (
@@ -677,57 +1015,31 @@ export function AdminPage() {
               <p style={{ color: MUTED, fontSize: 15 }}>Drop photos here or click to upload</p>
             </div>
           ) : (
-            <div
-              style={{
-                display: 'grid',
-                gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))',
-                gap: 16,
-              }}
+            <DndContext
+              sensors={sensors}
+              collisionDetection={closestCenter}
+              modifiers={[restrictToParentElement]}
+              onDragEnd={handleGalleryDragEnd}
             >
-              {galleryItems.map((g) => (
+              <SortableContext items={galleryItems.map((g) => g.id)} strategy={rectSortingStrategy}>
                 <div
-                  key={g.id}
                   style={{
-                    background: '#FFFFFF',
-                    border: `1px solid ${BORDER}`,
-                    borderRadius: 12,
-                    overflow: 'hidden',
+                    display: 'grid',
+                    gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))',
+                    gap: 16,
                   }}
                 >
-                  <img
-                    src={g.image_url}
-                    alt={g.caption || 'Gallery photo'}
-                    style={{ width: '100%', height: 160, objectFit: 'cover', display: 'block' }}
-                  />
-                  <div style={{ padding: '10px 12px', display: 'flex', flexDirection: 'column', gap: 8 }}>
-                    <input
-                      value={g.caption}
-                      onChange={(e) => handleGalleryCaption(g.id, e.target.value)}
-                      placeholder="Caption (optional)"
-                      style={{ ...inputStyle, fontSize: 13, padding: '8px 10px' }}
+                  {galleryItems.map((g) => (
+                    <SortableGalleryTile
+                      key={g.id}
+                      item={g}
+                      onCaption={handleGalleryCaption}
+                      onDelete={handleGalleryDelete}
                     />
-                    <button
-                      onClick={() => handleGalleryDelete(g.id)}
-                      style={{
-                        alignSelf: 'flex-start',
-                        cursor: 'pointer',
-                        background: 'none',
-                        border: '1px solid #C9BCA9',
-                        color: BODY,
-                        borderRadius: 999,
-                        padding: '6px 12px',
-                        fontFamily: "var(--font-montserrat), 'Montserrat', sans-serif",
-                        fontSize: 10,
-                        letterSpacing: '0.08em',
-                        textTransform: 'uppercase' as const,
-                      }}
-                    >
-                      Delete
-                    </button>
-                  </div>
+                  ))}
                 </div>
-              ))}
-            </div>
+              </SortableContext>
+            </DndContext>
           )}
         </div>
       </section>
