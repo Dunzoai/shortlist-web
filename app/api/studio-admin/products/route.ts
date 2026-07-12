@@ -57,6 +57,28 @@ export async function PATCH(req: NextRequest) {
   return NextResponse.json({ success: true });
 }
 
+// Reorder products — batch update sort_order from an ordered list
+export async function PUT(req: NextRequest) {
+  const db = guard(req);
+  if (db instanceof NextResponse) return db;
+
+  const { order } = await req.json();
+  if (!Array.isArray(order)) {
+    return NextResponse.json({ error: 'order array is required' }, { status: 400 });
+  }
+
+  const results = await Promise.all(
+    order.map(({ id, sort_order }) =>
+      db.from('sunday_products').update({ sort_order }).eq('id', id)
+    )
+  );
+  const failed = results.find((r) => r.error);
+  if (failed?.error) {
+    return NextResponse.json({ error: failed.error.message }, { status: 500 });
+  }
+  return NextResponse.json({ success: true });
+}
+
 // Delete a product
 export async function DELETE(req: NextRequest) {
   const db = guard(req);
