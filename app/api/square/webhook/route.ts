@@ -89,6 +89,8 @@ export async function POST(req: NextRequest) {
         // Authoritative total actually charged by Square.
         const paidAmount = payment?.amount_money?.amount;
         if (typeof paidAmount === 'number') update.total = paidAmount;
+        // Payment id — needed to issue refunds from the admin later.
+        if (payment?.id) update.square_payment_id = payment.id;
         if (shipping) update.shipping_address = shipping;
         if (name) update.customer_name = name;
         if (email) update.customer_email = email;

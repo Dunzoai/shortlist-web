@@ -146,7 +146,7 @@ export async function POST(req: NextRequest) {
     },
     checkout_options: {
       ask_for_shipping_address: true,
-      redirect_url: `${SUNDAY_SITE_URL}/?order_success=${orderNumber}`,
+      redirect_url: `${SUNDAY_SITE_URL}/order-confirmed?order=${orderNumber}`,
     },
     ...(customerEmail ? { pre_populated_data: { buyer_email: customerEmail } } : {}),
   };
