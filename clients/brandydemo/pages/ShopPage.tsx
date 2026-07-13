@@ -180,8 +180,12 @@ export function ShopPage() {
               {c.shop.introKit.ctaText}
             </a>
           </div>
-          <div style={{ width: '100%', height: 'clamp(240px,28vw,340px)', borderRadius: 12, backgroundColor: 'rgba(251,244,234,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <p style={{ color: MUTED, fontSize: 14 }}>Intro kit photo</p>
+          <div style={{ width: '100%', height: 'clamp(240px,28vw,340px)', borderRadius: 12, overflow: 'hidden' }}>
+            <img
+              src="/clients/brandydemo/intro-kit.jpg"
+              alt={c.shop.introKit.headlineStart + c.shop.introKit.headlineAccent}
+              style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+            />
           </div>
         </div>
       </section>
