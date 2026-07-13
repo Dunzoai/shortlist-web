@@ -29,3 +29,32 @@ export async function GET(req: NextRequest) {
 
   return NextResponse.json({ orders: data ?? [] });
 }
+
+// Update an order's fulfillment status (e.g. mark shipped).
+export async function PATCH(req: NextRequest) {
+  if (!isStudioAdminAuthed(req)) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
+  const db = serviceClient();
+  if (!db) {
+    return NextResponse.json({ error: 'Server misconfigured' }, { status: 500 });
+  }
+
+  const { id, status } = await req.json();
+  const allowed = ['paid', 'shipped'];
+  if (!id || !allowed.includes(status)) {
+    return NextResponse.json({ error: 'id and a valid status are required' }, { status: 400 });
+  }
+
+  const { error } = await db
+    .from('orders')
+    .update({ status })
+    .eq('id', id)
+    .eq('client_slug', SQUARE_CLIENT_SLUG);
+
+  if (error) {
+    return NextResponse.json({ error: error.message }, { status: 500 });
+  }
+  return NextResponse.json({ success: true });
+}
