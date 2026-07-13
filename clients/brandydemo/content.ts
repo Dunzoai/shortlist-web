@@ -370,6 +370,9 @@ const content = {
       allYears: 'All time',
       markShipped: 'Mark shipped',
       marking: 'Saving…',
+      searchPlaceholder: 'Search orders — name, order #, item, date…',
+      refund: 'Refund',
+      refunding: 'Refunding…',
     },
     settings: {
       toggle: 'Order settings',
@@ -403,6 +406,23 @@ const content = {
     placeholder: 'Password',
     button: 'Enter studio',
     error: 'Incorrect password. Try again.',
+  },
+
+  // ── Order Confirmed (post-checkout redirect) ──
+  orderConfirmed: {
+    eyebrow: 'Order received',
+    headingStart: 'Thank ',
+    headingAccent: 'you!',
+    message:
+      'Your order is in — thank you for supporting handmade. You’ll get a confirmation email from Square with your receipt.',
+    orderLabel: 'Order number',
+    processingTitle: 'What happens next',
+    processing:
+      'Each set is hand-painted to order, so please allow 7–14 business days (up to 21 during sale and holiday periods) for production before your order ships. We’ll get started right away.',
+    keepShoppingText: 'Keep shopping',
+    keepShoppingHref: '/shop',
+    galleryText: 'See the gallery',
+    galleryHref: '/gallery',
   },
 
   // ── Terms & Conditions ──

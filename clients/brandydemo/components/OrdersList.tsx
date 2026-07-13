@@ -69,7 +69,10 @@ export default function OrdersList() {
   const [chip, setChip] = useState<ChipKey>('current');
   const [year, setYear] = useState<string>('all');
   const [month, setMonth] = useState<string>('all');
+  const [query, setQuery] = useState('');
   const [markingId, setMarkingId] = useState<string | null>(null);
+  const [refundingId, setRefundingId] = useState<string | null>(null);
+  const [actionError, setActionError] = useState('');
 
   useEffect(() => {
     fetch('/api/studio-admin/orders')
@@ -88,6 +91,25 @@ export default function OrdersList() {
     });
     if (res.ok) setOrders((prev) => prev.map((o) => (o.id === id ? { ...o, status: 'shipped' } : o)));
     setMarkingId(null);
+  };
+
+  const refund = async (o: Order) => {
+    const amount = money(o.total);
+    if (!window.confirm(`Refund ${amount} to ${o.customer_name || 'this customer'}? This cannot be undone.`)) return;
+    setActionError('');
+    setRefundingId(o.id);
+    const res = await fetch('/api/studio-admin/orders/refund', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id: o.id }),
+    });
+    if (res.ok) {
+      setOrders((prev) => prev.map((x) => (x.id === o.id ? { ...x, status: 'refunded' } : x)));
+    } else {
+      const d = await res.json().catch(() => ({}));
+      setActionError(`Refund failed: ${d.error || 'please try again'}`);
+    }
+    setRefundingId(null);
   };
 
   // Pending (unpaid) orders are hidden entirely for now.
@@ -109,6 +131,24 @@ export default function OrdersList() {
 
   const years = Array.from(new Set(visible.map((o) => new Date(o.created_at).getFullYear()))).sort((a, b) => b - a);
 
+  const q = query.trim().toLowerCase();
+  const matchesQuery = (o: Order) => {
+    if (!q) return true;
+    const d = new Date(o.created_at);
+    const dateStr = d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }).toLowerCase();
+    const haystack = [
+      o.order_number,
+      o.customer_name,
+      o.customer_email,
+      dateStr,
+      ...(o.items || []).map((it) => it.name),
+    ]
+      .filter(Boolean)
+      .join(' ')
+      .toLowerCase();
+    return haystack.includes(q);
+  };
+
   const filtered = visible
     .filter((o) => chipMatch[chip](o))
     .filter((o) => {
@@ -117,7 +157,8 @@ export default function OrdersList() {
       if (year !== 'all' && d.getFullYear() !== Number(year)) return false;
       if (month !== 'all' && d.getMonth() !== Number(month)) return false;
       return true;
-    });
+    })
+    .filter(matchesQuery);
 
   const selectStyle: React.CSSProperties = {
     border: `1px solid ${BORDER}`,
@@ -147,7 +188,35 @@ export default function OrdersList() {
         </h2>
         <OrderSettings />
       </div>
-      <p style={{ margin: '0 0 20px', fontSize: 14, color: BODY, maxWidth: '60ch' }}>{t.subtitle}</p>
+      <p style={{ margin: '0 0 18px', fontSize: 14, color: BODY, maxWidth: '60ch' }}>{t.subtitle}</p>
+
+      {/* Search (controls every tab) */}
+      <div style={{ position: 'relative', marginBottom: 16, maxWidth: 460 }}>
+        <svg
+          width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={MUTED} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"
+          style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)' }}
+        >
+          <circle cx="11" cy="11" r="8" />
+          <path d="m21 21-4.3-4.3" />
+        </svg>
+        <input
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          placeholder={t.searchPlaceholder}
+          style={{
+            width: '100%',
+            boxSizing: 'border-box',
+            border: `1px solid ${BORDER}`,
+            borderRadius: 999,
+            padding: '11px 16px 11px 40px',
+            fontFamily: "var(--font-montserrat), 'Montserrat', sans-serif",
+            fontSize: 14,
+            color: DARK,
+            background: '#FFFFFF',
+            outline: 'none',
+          }}
+        />
+      </div>
 
       {/* Status chips */}
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginBottom: 14 }}>
@@ -194,6 +263,10 @@ export default function OrdersList() {
         </select>
       </div>
 
+      {actionError && (
+        <p style={{ margin: '0 0 14px', fontSize: 13, color: '#C56B6B' }}>{actionError}</p>
+      )}
+
       {loading ? (
         <p style={{ color: MUTED, fontSize: 15 }}>{t.loading}</p>
       ) : visible.length === 0 ? (
@@ -230,7 +303,7 @@ export default function OrdersList() {
                       {new Date(o.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
                     </span>
                   </div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
                     {o.status === 'paid' && (
                       <button
                         onClick={() => markShipped(o.id)}
@@ -251,6 +324,28 @@ export default function OrdersList() {
                         }}
                       >
                         {markingId === o.id ? t.marking : t.markShipped}
+                      </button>
+                    )}
+                    {(o.status === 'paid' || o.status === 'shipped') && (
+                      <button
+                        onClick={() => refund(o)}
+                        disabled={refundingId === o.id}
+                        style={{
+                          cursor: 'pointer',
+                          background: 'none',
+                          border: '1px solid #D2A2A2',
+                          color: '#C56B6B',
+                          borderRadius: 999,
+                          padding: '7px 14px',
+                          fontFamily: "var(--font-montserrat), 'Montserrat', sans-serif",
+                          fontSize: 11,
+                          letterSpacing: '0.06em',
+                          textTransform: 'uppercase',
+                          fontWeight: 600,
+                          opacity: refundingId === o.id ? 0.6 : 1,
+                        }}
+                      >
+                        {refundingId === o.id ? t.refunding : t.refund}
                       </button>
                     )}
                     <span style={{ fontFamily: "var(--font-playfair), 'Playfair Display', serif", fontWeight: 600, fontSize: 18, color: DARK }}>
