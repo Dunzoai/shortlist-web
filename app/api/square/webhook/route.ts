@@ -12,7 +12,7 @@ import { getSquareConfig, getValidSquareToken } from '@/lib/squareRefresh';
  */
 
 function verifySignature(notificationUrl: string, rawBody: string, signature: string | null): boolean {
-  const key = process.env.SQUARE_WEBHOOK_SIGNATURE_KEY;
+  const key = process.env.SUNDAY_WEBHOOK_SIGNATURE_KEY;
   if (!key || !signature) return false;
   const expected = createHmac('sha256', key).update(notificationUrl + rawBody).digest('base64');
   const a = Buffer.from(expected);
