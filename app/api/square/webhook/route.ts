@@ -86,6 +86,9 @@ export async function POST(req: NextRequest) {
           status: 'paid',
           paid_at: new Date().toISOString(),
         };
+        // Authoritative total actually charged by Square.
+        const paidAmount = payment?.amount_money?.amount;
+        if (typeof paidAmount === 'number') update.total = paidAmount;
         if (shipping) update.shipping_address = shipping;
         if (name) update.customer_name = name;
         if (email) update.customer_email = email;

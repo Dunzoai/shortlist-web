@@ -3,16 +3,20 @@ import { randomUUID } from 'crypto';
 import { serviceClient } from '@/lib/studioAdmin';
 import { SQUARE_CLIENT_SLUG, SQUARE_VERSION, SUNDAY_SITE_URL, squareConnectBaseUrl } from '@/lib/square';
 import { getSquareConfig, getValidSquareToken } from '@/lib/squareRefresh';
+import { computeTotals, DEFAULT_SETTINGS, type StoreSettings } from '@/lib/storeSettings';
 
 /**
  * Creates a Square Payment Link for a Sunday shop order.
  *
- * Security: the client sends only { product_id, quantity }. All prices are
- * looked up server-side from sunday_products — a client-supplied price is never
- * trusted. Payment confirmation happens in the webhook, not here.
+ * Security: the client sends only { product_id, quantity }. Prices, tax, and
+ * shipping are all computed server-side (products from sunday_products, tax +
+ * shipping from sunday_settings) — client-supplied amounts are never trusted.
+ * Payment confirmation happens in the webhook, not here.
  */
 
 type CartItem = { product_id: string; quantity: number };
+
+const TAX_UID = 'sunday-sales-tax';
 
 export async function POST(req: NextRequest) {
   const db = serviceClient();
@@ -33,7 +37,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Cart is empty' }, { status: 400 });
   }
 
-  // Resolve client + real prices from the DB (never trust client prices).
+  // Resolve client + real prices from the DB.
   const { data: client } = await db
     .from('web_clients')
     .select('id')
@@ -52,33 +56,54 @@ export async function POST(req: NextRequest) {
   if (prodError) {
     return NextResponse.json({ error: prodError.message }, { status: 500 });
   }
-
   const priceById = new Map((products ?? []).map((p) => [p.id, p]));
 
-  // Build line items with server-side pricing.
-  const lineItems: { name: string; quantity: string; base_price_money: { amount: number; currency: string } }[] = [];
+  // Store settings (tax + shipping).
+  const { data: settingsRow } = await db
+    .from('sunday_settings')
+    .select('tax_rate, shipping_flat_cents, shipping_carrier, free_shipping_threshold_cents')
+    .eq('client_slug', SQUARE_CLIENT_SLUG)
+    .maybeSingle();
+  const settings: StoreSettings = settingsRow ?? DEFAULT_SETTINGS;
+  const taxRate = Number(settings.tax_rate) || 0;
+
+  // Build product line items (server-priced).
+  const lineItems: Record<string, unknown>[] = [];
   const snapshot: { product_id: string; name: string; quantity: number; price_cents: number }[] = [];
   let subtotal = 0;
 
-  for (const item of cleaned) {
+  cleaned.forEach((item, i) => {
     const product = priceById.get(item.product_id);
-    if (!product) {
-      return NextResponse.json({ error: `Product not available: ${item.product_id}` }, { status: 400 });
-    }
-    if (product.price == null) {
-      return NextResponse.json({ error: `Product has no price: ${product.name}` }, { status: 400 });
-    }
+    if (!product) return;
+    if (product.price == null) return;
     const priceCents = Math.round(Number(product.price) * 100);
     subtotal += priceCents * item.quantity;
     lineItems.push({
+      uid: `item-${i}`,
       name: product.name,
       quantity: String(item.quantity),
       base_price_money: { amount: priceCents, currency: 'USD' },
+      ...(taxRate > 0 ? { applied_taxes: [{ tax_uid: TAX_UID }] } : {}),
     });
     snapshot.push({ product_id: product.id, name: product.name, quantity: item.quantity, price_cents: priceCents });
+  });
+
+  if (snapshot.length === 0) {
+    return NextResponse.json({ error: 'No valid, priced items in cart' }, { status: 400 });
   }
 
-  const total = subtotal; // no tax/shipping for now
+  const totals = computeTotals(subtotal, settings);
+
+  // Shipping as its own (untaxed) line item.
+  if (totals.shipping > 0) {
+    const label = settings.shipping_carrier ? `Shipping — ${settings.shipping_carrier}` : 'Shipping';
+    lineItems.push({
+      name: label,
+      quantity: '1',
+      base_price_money: { amount: totals.shipping, currency: 'USD' },
+    });
+  }
+
   const orderNumber = `SUN-${Date.now().toString(36).toUpperCase()}${Math.random().toString(36).slice(2, 4).toUpperCase()}`;
 
   // 1) Create the order row first (pending).
@@ -89,7 +114,9 @@ export async function POST(req: NextRequest) {
       order_number: orderNumber,
       items: snapshot,
       subtotal,
-      total,
+      shipping_cents: totals.shipping,
+      tax_cents: totals.tax,
+      total: totals.total,
       customer_name: customerName,
       customer_email: customerEmail,
       status: 'pending',
@@ -113,6 +140,9 @@ export async function POST(req: NextRequest) {
     order: {
       location_id: config.location_id,
       line_items: lineItems,
+      ...(taxRate > 0
+        ? { taxes: [{ uid: TAX_UID, name: 'Sales Tax', percentage: String(taxRate), scope: 'LINE_ITEM' }] }
+        : {}),
     },
     checkout_options: {
       ask_for_shipping_address: true,
