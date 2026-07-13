@@ -82,14 +82,14 @@ export default function OrdersList() {
       .finally(() => setLoading(false));
   }, []);
 
-  const markShipped = async (id: string) => {
+  const setStatus = async (id: string, status: 'paid' | 'shipped') => {
     setMarkingId(id);
     const res = await fetch('/api/studio-admin/orders', {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ id, status: 'shipped' }),
+      body: JSON.stringify({ id, status }),
     });
-    if (res.ok) setOrders((prev) => prev.map((o) => (o.id === id ? { ...o, status: 'shipped' } : o)));
+    if (res.ok) setOrders((prev) => prev.map((o) => (o.id === id ? { ...o, status } : o)));
     setMarkingId(null);
   };
 
@@ -306,7 +306,7 @@ export default function OrdersList() {
                   <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
                     {o.status === 'paid' && (
                       <button
-                        onClick={() => markShipped(o.id)}
+                        onClick={() => setStatus(o.id, 'shipped')}
                         disabled={markingId === o.id}
                         style={{
                           cursor: 'pointer',
@@ -324,6 +324,28 @@ export default function OrdersList() {
                         }}
                       >
                         {markingId === o.id ? t.marking : t.markShipped}
+                      </button>
+                    )}
+                    {o.status === 'shipped' && (
+                      <button
+                        onClick={() => setStatus(o.id, 'paid')}
+                        disabled={markingId === o.id}
+                        style={{
+                          cursor: 'pointer',
+                          background: 'none',
+                          border: '1px solid #C9BCA9',
+                          color: BODY,
+                          borderRadius: 999,
+                          padding: '7px 14px',
+                          fontFamily: "var(--font-montserrat), 'Montserrat', sans-serif",
+                          fontSize: 11,
+                          letterSpacing: '0.06em',
+                          textTransform: 'uppercase',
+                          fontWeight: 600,
+                          opacity: markingId === o.id ? 0.6 : 1,
+                        }}
+                      >
+                        {markingId === o.id ? t.marking : t.markUnshipped}
                       </button>
                     )}
                     {(o.status === 'paid' || o.status === 'shipped') && (
