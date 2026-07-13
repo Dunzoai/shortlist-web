@@ -133,15 +133,14 @@ export function SizingPage() {
               height: 'clamp(320px,42vw,540px)',
               borderRadius: 16,
               overflow: 'hidden',
-              backgroundColor: '#e8ddd0',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
+              backgroundColor: '#FFFFFF',
             }}
           >
-            <p style={{ color: MUTED, fontSize: 14, textAlign: 'center', padding: 20 }}>
-              Sizing photo placeholder
-            </p>
+            <img
+              src="/clients/brandydemo/sizing-kit.jpg"
+              alt="Sunday Nail Press sizing kit chart — find the perfect nail size for each finger"
+              style={{ width: '100%', height: '100%', objectFit: 'contain', display: 'block' }}
+            />
           </div>
         </div>
       </header>
