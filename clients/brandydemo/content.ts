@@ -369,6 +369,7 @@ const content = {
       allMonths: 'All months',
       allYears: 'All time',
       markShipped: 'Mark shipped',
+      markUnshipped: 'Move to pending',
       marking: 'Saving…',
       searchPlaceholder: 'Search orders — name, order #, item, date…',
       refund: 'Refund',
