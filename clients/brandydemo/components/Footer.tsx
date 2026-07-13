@@ -114,6 +114,7 @@ export default function Footer({ footer }: FooterProps) {
             padding: '0 clamp(20px,4vw,40px) 28px',
             display: 'flex',
             justifyContent: 'space-between',
+            alignItems: 'center',
             gap: 16,
             flexWrap: 'wrap',
             borderTop: '1px solid rgba(51,65,77,0.12)',
@@ -122,6 +123,34 @@ export default function Footer({ footer }: FooterProps) {
           <p style={{ margin: '16px 0 0', fontSize: 13, color: MUTED }}>
             {f.copyright}
           </p>
+
+          {/* Powered by Shortlist Pass */}
+          <a
+            href={f.poweredByHref}
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{
+              marginTop: 16,
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 8,
+              fontSize: 12,
+              letterSpacing: '0.04em',
+              color: MUTED,
+              textDecoration: 'none',
+              transition: 'color .15s',
+            }}
+            onMouseEnter={(e) => { e.currentTarget.style.color = DARK; }}
+            onMouseLeave={(e) => { e.currentTarget.style.color = MUTED; }}
+          >
+            <img
+              src="/shortlist-mark.png"
+              alt="Shortlist Pass"
+              style={{ height: 20, width: 'auto', display: 'block', mixBlendMode: 'multiply' }}
+            />
+            {f.poweredByText}
+          </a>
+
           <a
             href={f.adminHref}
             style={{
