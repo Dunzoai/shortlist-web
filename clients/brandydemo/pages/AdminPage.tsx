@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from 'react';
 import { supabase } from '@/lib/supabase';
 import content from '../content';
 import SquareConnect from '../components/SquareConnect';
+import OrdersList from '../components/OrdersList';
 import {
   DndContext,
   closestCenter,
@@ -1046,6 +1047,9 @@ export function AdminPage() {
             </DndContext>
           )}
         </div>
+
+        {/* ───── Orders ───── */}
+        <OrdersList />
       </section>
     </main>
   );

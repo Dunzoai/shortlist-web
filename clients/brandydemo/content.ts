@@ -297,6 +297,18 @@ const content = {
       { id: 'p6', name: 'Solid-Color Sizing Set', desc: 'A sizing kit and a wearable solid-color set in one.', level: 'Level 1', category: 'Sizing kits' },
     ] as Product[],
     emptyMessage: 'Nothing in this category yet \u2014 check back soon!',
+    cart: {
+      addButton: 'Add to cart',
+      soldOut: 'Coming soon',
+      title: 'Your cart',
+      empty: 'Your cart is empty.',
+      subtotalLabel: 'Subtotal',
+      checkoutButton: 'Checkout',
+      checkingOut: 'Redirecting\u2026',
+      shippingNote: 'Shipping address & payment collected securely at checkout.',
+      cartLabel: 'Cart',
+      error: 'Something went wrong. Please try again.',
+    },
   },
 
   // ── Admin Page ──
@@ -326,6 +338,16 @@ const content = {
       locationLabel: 'Location',
       connectedFlash: 'Square connected successfully.',
       errorFlash: 'Square connection failed:',
+    },
+    orders: {
+      title: 'Orders',
+      subtitle: 'Paid orders show the customer’s shipping address so you know what to make and where to send it.',
+      empty: 'No orders yet.',
+      loading: 'Loading orders…',
+      itemsLabel: 'Items',
+      shipLabel: 'Ship to',
+      totalLabel: 'Total',
+      noAddress: 'Address arrives once the order is paid.',
     },
   },
 
