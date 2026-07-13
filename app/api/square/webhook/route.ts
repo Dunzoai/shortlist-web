@@ -95,5 +95,17 @@ export async function POST(req: NextRequest) {
     }
   }
 
+  // Refunds → mark the order refunded.
+  if (event.type === 'refund.updated' || event.type === 'refund.created') {
+    const refund = event.data?.object?.refund;
+    const squareOrderId = refund?.order_id;
+    if ((refund?.status === 'COMPLETED' || refund?.status === 'PENDING') && squareOrderId) {
+      await db
+        .from('orders')
+        .update({ status: 'refunded' })
+        .eq('square_order_id', squareOrderId);
+    }
+  }
+
   return NextResponse.json({ received: true });
 }

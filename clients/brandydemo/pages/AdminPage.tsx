@@ -36,6 +36,8 @@ const INPUT_BORDER = '#E0D4C4';
 
 const ADD_CATEGORY = '__add_new_category__';
 
+type Section = 'products' | 'gallery' | 'orders' | 'payments';
+
 type Product = {
   id: string;
   name: string;
@@ -81,6 +83,20 @@ function GripIcon({ light = false }: { light?: boolean }) {
       )}
     </svg>
   );
+}
+
+function NavIcon({ section }: { section: Section }) {
+  const common = { width: 22, height: 22, viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: 1.6, strokeLinecap: 'round' as const, strokeLinejoin: 'round' as const };
+  if (section === 'products') {
+    return (<svg {...common}><path d="M20.6 13.4 13.4 20.6a2 2 0 0 1-2.8 0l-7.2-7.2a2 2 0 0 1-.6-1.4V4a1 1 0 0 1 1-1h8a2 2 0 0 1 1.4.6l7.4 7.4a2 2 0 0 1 0 2.4Z" /><circle cx="7.5" cy="7.5" r="1.2" /></svg>);
+  }
+  if (section === 'gallery') {
+    return (<svg {...common}><rect x="3" y="3" width="18" height="18" rx="2" /><circle cx="8.5" cy="8.5" r="1.5" /><path d="m21 15-5-5L5 21" /></svg>);
+  }
+  if (section === 'orders') {
+    return (<svg {...common}><path d="M6 2 4 6v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V6l-2-4Z" /><path d="M4 6h16" /><path d="M9 10a3 3 0 0 0 6 0" /></svg>);
+  }
+  return (<svg {...common}><rect x="2" y="5" width="20" height="14" rx="2" /><path d="M2 10h20" /></svg>);
 }
 
 function PhotoDropZone({
@@ -171,6 +187,7 @@ function SortableProductCard({
   product,
   categories,
   uploadingId,
+  draggable,
   onField,
   onPrice,
   onUpload,
@@ -180,6 +197,7 @@ function SortableProductCard({
   product: Product;
   categories: string[];
   uploadingId: string | null;
+  draggable: boolean;
   onField: (id: string, field: 'name' | 'description' | 'level' | 'category', value: string) => void;
   onPrice: (id: string, raw: string) => void;
   onUpload: (productId: string, file: File) => void;
@@ -210,26 +228,28 @@ function SortableProductCard({
 
   return (
     <div ref={setNodeRef} style={style}>
-      {/* Drag handle bar */}
-      <div
-        {...attributes}
-        {...listeners}
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: 8,
-          padding: '10px 16px',
-          borderBottom: `1px solid ${BORDER}`,
-          cursor: 'grab',
-          touchAction: 'none',
-          color: MUTED,
-        }}
-      >
-        <GripIcon />
-        <span style={{ fontSize: 11, letterSpacing: '0.12em', textTransform: 'uppercase' }}>
-          {content.admin.dragHint}
-        </span>
-      </div>
+      {/* Drag handle bar (only when reordering is available) */}
+      {draggable && (
+        <div
+          {...attributes}
+          {...listeners}
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 8,
+            padding: '10px 16px',
+            borderBottom: `1px solid ${BORDER}`,
+            cursor: 'grab',
+            touchAction: 'none',
+            color: MUTED,
+          }}
+        >
+          <GripIcon />
+          <span style={{ fontSize: 11, letterSpacing: '0.12em', textTransform: 'uppercase' }}>
+            {content.admin.dragHint}
+          </span>
+        </div>
+      )}
 
       <div
         style={{
@@ -460,7 +480,9 @@ function SortableGalleryTile({
 
 export function AdminPage() {
   const c = content;
+  const [section, setSection] = useState<Section>('products');
   const [products, setProducts] = useState<Product[]>([]);
+  const [productFilter, setProductFilter] = useState('All');
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [uploadingId, setUploadingId] = useState<string | null>(null);
@@ -475,6 +497,7 @@ export function AdminPage() {
     useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
     useSensor(TouchSensor, { activationConstraint: { delay: 200, tolerance: 8 } }),
   );
+  const noSensors = useSensors();
 
   // Load products from Supabase (public read via anon)
   useEffect(() => {
@@ -695,23 +718,30 @@ export function AdminPage() {
     window.location.href = '/studio-admin/login';
   };
 
+  // New uploads land at the top (newest-first), then persist the order.
   const handleGalleryUpload = async (files: FileList) => {
     setGalleryUploading(true);
-    let order = galleryItems.length + 1;
+    const uploaded: GalleryItem[] = [];
     for (const file of Array.from(files)) {
       if (!file.type.startsWith('image/')) continue;
       const form = new FormData();
       form.append('file', file);
       form.append('kind', 'gallery');
       form.append('clientId', clientId);
-      form.append('sortOrder', String(order));
-      order += 1;
+      form.append('sortOrder', '0');
 
       const res = await fetch('/api/studio-admin/upload', { method: 'POST', body: form });
       if (res.ok) {
         const { item } = await res.json();
-        if (item) setGalleryItems((prev) => [...prev, item]);
+        if (item) uploaded.push(item);
       }
+    }
+    if (uploaded.length) {
+      setGalleryItems((prev) => {
+        const next = [...uploaded.reverse(), ...prev];
+        persistGalleryOrder(next);
+        return next;
+      });
     }
     setGalleryUploading(false);
   };
@@ -738,17 +768,28 @@ export function AdminPage() {
     setGalleryItems((prev) => prev.filter((g) => g.id !== id));
   };
 
-  // Base categories from content, plus any already on products, plus session-added ones
+  // Categories: content base + those on products + session-added ones.
   const baseCategories = c.shop.categories.filter((cat) => cat !== 'All');
   const productCategories = products.map((p) => p.category).filter(Boolean);
-  const allCategories = Array.from(
-    new Set([...baseCategories, ...productCategories, ...customCategories])
-  );
+  const allCategories = Array.from(new Set([...baseCategories, ...productCategories, ...customCategories]));
+  const filterCategories = [c.admin.allLabel, ...allCategories];
+
+  const canReorderProducts = productFilter === 'All';
+  const displayedProducts = canReorderProducts
+    ? products
+    : products.filter((p) => p.category === productFilter);
+
+  const navItems: { key: Section; label: string }[] = [
+    { key: 'products', label: c.admin.nav.products },
+    { key: 'gallery', label: c.admin.nav.gallery },
+    { key: 'orders', label: c.admin.nav.orders },
+    { key: 'payments', label: c.admin.nav.payments },
+  ];
 
   if (loading) {
     return (
       <main style={{ backgroundColor: CREAM, minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <p style={{ color: BODY, fontSize: 16 }}>Loading products...</p>
+        <p style={{ color: BODY, fontSize: 16 }}>Loading...</p>
       </main>
     );
   }
@@ -762,13 +803,37 @@ export function AdminPage() {
         minHeight: '100vh',
       }}
     >
+      <style>{`
+        .sa-shell { max-width: 1160px; margin: 0 auto; padding: clamp(24px,4vw,44px) clamp(16px,4vw,40px) clamp(80px,9vw,110px); }
+        .sa-nav { display: flex; }
+        .sa-navbtn { display: flex; align-items: center; gap: 11px; cursor: pointer; background: none; border: none;
+          border-radius: 12px; padding: 12px 14px; font-family: var(--font-montserrat), 'Montserrat', sans-serif;
+          font-size: 13px; letter-spacing: 0.05em; color: ${BODY}; transition: background .15s, color .15s; }
+        .sa-navbtn.active { background: #FFFFFF; color: ${DARK}; font-weight: 600; box-shadow: 0 6px 18px rgba(51,65,77,0.07); }
+        .sa-main { min-width: 0; }
+        @media (min-width: 860px) {
+          .sa-shell { display: flex; gap: 34px; align-items: flex-start; }
+          .sa-nav { position: sticky; top: 24px; flex-direction: column; width: 210px; flex-shrink: 0; gap: 6px; }
+          .sa-navbtn { width: 100%; justify-content: flex-start; }
+          .sa-main { flex: 1; }
+        }
+        @media (max-width: 859px) {
+          .sa-nav { position: fixed; left: 0; right: 0; bottom: 0; z-index: 60; background: #FFFFFF;
+            border-top: 1px solid ${BORDER}; align-items: stretch;
+            padding: 8px 4px calc(8px + env(safe-area-inset-bottom)); box-shadow: 0 -6px 22px rgba(51,65,77,0.09); }
+          .sa-navbtn { flex: 1 1 0; min-width: 0; flex-direction: column; gap: 3px; padding: 6px 4px; font-size: 10px; letter-spacing: 0.03em; border-radius: 10px; }
+          .sa-navbtn.active { box-shadow: none; background: #F0F5FB; }
+          .sa-main { padding-bottom: 8px; }
+        }
+      `}</style>
+
       {/* ───── Admin Header ───── */}
       <header style={{ background: 'linear-gradient(120deg, #8EB6D9 0%, #B9D4F1 100%)', color: CREAM }}>
         <div
           style={{
-            maxWidth: 1100,
+            maxWidth: 1160,
             margin: '0 auto',
-            padding: '24px clamp(20px,4vw,40px)',
+            padding: '22px clamp(16px,4vw,40px)',
             display: 'flex',
             justifyContent: 'space-between',
             alignItems: 'center',
@@ -801,9 +866,7 @@ export function AdminPage() {
             </span>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-            {saving && (
-              <span style={{ fontSize: 12, color: '#FFFFFF', opacity: 0.7 }}>Saving...</span>
-            )}
+            {saving && <span style={{ fontSize: 12, color: '#FFFFFF', opacity: 0.7 }}>Saving...</span>}
             <a
               href={c.admin.backHref}
               style={{ color: '#FFFFFF', fontSize: 14, textDecoration: 'underline', textUnderlineOffset: 4 }}
@@ -831,226 +894,216 @@ export function AdminPage() {
         </div>
       </header>
 
-      <section
-        style={{
-          maxWidth: 1100,
-          margin: '0 auto',
-          padding: 'clamp(32px,5vw,56px) clamp(20px,4vw,40px) clamp(64px,8vw,100px)',
-        }}
-      >
-        {/* ───── Info Banner ───── */}
-        <div
-          style={{
-            background: INFO_BG,
-            borderRadius: 14,
-            padding: '18px 22px',
-            marginBottom: 32,
-            fontSize: 15,
-            lineHeight: 1.6,
-            color: DARK,
-          }}
-        >
-          {c.admin.infoBanner} Drag the handle on any card to reorder. Changes save automatically to the database and show up on the Shop page.
-        </div>
-
-        {/* ───── Square Payments ───── */}
-        <SquareConnect />
-
-        {/* ───── Heading + Actions ───── */}
-        <div
-          style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            gap: 16,
-            flexWrap: 'wrap',
-            marginBottom: 24,
-          }}
-        >
-          <h1
-            style={{
-              margin: 0,
-              fontFamily: "var(--font-playfair), 'Playfair Display', serif",
-              fontWeight: 600,
-              fontSize: 'clamp(30px,4vw,44px)',
-              color: DARK,
-            }}
-          >
-            Products{' '}
-            <span
-              style={{
-                fontFamily: "var(--font-dancing-script), 'Dancing Script', cursive",
-                fontSize: '0.7em',
-                color: BLUE_DARK,
-                fontWeight: 600,
-              }}
-            >
-              ({products.length})
-            </span>
-          </h1>
-          <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
+      <div className="sa-shell">
+        {/* ───── Section nav (sidebar on desktop, bottom belt on mobile) ───── */}
+        <nav className="sa-nav">
+          {navItems.map((item) => (
             <button
-              onClick={handleAdd}
-              style={{
-                cursor: 'pointer',
-                background: DARK,
-                color: CREAM,
-                border: 'none',
-                borderRadius: 999,
-                padding: '12px 24px',
-                fontFamily: "var(--font-montserrat), 'Montserrat', sans-serif",
-                fontSize: 12,
-                letterSpacing: '0.1em',
-                textTransform: 'uppercase' as const,
-                fontWeight: 600,
-              }}
+              key={item.key}
+              className={`sa-navbtn${section === item.key ? ' active' : ''}`}
+              onClick={() => setSection(item.key)}
             >
-              {c.admin.addButtonText}
+              <NavIcon section={item.key} />
+              <span>{item.label}</span>
             </button>
-            <button
-              onClick={handleReset}
-              style={{
-                cursor: 'pointer',
-                background: 'none',
-                color: BODY,
-                border: '1px solid #C9BCA9',
-                borderRadius: 999,
-                padding: '12px 20px',
-                fontFamily: "var(--font-montserrat), 'Montserrat', sans-serif",
-                fontSize: 12,
-                letterSpacing: '0.08em',
-                textTransform: 'uppercase' as const,
-              }}
-            >
-              {c.admin.resetButtonText}
-            </button>
-          </div>
-        </div>
+          ))}
+        </nav>
 
-        {/* ───── Product Cards (drag to reorder) ───── */}
-        <DndContext
-          sensors={sensors}
-          collisionDetection={closestCenter}
-          modifiers={[restrictToVerticalAxis]}
-          onDragEnd={handleProductDragEnd}
-        >
-          <SortableContext items={products.map((p) => p.id)} strategy={verticalListSortingStrategy}>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
-              {products.map((p) => (
-                <SortableProductCard
-                  key={p.id}
-                  product={p}
-                  categories={allCategories}
-                  uploadingId={uploadingId}
-                  onField={handleField}
-                  onPrice={handlePrice}
-                  onUpload={handleUpload}
-                  onDelete={handleDelete}
-                  onAddCategory={handleAddCategory}
-                />
-              ))}
-            </div>
-          </SortableContext>
-        </DndContext>
-
-        {/* ───── Gallery Section ───── */}
-        <div style={{ marginTop: 'clamp(48px,6vw,72px)', borderTop: `1px solid ${BORDER}`, paddingTop: 'clamp(32px,4vw,48px)' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 16, flexWrap: 'wrap', marginBottom: 24 }}>
-            <h2
-              style={{
-                margin: 0,
-                fontFamily: "var(--font-playfair), 'Playfair Display', serif",
-                fontWeight: 600,
-                fontSize: 'clamp(26px,3.4vw,38px)',
-                color: DARK,
-              }}
-            >
-              Gallery{' '}
-              <span style={{ fontFamily: "var(--font-dancing-script), 'Dancing Script', cursive", fontSize: '0.7em', color: BLUE_DARK, fontWeight: 600 }}>
-                ({galleryItems.length})
-              </span>
-            </h2>
-            <div style={{ display: 'flex', gap: 10 }}>
-              <input
-                ref={galleryFileRef}
-                type="file"
-                accept="image/*"
-                multiple
-                style={{ display: 'none' }}
-                onChange={(e) => { if (e.target.files?.length) handleGalleryUpload(e.target.files); }}
-              />
-              <button
-                onClick={() => galleryFileRef.current?.click()}
-                disabled={galleryUploading}
-                style={{
-                  cursor: 'pointer',
-                  background: DARK,
-                  color: CREAM,
-                  border: 'none',
-                  borderRadius: 999,
-                  padding: '12px 24px',
-                  fontFamily: "var(--font-montserrat), 'Montserrat', sans-serif",
-                  fontSize: 12,
-                  letterSpacing: '0.1em',
-                  textTransform: 'uppercase' as const,
-                  fontWeight: 600,
-                  opacity: galleryUploading ? 0.6 : 1,
-                }}
+        <div className="sa-main">
+          {/* ───── Products ───── */}
+          {section === 'products' && (
+            <>
+              <div
+                style={{ background: INFO_BG, borderRadius: 14, padding: '16px 20px', marginBottom: 24, fontSize: 14, lineHeight: 1.6, color: DARK }}
               >
-                {galleryUploading ? 'Uploading...' : '+ Add photos'}
-              </button>
-            </div>
-          </div>
-
-          <p style={{ margin: '0 0 20px', fontSize: 14, color: BODY }}>
-            Upload photos of nail sets you&apos;ve done. Drag to reorder — they&apos;ll appear on the Gallery page in this order.
-          </p>
-
-          {galleryItems.length === 0 ? (
-            <div
-              style={{
-                border: `2px dashed #C9BCA9`,
-                borderRadius: 16,
-                padding: 'clamp(40px,6vw,80px) 20px',
-                textAlign: 'center',
-                cursor: 'pointer',
-              }}
-              onClick={() => galleryFileRef.current?.click()}
-            >
-              <p style={{ color: MUTED, fontSize: 15 }}>Drop photos here or click to upload</p>
-            </div>
-          ) : (
-            <DndContext
-              sensors={sensors}
-              collisionDetection={closestCenter}
-              modifiers={[restrictToParentElement]}
-              onDragEnd={handleGalleryDragEnd}
-            >
-              <SortableContext items={galleryItems.map((g) => g.id)} strategy={rectSortingStrategy}>
-                <div
+                {c.admin.infoBanner} Drag the handle on any product to reorder.
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 16, flexWrap: 'wrap', marginBottom: 18 }}>
+                <h1
                   style={{
-                    display: 'grid',
-                    gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))',
-                    gap: 16,
+                    margin: 0,
+                    fontFamily: "var(--font-playfair), 'Playfair Display', serif",
+                    fontWeight: 600,
+                    fontSize: 'clamp(28px,4vw,42px)',
+                    color: DARK,
                   }}
                 >
-                  {galleryItems.map((g) => (
-                    <SortableGalleryTile
-                      key={g.id}
-                      item={g}
-                      onCaption={handleGalleryCaption}
-                      onDelete={handleGalleryDelete}
-                    />
-                  ))}
+                  {c.admin.nav.products}{' '}
+                  <span style={{ fontFamily: "var(--font-dancing-script), 'Dancing Script', cursive", fontSize: '0.7em', color: BLUE_DARK, fontWeight: 600 }}>
+                    ({products.length})
+                  </span>
+                </h1>
+                <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
+                  <button
+                    onClick={handleAdd}
+                    style={{ cursor: 'pointer', background: DARK, color: CREAM, border: 'none', borderRadius: 999, padding: '12px 24px', fontFamily: "var(--font-montserrat), 'Montserrat', sans-serif", fontSize: 12, letterSpacing: '0.1em', textTransform: 'uppercase' as const, fontWeight: 600 }}
+                  >
+                    {c.admin.addButtonText}
+                  </button>
+                  <button
+                    onClick={handleReset}
+                    style={{ cursor: 'pointer', background: 'none', color: BODY, border: '1px solid #C9BCA9', borderRadius: 999, padding: '12px 20px', fontFamily: "var(--font-montserrat), 'Montserrat', sans-serif", fontSize: 12, letterSpacing: '0.08em', textTransform: 'uppercase' as const }}
+                  >
+                    {c.admin.resetButtonText}
+                  </button>
                 </div>
-              </SortableContext>
-            </DndContext>
+              </div>
+
+              {/* Category filter */}
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginBottom: 22 }}>
+                {filterCategories.map((cat) => {
+                  const active = productFilter === cat;
+                  return (
+                    <button
+                      key={cat}
+                      onClick={() => setProductFilter(cat)}
+                      style={{
+                        cursor: 'pointer',
+                        border: active ? '1.5px solid transparent' : `1.5px solid ${BORDER}`,
+                        background: active ? BLUE_DARK : 'transparent',
+                        color: active ? CREAM : BODY,
+                        borderRadius: 999,
+                        padding: '7px 16px',
+                        fontFamily: "var(--font-montserrat), 'Montserrat', sans-serif",
+                        fontSize: 12,
+                        letterSpacing: '0.06em',
+                        fontWeight: active ? 600 : 400,
+                      }}
+                    >
+                      {cat}
+                    </button>
+                  );
+                })}
+              </div>
+
+              {!canReorderProducts && (
+                <p style={{ margin: '0 0 14px', fontSize: 13, color: MUTED }}>
+                  Switch to “{c.admin.allLabel}” to drag and reorder products.
+                </p>
+              )}
+
+              <DndContext
+                sensors={canReorderProducts ? sensors : noSensors}
+                collisionDetection={closestCenter}
+                modifiers={[restrictToVerticalAxis]}
+                onDragEnd={handleProductDragEnd}
+              >
+                <SortableContext items={displayedProducts.map((p) => p.id)} strategy={verticalListSortingStrategy}>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+                    {displayedProducts.map((p) => (
+                      <SortableProductCard
+                        key={p.id}
+                        product={p}
+                        categories={allCategories}
+                        uploadingId={uploadingId}
+                        draggable={canReorderProducts}
+                        onField={handleField}
+                        onPrice={handlePrice}
+                        onUpload={handleUpload}
+                        onDelete={handleDelete}
+                        onAddCategory={handleAddCategory}
+                      />
+                    ))}
+                  </div>
+                </SortableContext>
+              </DndContext>
+            </>
+          )}
+
+          {/* ───── Gallery ───── */}
+          {section === 'gallery' && (
+            <>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 16, flexWrap: 'wrap', marginBottom: 12 }}>
+                <h1
+                  style={{
+                    margin: 0,
+                    fontFamily: "var(--font-playfair), 'Playfair Display', serif",
+                    fontWeight: 600,
+                    fontSize: 'clamp(28px,4vw,42px)',
+                    color: DARK,
+                  }}
+                >
+                  {c.admin.nav.gallery}{' '}
+                  <span style={{ fontFamily: "var(--font-dancing-script), 'Dancing Script', cursive", fontSize: '0.7em', color: BLUE_DARK, fontWeight: 600 }}>
+                    ({galleryItems.length})
+                  </span>
+                </h1>
+                <div style={{ display: 'flex', gap: 10 }}>
+                  <input
+                    ref={galleryFileRef}
+                    type="file"
+                    accept="image/*"
+                    multiple
+                    style={{ display: 'none' }}
+                    onChange={(e) => { if (e.target.files?.length) handleGalleryUpload(e.target.files); }}
+                  />
+                  <button
+                    onClick={() => galleryFileRef.current?.click()}
+                    disabled={galleryUploading}
+                    style={{ cursor: 'pointer', background: DARK, color: CREAM, border: 'none', borderRadius: 999, padding: '12px 24px', fontFamily: "var(--font-montserrat), 'Montserrat', sans-serif", fontSize: 12, letterSpacing: '0.1em', textTransform: 'uppercase' as const, fontWeight: 600, opacity: galleryUploading ? 0.6 : 1 }}
+                  >
+                    {galleryUploading ? 'Uploading...' : '+ Add photos'}
+                  </button>
+                </div>
+              </div>
+
+              <p style={{ margin: '0 0 20px', fontSize: 14, color: BODY }}>
+                New photos land first. Drag to reorder — they appear on the Gallery page in this order.
+              </p>
+
+              {galleryItems.length === 0 ? (
+                <div
+                  style={{ border: `2px dashed #C9BCA9`, borderRadius: 16, padding: 'clamp(40px,6vw,80px) 20px', textAlign: 'center', cursor: 'pointer' }}
+                  onClick={() => galleryFileRef.current?.click()}
+                >
+                  <p style={{ color: MUTED, fontSize: 15 }}>Drop photos here or click to upload</p>
+                </div>
+              ) : (
+                <DndContext
+                  sensors={sensors}
+                  collisionDetection={closestCenter}
+                  modifiers={[restrictToParentElement]}
+                  onDragEnd={handleGalleryDragEnd}
+                >
+                  <SortableContext items={galleryItems.map((g) => g.id)} strategy={rectSortingStrategy}>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: 16 }}>
+                      {galleryItems.map((g) => (
+                        <SortableGalleryTile
+                          key={g.id}
+                          item={g}
+                          onCaption={handleGalleryCaption}
+                          onDelete={handleGalleryDelete}
+                        />
+                      ))}
+                    </div>
+                  </SortableContext>
+                </DndContext>
+              )}
+            </>
+          )}
+
+          {/* ───── Orders ───── */}
+          {section === 'orders' && <OrdersList />}
+
+          {/* ───── Payments ───── */}
+          {section === 'payments' && (
+            <>
+              <h1
+                style={{
+                  margin: '0 0 18px',
+                  fontFamily: "var(--font-playfair), 'Playfair Display', serif",
+                  fontWeight: 600,
+                  fontSize: 'clamp(28px,4vw,42px)',
+                  color: DARK,
+                }}
+              >
+                {c.admin.nav.payments}
+              </h1>
+              <SquareConnect />
+            </>
           )}
         </div>
-
-        {/* ───── Orders ───── */}
-        <OrdersList />
-      </section>
+      </div>
     </main>
   );
 }
