@@ -407,77 +407,118 @@ const content = {
 
   // ── Terms & Conditions ──
   terms: {
-    eyebrow: 'The fine print, kept simple',
+    eyebrow: 'The fine print',
     title: 'Terms & Conditions',
     updated: 'Last updated July 13, 2026',
     intro:
-      'Thanks for shopping with Sunday Nail Press. These terms cover how orders, shipping, and returns work so we’re on the same page from the start. By placing an order you’re agreeing to everything below.',
-    sections: [
+      'Please read these terms and our privacy policy before placing an order. By ordering from Sunday Nail Press, you agree to everything below.',
+    groups: [
       {
-        heading: 'Handmade & made to order',
-        body: [
-          'Every Sunday set is hand-painted to order by a licensed nail tech. Because each set is made by hand, small variations in color, placement, and finish are part of the charm — no two sets are ever perfectly identical, and slight differences from your screen are normal.',
-          'Please allow the production time noted at checkout before your set ships. Custom designs may take a little longer, and we’ll always keep you posted.',
+        title: 'General Terms & Conditions',
+        points: [
+          '7–14 business day processing time, and up to 21 business days during sale and holiday periods.',
+          'Shipping time does not include processing time — every order requires a production period before it ships.',
+          'Orders cannot be changed after order confirmation.',
+          'No refunds due to customer sizing errors. Sizing is the customer’s responsibility.',
+          'Incorrect shipping addresses cannot be changed after an order is sent out. If an order is sent to the wrong address, the customer must pay $5 to have it reshipped once it is returned to the original sender.',
+          'Sunday Nail Press is not responsible for shipping carrier errors. Once an order is scanned into the carrier’s system, it is no longer Sunday Nail Press’s responsibility.',
+          'No returns or exchanges.',
+          'A standard order is 10 nails per set.',
+        ],
+        sections: [
+          {
+            heading: 'Package lost in transit',
+            body: [
+              'All claims must be submitted no later than 30 days after the estimated delivery date. Claims deemed an error on our part are covered at our expense.',
+            ],
+          },
+          {
+            heading: 'Wrong address',
+            body: [
+              'If the provided address is considered insufficient by the courier, the shipment will be sent back to me. You will be liable for reshipment costs once I have confirmed an updated address with you (if and as applicable).',
+            ],
+          },
+          {
+            heading: 'Nail set returns',
+            body: [
+              'Once purchased, a nail set cannot be exchanged or returned. If the sizing is incorrect based on customer sizing (via measurement or size kit), the customer is responsible for ordering another set to correct the sizing error.',
+            ],
+          },
         ],
       },
       {
-        heading: 'Sizing',
-        body: [
-          'For the best fit, order a Sizing Kit first and follow the sizing guide. You’re responsible for the sizes you submit — sets made to the sizes you provide can’t be remade for free if the fit is off.',
-          'If you’re between sizes, go with the larger one. Reach out any time if you’re unsure and we’ll help.',
-        ],
-      },
-      {
-        heading: 'Orders & payment',
-        body: [
-          'Prices are in U.S. dollars. Payment is processed securely through Square at checkout — we never see or store your full card details.',
-          'Placing an order is an offer to buy; your order is confirmed once payment is completed and you receive a confirmation. We reserve the right to cancel and refund an order if an item is unavailable or a pricing error occurs.',
-        ],
-      },
-      {
-        heading: 'Shipping & delivery',
-        body: [
-          'Sets ship to the address you provide at checkout, so please double-check it — we can’t be responsible for orders sent to an incorrect or incomplete address.',
-          'Once a package leaves our hands it’s in the carrier’s care. Delivery times are estimates, and we aren’t liable for carrier delays. If a package is lost or arrives damaged, contact us and we’ll do our best to make it right.',
-        ],
-      },
-      {
-        heading: 'Returns, refunds & cancellations',
-        body: [
-          'Because press-on nails are a personal, made-to-order item, all sales are final and we can’t accept returns for hygiene reasons.',
-          'If your order arrives damaged, defective, or incorrect, email or message us within 7 days of delivery with a photo and we’ll replace it or make it right.',
-          'Need to cancel or change an order? Reach out as soon as possible. We can usually adjust before your set goes into production — once it’s being made, it can no longer be changed or cancelled.',
-        ],
-      },
-      {
-        heading: 'Application, care & safety',
-        body: [
-          'Press-ons are a temporary, reusable product. Follow the included application and removal instructions for the best wear and to protect your natural nails.',
-          'If you have sensitive skin or a history of adhesive allergies, do a patch test first and stop using the product if you notice any irritation. Keep nails and adhesive away from children. Sunday Nail Press isn’t responsible for reactions, damage, or injury resulting from improper application, removal, or use.',
-        ],
-      },
-      {
-        heading: 'Our designs & photos',
-        body: [
-          'All Sunday designs, images, and branding are the property of Sunday Nail Press and may not be copied, resold, or reproduced without permission. Photos you share of your Sunday nails may occasionally be reposted with credit — let us know if you’d prefer we didn’t.',
-        ],
-      },
-      {
-        heading: 'Limitation of liability',
-        body: [
-          'To the fullest extent allowed by law, Sunday Nail Press’ liability for any order is limited to the amount you paid for that order. We aren’t liable for indirect or incidental losses arising from use of our products or website.',
-        ],
-      },
-      {
-        heading: 'Changes to these terms',
-        body: [
-          'We may update these terms from time to time. The version posted here, with the “last updated” date above, is the one that applies to your order.',
-        ],
-      },
-      {
-        heading: 'Get in touch',
-        body: [
-          'Questions about an order or these terms? Message us on Instagram @honeyb_polished — we’re happy to help.',
+        title: 'Privacy Policy',
+        sections: [
+          {
+            heading: 'Collection of information you provide to us',
+            body: [
+              'We collect information you provide directly to us. For example, we collect information when you create an account, participate in any interactive features of the Services, subscribe to a newsletter or email list, participate in an event, survey, contest or promotion, make a purchase, communicate with us via third-party social media sites, request customer support, or otherwise communicate with us.',
+              'The types of information we may collect include your name, email address, password, postal address, phone number, gender, date of birth, occupation, employer information, photo, preference or interest data, and any other information you choose to provide. If you provide an email address to invite a friend to participate in the Services, we will collect that email address and use it to send your friend such an invitation.',
+            ],
+          },
+          {
+            heading: 'Information we collect automatically',
+            body: ['When you access or use our Services, we may automatically collect information about you, including:'],
+            list: [
+              'Log Information: your IP address, web request, access times, pages viewed, web browser, links clicked, and the page you visited before navigating to the Services.',
+              'Mobile Device Information: the hardware model, operating system and version, unique device identifiers, mobile network information, and information about your use of our mobile applications.',
+              'Cookies & tracking technologies: we and our service providers use cookies and web beacons to improve the Services, see which features are popular, count visits, and understand usage and campaign effectiveness. See “Your Choices” for how to disable cookies.',
+            ],
+          },
+          {
+            heading: 'Information we collect from other sources',
+            body: [
+              'We may also obtain information from other sources and combine it with information we collect through our Services. For example, if you create or log into your account through a third-party social media site, we will have access to certain information from that site — such as your name, account information, and friends list — in accordance with that site’s authorization procedures. We may also collect information about you when you post content to our pages or feeds on third-party social media sites.',
+            ],
+          },
+          {
+            heading: 'Use of information',
+            body: ['We may use information about you for various purposes, including to:'],
+            list: [
+              'Provide, maintain, improve, and promote our products and services;',
+              'Deliver the information, products, and services you request, process transactions, and send related information, including confirmations and receipts;',
+              'Send technical notices, updates, security alerts, and support and administrative messages;',
+              'Respond to your comments, questions, and requests, and provide customer service;',
+              'Communicate with you about products, services, surveys, offers, promotions, rewards, and events, and provide news and information we think will interest you;',
+              'Monitor and analyze trends, usage, and activities in connection with our Services;',
+              'Personalize and improve the Services and provide content or features that match user profiles or interests;',
+              'Facilitate contests, sweepstakes, and promotions, and process and deliver entries and rewards;',
+              'Link or combine with information from others to help understand your needs and provide better service; and',
+              'Carry out any other purpose for which the information was collected.',
+            ],
+            outro:
+              'We are based in the United States and the information we collect is governed by U.S. law. By accessing or using the Services or otherwise providing information to us, you consent to the processing and transfer of information in and to the U.S. and other countries.',
+          },
+          {
+            heading: 'Sharing of information',
+            body: ['We may share information about you as follows or as otherwise described in this Privacy Policy:'],
+            list: [
+              'With vendors, consultants, and other service providers who need access to such information to carry out work or perform services on our behalf;',
+              'When you participate in interactive areas of our Services, certain information you provide may be displayed to other users, such as your name, photo, and comments;',
+              'In response to a request for information if we believe disclosure is in accordance with, or required by, any applicable law, regulation, or legal process;',
+              'If we believe your actions are inconsistent with our user agreements or policies, or to protect the rights, property, and safety of the Company or others;',
+              'In connection with, or during negotiations of, any merger, sale of company assets, financing, or acquisition of all or a portion of our business by another company; and',
+              'With your consent or at your direction.',
+            ],
+          },
+          {
+            heading: 'Social sharing features',
+            body: [
+              'The Services may offer social sharing features and other integrated tools (such as the Facebook “Like” button) that let you share actions you take on our Services with other media, and vice versa. Your use of such features enables the sharing of information with your friends or the public, depending on the settings you establish with the entity that provides the social sharing feature. For more information about the purpose and scope of data collection and processing in connection with social sharing features, please visit the privacy policies of the entities that provide these features.',
+            ],
+          },
+          {
+            heading: 'Advertising and analytics services provided by others',
+            body: [
+              'We may allow others to serve advertisements on our behalf across the Internet and to provide analytics services. These entities may use cookies, web beacons, and other technologies to collect information about your use of the Services and other websites, including your IP address, web browser, pages viewed, time spent on pages, links clicked, and conversion information. This information may be used to analyze and track data, determine the popularity of certain content, deliver advertising and content targeted to your interests, and better understand your online activity. For more information about interest-based ads, or to opt out, please visit www.aboutads.info/choices.',
+            ],
+          },
+          {
+            heading: 'Security',
+            body: [
+              'The Company takes reasonable measures to help protect information about you from loss, theft, misuse, and unauthorized access, disclosure, alteration, and destruction.',
+            ],
+          },
         ],
       },
     ],

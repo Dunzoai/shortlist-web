@@ -12,9 +12,13 @@ const BODY = '#55606B';
 const MUTED = '#A99E92';
 const BORDER = '#ECDECB';
 
+type Section = { heading: string; body?: string[]; list?: string[]; outro?: string };
+type Group = { title: string; points?: string[]; sections?: Section[] };
+
 export function TermsPage() {
   const c = content;
   const t = c.terms;
+  const groups = t.groups as unknown as Group[];
 
   return (
     <main style={{ backgroundColor: CREAM, color: DARK, fontFamily: "var(--font-montserrat), 'Montserrat', sans-serif", minHeight: '100vh' }}>
@@ -46,62 +50,73 @@ export function TermsPage() {
             Conditions
           </span>
         </h1>
-        <p style={{ margin: '0 0 28px', fontSize: 13, fontStyle: 'italic', color: MUTED }}>{t.updated}</p>
-        <p style={{ margin: '0 0 8px', fontSize: 17, lineHeight: 1.75, color: BODY }}>{t.intro}</p>
+        <p style={{ margin: '0 0 26px', fontSize: 13, fontStyle: 'italic', color: MUTED }}>{t.updated}</p>
+        <p style={{ margin: 0, fontSize: 17, lineHeight: 1.75, color: BODY }}>{t.intro}</p>
 
-        {/* Sections */}
-        <div style={{ marginTop: 'clamp(36px,5vw,56px)' }}>
-          {t.sections.map((s, i) => (
-            <section
-              key={s.heading}
+        {/* Groups */}
+        {groups.map((g) => (
+          <div key={g.title} style={{ marginTop: 'clamp(44px,6vw,72px)' }}>
+            <h2
               style={{
-                paddingTop: 'clamp(28px,4vw,40px)',
-                marginTop: 'clamp(28px,4vw,40px)',
-                borderTop: `1px solid ${BORDER}`,
+                margin: '0 0 8px',
+                paddingBottom: 16,
+                borderBottom: `2px solid ${BLUE_DARK}`,
+                fontFamily: "var(--font-playfair), 'Playfair Display', serif",
+                fontWeight: 600,
+                fontSize: 'clamp(26px,3.4vw,36px)',
+                color: DARK,
               }}
             >
-              <div style={{ display: 'flex', alignItems: 'baseline', gap: 14, marginBottom: 14 }}>
-                <span
+              {g.title}
+            </h2>
+
+            {/* Rule list */}
+            {g.points && (
+              <ul style={{ listStyle: 'none', margin: '24px 0 0', padding: 0 }}>
+                {g.points.map((p, i) => (
+                  <li key={i} style={{ display: 'flex', gap: 12, alignItems: 'flex-start', padding: '11px 0', borderBottom: `1px solid ${BORDER}` }}>
+                    <span style={{ flexShrink: 0, marginTop: 6, width: 7, height: 7, borderRadius: '50%', background: BLUE_DARK, display: 'inline-block' }} />
+                    <span style={{ fontSize: 15.5, lineHeight: 1.65, color: BODY }}>{p}</span>
+                  </li>
+                ))}
+              </ul>
+            )}
+
+            {/* Sections */}
+            {g.sections?.map((s) => (
+              <section key={s.heading} style={{ marginTop: 'clamp(26px,3.5vw,38px)' }}>
+                <h3
                   style={{
-                    fontFamily: "var(--font-dancing-script), 'Dancing Script', cursive",
-                    fontSize: 26,
-                    fontWeight: 600,
-                    color: BLUE_DARK,
-                    lineHeight: 1,
-                    minWidth: 30,
-                  }}
-                >
-                  {String(i + 1).padStart(2, '0')}
-                </span>
-                <h2
-                  style={{
-                    margin: 0,
+                    margin: '0 0 12px',
                     fontFamily: "var(--font-playfair), 'Playfair Display', serif",
                     fontWeight: 600,
-                    fontSize: 'clamp(21px,2.6vw,27px)',
+                    fontSize: 'clamp(19px,2.4vw,24px)',
                     color: DARK,
                   }}
                 >
                   {s.heading}
-                </h2>
-              </div>
-              {s.body.map((para, j) => (
-                <p
-                  key={j}
-                  style={{
-                    margin: j === 0 ? '0' : '14px 0 0',
-                    fontSize: 15.5,
-                    lineHeight: 1.75,
-                    color: BODY,
-                    paddingLeft: 'clamp(0px,1vw,44px)',
-                  }}
-                >
-                  {para}
-                </p>
-              ))}
-            </section>
-          ))}
-        </div>
+                </h3>
+                {s.body?.map((para, j) => (
+                  <p key={j} style={{ margin: j === 0 ? 0 : '12px 0 0', fontSize: 15.5, lineHeight: 1.75, color: BODY }}>
+                    {para}
+                  </p>
+                ))}
+                {s.list && (
+                  <ul style={{ margin: '12px 0 0', paddingLeft: 22 }}>
+                    {s.list.map((li, k) => (
+                      <li key={k} style={{ margin: '8px 0', fontSize: 15.5, lineHeight: 1.7, color: BODY, paddingLeft: 4 }}>
+                        {li}
+                      </li>
+                    ))}
+                  </ul>
+                )}
+                {s.outro && (
+                  <p style={{ margin: '14px 0 0', fontSize: 15.5, lineHeight: 1.75, color: BODY }}>{s.outro}</p>
+                )}
+              </section>
+            ))}
+          </div>
+        ))}
       </section>
 
       <EmailSubscribe />
