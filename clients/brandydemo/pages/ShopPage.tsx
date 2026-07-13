@@ -6,6 +6,7 @@ import Footer from '../components/Footer';
 import { supabase } from '@/lib/supabase';
 import content from '../content';
 import EmailSubscribe from '../components/EmailSubscribe';
+import { computeTotals, DEFAULT_SETTINGS, type StoreSettings } from '@/lib/storeSettings';
 
 const CREAM = '#FBF4EA';
 const BLUE = '#8EB6D9';
@@ -46,6 +47,7 @@ export function ShopPage() {
   const [cartOpen, setCartOpen] = useState(false);
   const [checkingOut, setCheckingOut] = useState(false);
   const [error, setError] = useState('');
+  const [settings, setSettings] = useState<StoreSettings>(DEFAULT_SETTINGS);
 
   useEffect(() => {
     async function load() {
@@ -64,6 +66,14 @@ export function ShopPage() {
 
         if (data) setProducts(data);
       }
+
+      const { data: s } = await supabase
+        .from('sunday_settings')
+        .select('tax_rate, shipping_flat_cents, shipping_carrier, free_shipping_threshold_cents')
+        .eq('client_slug', 'brandydemo')
+        .maybeSingle();
+      if (s) setSettings(s);
+
       setLoading(false);
     }
     load();
@@ -80,6 +90,8 @@ export function ShopPage() {
 
   const cartCount = cart.reduce((n, l) => n + l.qty, 0);
   const subtotal = cart.reduce((sum, l) => sum + l.price * l.qty, 0);
+  const totals = computeTotals(Math.round(subtotal * 100), settings);
+  const shippingLabel = settings.shipping_carrier ? `${cc.shippingLabel} — ${settings.shipping_carrier}` : cc.shippingLabel;
 
   const addToCart = (p: Product) => {
     if (p.price == null) return;
@@ -454,10 +466,26 @@ export function ShopPage() {
             </div>
 
             <div style={{ padding: '18px 24px 24px', borderTop: '1px solid #ECDECB' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 6 }}>
-                <span style={{ fontSize: 13, letterSpacing: '0.1em', textTransform: 'uppercase', color: MUTED }}>{cc.subtotalLabel}</span>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6, fontSize: 14, color: BODY }}>
+                <span>{cc.subtotalLabel}</span>
+                <span>{formatPrice(totals.subtotal / 100)}</span>
+              </div>
+              {cart.length > 0 && (
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6, fontSize: 14, color: BODY }}>
+                  <span>{shippingLabel}</span>
+                  <span>{totals.shipping === 0 ? cc.freeShipping : formatPrice(totals.shipping / 100)}</span>
+                </div>
+              )}
+              {totals.tax > 0 && (
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6, fontSize: 14, color: BODY }}>
+                  <span>{cc.taxLabel}</span>
+                  <span>{formatPrice(totals.tax / 100)}</span>
+                </div>
+              )}
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', margin: '10px 0 12px', paddingTop: 10, borderTop: '1px solid #ECDECB' }}>
+                <span style={{ fontSize: 13, letterSpacing: '0.1em', textTransform: 'uppercase', color: MUTED }}>{cc.totalLabel}</span>
                 <span style={{ fontFamily: "var(--font-playfair), 'Playfair Display', serif", fontWeight: 600, fontSize: 22, color: DARK }}>
-                  {formatPrice(subtotal)}
+                  {formatPrice(totals.total / 100)}
                 </span>
               </div>
               <p style={{ margin: '0 0 14px', fontSize: 12, color: MUTED }}>{cc.shippingNote}</p>

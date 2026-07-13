@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import content from '../content';
+import OrderSettings from './OrderSettings';
 
 const BLUE_DARK = '#5E86AD';
 const CREAM = '#FBF4EA';
@@ -132,17 +133,20 @@ export default function OrdersList() {
 
   return (
     <div>
-      <h2
-        style={{
-          margin: '0 0 6px',
-          fontFamily: "var(--font-playfair), 'Playfair Display', serif",
-          fontWeight: 600,
-          fontSize: 'clamp(26px,3.4vw,38px)',
-          color: DARK,
-        }}
-      >
-        {t.title}
-      </h2>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 16, marginBottom: 6 }}>
+        <h2
+          style={{
+            margin: 0,
+            fontFamily: "var(--font-playfair), 'Playfair Display', serif",
+            fontWeight: 600,
+            fontSize: 'clamp(26px,3.4vw,38px)',
+            color: DARK,
+          }}
+        >
+          {t.title}
+        </h2>
+        <OrderSettings />
+      </div>
       <p style={{ margin: '0 0 20px', fontSize: 14, color: BODY, maxWidth: '60ch' }}>{t.subtitle}</p>
 
       {/* Status chips */}
