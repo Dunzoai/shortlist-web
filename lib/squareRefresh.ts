@@ -22,10 +22,11 @@ export type SquareConfig = {
 // Refresh when the token expires within this window.
 const REFRESH_THRESHOLD_MS = 7 * 24 * 60 * 60 * 1000; // 7 days
 
-export async function getValidSquareToken(
+/** Loads the stored Square config (access token, location, merchant, env) or null. */
+export async function getSquareConfig(
   db: SupabaseClient,
   clientSlug: string,
-): Promise<string | null> {
+): Promise<SquareConfig | null> {
   const { data, error } = await db
     .from('payment_config')
     .select('config, is_active')
@@ -34,12 +35,23 @@ export async function getValidSquareToken(
     .maybeSingle();
 
   if (error || !data || data.is_active !== true) return null;
+  return (data.config as SquareConfig) ?? null;
+}
 
-  const config = data.config as SquareConfig;
+/**
+ * Returns a valid access token, refreshing when near expiry — or unconditionally
+ * when `force` is true (used for the 401 → refresh → retry safety net).
+ */
+export async function getValidSquareToken(
+  db: SupabaseClient,
+  clientSlug: string,
+  force = false,
+): Promise<string | null> {
+  const config = await getSquareConfig(db, clientSlug);
   if (!config?.access_token) return null;
 
   const expiresAt = config.expires_at ? new Date(config.expires_at).getTime() : 0;
-  const needsRefresh = !expiresAt || expiresAt - Date.now() < REFRESH_THRESHOLD_MS;
+  const needsRefresh = force || !expiresAt || expiresAt - Date.now() < REFRESH_THRESHOLD_MS;
   if (!needsRefresh || !config.refresh_token) return config.access_token;
 
   const resp = await fetch(`${squareConnectBaseUrl()}/oauth2/token`, {

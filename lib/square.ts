@@ -12,6 +12,12 @@ export const SQUARE_CLIENT_SLUG = 'brandydemo';
 export const SQUARE_SCOPES =
   'PAYMENTS_WRITE PAYMENTS_READ ORDERS_WRITE ORDERS_READ MERCHANT_PROFILE_READ ITEMS_READ';
 
+// Square API version sent as the `Square-Version` header on REST calls.
+export const SQUARE_VERSION = '2024-10-17';
+
+/** Canonical public site URL used for OAuth/checkout redirects. */
+export const SUNDAY_SITE_URL = 'https://www.sundaynailpress.com';
+
 export function squareEnvironment(): 'production' | 'sandbox' {
   return process.env.SQUARE_ENVIRONMENT === 'production' ? 'production' : 'sandbox';
 }

@@ -25,6 +25,8 @@ type Product = {
   price: number | null;
 };
 
+type CartLine = { id: string; name: string; price: number; qty: number };
+
 function formatPrice(price: number) {
   return new Intl.NumberFormat('en-US', {
     style: 'currency',
@@ -36,9 +38,14 @@ function formatPrice(price: number) {
 
 export function ShopPage() {
   const c = content;
+  const cc = content.shop.cart;
   const [filter, setFilter] = useState('All');
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
+  const [cart, setCart] = useState<CartLine[]>([]);
+  const [cartOpen, setCartOpen] = useState(false);
+  const [checkingOut, setCheckingOut] = useState(false);
+  const [error, setError] = useState('');
 
   useEffect(() => {
     async function load() {
@@ -70,6 +77,51 @@ export function ShopPage() {
   const orderedBase = c.shop.categories.filter((cat) => cat === 'All' || productCats.includes(cat));
   const extraCats = productCats.filter((cat) => !c.shop.categories.includes(cat));
   const filterCats = [...orderedBase, ...extraCats];
+
+  const cartCount = cart.reduce((n, l) => n + l.qty, 0);
+  const subtotal = cart.reduce((sum, l) => sum + l.price * l.qty, 0);
+
+  const addToCart = (p: Product) => {
+    if (p.price == null) return;
+    setError('');
+    setCart((prev) => {
+      const existing = prev.find((l) => l.id === p.id);
+      if (existing) {
+        return prev.map((l) => (l.id === p.id ? { ...l, qty: l.qty + 1 } : l));
+      }
+      return [...prev, { id: p.id, name: p.name, price: p.price as number, qty: 1 }];
+    });
+    setCartOpen(true);
+  };
+
+  const setQty = (id: string, qty: number) => {
+    setCart((prev) =>
+      qty <= 0 ? prev.filter((l) => l.id !== id) : prev.map((l) => (l.id === id ? { ...l, qty } : l))
+    );
+  };
+
+  const handleCheckout = async () => {
+    if (cart.length === 0) return;
+    setCheckingOut(true);
+    setError('');
+    try {
+      const res = await fetch('/api/square/checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ items: cart.map((l) => ({ product_id: l.id, quantity: l.qty })) }),
+      });
+      const data = await res.json();
+      if (res.ok && data.checkout_url) {
+        window.location.href = data.checkout_url;
+        return;
+      }
+      setError(data.error ? `${cc.error}` : cc.error);
+      setCheckingOut(false);
+    } catch {
+      setError(cc.error);
+      setCheckingOut(false);
+    }
+  };
 
   return (
     <main style={{ backgroundColor: CREAM, color: DARK, fontFamily: "var(--font-montserrat), 'Montserrat', sans-serif", minHeight: '100vh' }}>
@@ -289,22 +341,25 @@ export function ShopPage() {
                     {product.description}
                   </p>
                   <button
-                    disabled
+                    onClick={() => addToCart(product)}
+                    disabled={product.price == null}
                     style={{
                       marginTop: 6,
-                      border: '1px solid #C9BCA9',
-                      background: 'none',
+                      border: 'none',
+                      background: product.price == null ? 'none' : DARK,
                       borderRadius: 999,
                       padding: 12,
                       fontFamily: "var(--font-montserrat), 'Montserrat', sans-serif",
                       fontSize: 12,
                       letterSpacing: '0.1em',
                       textTransform: 'uppercase',
-                      color: MUTED,
-                      cursor: 'not-allowed',
+                      color: product.price == null ? MUTED : CREAM,
+                      fontWeight: 600,
+                      cursor: product.price == null ? 'not-allowed' : 'pointer',
+                      ...(product.price == null ? { border: '1px solid #C9BCA9' } : {}),
                     }}
                   >
-                    Checkout coming soon
+                    {product.price == null ? cc.soldOut : cc.addButton}
                   </button>
                 </div>
               </article>
@@ -313,8 +368,143 @@ export function ShopPage() {
         )}
       </section>
 
+      {/* ───── Floating Cart Button ───── */}
+      {cartCount > 0 && !cartOpen && (
+        <button
+          onClick={() => setCartOpen(true)}
+          style={{
+            position: 'fixed',
+            bottom: 24,
+            right: 24,
+            zIndex: 40,
+            cursor: 'pointer',
+            background: DARK,
+            color: CREAM,
+            border: 'none',
+            borderRadius: 999,
+            padding: '14px 24px',
+            fontFamily: "var(--font-montserrat), 'Montserrat', sans-serif",
+            fontSize: 13,
+            letterSpacing: '0.08em',
+            textTransform: 'uppercase',
+            fontWeight: 600,
+            boxShadow: '0 10px 30px rgba(51,65,77,0.28)',
+            display: 'flex',
+            alignItems: 'center',
+            gap: 10,
+          }}
+        >
+          {cc.cartLabel}
+          <span style={{ background: PEACH, color: DARK, borderRadius: 999, padding: '2px 9px', fontSize: 12 }}>{cartCount}</span>
+        </button>
+      )}
+
+      {/* ───── Cart Drawer ───── */}
+      {cartOpen && (
+        <>
+          <div
+            onClick={() => setCartOpen(false)}
+            style={{ position: 'fixed', inset: 0, background: 'rgba(51,65,77,0.35)', zIndex: 50 }}
+          />
+          <aside
+            style={{
+              position: 'fixed',
+              top: 0,
+              right: 0,
+              bottom: 0,
+              width: 'min(400px, 100vw)',
+              background: CREAM,
+              zIndex: 51,
+              boxShadow: '-14px 0 40px rgba(51,65,77,0.2)',
+              display: 'flex',
+              flexDirection: 'column',
+            }}
+          >
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '22px 24px', borderBottom: '1px solid #ECDECB' }}>
+              <h2 style={{ margin: 0, fontFamily: "var(--font-playfair), 'Playfair Display', serif", fontWeight: 600, fontSize: 24, color: DARK }}>
+                {cc.title}
+              </h2>
+              <button
+                onClick={() => setCartOpen(false)}
+                aria-label="Close cart"
+                style={{ cursor: 'pointer', background: 'none', border: 'none', fontSize: 26, lineHeight: 1, color: MUTED }}
+              >
+                ×
+              </button>
+            </div>
+
+            <div style={{ flex: 1, overflowY: 'auto', padding: '16px 24px' }}>
+              {cart.length === 0 ? (
+                <p style={{ color: BODY, fontSize: 15, marginTop: 24 }}>{cc.empty}</p>
+              ) : (
+                cart.map((line) => (
+                  <div key={line.id} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '14px 0', borderBottom: '1px solid #ECDECB' }}>
+                    <div style={{ flex: 1 }}>
+                      <p style={{ margin: '0 0 2px', fontSize: 15, fontWeight: 600, color: DARK }}>{line.name}</p>
+                      <p style={{ margin: 0, fontSize: 13, color: BLUE_DARK }}>{formatPrice(line.price)}</p>
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                      <button onClick={() => setQty(line.id, line.qty - 1)} style={stepperStyle} aria-label="Decrease">−</button>
+                      <span style={{ minWidth: 20, textAlign: 'center', fontSize: 15 }}>{line.qty}</span>
+                      <button onClick={() => setQty(line.id, line.qty + 1)} style={stepperStyle} aria-label="Increase">+</button>
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+
+            <div style={{ padding: '18px 24px 24px', borderTop: '1px solid #ECDECB' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 6 }}>
+                <span style={{ fontSize: 13, letterSpacing: '0.1em', textTransform: 'uppercase', color: MUTED }}>{cc.subtotalLabel}</span>
+                <span style={{ fontFamily: "var(--font-playfair), 'Playfair Display', serif", fontWeight: 600, fontSize: 22, color: DARK }}>
+                  {formatPrice(subtotal)}
+                </span>
+              </div>
+              <p style={{ margin: '0 0 14px', fontSize: 12, color: MUTED }}>{cc.shippingNote}</p>
+              {error && <p style={{ margin: '0 0 12px', fontSize: 13, color: '#C56B6B' }}>{error}</p>}
+              <button
+                onClick={handleCheckout}
+                disabled={cart.length === 0 || checkingOut}
+                style={{
+                  width: '100%',
+                  cursor: cart.length === 0 || checkingOut ? 'default' : 'pointer',
+                  background: DARK,
+                  color: CREAM,
+                  border: 'none',
+                  borderRadius: 999,
+                  padding: '15px 24px',
+                  fontFamily: "var(--font-montserrat), 'Montserrat', sans-serif",
+                  fontSize: 13,
+                  letterSpacing: '0.1em',
+                  textTransform: 'uppercase',
+                  fontWeight: 600,
+                  opacity: cart.length === 0 || checkingOut ? 0.55 : 1,
+                }}
+              >
+                {checkingOut ? cc.checkingOut : cc.checkoutButton}
+              </button>
+            </div>
+          </aside>
+        </>
+      )}
+
       <EmailSubscribe />
       <Footer footer={c.footer} />
     </main>
   );
 }
+
+const stepperStyle: React.CSSProperties = {
+  cursor: 'pointer',
+  width: 30,
+  height: 30,
+  borderRadius: 999,
+  border: '1px solid #C9BCA9',
+  background: '#FFFFFF',
+  color: DARK,
+  fontSize: 16,
+  lineHeight: 1,
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+};
