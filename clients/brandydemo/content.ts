@@ -380,6 +380,84 @@ const content = {
     error: 'Incorrect password. Try again.',
   },
 
+  // ── Terms & Conditions ──
+  terms: {
+    eyebrow: 'The fine print, kept simple',
+    title: 'Terms & Conditions',
+    updated: 'Last updated July 13, 2026',
+    intro:
+      'Thanks for shopping with Sunday Nail Press. These terms cover how orders, shipping, and returns work so we’re on the same page from the start. By placing an order you’re agreeing to everything below.',
+    sections: [
+      {
+        heading: 'Handmade & made to order',
+        body: [
+          'Every Sunday set is hand-painted to order by a licensed nail tech. Because each set is made by hand, small variations in color, placement, and finish are part of the charm — no two sets are ever perfectly identical, and slight differences from your screen are normal.',
+          'Please allow the production time noted at checkout before your set ships. Custom designs may take a little longer, and we’ll always keep you posted.',
+        ],
+      },
+      {
+        heading: 'Sizing',
+        body: [
+          'For the best fit, order a Sizing Kit first and follow the sizing guide. You’re responsible for the sizes you submit — sets made to the sizes you provide can’t be remade for free if the fit is off.',
+          'If you’re between sizes, go with the larger one. Reach out any time if you’re unsure and we’ll help.',
+        ],
+      },
+      {
+        heading: 'Orders & payment',
+        body: [
+          'Prices are in U.S. dollars. Payment is processed securely through Square at checkout — we never see or store your full card details.',
+          'Placing an order is an offer to buy; your order is confirmed once payment is completed and you receive a confirmation. We reserve the right to cancel and refund an order if an item is unavailable or a pricing error occurs.',
+        ],
+      },
+      {
+        heading: 'Shipping & delivery',
+        body: [
+          'Sets ship to the address you provide at checkout, so please double-check it — we can’t be responsible for orders sent to an incorrect or incomplete address.',
+          'Once a package leaves our hands it’s in the carrier’s care. Delivery times are estimates, and we aren’t liable for carrier delays. If a package is lost or arrives damaged, contact us and we’ll do our best to make it right.',
+        ],
+      },
+      {
+        heading: 'Returns, refunds & cancellations',
+        body: [
+          'Because press-on nails are a personal, made-to-order item, all sales are final and we can’t accept returns for hygiene reasons.',
+          'If your order arrives damaged, defective, or incorrect, email or message us within 7 days of delivery with a photo and we’ll replace it or make it right.',
+          'Need to cancel or change an order? Reach out as soon as possible. We can usually adjust before your set goes into production — once it’s being made, it can no longer be changed or cancelled.',
+        ],
+      },
+      {
+        heading: 'Application, care & safety',
+        body: [
+          'Press-ons are a temporary, reusable product. Follow the included application and removal instructions for the best wear and to protect your natural nails.',
+          'If you have sensitive skin or a history of adhesive allergies, do a patch test first and stop using the product if you notice any irritation. Keep nails and adhesive away from children. Sunday Nail Press isn’t responsible for reactions, damage, or injury resulting from improper application, removal, or use.',
+        ],
+      },
+      {
+        heading: 'Our designs & photos',
+        body: [
+          'All Sunday designs, images, and branding are the property of Sunday Nail Press and may not be copied, resold, or reproduced without permission. Photos you share of your Sunday nails may occasionally be reposted with credit — let us know if you’d prefer we didn’t.',
+        ],
+      },
+      {
+        heading: 'Limitation of liability',
+        body: [
+          'To the fullest extent allowed by law, Sunday Nail Press’ liability for any order is limited to the amount you paid for that order. We aren’t liable for indirect or incidental losses arising from use of our products or website.',
+        ],
+      },
+      {
+        heading: 'Changes to these terms',
+        body: [
+          'We may update these terms from time to time. The version posted here, with the “last updated” date above, is the one that applies to your order.',
+        ],
+      },
+      {
+        heading: 'Get in touch',
+        body: [
+          'Questions about an order or these terms? Message us on Instagram @honeyb_polished — we’re happy to help.',
+        ],
+      },
+    ],
+  },
+
   // ── Footer ──
   footer: {
     brand: 'Sunday',
@@ -400,6 +478,8 @@ const content = {
     copyright: `\u00A9 Sunday ${new Date().getFullYear()}`,
     adminText: 'Studio admin',
     adminHref: '/studio-admin',
+    poweredByText: 'Powered by The Shortlist Pass Company',
+    poweredByHref: 'https://shortlistpass.com',
   },
 };
 
