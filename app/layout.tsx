@@ -190,24 +190,31 @@ export async function generateMetadata(): Promise<Metadata> {
     return {
       title: "Sunday Press-On Nails | Handmade by Brandy",
       description: "Custom and pre-designed press-on nail sets, handmade to order by a licensed nail tech and shipped straight to your door.",
-      keywords: ["press-on nails", "custom nails", "handmade nails", "nail art", "press on nail sets", "Sunday nails"],
+      keywords: ["press-on nails", "custom nails", "handmade nails", "nail art", "press on nail sets", "Sunday nails", "Sunday Nail Press"],
       authors: [{ name: "Sunday Press-On Nails" }],
       creator: "Sunday Press-On Nails",
-      metadataBase: new URL('https://brandydemo.shortlistpass.com'),
+      metadataBase: new URL('https://www.sundaynailpress.com'),
+      alternates: { canonical: 'https://www.sundaynailpress.com' },
+      icons: {
+        icon: '/clients/brandydemo/favicon.png',
+        apple: '/clients/brandydemo/apple-touch-icon.png',
+      },
       openGraph: {
         type: 'website',
         locale: 'en_US',
-        url: '/',
+        url: 'https://www.sundaynailpress.com',
         siteName: 'Sunday Press-On Nails',
         title: 'Sunday Press-On Nails | Handmade by Brandy',
         description: 'Custom and pre-designed press-on nail sets, handmade to order by a licensed nail tech.',
+        images: [{ url: '/clients/brandydemo/og-image.jpg', width: 1200, height: 630, alt: 'Sunday Press-On Nails — salon nails, on your schedule' }],
       },
       twitter: {
         card: 'summary_large_image',
         title: 'Sunday Press-On Nails | Handmade by Brandy',
         description: 'Custom press-on nail sets, handmade to order and shipped to your door.',
+        images: ['/clients/brandydemo/og-image.jpg'],
       },
-      robots: { index: false, follow: false },
+      robots: { index: true, follow: true, googleBot: { index: true, follow: true, 'max-video-preview': -1, 'max-image-preview': 'large', 'max-snippet': -1 } },
     };
   }
 
