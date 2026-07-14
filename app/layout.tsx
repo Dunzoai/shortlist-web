@@ -200,6 +200,7 @@ export async function generateMetadata(): Promise<Metadata> {
       creator: "Sunday Press-On Nails",
       metadataBase: new URL('https://www.sundaynailpress.com'),
       alternates: { canonical: 'https://www.sundaynailpress.com' },
+      verification: { other: { 'p:domain_verify': '03d58d654cd03c27abcf60245cc13538' } },
       icons: {
         icon: '/clients/brandydemo/favicon.png',
         apple: '/clients/brandydemo/apple-touch-icon.png',
