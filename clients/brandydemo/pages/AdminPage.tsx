@@ -192,6 +192,7 @@ function SortableProductCard({
   categories,
   uploadingId,
   draggable,
+  isHero,
   onField,
   onPrice,
   onUpload,
@@ -202,6 +203,7 @@ function SortableProductCard({
   categories: string[];
   uploadingId: string | null;
   draggable: boolean;
+  isHero: boolean;
   onField: (id: string, field: 'name' | 'description' | 'level' | 'category', value: string) => void;
   onPrice: (id: string, raw: string) => void;
   onUpload: (productId: string, file: File) => void;
@@ -225,15 +227,43 @@ function SortableProductCard({
     opacity: isDragging ? 0.6 : 1,
     zIndex: isDragging ? 5 : undefined,
     background: '#FFFFFF',
-    border: `1px solid ${BORDER}`,
+    border: isHero ? `2px solid ${BLUE}` : `1px solid ${BORDER}`,
     borderRadius: 16,
     boxShadow: isDragging ? '0 18px 40px rgba(51,65,77,0.18)' : undefined,
   };
 
   return (
     <div ref={setNodeRef} style={style}>
-      {/* Drag handle bar (only when reordering is available) */}
-      {draggable && (
+      {/* Hero (Intro Kit) marker bar */}
+      {isHero && (
+        <div
+          {...(draggable ? attributes : {})}
+          {...(draggable ? listeners : {})}
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 8,
+            padding: '11px 16px',
+            borderTopLeftRadius: 14,
+            borderTopRightRadius: 14,
+            borderBottom: `1px solid ${BORDER}`,
+            background: 'linear-gradient(120deg, #D7E6F7 0%, #FFE6CB 100%)',
+            color: DARK,
+            cursor: draggable ? 'grab' : 'default',
+            touchAction: 'none',
+          }}
+        >
+          <svg width="15" height="15" viewBox="0 0 20 20" fill={BLUE_DARK} aria-hidden="true">
+            <path d="M10 1L11.6 7.2L18 8L12.6 11.6L14 18L10 14.4L6 18L7.4 11.6L2 8L8.4 7.2Z" />
+          </svg>
+          <span style={{ fontSize: 11, letterSpacing: '0.1em', textTransform: 'uppercase', fontWeight: 600 }}>
+            {content.admin.heroBadge}
+          </span>
+        </div>
+      )}
+
+      {/* Drag handle bar (only when reordering is available and not the hero) */}
+      {draggable && !isHero && (
         <div
           {...attributes}
           {...listeners}
@@ -1040,6 +1070,7 @@ export function AdminPage() {
                         categories={allCategories}
                         uploadingId={uploadingId}
                         draggable={canReorderProducts}
+                        isHero={p.id === 'intro-kit'}
                         onField={handleField}
                         onPrice={handlePrice}
                         onUpload={handleUpload}
