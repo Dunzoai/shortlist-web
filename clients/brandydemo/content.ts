@@ -331,6 +331,7 @@ const content = {
     addCategoryOption: '+ Add new category…',
     newCategoryPlaceholder: 'New category name',
     dragHint: 'Drag to reorder',
+    heroBadge: 'Intro Kit — featured at the top of your shop',
     allLabel: 'All',
     nav: {
       products: 'Products',
