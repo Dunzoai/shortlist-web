@@ -189,8 +189,13 @@ export async function generateMetadata(): Promise<Metadata> {
   if (client?.slug === 'brandydemo') {
     return {
       title: "Sunday Press-On Nails | Handmade by Brandy",
-      description: "Custom and pre-designed press-on nail sets, handmade to order by a licensed nail tech and shipped straight to your door.",
-      keywords: ["press-on nails", "custom nails", "handmade nails", "nail art", "press on nail sets", "Sunday nails", "Sunday Nail Press"],
+      description: "Custom and pre-designed press-on nail sets, handmade to order by a licensed nail tech and shipped straight to your door — based in the Conway & Myrtle Beach, SC area.",
+      keywords: [
+        "press-on nails", "custom nails", "handmade nails", "nail art", "press on nail sets",
+        "Sunday nails", "Sunday Nail Press",
+        "Conway SC nails", "Myrtle Beach nails", "Myrtle Beach press-on nails",
+        "Conway nail tech", "Grand Strand nails", "press on nails South Carolina", "custom nails Myrtle Beach",
+      ],
       authors: [{ name: "Sunday Press-On Nails" }],
       creator: "Sunday Press-On Nails",
       metadataBase: new URL('https://www.sundaynailpress.com'),
@@ -329,6 +334,40 @@ export default async function RootLayout({
                   { "@type": "LocationFeatureSpecification", "name": "Free Parking", "value": true },
                   { "@type": "LocationFeatureSpecification", "name": "Outdoor Seating", "value": true }
                 ]
+              })
+            }}
+          />
+        )}
+
+        {/* Local business structured data — helps Sunday show up for Conway / Myrtle Beach searches */}
+        {client?.slug === 'brandydemo' && (
+          <script
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{
+              __html: JSON.stringify({
+                "@context": "https://schema.org",
+                "@type": ["Store", "HealthAndBeautyBusiness"],
+                "name": "Sunday Nail Press",
+                "description": "Handmade custom and pre-designed press-on nail sets, made to order by a licensed nail tech and shipped to your door. Serving Conway, Myrtle Beach, and the Grand Strand, SC.",
+                "url": "https://www.sundaynailpress.com",
+                "image": "https://www.sundaynailpress.com/clients/brandydemo/og-image.jpg",
+                "priceRange": "$$",
+                "address": {
+                  "@type": "PostalAddress",
+                  "addressLocality": "Conway",
+                  "addressRegion": "SC",
+                  "addressCountry": "US"
+                },
+                "areaServed": [
+                  { "@type": "City", "name": "Conway", "sameAs": "https://en.wikipedia.org/wiki/Conway,_South_Carolina" },
+                  { "@type": "City", "name": "Myrtle Beach", "sameAs": "https://en.wikipedia.org/wiki/Myrtle_Beach,_South_Carolina" },
+                  { "@type": "AdministrativeArea", "name": "Grand Strand, South Carolina" }
+                ],
+                "sameAs": ["https://instagram.com/honeyb_polished"],
+                "makesOffer": {
+                  "@type": "Offer",
+                  "itemOffered": { "@type": "Product", "name": "Handmade press-on nail sets" }
+                }
               })
             }}
           />

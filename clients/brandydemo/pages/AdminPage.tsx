@@ -485,6 +485,7 @@ function SortableGalleryTile({
 export function AdminPage() {
   const c = content;
   const [section, setSection] = useState<Section>('products');
+  const [unseenOrders, setUnseenOrders] = useState(0);
   const [products, setProducts] = useState<Product[]>([]);
   const [productFilter, setProductFilter] = useState('All');
   const [loading, setLoading] = useState(true);
@@ -533,7 +534,21 @@ export function AdminPage() {
       setLoading(false);
     }
     load();
+
+    // New-order badge count (paid orders arrived since Orders was last opened).
+    fetch('/api/studio-admin/orders/unseen')
+      .then((r) => r.json())
+      .then((d) => setUnseenOrders(d.count || 0))
+      .catch(() => {});
   }, []);
+
+  const selectSection = (key: Section) => {
+    setSection(key);
+    if (key === 'orders' && unseenOrders > 0) {
+      fetch('/api/studio-admin/orders/unseen', { method: 'POST' }).catch(() => {});
+      setUnseenOrders(0);
+    }
+  };
 
   // Debounced save via the service-role API route
   const saveProduct = (product: Product) => {
@@ -906,10 +921,33 @@ export function AdminPage() {
             <button
               key={item.key}
               className={`sa-navbtn${section === item.key ? ' active' : ''}`}
-              onClick={() => setSection(item.key)}
+              onClick={() => selectSection(item.key)}
+              style={{ position: 'relative' }}
             >
               <NavIcon section={item.key} />
               <span>{item.label}</span>
+              {item.key === 'orders' && unseenOrders > 0 && (
+                <span
+                  style={{
+                    position: 'absolute',
+                    top: 3,
+                    right: 6,
+                    minWidth: 18,
+                    height: 18,
+                    padding: '0 5px',
+                    borderRadius: 999,
+                    background: '#E08A6E',
+                    color: '#FFFFFF',
+                    fontSize: 11,
+                    fontWeight: 700,
+                    lineHeight: '18px',
+                    textAlign: 'center',
+                    boxShadow: '0 1px 4px rgba(51,65,77,0.25)',
+                  }}
+                >
+                  {unseenOrders}
+                </span>
+              )}
             </button>
           ))}
         </nav>
