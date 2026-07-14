@@ -5,6 +5,7 @@ import { supabase } from '@/lib/supabase';
 import content from '../content';
 import SquareConnect from '../components/SquareConnect';
 import OrdersList from '../components/OrdersList';
+import SubscribersList from '../components/SubscribersList';
 import {
   DndContext,
   closestCenter,
@@ -36,7 +37,7 @@ const INPUT_BORDER = '#E0D4C4';
 
 const ADD_CATEGORY = '__add_new_category__';
 
-type Section = 'products' | 'gallery' | 'orders' | 'payments';
+type Section = 'products' | 'gallery' | 'orders' | 'subscribers' | 'payments';
 
 type Product = {
   id: string;
@@ -95,6 +96,9 @@ function NavIcon({ section }: { section: Section }) {
   }
   if (section === 'orders') {
     return (<svg {...common}><path d="M6 2 4 6v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V6l-2-4Z" /><path d="M4 6h16" /><path d="M9 10a3 3 0 0 0 6 0" /></svg>);
+  }
+  if (section === 'subscribers') {
+    return (<svg {...common}><rect x="3" y="5" width="18" height="14" rx="2" /><path d="m3 7 9 6 9-6" /></svg>);
   }
   return (<svg {...common}><rect x="2" y="5" width="20" height="14" rx="2" /><path d="M2 10h20" /></svg>);
 }
@@ -783,6 +787,7 @@ export function AdminPage() {
     { key: 'products', label: c.admin.nav.products },
     { key: 'gallery', label: c.admin.nav.gallery },
     { key: 'orders', label: c.admin.nav.orders },
+    { key: 'subscribers', label: c.admin.nav.subscribers },
     { key: 'payments', label: c.admin.nav.payments },
   ];
 
@@ -1084,6 +1089,9 @@ export function AdminPage() {
 
           {/* ───── Orders ───── */}
           {section === 'orders' && <OrdersList />}
+
+          {/* ───── Subscribers ───── */}
+          {section === 'subscribers' && <SubscribersList />}
 
           {/* ───── Payments ───── */}
           {section === 'payments' && (

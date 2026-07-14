@@ -336,7 +336,17 @@ const content = {
       products: 'Products',
       gallery: 'Gallery',
       orders: 'Orders',
+      subscribers: 'Emails',
       payments: 'Payments',
+    },
+    subscribers: {
+      title: 'Email list',
+      subtitle: 'Everyone who signed up through the subscribe box on your site. Each email is stored once — no duplicates.',
+      empty: 'No sign-ups yet.',
+      loading: 'Loading…',
+      download: 'Download CSV',
+      countOne: 'subscriber',
+      countMany: 'subscribers',
     },
     square: {
       title: 'Payments',
