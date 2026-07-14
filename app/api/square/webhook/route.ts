@@ -57,7 +57,15 @@ export async function POST(req: NextRequest) {
         .eq('square_order_id', squareOrderId)
         .maybeSingle();
 
-      if (order && order.status !== 'paid' && order.status !== 'shipped') {
+      // A refund keeps the payment COMPLETED and fires payment.updated — so a
+      // fully-refunded payment must NOT flip a refunded order back to paid.
+      const refundedMoney = payment?.refunded_money?.amount ?? 0;
+      const amountMoney = payment?.amount_money?.amount ?? 0;
+      if (order && refundedMoney > 0 && refundedMoney >= amountMoney) {
+        if (order.status !== 'refunded') {
+          await db.from('orders').update({ status: 'refunded' }).eq('id', order.id);
+        }
+      } else if (order && order.status !== 'paid' && order.status !== 'shipped' && order.status !== 'refunded') {
         // Pull the shipping address Square collected off the order's fulfillment.
         let shipping: any = null;
         let name: string | null = null;
