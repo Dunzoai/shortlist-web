@@ -16,6 +16,9 @@ const DARK = '#33414D';
 const BODY = '#55606B';
 const MUTED = '#A99E92';
 
+// The intro kit is a real product but rendered as the hero card, not in the grid.
+const INTRO_KIT_ID = 'intro-kit';
+
 type Product = {
   id: string;
   name: string;
@@ -79,11 +82,14 @@ export function ShopPage() {
     load();
   }, []);
 
-  const filtered = filter === 'All' ? products : products.filter((p) => p.category === filter);
+  const introProduct = products.find((p) => p.id === INTRO_KIT_ID);
+  const shopProducts = products.filter((p) => p.id !== INTRO_KIT_ID);
+
+  const filtered = filter === 'All' ? shopProducts : shopProducts.filter((p) => p.category === filter);
 
   // Filter buttons reflect the categories that actually exist on products,
   // ordered by the content list first, then any custom categories after.
-  const productCats = Array.from(new Set(products.map((p) => p.category).filter(Boolean)));
+  const productCats = Array.from(new Set(shopProducts.map((p) => p.category).filter(Boolean)));
   const orderedBase = c.shop.categories.filter((cat) => cat === 'All' || productCats.includes(cat));
   const extraCats = productCats.filter((cat) => !c.shop.categories.includes(cat));
   const filterCats = [...orderedBase, ...extraCats];
@@ -223,26 +229,55 @@ export function ShopPage() {
             <p style={{ margin: '0 0 22px', fontSize: 16, lineHeight: 1.65, color: '#42505C', maxWidth: '50ch' }}>
               {c.shop.introKit.description}
             </p>
-            <a
-              href={c.shop.introKit.ctaHref}
-              style={{
-                display: 'inline-block',
-                background: PEACH,
-                color: DARK,
-                fontWeight: 600,
-                textDecoration: 'none',
-                padding: '14px 28px',
-                borderRadius: 999,
-                fontSize: 12,
-                letterSpacing: '0.12em',
-                textTransform: 'uppercase',
-                transition: 'transform .15s ease, box-shadow .15s ease',
-              }}
-              onMouseEnter={(e) => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 8px 20px rgba(255,198,161,0.65)'; }}
-              onMouseLeave={(e) => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = 'none'; }}
-            >
-              {c.shop.introKit.ctaText}
-            </a>
+            {introProduct && introProduct.price != null ? (
+              <div style={{ display: 'flex', alignItems: 'center', gap: 20, flexWrap: 'wrap' }}>
+                <button
+                  onClick={() => addToCart(introProduct)}
+                  style={{
+                    background: PEACH,
+                    color: DARK,
+                    fontWeight: 600,
+                    border: 'none',
+                    cursor: 'pointer',
+                    padding: '14px 28px',
+                    borderRadius: 999,
+                    fontSize: 12,
+                    letterSpacing: '0.12em',
+                    textTransform: 'uppercase',
+                    fontFamily: "var(--font-montserrat), 'Montserrat', sans-serif",
+                    transition: 'transform .15s ease, box-shadow .15s ease',
+                  }}
+                  onMouseEnter={(e) => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 8px 20px rgba(255,198,161,0.65)'; }}
+                  onMouseLeave={(e) => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = 'none'; }}
+                >
+                  {cc.addButton}
+                </button>
+                <span style={{ fontFamily: "var(--font-playfair), 'Playfair Display', serif", fontWeight: 600, fontSize: 26, color: DARK }}>
+                  {formatPrice(introProduct.price)}
+                </span>
+              </div>
+            ) : (
+              <a
+                href={c.shop.introKit.ctaHref}
+                style={{
+                  display: 'inline-block',
+                  background: PEACH,
+                  color: DARK,
+                  fontWeight: 600,
+                  textDecoration: 'none',
+                  padding: '14px 28px',
+                  borderRadius: 999,
+                  fontSize: 12,
+                  letterSpacing: '0.12em',
+                  textTransform: 'uppercase',
+                  transition: 'transform .15s ease, box-shadow .15s ease',
+                }}
+                onMouseEnter={(e) => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 8px 20px rgba(255,198,161,0.65)'; }}
+                onMouseLeave={(e) => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = 'none'; }}
+              >
+                {c.shop.introKit.ctaText}
+              </a>
+            )}
           </div>
           <div style={{ width: '100%', height: 'clamp(240px,28vw,340px)', borderRadius: 12, overflow: 'hidden' }}>
             <img
