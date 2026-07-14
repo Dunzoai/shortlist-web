@@ -49,11 +49,30 @@ function WhiteSparkle({ x, y, size }: { x: string; y: string; size: number }) {
 export default function EmailSubscribe() {
   const [email, setEmail] = useState('');
   const [submitted, setSubmitted] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState('');
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!email) return;
-    setSubmitted(true);
+    if (!email || submitting) return;
+    setSubmitting(true);
+    setError('');
+    try {
+      const res = await fetch('/api/subscribe', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: email.trim() }),
+      });
+      if (res.ok) {
+        setSubmitted(true);
+      } else {
+        const d = await res.json().catch(() => ({}));
+        setError(d.error || 'Something went wrong. Please try again.');
+      }
+    } catch {
+      setError('Something went wrong. Please try again.');
+    }
+    setSubmitting(false);
   };
 
   return (
@@ -168,13 +187,18 @@ export default function EmailSubscribe() {
           />
           <button
             type="submit"
-            style={{ padding: '15px 28px', border: 'none', borderRadius: '0 6px 6px 0', backgroundColor: MAUVE, color: '#FFFFFF', fontSize: 14, fontWeight: 600, letterSpacing: '0.04em', textTransform: 'uppercase', cursor: 'pointer', fontFamily: "var(--font-montserrat), 'Montserrat', sans-serif", transition: 'background-color .15s ease' }}
-            onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#9A7580'; }}
+            disabled={submitting}
+            style={{ padding: '15px 28px', border: 'none', borderRadius: '0 6px 6px 0', backgroundColor: MAUVE, color: '#FFFFFF', fontSize: 14, fontWeight: 600, letterSpacing: '0.04em', textTransform: 'uppercase', cursor: submitting ? 'default' : 'pointer', fontFamily: "var(--font-montserrat), 'Montserrat', sans-serif", transition: 'background-color .15s ease', opacity: submitting ? 0.7 : 1 }}
+            onMouseEnter={(e) => { if (!submitting) e.currentTarget.style.backgroundColor = '#9A7580'; }}
             onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = MAUVE; }}
           >
-            Subscribe
+            {submitting ? 'Joining…' : 'Subscribe'}
           </button>
         </form>
+      )}
+
+      {error && (
+        <p style={{ margin: '14px 0 0', fontSize: 14, color: '#8A4A4A', fontWeight: 500, position: 'relative', zIndex: 1 }}>{error}</p>
       )}
 
       <style>{`
