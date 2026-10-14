@@ -6,6 +6,14 @@ export async function middleware(request: NextRequest) {
   const isPortalSubdomain = hostname.startsWith('portal.')
   const isClientPortalSubdomain = hostname.startsWith('my.') || hostname.startsWith('clients.')
 
+  // Palmetto Taps has no real-estate pages. getClient() falls back to Dani Diaz for any route a client doesn't define,
+  // so /about etc. were serving Dani's pages on palmettotaps.com (and Google picked "About Dani" up as a sitelink). 404 them there.
+  if (hostname.includes('palmettotaps') && /^\/(about|buyers|sellers|listings|blog|calculator|international)(\/|$)/.test(request.nextUrl.pathname)) {
+    const url = request.nextUrl.clone()
+    url.pathname = '/__not-found'
+    return NextResponse.rewrite(url)
+  }
+
   // Determine the effective pathname (after potential rewrite)
   let effectivePathname = request.nextUrl.pathname
   let needsRewrite = false
