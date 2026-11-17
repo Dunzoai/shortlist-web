@@ -7,6 +7,17 @@ import SquareConnect from '../components/SquareConnect';
 import OrdersList from '../components/OrdersList';
 import SubscribersList from '../components/SubscribersList';
 import {
+  PhotoEditor,
+  PRODUCT_ASPECTS,
+  HERO_ASPECTS,
+  GALLERY_ASPECTS,
+  loadEditState,
+  type AspectOption,
+  type PhotoEdit,
+  type PhotoSaveResult,
+  type PhotoSource,
+} from '../components/PhotoEditor';
+import {
   DndContext,
   closestCenter,
   PointerSensor,
@@ -52,6 +63,14 @@ type Product = {
 };
 
 type GalleryItem = { id: string; image_url: string; caption: string };
+
+type EditorState = {
+  target: { kind: 'product' | 'gallery'; id: string };
+  title: string;
+  source: PhotoSource;
+  aspects: AspectOption[];
+  initialEdit?: PhotoEdit;
+};
 
 const labelStyle: React.CSSProperties = {
   display: 'block',
@@ -106,20 +125,22 @@ function NavIcon({ section }: { section: Section }) {
 function PhotoDropZone({
   productId,
   imageUrl,
-  onUpload,
-  uploading,
+  aspect,
+  onPickFile,
+  onEdit,
 }: {
   productId: string;
   imageUrl: string | null;
-  onUpload: (productId: string, file: File) => void;
-  uploading: boolean;
+  aspect: number;
+  onPickFile: (productId: string, file: File) => void;
+  onEdit: (productId: string) => void;
 }) {
   const [dragging, setDragging] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
 
   const handleFile = (file: File) => {
     if (!file.type.startsWith('image/')) return;
-    onUpload(productId, file);
+    onPickFile(productId, file);
   };
 
   return (
@@ -132,12 +153,12 @@ function PhotoDropZone({
         const file = e.dataTransfer.files?.[0];
         if (file) handleFile(file);
       }}
-      onClick={() => fileRef.current?.click()}
+      onClick={() => (imageUrl ? onEdit(productId) : fileRef.current?.click())}
       style={{
         width: '100%',
-        height: 180,
+        aspectRatio: String(aspect),
         borderRadius: 10,
-        border: `2px dashed ${dragging ? BLUE_DARK : '#C9BCA9'}`,
+        border: imageUrl && !dragging ? `1px solid ${BORDER}` : `2px dashed ${dragging ? BLUE_DARK : '#C9BCA9'}`,
         backgroundColor: dragging ? '#F0F7FF' : '#F8F3EC',
         display: 'flex',
         flexDirection: 'column',
@@ -154,22 +175,33 @@ function PhotoDropZone({
         type="file"
         accept="image/*"
         style={{ display: 'none' }}
+        onClick={(e) => e.stopPropagation()}
         onChange={(e) => {
           const file = e.target.files?.[0];
           if (file) handleFile(file);
+          e.target.value = '';
         }}
       />
-      {uploading && (
-        <div style={{
-          position: 'absolute', inset: 0, backgroundColor: 'rgba(251,244,234,0.8)',
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-          fontSize: 13, color: BLUE_DARK, fontWeight: 600, zIndex: 2,
-        }}>
-          Uploading...
-        </div>
-      )}
       {imageUrl ? (
-        <img src={imageUrl} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+        <>
+          <img src={imageUrl} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+          <div style={{ position: 'absolute', right: 8, bottom: 8, display: 'flex', gap: 6 }}>
+            <button
+              type="button"
+              onClick={(e) => { e.stopPropagation(); onEdit(productId); }}
+              style={photoPillStyle}
+            >
+              <PencilIcon /> Edit
+            </button>
+            <button
+              type="button"
+              onClick={(e) => { e.stopPropagation(); fileRef.current?.click(); }}
+              style={photoPillStyle}
+            >
+              Replace
+            </button>
+          </div>
+        </>
       ) : (
         <>
           <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke={MUTED} strokeWidth="1.5">
@@ -187,26 +219,54 @@ function PhotoDropZone({
   );
 }
 
+const photoPillStyle: React.CSSProperties = {
+  cursor: 'pointer',
+  display: 'inline-flex',
+  alignItems: 'center',
+  gap: 5,
+  background: 'rgba(255,255,255,0.92)',
+  backdropFilter: 'blur(4px)',
+  WebkitBackdropFilter: 'blur(4px)',
+  color: DARK,
+  border: 'none',
+  borderRadius: 999,
+  padding: '7px 12px',
+  fontFamily: "var(--font-montserrat), 'Montserrat', sans-serif",
+  fontSize: 11,
+  fontWeight: 600,
+  letterSpacing: '0.06em',
+  textTransform: 'uppercase',
+  boxShadow: '0 2px 8px rgba(51,65,77,0.18)',
+};
+
+function PencilIcon() {
+  return (
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <path d="M17 3a2.85 2.85 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z" />
+    </svg>
+  );
+}
+
 function SortableProductCard({
   product,
   categories,
-  uploadingId,
   draggable,
   isHero,
   onField,
   onPrice,
-  onUpload,
+  onPickFile,
+  onEditPhoto,
   onDelete,
   onAddCategory,
 }: {
   product: Product;
   categories: string[];
-  uploadingId: string | null;
   draggable: boolean;
   isHero: boolean;
   onField: (id: string, field: 'name' | 'description' | 'level' | 'category', value: string) => void;
   onPrice: (id: string, raw: string) => void;
-  onUpload: (productId: string, file: File) => void;
+  onPickFile: (productId: string, file: File) => void;
+  onEditPhoto: (productId: string) => void;
   onDelete: (id: string, name: string) => void;
   onAddCategory: (id: string, name: string) => void;
 }) {
@@ -296,12 +356,13 @@ function SortableProductCard({
       >
         {/* Photo drop zone */}
         <div>
-          <label style={labelStyle}>Photo — drag & drop</label>
+          <label style={labelStyle}>Photo — drag & drop, tap to edit</label>
           <PhotoDropZone
             productId={product.id}
             imageUrl={product.image_url}
-            onUpload={onUpload}
-            uploading={uploadingId === product.id}
+            aspect={isHero ? 5 / 3 : 3 / 2}
+            onPickFile={onPickFile}
+            onEdit={onEditPhoto}
           />
         </div>
 
@@ -431,10 +492,12 @@ function SortableProductCard({
 function SortableGalleryTile({
   item,
   onCaption,
+  onEdit,
   onDelete,
 }: {
   item: GalleryItem;
   onCaption: (id: string, caption: string) => void;
+  onEdit: (id: string) => void;
   onDelete: (id: string) => void;
 }) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: item.id });
@@ -455,8 +518,16 @@ function SortableGalleryTile({
         <img
           src={item.image_url}
           alt={item.caption || 'Gallery photo'}
-          style={{ width: '100%', height: 160, objectFit: 'cover', display: 'block' }}
+          style={{ width: '100%', height: 160, objectFit: 'cover', display: 'block', cursor: 'pointer' }}
+          onClick={() => onEdit(item.id)}
         />
+        <button
+          type="button"
+          onClick={() => onEdit(item.id)}
+          style={{ ...photoPillStyle, position: 'absolute', right: 8, bottom: 8 }}
+        >
+          <PencilIcon /> Edit
+        </button>
         <div
           {...attributes}
           {...listeners}
@@ -520,7 +591,7 @@ export function AdminPage() {
   const [productFilter, setProductFilter] = useState('All');
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [uploadingId, setUploadingId] = useState<string | null>(null);
+  const [editor, setEditor] = useState<EditorState | null>(null);
   const [clientId, setClientId] = useState<string>('');
   const [galleryItems, setGalleryItems] = useState<GalleryItem[]>([]);
   const [galleryUploading, setGalleryUploading] = useState(false);
@@ -684,21 +755,68 @@ export function AdminPage() {
     });
   };
 
-  const handleUpload = async (productId: string, file: File) => {
-    setUploadingId(productId);
-    const form = new FormData();
-    form.append('file', file);
-    form.append('kind', 'product');
-    form.append('productId', productId);
+  // ── Photo editor ──
+  const productAspects = (id: string) => (id === 'intro-kit' ? HERO_ASPECTS : PRODUCT_ASPECTS);
+  const productTitle = (id: string) => products.find((p) => p.id === id)?.name || 'Edit photo';
 
-    const res = await fetch('/api/studio-admin/upload', { method: 'POST', body: form });
-    if (res.ok) {
-      const { url } = await res.json();
-      setProducts((prev) =>
-        prev.map((p) => (p.id === productId ? { ...p, image_url: url } : p))
-      );
+  // New file picked/dropped on a product → crop it before it goes live.
+  const handlePickProductFile = (productId: string, file: File) => {
+    setEditor({
+      target: { kind: 'product', id: productId },
+      title: productTitle(productId),
+      source: { kind: 'file', file },
+      aspects: productAspects(productId),
+    });
+  };
+
+  const openEditorForUrl = async (target: EditorState['target'], imageUrl: string, title: string, aspects: AspectOption[]) => {
+    const { originalUrl, edit } = await loadEditState(imageUrl);
+    setEditor({ target, title, source: { kind: 'url', url: originalUrl }, aspects, initialEdit: edit });
+  };
+
+  const handleEditProductPhoto = (productId: string) => {
+    const url = products.find((p) => p.id === productId)?.image_url;
+    if (url) openEditorForUrl({ kind: 'product', id: productId }, url, productTitle(productId), productAspects(productId));
+  };
+
+  const handleEditGalleryPhoto = (id: string) => {
+    const item = galleryItems.find((g) => g.id === id);
+    if (item) openEditorForUrl({ kind: 'gallery', id }, item.image_url, item.caption || 'Gallery photo', GALLERY_ASPECTS);
+  };
+
+  const handleEditorSave = async ({ edited, original, originalUrl, edit }: PhotoSaveResult) => {
+    if (!editor) return;
+    const { target } = editor;
+    const form = new FormData();
+    form.append('file', new File([edited], 'photo.jpg', { type: 'image/jpeg' }));
+    let originalBlob = original;
+    // Seed photos live in /public, not storage — copy them up so later edits start from the original.
+    if (!originalBlob && originalUrl && !/^https?:/.test(originalUrl)) {
+      originalBlob = await fetch(originalUrl).then((r) => (r.ok ? r.blob() : undefined)).catch(() => undefined);
     }
-    setUploadingId(null);
+    if (originalBlob) {
+      form.append('original', new File([originalBlob], 'original.jpg', { type: originalBlob.type || 'image/jpeg' }));
+    } else if (originalUrl) {
+      form.append('originalUrl', originalUrl);
+    }
+    form.append('edit', JSON.stringify(edit));
+    form.append('kind', target.kind);
+    if (target.kind === 'product') form.append('productId', target.id);
+    else form.append('galleryId', target.id);
+
+    // Keep the editor open until the save lands so a failure doesn't lose her crop.
+    const res = await fetch('/api/studio-admin/upload', { method: 'POST', body: form });
+    if (!res.ok) {
+      const { error } = await res.json().catch(() => ({ error: '' }));
+      throw new Error(`Photo didn't save${error ? ` (${error})` : ''}. Please try again.`);
+    }
+    const data = await res.json();
+    if (target.kind === 'product') {
+      setProducts((prev) => prev.map((p) => (p.id === target.id ? { ...p, image_url: data.url } : p)));
+    } else if (data.item) {
+      setGalleryItems((prev) => prev.map((g) => (g.id === target.id ? { ...g, image_url: data.item.image_url } : g)));
+    }
+    setEditor(null);
   };
 
   const handleAdd = async () => {
@@ -1068,12 +1186,12 @@ export function AdminPage() {
                         key={p.id}
                         product={p}
                         categories={allCategories}
-                        uploadingId={uploadingId}
                         draggable={canReorderProducts}
                         isHero={p.id === 'intro-kit'}
                         onField={handleField}
                         onPrice={handlePrice}
-                        onUpload={handleUpload}
+                        onPickFile={handlePickProductFile}
+                        onEditPhoto={handleEditProductPhoto}
                         onDelete={handleDelete}
                         onAddCategory={handleAddCategory}
                       />
@@ -1146,6 +1264,7 @@ export function AdminPage() {
                           key={g.id}
                           item={g}
                           onCaption={handleGalleryCaption}
+                          onEdit={handleEditGalleryPhoto}
                           onDelete={handleGalleryDelete}
                         />
                       ))}
@@ -1181,6 +1300,17 @@ export function AdminPage() {
           )}
         </div>
       </div>
+      {editor && (
+        <PhotoEditor
+          key={`${editor.target.kind}-${editor.target.id}`}
+          title={editor.title}
+          source={editor.source}
+          aspects={editor.aspects}
+          initialEdit={editor.initialEdit}
+          onCancel={() => setEditor(null)}
+          onSave={handleEditorSave}
+        />
+      )}
     </main>
   );
 }

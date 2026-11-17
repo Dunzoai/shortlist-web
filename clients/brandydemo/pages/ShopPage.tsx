@@ -279,12 +279,14 @@ export function ShopPage() {
               </a>
             )}
           </div>
-          <div style={{ width: '100%', height: 'clamp(240px,28vw,340px)', borderRadius: 12, overflow: 'hidden' }}>
-            <img
-              src="/clients/brandydemo/intro-kit.jpg"
-              alt={c.shop.introKit.headlineStart + c.shop.introKit.headlineAccent}
-              style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
-            />
+          <div style={{ width: '100%', aspectRatio: '5 / 3', borderRadius: 12, overflow: 'hidden', backgroundColor: '#F3EDE4' }}>
+            {!loading && (
+              <img
+                src={introProduct?.image_url || '/clients/brandydemo/intro-kit.jpg'}
+                alt={c.shop.introKit.headlineStart + c.shop.introKit.headlineAccent}
+                style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+              />
+            )}
           </div>
         </div>
       </section>
@@ -356,7 +358,7 @@ export function ShopPage() {
                 onMouseLeave={(e) => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = 'none'; }}
               >
                 {/* Product image */}
-                <div style={{ height: 220, backgroundColor: '#F3EDE4', overflow: 'hidden' }}>
+                <div style={{ aspectRatio: '3 / 2', backgroundColor: '#F3EDE4', overflow: 'hidden' }}>
                   {product.image_url ? (
                     <img src={product.image_url} alt={product.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                   ) : (
