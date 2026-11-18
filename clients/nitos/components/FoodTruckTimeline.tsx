@@ -47,14 +47,30 @@ function formatTime(time: string): string {
   return `${hour12}:${minutes}${ampm}`;
 }
 
+// The truck runs in Myrtle Beach, so "today" and the week are always Eastern
+// time — never UTC (toISOString) or the visitor's own timezone. Day objects are
+// pinned to noon UTC so formatting them in UTC can never roll to another day.
+const TRUCK_TIME_ZONE = "America/New_York";
+
+// Today's date in Myrtle Beach as YYYY-MM-DD
+function getTruckToday(): string {
+  // en-CA formats as YYYY-MM-DD
+  return new Intl.DateTimeFormat("en-CA", {
+    timeZone: TRUCK_TIME_ZONE,
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).format(new Date());
+}
+
 // Get day abbreviation from date
 function getDayAbbrev(date: Date): string {
-  return date.toLocaleDateString("en-US", { weekday: "short" });
+  return date.toLocaleDateString("en-US", { weekday: "short", timeZone: "UTC" });
 }
 
 // Get full day name from date
 function getFullDay(date: Date): string {
-  return date.toLocaleDateString("en-US", { weekday: "long" }).toUpperCase();
+  return date.toLocaleDateString("en-US", { weekday: "long", timeZone: "UTC" }).toUpperCase();
 }
 
 // Get date string in YYYY-MM-DD format
@@ -62,20 +78,17 @@ function getDateString(date: Date): string {
   return date.toISOString().split("T")[0];
 }
 
-// Get the current week (Monday to Sunday)
+// Get the current week (Monday to Sunday) in Myrtle Beach time
 function getCurrentWeek(): Date[] {
-  const today = new Date();
-  const dayOfWeek = today.getDay();
+  const today = new Date(`${getTruckToday()}T12:00:00Z`);
+  const dayOfWeek = today.getUTCDay();
   // Adjust so Monday is 0, Sunday is 6
   const mondayOffset = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
 
-  const monday = new Date(today);
-  monday.setDate(today.getDate() + mondayOffset);
-
   const week: Date[] = [];
   for (let i = 0; i < 7; i++) {
-    const day = new Date(monday);
-    day.setDate(monday.getDate() + i);
+    const day = new Date(today);
+    day.setUTCDate(today.getUTCDate() + mondayOffset + i);
     week.push(day);
   }
   return week;
@@ -158,7 +171,7 @@ export function FoodTruckTimeline({ onDayChange }: FoodTruckTimelineProps) {
         setScheduleData(weekSchedule);
 
         // Set initial active index to today
-        const today = getDateString(new Date());
+        const today = getTruckToday();
         const todayIndex = weekSchedule.findIndex((day) => day.date === today);
         if (todayIndex !== -1) {
           setActiveIndex(todayIndex);
